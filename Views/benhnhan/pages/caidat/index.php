@@ -214,7 +214,7 @@ if ($currentTab === 'active') {
 </head>
 <body>
 
-<h2>Hồ sơ bệnh nhân</h2>
+<h2>Danh sách bệnh nhân</h2>
 <div class="tab-navigation">
     <a href="?action=caidat&tab=all" class="tab-button <?= $currentTab === 'all' ? 'active' : '' ?>">
         Tất cả <span class="tab-count"><?= count($benhnhans) ?></span>
