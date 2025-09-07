@@ -108,7 +108,7 @@
     include_once('Controllers/clichlamviec.php'); 
     $pPhieuKham = new cPhieuKhambenh();
     $pBacSi = new cBacSi();
-    $tblBacSi = $pBacSi->getBacSiById( $_SESSION['mabacsi'])->fetch_assoc();
+    $tblBacSi = $pBacSi->getBacSiById($_SESSION['mabacsi'])->fetch_assoc();
     $pLichKham = new cLichKham();
     $pBenhNhan = new cBenhNhan();
     $tblLich = $pLichKham->getlich($_SESSION['makhunggiokb'])->fetch_assoc();

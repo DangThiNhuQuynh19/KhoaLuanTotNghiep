@@ -3,11 +3,11 @@ include_once("Controllers/cchuyengia.php");
 include_once("Controllers/clichkham.php");
 
 // Kiểm tra id chuyên gia
-if (!isset($_GET['id'])) {
+if (!isset($_GET['idcg'])) {
     echo "Không tìm thấy chuyên gia.";
     exit;
 }
-$machuyengia = $_GET['id'];
+$machuyengia = $_GET['idcg'];
 $ngay = isset($_GET['ngay']) ? $_GET['ngay'] : date('Y-m-d'); // Nếu chưa chọn ngày thì lấy ngày hôm nay
 // Lấy thông tin chuyên gia
 $cChuyenGia = new cChuyenGia();
@@ -26,7 +26,6 @@ $ngayHienTai = date('Y-m-d'); // Ngày hiện tại
 
 $cLichKham = new cLichKham();
 $lichkham = $cLichKham->getLichKhamOfChuyenGiaByNgay($ngay, $machuyengia, $gioHienTai);
-
 ?>
 
 <style>
@@ -168,7 +167,7 @@ $lichkham = $cLichKham->getLichKhamOfChuyenGiaByNgay($ngay, $machuyengia, $gioHi
     <!-- Form chọn ngày và giờ -->
     <form method="get" id="form-ngay" class="date-picker">
         <input type="hidden" name="action" value="chitietchuyengia">
-        <input type="hidden" name="id" value="<?php echo $machuyengia; ?>">
+        <input type="hidden" name="idcg" value="<?php echo $machuyengia; ?>">
         <input type="hidden" name="giohientai" id="giohientai" value="">
 
         <label for="ngay">Chọn ngày khám:</label>
@@ -202,13 +201,16 @@ $lichkham = $cLichKham->getLichKhamOfChuyenGiaByNgay($ngay, $machuyengia, $gioHi
             $link = "";
             if ($ngay == $ngayHienTai) {
                 if ($giobatdau >= $gioHienTai) {
-                    $link = '<a href="index.php?action=datlichkham&idcg=' . $machuyengia . '&ngay=' . $ngay . '&ca=' . $macalamviec . '">' . $giobatdau . ' - ' . $gioketthuc . '</a>';
+                    $link = '<a href="index.php?action=datlichkham&idcg=' . $machuyengia . '&ngay=' . $ngay . '&ca=' . $macalamviec . '">' 
+                          . $giobatdau . ' - ' . $gioketthuc . '</a>';
                 } else {
-                    $link = "<p>Ca này đã qua.</p>";
+                    continue; 
                 }
             } else {
-                $link = '<a href="index.php?action=datlichkham&idcg=' . $machuyengia . '&ngay=' . $ngay . '&ca=' . $macalamviec . '">' . $giobatdau . ' - ' . $gioketthuc . '</a>';
+                $link = '<a href="index.php?action=datlichkham&idcg=' . $machuyengia . '&ngay=' . $ngay . '&ca=' . $macalamviec . '">' 
+                      . $giobatdau . ' - ' . $gioketthuc . '</a>';
             }
+            
 
             // Phân loại
             if ($hinhthuc == "online") {

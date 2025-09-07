@@ -202,13 +202,16 @@ $lichkham = $cLichKham->getLichKhamOfBacSiByNgay($ngay, $mabacsi, $gioHienTai);
             $link = "";
             if ($ngay == $ngayHienTai) {
                 if ($giobatdau >= $gioHienTai) {
-                    $link = '<a href="index.php?action=datlichkham&idbs=' . $mabacsi . '&ngay=' . $ngay . '&ca=' . $macalamviec . '">' . $giobatdau . ' - ' . $gioketthuc . '</a>';
+                    $link = '<a href="index.php?action=datlichkham&idbs=' . $mabacsi . '&ngay=' . $ngay . '&ca=' . $macalamviec . '">' 
+                          . $giobatdau . ' - ' . $gioketthuc . '</a>';
                 } else {
-                    $link = "<p>Ca này đã qua.</p>";
+                    continue;
                 }
             } else {
-                $link = '<a href="index.php?action=datlichkham&idbs=' . $mabacsi . '&ngay=' . $ngay . '&ca=' . $macalamviec . '">' . $giobatdau . ' - ' . $gioketthuc . '</a>';
+                $link = '<a href="index.php?action=datlichkham&idbs=' . $mabacsi . '&ngay=' . $ngay . '&ca=' . $macalamviec . '">' 
+                      . $giobatdau . ' - ' . $gioketthuc . '</a>';
             }
+            
 
             // Phân loại
             if ($hinhthuc == "online") {

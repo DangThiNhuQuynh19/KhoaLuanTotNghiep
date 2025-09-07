@@ -178,12 +178,13 @@
 include_once('Assets/config.php');
 include_once('Controllers/cbacsi.php');
 include_once('Controllers/clichkham.php');
+include_once('Controllers/cchuyengia.php');
 
 // Xử lý lấy thông tin bác sĩ, lịch làm việc
 $idbs = $_GET['idbs'] ?? null;
 $ngay = $_GET['ngay'] ?? null;
 $ca = $_GET['ca'] ?? null;
-
+$idcg = $_GET['idcg'] ?? null;
 if ($idbs && $ngay && $ca) {
     $pBacSi = new cBacSi();
     $tblBacSi = $pBacSi->getBacSiById($idbs);
@@ -207,7 +208,31 @@ if ($idbs && $ngay && $ca) {
     } else {
         $error = "Không tìm thấy thông tin ca làm việc.";
     }
-} else {
+}elseif ($idcg && $ngay && $ca) {
+    $pChuyenGia = new cChuyenGia();
+    $tblChuyenGia = $pChuyenGia->getChuyenGiaById($idcg);
+    if ($tblChuyenGia && $tblChuyenGia->num_rows > 0) {
+        $chuyengia = $tblChuyenGia->fetch_assoc();
+        $hoten = $chuyengia['hoten'];
+        $capbac = $chuyengia['capbac'];
+        $chuyenKhoa = $chuyengia['tenlinhvuc'];
+        $gia = $chuyengia['giatuvan'];
+        $anh = $chuyengia['imgcg'];
+    } else {
+        $error = "Không tìm thấy thông tin chuyên gia.";
+    }
+
+    $pLichKham = new cLichKham();
+    $tblLich = $pLichKham->getlich($ca);
+    if ($tblLich && $tblLich->num_rows > 0) {
+        $lich = $tblLich->fetch_assoc();
+        $giobatdau = $lich['giobatdau'];
+        $gioketthuc = $lich['gioketthuc'];
+    } else {
+        $error = "Không tìm thấy thông tin ca làm việc.";
+    }
+}
+else {
     $error = "Thiếu tham số trên URL.";
 }
 
@@ -262,17 +287,25 @@ if (isset($_POST['datlich'])) {
 
 ?>
 <body>
-<?php if ($idbs && $ngay && $ca): ?>
+<?php if ($idbs && $ngay && $ca || $idcg): ?>
   <div class="container text-center">
     <div class="card">
       <div class="card-body d-flex justify-content-center align-items-center">
         <div class="doctor-info text-start">
           <h5 class="card-title"><?php echo htmlspecialchars($capbac); ?> - <?php echo htmlspecialchars($hoten); ?></h5>
-          <p><strong>Chuyên khoa:</strong> <?php echo htmlspecialchars($chuyenKhoa); ?></p>
+          <?php if ($idbs):?>
+            <p><strong>Chuyên khoa:</strong> <?php echo htmlspecialchars($chuyenKhoa); ?></p>
+          <?php elseif ($idcg):?>
+            <p><strong>Lĩnh vực:</strong> <?php echo htmlspecialchars($chuyenKhoa); ?></p>
+          <?php endif?>
           <p><strong>Ngày khám:</strong> <?php echo htmlspecialchars($ngay); ?></p>
           <p><strong>Giờ bắt đầu:</strong> <?php echo htmlspecialchars($giobatdau); ?></p>
           <p><strong>Giờ kết thúc:</strong> <?php echo htmlspecialchars($gioketthuc); ?></p>
-          <p><strong>Giá khám:</strong> <?php echo htmlspecialchars($gia);  ?> đồng</p>
+          <?php if($idbs):?>
+            <p><strong>Giá khám:</strong> <?php echo htmlspecialchars($gia);  ?> đồng</p>
+          <?php elseif($idcg):?>
+            <p><strong>Giá tư vấn:</strong> <?php echo htmlspecialchars($gia);  ?> đồng</p>
+          <?php endif?>
         </div>
         <div class="doctor-image ms-4">
           <img src="Assets/img/<?php echo htmlspecialchars($anh); ?>" alt="Ảnh bác sĩ" class="img-fluid rounded-circle">

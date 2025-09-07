@@ -200,7 +200,7 @@ if (!empty($_GET['name']) && !empty($_GET['linhvuc'])) {
                 ?>
             </p>
             <div class="doctor-buttons" >
-                <a href="?action=chitietchuyengia&id=<?php echo $row['machuyengia']; ?>" class="btn-secondary">XEM CHI TIẾT</a>
+                <a href="?action=chitietchuyengia&idcg=<?php echo $row['machuyengia']; ?>" class="btn-secondary">XEM CHI TIẾT</a>
             </div>
         </div>
     </div>

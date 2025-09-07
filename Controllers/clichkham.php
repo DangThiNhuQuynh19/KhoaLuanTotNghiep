@@ -64,5 +64,18 @@ class cLichKham {
             }
         }
     }
+    public function getlichhennhanvien(){
+        $p = new mLichKham();
+        $tbl = $p->lichhen();
+        if(!$tbl){
+            return -1;
+        }else{
+            if($tbl->num_rows > 0){
+                return $tbl;
+            }else{
+                return 0;
+            }
+        }
+    }
 }
 ?>

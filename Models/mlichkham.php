@@ -82,8 +82,7 @@ class mLichKham {
         $con = $p->moketnoi();
         $con->set_charset('utf8');
         if($con){
-            $str = "select * from lichlamviec as lv join calamviec as cv 
-            on cv.macalamviec = lv.macalamviec where cv.macalamviec='$id'";
+            $str = "select * from khunggiokhambenh WHERE makhunggiokb='$id'";
             $tbl = $con->query($str);
             $p->dongketnoi($con);
             return $tbl;
@@ -103,6 +102,29 @@ class mLichKham {
                     JOIN bacsi bs ON pkb.mabacsi = bs.mabacsi
                     JOIN benhnhan bn ON pkb.mabenhnhan = bn.mabenhnhan
                     WHERE bs.tentk = '$bs' AND bn.tentk = '$bn'";
+            $result = $con->query($sql);
+            $p->dongketnoi($con);
+            return $result;
+        } else {
+            return false;
+        }
+    }
+    public function lichhen() {
+        $p = new clsKetNoi();
+        $con = $p->moketnoi();
+        $con->set_charset('utf8');
+
+        if ($con) {
+            $sql = "SELECT pk.maphieukhambenh, pk.ngaykham, kgkb.giobatdau, nd_bn.hoten AS ten_benhnhan, 
+                    nd_bs.hoten AS ten_bacsi, tt.tentrangthai FROM phieukhambenh AS pk 
+                    JOIN khunggiokhambenh AS kgkb ON pk.makhunggiokb = kgkb.makhunggiokb 
+                    JOIN bacsi AS bs ON pk.mabacsi = bs.mabacsi 
+                    JOIN benhnhan AS bn ON pk.mabenhnhan = bn.mabenhnhan 
+                    
+                    JOIN nguoidung AS nd_bs ON bs.mabacsi = nd_bs.manguoidung 
+                    JOIN nguoidung AS nd_bn ON bn.mabenhnhan = nd_bn.manguoidung 
+                    JOIN trangthai AS tt ON pk.matrangthai = tt.matrangthai 
+                    WHERE pk.ngaykham >= CURRENT_DATE ORDER BY pk.ngaykham ASC, kgkb.giobatdau ASC;";
             $result = $con->query($sql);
             $p->dongketnoi($con);
             return $result;

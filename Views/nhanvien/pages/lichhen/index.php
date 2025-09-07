@@ -1,3 +1,9 @@
+<?php
+include_once(__DIR__ . '../../../../../Controllers/clichkham.php');
+$c = new cLichKham();
+$result = $c->getlichhennhanvien();
+?>
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -24,26 +30,31 @@
       <?php if ($result->num_rows > 0): ?>
         <?php while($row = $result->fetch_assoc()): ?>
           <tr>
-            <td><?= $row['id'] ?></td>
-            <td><?= date("d/m/Y", strtotime($row['ngayhen'])) ?></td>
-            <td><?= $row['giohen'] ?></td>
-            <td><?= $row['tenbenhnhan'] ?></td>
-            <td><?= $row['tenbacsi'] ?></td>
+            <td><?= $row['maphieukhambenh'] ?></td>
+            <td><?= date("d/m/Y", strtotime($row['ngaykham'])) ?></td>
+            <td><?= $row['giobatdau'] ?></td>
+            <td><?= $row['ten_benhnhan'] ?></td>
+            <td><?= $row['ten_bacsi'] ?></td>
             <td>
               <?php
-                switch ($row['trangthai']) {
-                    case 0: echo '<span class="badge bg-warning">Chờ xác nhận</span>'; break;
-                    case 1: echo '<span class="badge bg-success">Đã xác nhận</span>'; break;
-                    case 2: echo '<span class="badge bg-danger">Đã hủy</span>'; break;
+                if ($row['tentrangthai'] == 'Chưa khám') {
+                    echo '<span class="badge bg-warning">Chưa khám</span>';
+                } elseif ($row['tentrangthai'] == 'Đã khám') {
+                    echo '<span class="badge bg-success">Đã khám</span>';
+                } elseif ($row['tentrangthai'] == 'Đã hủy') {
+                    echo '<span class="badge bg-danger">Đã hủy</span>';
+                } else {
+                    echo '<span class="badge bg-secondary">'.$row['tentrangthai'].'</span>';
                 }
               ?>
             </td>
+
             <td>
-              <a href="sualichhen.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-primary">
+              <a href="?action=sualichhen&id=<?= $row['maphieukhambenh'] ?>" class="btn btn-sm btn-primary">
                 <i class="bi bi-pencil-square"></i> Sửa
               </a>
-              <a href="xoalichhen.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Xóa lịch hẹn này?')">
-                <i class="bi bi-trash"></i> Xóa
+              <a href="huylichhen.php?id=<?= $row['maphieukhambenh'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Xóa lịch hẹn này?')">
+                <i class="bi bi-trash"></i> Hủy
               </a>
             </td>
           </tr>
