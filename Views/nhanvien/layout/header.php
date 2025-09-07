@@ -1,10 +1,9 @@
 <?php
-session_start();
-// Giả sử đã có session đăng nhập nhân viên
-if (!isset($_SESSION['vaitro']) || $_SESSION['vaitro'] != 'nhanvien') {
-    header("Location: dangnhap.php");
-    exit();
-}
+    // include_once('Controllers/cbacsi.php');
+    // $cbacsi= new cbacsi();
+    // if(isset($_SESSION["dangnhap"]) && isset($_SESSION["user"])){
+    //     $bacsi = $cbacsi->getBacSiByTenTK($_SESSION["user"]["tentk"]);
+    // }
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -82,7 +81,7 @@ if (!isset($_SESSION['vaitro']) || $_SESSION['vaitro'] != 'nhanvien') {
         <span>Nhân viên</span>
       </a>
       <ul class="dropdown-menu shadow">
-        <li><a class="dropdown-item" href="dangxuat.php"><i class="bi bi-box-arrow-right"></i> Đăng xuất</a></li>
+        <li><a class="dropdown-item" href="?action=dangxuat"><i class="bi bi-box-arrow-right"></i> Đăng xuất</a></li>
       </ul>
     </div>
   </div>

@@ -2,11 +2,11 @@
   <div class="row">
     <!-- Sidebar -->
     <div class="col-md-3 col-lg-2 sidebar">
-        <a href="#" class="active"><i class="bi bi-calendar-event"></i> Lịch hẹn</a>
-        <a href="#"><i class="bi bi-pencil-square"></i> Danh sách chuyên gia</a>
+        <a href="?action=lichhen" class="active"><i class="bi bi-calendar-event"></i> Lịch hẹn</a>
+        <a href="#"><i class="bi bi-people"></i> Danh sách chuyên gia</a>
         <a href="#"><i class="bi bi-people"></i> Danh sách bác sĩ</a>
         <a href="#"><i class="bi bi-clock-history"></i> Lịch làm việc cá nhân</a>
-        <a href="#"><i class="bi bi-clock-history"></i> Thông tin cá nhân</a>
+        <a href="#"><i class="bi bi-person-circle"></i> Thông tin cá nhân</a>
     </div>
 
     <!-- Nội dung chính -->
