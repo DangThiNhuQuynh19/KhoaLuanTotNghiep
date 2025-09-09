@@ -2,9 +2,9 @@
 include_once("Models/mphieukhambenh.php");
 
 class cPhieuKhamBenh {
-    public function insertphieukham($maphieukb,$ngaykham,$macalamviec,$mabacsi,$mabenhnhan,$tongtien,$trangthai){
+    public function insertphieukham($maphieukb,$ngaykham,$makhunggiokb,$mabacsi,$mabenhnhan,$matrangthai){
         $p = new mPhieuKhamBenh();
-        $kq = $p -> insertphieukham($maphieukb,$ngaykham,$macalamviec,$mabacsi,$mabenhnhan,$tongtien,$trangthai);
+        $kq = $p -> insertphieukham($maphieukb,$ngaykham,$makhunggiokb,$mabacsi,$mabenhnhan,$matrangthai);
         if($kq){
             return $kq;
         } else {

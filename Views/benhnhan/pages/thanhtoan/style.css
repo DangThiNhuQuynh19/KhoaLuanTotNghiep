@@ -1,0 +1,93 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: #f5f5f5;
+}
+
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    margin-top: 100px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+    .header h1 {
+        color: #2c3e50;
+        margin-bottom: 10px;
+    }
+
+.payment-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+.info-section {
+    flex: 1;
+    padding: 20px;
+}
+
+.qr-section {
+    flex: 1;
+    text-align: center;
+    padding: 20px;
+}
+
+.qr-code {
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
+    border: 1px solid #ddd;
+    padding: 10px;
+}
+
+.info-item {
+    margin-bottom: 15px;
+}
+
+    .info-item label {
+        font-weight: bold;
+        color: #34495e;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .info-item span {
+        color: #2c3e50;
+    }
+
+.total {
+    font-size: 1.2em;
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.button {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    font-size: 16px;
+}
+
+    .button:hover {
+        background-color: #2980b9;
+    }

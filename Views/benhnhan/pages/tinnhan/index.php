@@ -1,5 +1,4 @@
 <?php
-session_start();
 if (!isset($_SESSION['user']['tentk'])) {
     header("Location: index.php");
     exit();
@@ -32,7 +31,7 @@ $tentk = $_SESSION['user']['tentk'];
             overflow-y: auto;
         }
         #userList h3 {
-            background: #8e44ad;
+            background: #3C1561;
             color: white;
             padding: 15px;
             margin: 0;

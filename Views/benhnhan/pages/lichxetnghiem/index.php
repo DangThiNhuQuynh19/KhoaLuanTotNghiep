@@ -1,5 +1,4 @@
 <?php
-session_start();
 include_once('Controllers/clichxetnghiem.php');
 
 if (!isset($_SESSION['user']) || !isset($_SESSION['user']['tentk'])) {

@@ -10,7 +10,7 @@
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background-color: #f8f9fa;
-      padding: 3rem 0;
+      padding: 7rem 0;
     }
 
     .clinic-card {

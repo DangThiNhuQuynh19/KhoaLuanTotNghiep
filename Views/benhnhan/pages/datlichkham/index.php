@@ -268,10 +268,15 @@ include_once('Controllers/clichlamviec.php');
 if (isset($_POST['datlich'])) {
     $_SESSION['mabenhnhan'] = $_POST['mabenhnhan'];
     $_SESSION['makhunggiokb'] = $_POST['makhunggiokb'];
-    $_SESSION['mabacsi'] = $_POST['mabacsi'];
+    if(isset($idbs)){
+        $_SESSION['mabacsi'] = $_POST['mabacsi'];
+    }
+    elseif(isset($idcg)){
+         $_SESSION['machuyengia'] = $_POST['machuyengia'];
+    }
     $_SESSION['ngaykham'] = $_POST['ngaykham'];
     $_SESSION['tongtien'] = $_POST['giakham'];
-    $_SESSION['trangthai'] = 'Chưa khám';
+    $_SESSION['matrangthai'] = '6';
 
     // Tạo mã phiếu khám bệnh ngẫu nhiên
     $maphieukb = 'PKB' . time() . rand(100, 999);
@@ -352,7 +357,11 @@ if (isset($_POST['datlich'])) {
             <form method="POST">
               <input type="hidden" name="mabenhnhan" value="<?php echo $bn['mabenhnhan']; ?>">
               <input type="hidden" name="makhunggiokb" value="<?php echo $ca; ?>">
-              <input type="hidden" name="mabacsi" value="<?php echo $idbs; ?>">
+              <?php if(isset($idbs)):?>
+                <input type="hidden" name="mabacsi" value="<?php echo $idbs; ?>">
+              <?php elseif(isset($idcg)):?>
+                <input type="hidden" name="machuyengia" value="<?php echo $idcg; ?>">
+              <?php endif; ?>
               <input type="hidden" name="ngaykham" value="<?php echo $ngay; ?>">
               <input type="hidden" name="giakham" value="<?php echo $gia; ?>">
               <div class="text-center mt-3">

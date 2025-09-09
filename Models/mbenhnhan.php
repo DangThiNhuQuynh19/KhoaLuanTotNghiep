@@ -56,7 +56,9 @@
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if($con){
-                $str = "select * from benhnhan where mabenhnhan = '$id'";
+                $str = "select * from benhnhan b
+                        join nguoidung d on b.mabenhnhan=d.manguoidung 
+                        where mabenhnhan = '$id'";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;
