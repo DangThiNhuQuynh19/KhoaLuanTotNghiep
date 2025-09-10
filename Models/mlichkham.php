@@ -10,24 +10,36 @@ class mLichKham {
             // Kiểm tra nếu ngày là hôm nay và có giờ hiện tại
             if ($ngay == date('Y-m-d') && $gioHienTai !== null) {
                 // Lọc ca làm việc có giờ bắt đầu >= giờ hiện tại
-                $str = "SELECT * FROM khunggiokhambenh 
-                        JOIN calamviec ON khunggiokhambenh.macalamviec = calamviec.macalamviec 
-                        JOIN lichlamviec ON lichlamviec.macalamviec = calamviec.macalamviec 
-                        JOIN nguoidung ON lichlamviec.manguoidung = nguoidung.manguoidung 
+                $str = "SELECT calamviec.tenca, lichlamviec.*, nguoidung.*, chuyengia.*, 
+                        phieukhambenh.*, khunggiokhambenh.*
+                        FROM khunggiokhambenh
+                        JOIN calamviec ON khunggiokhambenh.macalamviec = calamviec.macalamviec
+                        JOIN lichlamviec ON lichlamviec.macalamviec = calamviec.macalamviec
+                        JOIN nguoidung ON lichlamviec.manguoidung = nguoidung.manguoidung
                         JOIN chuyengia ON nguoidung.manguoidung = chuyengia.machuyengia
-                        LEFT JOIN phieukhambenh ON phieukhambenh.makhunggiokb = lichlamviec.malichlamviec 
-                        WHERE  ngaylam = '$ngay' 
-                            AND chuyengia.machuyengia = '$id'
-                            AND khunggiokhambenh.giobatdau >= '$gioHienTai'
-                            AND phieukhambenh.maphieukhambenh IS NULL";
+                        LEFT JOIN phieukhambenh 
+                            ON phieukhambenh.makhunggiokb = khunggiokhambenh.makhunggiokb
+                            AND phieukhambenh.ngaykham = lichlamviec.ngaylam
+                            AND phieukhambenh.mabacsi = lichlamviec.manguoidung
+                            AND phieukhambenh.matrangthai = 6 
+                            WHERE  ngaylam = '$ngay' 
+                                AND chuyengia.machuyengia = '$id'
+                                AND khunggiokhambenh.giobatdau >= '$gioHienTai'
+                                AND phieukhambenh.maphieukhambenh IS NULL";
             } else {
                 // Ngày lớn hơn hôm nay, hiển thị tất cả ca
-                $str = "SELECT * FROM khunggiokhambenh 
-                        JOIN calamviec ON khunggiokhambenh.macalamviec = calamviec.macalamviec 
-                        JOIN lichlamviec ON lichlamviec.macalamviec = calamviec.macalamviec 
-                        JOIN nguoidung ON lichlamviec.manguoidung = nguoidung.manguoidung 
+                $str = "SELECT calamviec.tenca, lichlamviec.*, nguoidung.*, chuyengia.*, 
+                            phieukhambenh.*, khunggiokhambenh.*
+                        FROM khunggiokhambenh
+                        JOIN calamviec ON khunggiokhambenh.macalamviec = calamviec.macalamviec
+                        JOIN lichlamviec ON lichlamviec.macalamviec = calamviec.macalamviec
+                        JOIN nguoidung ON lichlamviec.manguoidung = nguoidung.manguoidung
                         JOIN chuyengia ON nguoidung.manguoidung = chuyengia.machuyengia
-                        LEFT JOIN phieukhambenh ON phieukhambenh.makhunggiokb = lichlamviec.malichlamviec 
+                        LEFT JOIN phieukhambenh 
+                            ON phieukhambenh.makhunggiokb = khunggiokhambenh.makhunggiokb
+                            AND phieukhambenh.ngaykham = lichlamviec.ngaylam
+                            AND phieukhambenh.mabacsi = lichlamviec.manguoidung
+                            AND phieukhambenh.matrangthai = 6 
                         WHERE  ngaylam = '$ngay' 
                             AND chuyengia.machuyengia = '$id'
                             AND phieukhambenh.maphieukhambenh IS NULL";
@@ -48,24 +60,36 @@ class mLichKham {
             // Kiểm tra nếu ngày là hôm nay và có giờ hiện tại
             if ($ngay == date('Y-m-d') && $gioHienTai !== null) {
                 // Lọc ca làm việc có giờ bắt đầu >= giờ hiện tại
-                $str = "SELECT calamviec.tenca, lichlamviec.*, nguoidung.*, nguoidung.*,bacsi.*, phieukhambenh.*, khunggiokhambenh.* FROM khunggiokhambenh 
-                        JOIN calamviec ON khunggiokhambenh.macalamviec = calamviec.macalamviec 
-                        JOIN lichlamviec ON lichlamviec.macalamviec = calamviec.macalamviec 
-                        JOIN nguoidung ON lichlamviec.manguoidung = nguoidung.manguoidung 
+                $str = "SELECT calamviec.tenca, lichlamviec.*, nguoidung.*, bacsi.*, 
+                        phieukhambenh.*, khunggiokhambenh.*
+                        FROM khunggiokhambenh
+                        JOIN calamviec ON khunggiokhambenh.macalamviec = calamviec.macalamviec
+                        JOIN lichlamviec ON lichlamviec.macalamviec = calamviec.macalamviec
+                        JOIN nguoidung ON lichlamviec.manguoidung = nguoidung.manguoidung
                         JOIN bacsi ON nguoidung.manguoidung = bacsi.mabacsi
-                        LEFT JOIN phieukhambenh ON phieukhambenh.makhunggiokb = lichlamviec.malichlamviec 
-                        WHERE  ngaylam = '$ngay' 
-                            AND bacsi.mabacsi = '$id'
-                            AND khunggiokhambenh.giobatdau >= '$gioHienTai'
-                            AND phieukhambenh.maphieukhambenh IS NULL";
+                        LEFT JOIN phieukhambenh 
+                            ON phieukhambenh.makhunggiokb = khunggiokhambenh.makhunggiokb
+                            AND phieukhambenh.ngaykham = lichlamviec.ngaylam
+                            AND phieukhambenh.mabacsi = lichlamviec.manguoidung
+                            AND phieukhambenh.matrangthai = 6 
+                            WHERE  ngaylam = '$ngay' 
+                                AND bacsi.mabacsi = '$id'
+                                AND khunggiokhambenh.giobatdau >= '$gioHienTai'
+                                AND phieukhambenh.maphieukhambenh IS NULL";
             } else {
                 // Ngày lớn hơn hôm nay, hiển thị tất cả ca
-                $str = "SELECT calamviec.tenca, lichlamviec.*, nguoidung.*, nguoidung.*,bacsi.*, phieukhambenh.*, khunggiokhambenh.* FROM khunggiokhambenh 
-                        JOIN calamviec ON khunggiokhambenh.macalamviec = calamviec.macalamviec 
-                        JOIN lichlamviec ON lichlamviec.macalamviec = calamviec.macalamviec 
-                        JOIN nguoidung ON lichlamviec.manguoidung = nguoidung.manguoidung 
+                $str = "SELECT calamviec.tenca, lichlamviec.*, nguoidung.*, bacsi.*, 
+                            phieukhambenh.*, khunggiokhambenh.*
+                        FROM khunggiokhambenh
+                        JOIN calamviec ON khunggiokhambenh.macalamviec = calamviec.macalamviec
+                        JOIN lichlamviec ON lichlamviec.macalamviec = calamviec.macalamviec
+                        JOIN nguoidung ON lichlamviec.manguoidung = nguoidung.manguoidung
                         JOIN bacsi ON nguoidung.manguoidung = bacsi.mabacsi
-                        LEFT JOIN phieukhambenh ON phieukhambenh.makhunggiokb = lichlamviec.malichlamviec 
+                        LEFT JOIN phieukhambenh 
+                            ON phieukhambenh.makhunggiokb = khunggiokhambenh.makhunggiokb
+                            AND phieukhambenh.ngaykham = lichlamviec.ngaylam
+                            AND phieukhambenh.mabacsi = lichlamviec.manguoidung
+                            AND phieukhambenh.matrangthai = 6 
                         WHERE  ngaylam = '$ngay' 
                             AND bacsi.mabacsi = '$id'
                             AND phieukhambenh.maphieukhambenh IS NULL";

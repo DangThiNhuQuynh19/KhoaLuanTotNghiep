@@ -193,7 +193,7 @@ $lichkham = $cLichKham->getLichKhamOfChuyenGiaByNgay($ngay, $machuyengia, $gioHi
         $caOffline = [];
 
         while ($rowCa = $lichkham->fetch_assoc()) {
-            $macalamviec = $rowCa['macalamviec'];
+            $makhunggiokb = $rowCa['makhunggiokb'];
             $giobatdau = date('H:i', strtotime($rowCa['giobatdau']));
             $gioketthuc = date('H:i', strtotime($rowCa['gioketthuc']));
             $hinhthuc = $rowCa['hinhthuclamviec']; // 0 = offline, 1 = online
@@ -201,13 +201,13 @@ $lichkham = $cLichKham->getLichKhamOfChuyenGiaByNgay($ngay, $machuyengia, $gioHi
             $link = "";
             if ($ngay == $ngayHienTai) {
                 if ($giobatdau >= $gioHienTai) {
-                    $link = '<a href="index.php?action=datlichkham&idcg=' . $machuyengia . '&ngay=' . $ngay . '&ca=' . $macalamviec . '">' 
+                    $link = '<a href="index.php?action=datlichkham&idcg=' . $machuyengia . '&ngay=' . $ngay . '&ca=' . $makhunggiokb . '">' 
                           . $giobatdau . ' - ' . $gioketthuc . '</a>';
                 } else {
                     continue; 
                 }
             } else {
-                $link = '<a href="index.php?action=datlichkham&idcg=' . $machuyengia . '&ngay=' . $ngay . '&ca=' . $macalamviec . '">' 
+                $link = '<a href="index.php?action=datlichkham&idcg=' . $machuyengia . '&ngay=' . $ngay . '&ca=' . $makhunggiokb . '">' 
                       . $giobatdau . ' - ' . $gioketthuc . '</a>';
             }
             
