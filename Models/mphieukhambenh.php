@@ -3,7 +3,7 @@
  class mPhieuKhamBenh{
         public function insertphieukham($maphieukb,$ngaykham,$makhunggiokb,$mabacsi,$mabenhnhan,$matrangthai){
             $p = new clsketnoi();
-            $truyvan = "INSERT INTO phieukhambenh(maphieukb,ngaykham,makhunggiokb,mabacsi,mabenhnhan,matrangthai) VALUES ('$maphieukb','$ngaykham','$makhunggiokb','$mabacsi','$mabenhnhan','$matrangthai')";
+            $truyvan = "INSERT INTO phieukhambenh(maphieukhambenh,ngaykham,makhunggiokb,mabacsi,mabenhnhan,matrangthai) VALUES ('$maphieukb','$ngaykham','$makhunggiokb','$mabacsi','$mabenhnhan','$matrangthai')";
             $con = $p->moketnoi();
             $kq = mysqli_query($con, $truyvan);
             $p->dongketnoi($con);
