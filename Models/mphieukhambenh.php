@@ -157,10 +157,12 @@
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if($con){
-                $str = "SELECT bs.hoten, pk.trangthai, pk.*, ca.*, bn.*, ck.tenchuyenkhoa
+                $str = "SELECT nd.hoten, tt.tentrangthai, pk.*, kg.*, bn.*, ck.tenchuyenkhoa
                 FROM phieukhambenh AS pk
-                JOIN calamviec AS ca ON ca.macalamviec = pk.macalamviec
+                JOIN trangthai AS tt ON tt.matrangthai = pk.matrangthai
+                JOIN khunggiokhambenh AS kg ON kg.makhunggiokb = pk.makhunggiokb
                 JOIN bacsi AS bs ON pk.mabacsi = bs.mabacsi
+                JOIN nguoidung AS nd ON nd.manguoidung = bs.mabacsi
                 JOIN chuyenkhoa ck ON ck.machuyenkhoa=bs.machuyenkhoa
                 JOIN benhnhan AS bn ON bn.mabenhnhan = pk.mabenhnhan
                 WHERE bs.mabacsi = '$mabacsi' AND  pk.ngaykham = CURDATE()";
@@ -177,11 +179,14 @@
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if($con){
-                $str = "SELECT bs.hoten, pk.trangthai, pk.*, ca.*, bn.*
+                $str = "SELECT nd_bs.hoten, tt.tentrangthai, pk.*, kg.*, bn.*
                 FROM phieukhambenh AS pk
-                JOIN calamviec AS ca ON ca.macalamviec = pk.macalamviec
+                JOIN trangthai AS tt ON tt.matrangthai = pk.matrangthai
+                JOIN khunggiokhambenh AS kg ON kg.makhunggiokb = pk.makhunggiokb
                 JOIN bacsi AS bs ON pk.mabacsi = bs.mabacsi
+                JOIN nguoidung AS nd_bs ON nd_bs.manguoidung = bs.mabacsi
                 JOIN benhnhan AS bn ON bn.mabenhnhan = pk.mabenhnhan
+                JOIN nguoidung AS nd_bn ON nd_bn.manguoidung = bn.mabenhnhan
                 WHERE bs.mabacsi = '$mabacsi' AND  pk.ngaykham = CURDATE()-1";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
@@ -243,16 +248,18 @@
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if($con){
-                $str = "SELECT bs.hoten, pk.trangthai, pk.*, ca.*, bn.*, c.*, bs.*
+                $str = "SELECT nd_bs.hoten, tt.tentrangthai, pk.*, kg.*, bn.*, c.*, bs.*
                 FROM phieukhambenh AS pk
-                JOIN calamviec AS ca ON ca.macalamviec = pk.macalamviec
+                JOIN khunggiokhambenh AS kg ON kg.makhunggiokb = pk.makhunggiokb
+                JOIN trangthai AS tt ON tt.matrangthai = pk.matrangthai
                 JOIN bacsi AS bs ON pk.mabacsi = bs.mabacsi
+                JOIN nguoidung AS nd_bs ON nd_bs.manguoidung = bs.mabacsi
                 JOIN benhnhan AS bn ON bn.mabenhnhan = pk.mabenhnhan
                 JOIN chuyenkhoa AS c ON c.machuyenkhoa = bs.machuyenkhoa
                 WHERE bs.mabacsi = '$mabacsi'
                 AND pk.ngaykham >= CURDATE() 
-                AND ca.giobatdau >= CURTIME()
-                ORDER BY pk.ngaykham ASC, ca.giobatdau ASC
+                AND kg.giobatdau >= CURTIME()
+                ORDER BY pk.ngaykham ASC, kg.giobatdau ASC
                 LIMIT 1;";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);

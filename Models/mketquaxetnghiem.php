@@ -49,7 +49,7 @@ class mKetQuaXetNghiem{
             join benhnhan as bn on bn.mabenhnhan=hs.mabenhnhan
             join chitiethoso as ct on ct.mahoso= l.mahoso
             join khunggioxetnghiem as k on k.makhunggioxetnghiem=l.makhunggio
-            where ct.mabacsi='$mabacsi' AND DATE(kq.thoigiantao) = CURDATE()
+            where ct.mabacsi='$mabacsi' AND DATE(l.ngayhen) = CURDATE()
             group by l.malichxetnghiem ";
             $tbl = $con->query($str);
             $p->dongketnoi($con);
@@ -67,7 +67,7 @@ class mKetQuaXetNghiem{
             $str = "select * from ketquaxetnghiem as kq
             join lichxetnghiem as l on kq.malichxetnghiem=l.malichxetnghiem
             join chitiethoso as ct on ct.mahoso= l.mahoso
-            where ct.mabacsi='$mabacsi' AND DATE(kq.thoigiantao) = CURDATE() - 1
+            where ct.mabacsi='$mabacsi' AND DATE(l.ngayhen) = CURDATE() - 1
             group by l.malichxetnghiem ";
             $tbl = $con->query($str);
             $p->dongketnoi($con);
@@ -90,7 +90,7 @@ class mKetQuaXetNghiem{
             join chuyenkhoa as ck on bs.machuyenkhoa=ck.machuyenkhoa
             where ct.mabacsi='$mabacsi'
             group by l.malichxetnghiem
-            ORDER BY thoigiantao DESC LIMIT 3";
+            ORDER BY ngayhen DESC LIMIT 3";
             $tbl = $con->query($str);
             $p->dongketnoi($con);
             return $tbl;
