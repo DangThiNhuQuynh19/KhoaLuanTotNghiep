@@ -23,6 +23,7 @@
             if($con){
                 $str = "select * from chitiethoso as ct
                 join bacsi as bs on ct.mabacsi=bs.mabacsi
+                join nguoidung nd on nd.manguoidung=bs.mabacsi
                 join chuyenkhoa as ck on ck.machuyenkhoa=bs.machuyenkhoa
                 where ct.mahoso='$mahoso'";
                 $tbl = $con->query($str);

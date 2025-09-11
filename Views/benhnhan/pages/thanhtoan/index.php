@@ -93,6 +93,6 @@
 <script>
 window.addEventListener("beforeunload", function () {
     // Gọi PHP để xóa session thanh toán khi rời khỏi trang
-    //navigator.sendBeacon("Views/benhnhan/pages/thanhtoan/xoasession.php");
+    navigator.sendBeacon("Views/benhnhan/pages/thanhtoan/xoasession.php");
 });
 </script>

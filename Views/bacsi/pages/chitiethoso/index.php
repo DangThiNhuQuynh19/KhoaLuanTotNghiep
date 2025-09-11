@@ -157,7 +157,7 @@ if(isset($_POST['btnupdate'])) {
                         <i class="fas fa-user"></i>
                     </div>
                     <div class="patient-details">
-                        <h3 class="patient-name"><?php echo $benhnhan[0]['hotenbenhnhan']; ?></h3>
+                        <h3 class="patient-name"><?php echo $benhnhan[0]['hoten']; ?></h3>
                         <div class="patient-id"><?php echo $benhnhan[0]['mabenhnhan']; ?></div>
                         
                         <div class="patient-data">
@@ -175,7 +175,7 @@ if(isset($_POST['btnupdate'])) {
                             </div>
                             <div class="patient-data-item">
                                 <div class="data-label">Nhóm máu</div>
-                                <div class="data-value"><?php echo $benhnhan[0]['nhommau']; ?></div>
+                                <div class="data-value"><?php// echo $benhnhan[0]['nhommau']; ?></div>
                             </div>
                             <div class="patient-data-item">
                                 <div class="data-label">Tiền sử bệnh tật của bản thân</div>
@@ -187,11 +187,11 @@ if(isset($_POST['btnupdate'])) {
                             </div>
                             <div class="patient-data-item">
                                 <div class="data-label">Địa chỉ</div>
-                                <div class="data-value"><?php echo $benhnhan[0]['sonha'].','.$benhnhan[0]['quan/huyen'].','.$benhnhan[0]['xa/phuong'].','.$benhnhan[0]['tinh/thanhpho']; ?></div>
+                                <div class="data-value"><?php echo $benhnhan[0]['sonha'].','.$benhnhan[0]['tenxaphuong'].','.$benhnhan[0]['tentinhthanhpho']; ?></div>
                             </div>
                             <div class="patient-data-item">
                                 <div class="data-label">Số điện thoại</div>
-                                <div class="data-value"><?php echo decryptData($benhnhan[0]['sdtbenhnhan']); ?></div>
+                                <div class="data-value"><?php echo decryptData($benhnhan[0]['sdt']); ?></div>
                             </div>
                             <div class="patient-data-item">
                                 <div class="data-label">Email</div>
@@ -199,7 +199,7 @@ if(isset($_POST['btnupdate'])) {
                             </div>
                             <div class="patient-data-item">
                                 <div class="data-label">CCCD</div>
-                                <div class="data-value"><?php echo $benhnhan[0]['cccdbenhnhan']; ?></div>
+                                <div class="data-value"><?php echo $benhnhan[0]['cccd']; ?></div>
                             </div>
                         </div>
                     </div>
@@ -237,7 +237,7 @@ if(isset($_POST['btnupdate'])) {
                         </div>
                         <div class="info-row">
                             <div class="info-label">Email bác sĩ</div>
-                            <div class="info-value"><?php echo $hoso[0]['emailbs']; ?></div>
+                            <div class="info-value"><?php echo decryptData($hoso[0]['email']); ?></div>
                         </div>
                         <div class="info-row">
                             <div class="info-label">Số điện thoại bác sĩ</div>
@@ -280,16 +280,16 @@ if(isset($_POST['btnupdate'])) {
                                         <td><?php echo $i['ngayhen']; ?></td>
                                         <td><?php echo $i['giobatdau']; ?></td>
                                         <td><?php echo $i['tenloaixetnghiem']; ?></td>
-                                        <td><?php echo $i['trangthailichxetnghiem']; ?></td>
+                                        <td><?php echo $i['tentrangthai']; ?></td>
                                         <td>
-                                            <?php if ($i['trangthailichxetnghiem'] == "Đã hoàn thành"): 
+                                            <?php if ($i['tentrangthai'] == "Hoàn thành"): 
                                                 $ketqua = $cketquaxetnghiem->get_ketquaxetnghiem($i['malichxetnghiem']);
                                                 $ketquaJson = json_encode($ketqua);
                                             ?>
                                                 <button class="btn-small btn-primary" onclick='openXetNghiemPopup(<?php echo $ketquaJson; ?>)'>
                                                     Xem kết quả
                                                 </button>
-                                            <?php elseif ($i['trangthailichxetnghiem'] == "Đã hủy"): ?>
+                                            <?php elseif ($i['tentrangthai'] == "Đã hủy"): ?>
                                                 <button class="btn-small btn-secondary" disabled>Đã hủy</button>
                                             <?php else: ?>
                                                 <button class="btn-small btn-secondary" disabled>Chờ kết quả</button>

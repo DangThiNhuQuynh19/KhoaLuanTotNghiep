@@ -11,7 +11,6 @@ $tentk = $_SESSION['user']['tentk'];
 $pPhieu = new cPhieuKhamBenh();
 $filter = $_GET['filter'] ?? null;
 $currentDate = date('Y-m-d');
-
 if ($filter === 'Đã hủy') {
     $phieus = $pPhieu->getAllPhieuKhamBenhOfTK($tentk, $filter);
 } elseif ($filter === 'Đã khám') {
@@ -34,7 +33,7 @@ if (isset($_GET['cancel_id'])) {
             $malichlamviec = $phieu['malichlamviec'];
             $result = $pPhieu->cancelPhieuKhamBenh($maphieukb);
             if ($result) {
-                echo "<script>alert('Lịch hẹn đã được hủy thành công.'); window.location.href='?action=lichhen';</script>";
+                echo "<script>alert('Lịch hẹn đã được hủy thành công.'); window.location.href='?action=lichhen&filter=Đã hủy';</script>";
             } else {
                 echo "<script>alert('Lỗi khi hủy lịch hẹn. Vui lòng thử lại sau.');</script>";
             }

@@ -87,34 +87,31 @@
                         if($lichxetnghiem_list){
                             foreach ($lichxetnghiem_list as $i) {
                                 $statusClass = '';
-                                switch ($i['trangthailichxetnghiem']) {
-                                    case 'Đã hoàn thành':
+                                switch ($i['tentrangthai']) {
+                                    case 'Hoàn thành':
                                         $style = 'status-completed';
                                         break;
-                                    case 'Chờ xác nhận':
+                                    case 'Đang thực hiện':
                                         $style = 'status-processing';
                                         break;
-                                    case 'Đã đặt lịch':
+                                    case 'Chờ thanh toán':
                                         $style = 'status-pending';
-                                        break;
-                                    case 'Đã hủy':
-                                        $style = 'status-canceled';
                                         break;
                                 }
                                     echo '<tr>';
                                     echo '<td>' . $i['malichxetnghiem'] . '</td>';
-                                    echo '<td>' . $i['hotenbenhnhan'] . '</td>';
+                                    echo '<td>' . $i['hoten'] . '</td>';
                                     echo '<td>' . $i['tenloaixetnghiem'] . '</td>';
                                     echo '<td>' . $i['tenchuyenkhoa'] . '</td>';
                                     echo '<td>' . $i['ngayhen'] . '</td>';
                                     echo '<td>' . $i['giobatdau'].'-'.$i['gioketthuc'] . '</td>';
-                                    echo '<td><span class="status-badge ' .  $style . '">' . $i['trangthailichxetnghiem'] . '</span></td>';
+                                    echo '<td><span class="status-badge ' .  $style . '">' . $i['tentrangthai'] . '</span></td>';
                                     echo '<td class="actions">';
                                     $kq_list=$cketquaxetnghiem->get_ketquaxetnghiem($i['malichxetnghiem']);
                                     if ($kq_list){
                                         echo '<a class="btn-primary" href="?action=ketquaxetnghiem&id=' . $i['malichxetnghiem'] . '" class="btn-small">Kết quả</a>';
                                     }
-                                    elseif($i['trangthailichxetnghiem']=='Đã hủy'){
+                                    elseif($i['tentrangthai']=='Đã hủy'){
                                         echo '<a class="btn-primary" href="#" class="btn-small">Hủy</a>';
                                     }
                                     else{

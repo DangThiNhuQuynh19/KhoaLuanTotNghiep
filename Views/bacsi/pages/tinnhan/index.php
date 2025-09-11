@@ -5,95 +5,93 @@ if (!isset($_SESSION['user']['tentk']) || $_SESSION['user']['vaitro'] != 0) {
 }
 $tentk = $_SESSION['user']['tentk'];
 ?>
-
-
-    <style>
-        body { background-color: #f0f2f5; font-family: Arial, sans-serif; }
-        .chat-layout { display: flex; height: calc(100vh - 100px); box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        #userList {
-            width: 300px;
-            background: white;
-            border-right: 1px solid #ddd;
-            overflow-y: auto;
-        }
-        #userList h3 {
-            background: #2c3e50;
-            color: white;
-            padding: 15px;
-            margin: 0;
-        }
-        .user {
-            padding: 12px 20px;
-            border-bottom: 1px solid #f0f0f0;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            transition: background 0.3s;
-        }
-        .user:hover { background: #f8f8f8; }
-        .user img {
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            object-fit: cover;
-            margin-right: 10px;
-        }
-        #chatContainer {
-            flex: 1;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            background: white;
-        }
-        #chatHeader { font-weight: bold; margin-bottom: 10px; }
-        #chatMessages {
-            flex: 1;
-            overflow-y: auto;
-            background: #e9ebee;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-        }
-        .message {
-            max-width: 70%;
-            padding: 10px 15px;
-            margin-bottom: 12px;
-            border-radius: 20px;
-            font-size: 15px;
-            line-height: 1.4;
-            clear: both;
-        }
-        .doctor {
-            background: #d4edda;
-            float: right;
-            border-bottom-left-radius: 0;
-        }
-        .patient {
-            background: #2c3e50;
-            color: white;
-            float: left;
-            border-bottom-right-radius: 0;
-        }
-        #messageInput {
-            padding: 10px;
-            width: 100%;
-            border: 1px solid #ccc;
-            border-radius: 25px;
-            margin-bottom: 10px;
-        }
-        #sendButton {
-            background: #2c3e50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 25px;
-            cursor: pointer;
-            align-self: flex-end;
-        }
-        #sendButton:disabled {
-            background: #ccc;
-        }
-    </style>
+<style>
+    body { background-color: #f0f2f5; font-family: Arial, sans-serif; }
+    .chat-layout { display: flex; height: calc(100vh - 100px); box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    #userList {
+        width: 300px;
+        background: white;
+        border-right: 1px solid #ddd;
+        overflow-y: auto;
+    }
+    #userList h3 {
+        background: #2c3e50;
+        color: white;
+        padding: 15px;
+        margin: 0;
+    }
+    .user {
+        padding: 12px 20px;
+        border-bottom: 1px solid #f0f0f0;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        transition: background 0.3s;
+    }
+    .user:hover { background: #f8f8f8; }
+    .user img {
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+        margin-right: 10px;
+    }
+    #chatContainer {
+        flex: 1;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        background: white;
+    }
+    #chatHeader { font-weight: bold; margin-bottom: 10px; }
+    #chatMessages {
+        flex: 1;
+        overflow-y: auto;
+        background: #e9ebee;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 10px;
+    }
+    .message {
+        max-width: 70%;
+        padding: 10px 15px;
+        margin-bottom: 12px;
+        border-radius: 20px;
+        font-size: 15px;
+        line-height: 1.4;
+        clear: both;
+    }
+    .doctor {
+        background: #d4edda;
+        float: right;
+        border-bottom-left-radius: 0;
+    }
+    .patient {
+        background: #2c3e50;
+        color: white;
+        float: left;
+        border-bottom-right-radius: 0;
+    }
+    #messageInput {
+        padding: 10px;
+        width: 100%;
+        border: 1px solid #ccc;
+        border-radius: 25px;
+        margin-bottom: 10px;
+    }
+    #sendButton {
+        background: #2c3e50;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 25px;
+        cursor: pointer;
+        align-self: flex-end;
+    }
+    #sendButton:disabled {
+        background: #ccc;
+    }
+</style>
 <div class="chat-layout">
     <div id="userList">
         <h3>Bệnh nhân</h3>
@@ -114,8 +112,8 @@ $tentk = $_SESSION['user']['tentk'];
 
             if ($tbl && $tbl->num_rows > 0) {
                 while ($row = $tbl->fetch_assoc()) {
-                    echo "<div class='user' onclick='selectUser(\"{$row['tentk']}\", \"{$row['hotenbenhnhan']}\")'>
-                            <span>{$row['hotenbenhnhan']}</span>
+                    echo "<div class='user' onclick='selectUser(\"{$row['tentk']}\", \"{$row['hoten']}\")'>
+                            <span>{$row['hoten']}</span>
                         </div>";
                 }
             } else {

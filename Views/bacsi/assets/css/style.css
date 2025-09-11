@@ -226,6 +226,8 @@ ul {
   border-top: 1px solid var(--light-gray);
   padding: 20px;
   margin-top: 40px;
+  margin-bottom: 0px;
+  padding-bottom: 0px;
 }
 
 .footer-content {

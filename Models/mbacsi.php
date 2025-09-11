@@ -88,7 +88,7 @@ require_once('ketnoi.php');
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if($con){
-                $str = "select * from bacsi b  join nguoidung d on b.mabacsi=d.manguoidung where email = '$tentk' limit 1";
+                $str = "select * from bacsi b  join nguoidung d on b.mabacsi=d.manguoidung where email = '$tentk'";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;

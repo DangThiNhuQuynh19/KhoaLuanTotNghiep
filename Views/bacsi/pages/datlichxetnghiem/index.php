@@ -111,7 +111,7 @@
                                 <select name="patientId" id="patientId" required>
                                     <option value="">-- Chọn bệnh nhân --</option>
                                     <?php foreach ($benhnhan_list as $i): ?>
-                                    <option value="<?php echo $i['mabenhnhan']; ?>"><?php echo $i['mabenhnhan'] . ' - ' . $i['hotenbenhnhan']; ?></option>
+                                    <option value="<?php echo $i['mabenhnhan']; ?>"><?php echo $i['mabenhnhan'] . ' - ' . $i['hoten']; ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
@@ -329,16 +329,16 @@
             const patientHosos = hosos.filter(h => h.mabenhnhan === patientId);
 
             if (patient) {
-                document.getElementById('patientName').value = patient.hotenbenhnhan;
+                document.getElementById('patientName').value = patient.hoten;
                 document.getElementById('patientDob').value = patient.ngaysinh;
                 document.getElementById('patientGender').value = patient.gioitinh;
-                document.getElementById('patientPhone').value = patient.sdtbenhnhan;
+                document.getElementById('patientPhone').value = patient.sdt;
             }
 
             patientHosos.forEach(h => {
                 const option = document.createElement('option');
                 option.value = h.mahoso;
-                option.textContent = `${h.mahoso} - ${h.ghichu} - ${h.ngaytao}`;
+                option.textContent = `${h.mahoso} - ${h.ngaytao}`; // bổ sung chuyên khoa
                 hosoSelect.appendChild(option);
             });
         });

@@ -12,7 +12,7 @@
         $benhnhan_list= $cbenhnhan->get_benhnhan_tukhoa($_POST["tukhoa"],$bacsi['mabacsi'] );
     }
     if(isset($_POST['homnay'])){
-        $benhnhan_list= $cphieukhambenh->get_lichkham_homnay($bacsi['mabacsi']);
+        $benhnhan_list= $cbenhnhan->get_benhnhan_homnay($bacsi['mabacsi']);
     }
     
 ?>
@@ -41,7 +41,7 @@
         </div>
         <form method="POST" style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 10px;">
             <input value="homnay" type="checkbox" name="homnay" id="homnay" onchange="this.form.submit()" <?php if (isset($_POST['homnay'])) echo 'checked'; ?>>
-            <label for="homnay" style="margin-left: 5px;"><b>Chỉ hiển thị bệnh nhân hôm nay</b></label>
+            <label for="homnay" style="margin-left: 5px;"><b> Hôm nay</b></label>
         </form>
         <div class="card">
             <div class="card-body no-padding">
@@ -64,11 +64,11 @@
                                 foreach ($benhnhan_list as $i) {
                                     echo '<tr>';
                                     echo '<td>' . $i['mabenhnhan'] . '</td>';
-                                    echo '<td>' . $i['hotenbenhnhan'] . '</td>';
+                                    echo '<td>' . $i['hoten'] . '</td>';
                                     echo '<td>' . $i['ngaysinh'] . '</td>';
                                     echo '<td>' . $i['gioitinh'] . '</td>';
-                                    echo '<td>' . $i['sdtbenhnhan'] . '</td>';
-                                    echo '<td>' . $i['cccdbenhnhan']. '</td>';
+                                    echo '<td>' . $i['sdt'] . '</td>';
+                                    echo '<td>' . $i['cccd']. '</td>';
                                     echo '<td>' . $i['email'] . '</td>';
                                     echo '<td class="actions">';
                                     echo '<a class="btn-primary btn-small" style="display: flex;" href="?action=chitietbenhnhan&id=' . $i['mabenhnhan'] . '" class="btn-small">Chi tiết</a>';

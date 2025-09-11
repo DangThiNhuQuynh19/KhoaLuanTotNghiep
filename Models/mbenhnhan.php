@@ -94,7 +94,7 @@
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if($con){
-                $str = "select * from benhnhan as b join phieukhambenh as p on b.mabenhnhan=p.mabenhnhan where mabacsi='$mabacsi' GROUP BY b.mabenhnhan ORDER BY b.mabenhnhan DESC";
+                $str = "select * from benhnhan as b join phieukhambenh as p on b.mabenhnhan=p.mabenhnhan join nguoidung nd on nd.manguoidung = b.mabenhnhan where mabacsi='$mabacsi' GROUP BY b.mabenhnhan ORDER BY b.mabenhnhan DESC";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;
@@ -108,7 +108,11 @@
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if($con){
-                $str = "select * from benhnhan where mabenhnhan = '$id'";
+                $str = "select * from benhnhan b 
+                        join nguoidung nd on nd.manguoidung = b.mabenhnhan
+                        join xaphuong x on x.maxaphuong = nd.maxaphuong
+                        join tinhthanhpho t on t.matinhthanhpho = x.matinhthanhpho
+                        where mabenhnhan = '$id'";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;
@@ -116,6 +120,30 @@
                 return false; 
             }
         }
+
+        public function select_benhnhan_homnay($mabacsi){
+            $p = new clsKetNoi();
+            $con = $p->moketnoi();
+            $con->set_charset('utf8');
+            if($con){
+                $str = "SELECT nd_bs.hoten as hotenbacsi, tt.tentrangthai, pk.*, kg.*, bn.*, ck.tenchuyenkhoa, nd_bn.*
+                FROM phieukhambenh AS pk
+                JOIN trangthai AS tt ON tt.matrangthai = pk.matrangthai
+                JOIN khunggiokhambenh AS kg ON kg.makhunggiokb = pk.makhunggiokb
+                JOIN bacsi AS bs ON pk.mabacsi = bs.mabacsi
+                JOIN nguoidung AS nd_bs ON nd_bs.manguoidung = bs.mabacsi
+                JOIN chuyenkhoa ck ON ck.machuyenkhoa=bs.machuyenkhoa
+                JOIN benhnhan AS bn ON bn.mabenhnhan = pk.mabenhnhan
+                JOIN nguoidung AS nd_bn ON nd_bn.manguoidung = bn.mabenhnhan
+                WHERE bs.mabacsi = '$mabacsi' AND  pk.ngaykham = CURDATE() GROUP BY bn.mabenhnhan";
+                $tbl = $con->query($str);
+                $p->dongketnoi($con);
+                return $tbl;
+            }else{
+                return false; 
+            }
+        }
+
         public function insertbenhnhan($mabenhnhan, $email, $hoten, $ngaysinh, $sdt,$dantoc, $cccd, $cccd_truoc_name, $birth_cert_name, $cccd_sau_name, $gioitinh, $nghenghiep, $tiensucuagiadinh, $tiensucuabanthan, $sonha, $xa, $tinh, $manguoithan, $quanhe) {
             // --- 1. Tính tuổi bệnh nhân ---
             $today = new DateTime();

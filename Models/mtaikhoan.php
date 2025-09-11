@@ -88,9 +88,9 @@ class mtaikhoan{
         $con = $p->moketnoi();
         $con->set_charset('utf8');
         if($con){
-            $str = "SELECT * from taikhoan tk join benhnhan b on tk.tentk = b.tentk 
+            $str = "SELECT * from taikhoan tk join nguoidung nd on nd.email = tk.tentk join benhnhan b on b.mabenhnhan = nd.manguoidung
                     join phieukhambenh pkb on b.mabenhnhan = pkb.mabenhnhan
-                    where vaitro=1 and quanhe='bản thân' and pkb.mabacsi='$id' group by tk.tentk";
+                    where mavaitro=1 and pkb.mabacsi='$id' group by nd.manguoidung";
     
             $tbl = $con->query($str);
             $p->dongketnoi($con);

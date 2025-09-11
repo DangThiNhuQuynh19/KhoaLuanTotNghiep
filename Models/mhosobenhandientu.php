@@ -102,8 +102,10 @@
             if($con){
                 $str = "select * from hosobenhan hs 
                 join benhnhan bn on hs.mabenhnhan=bn.mabenhnhan 
+                join nguoidung nd_bn on nd_bn.manguoidung = bn.mabenhnhan
                 join chitiethoso ct on hs.mahoso = ct.mahoso 
                 join bacsi bs on ct.mabacsi = bs.mabacsi 
+                join nguoidung nd_bs on nd_bs.manguoidung = bs.mabacsi
                 join chuyenkhoa ck on bs.machuyenkhoa = ck.machuyenkhoa 
                 where hs.mabenhnhan= '$mabenhnhan'
                 group by ct.mahoso";
@@ -167,7 +169,10 @@
             $con->set_charset('utf8');
             if($con){
                 $str = "select * from benhnhan bn 
+                join nguoidung nd on nd.manguoidung = bn.mabenhnhan
                 join hosobenhan hs on hs.mabenhnhan=bn.mabenhnhan
+                join xaphuong x on x.maxaphuong = nd.maxaphuong
+                join tinhthanhpho t on t.matinhthanhpho = x.matinhthanhpho
                 where hs.mahoso = '$mahoso'";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
@@ -185,6 +190,7 @@
                 $str = "select * from hosobenhan hs
                 join chitiethoso ct on hs.mahoso=ct.mahoso
                 join bacsi bs on bs.mabacsi=ct.mabacsi
+                join nguoidung nd on nd.manguoidung = bs.mabacsi
                 where ct.mahoso = '$mahoso'";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);

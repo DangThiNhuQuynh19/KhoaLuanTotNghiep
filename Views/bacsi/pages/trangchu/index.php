@@ -8,7 +8,6 @@
     $cbacsi = new cBacSi();
     $cphieukhambenh = new cPhieuKhamBenh();
     $bacsi= $cbacsi->getBacSiByTenTK($_SESSION['user']['tentk']);
-    echo $bacsi;
     $lichhenhomnay_list=$cphieukhambenh->get_lichkham_homnay($bacsi['mabacsi']);
     $tongbenhnhanhomnay= $cphieukhambenh->count_benhnhan($bacsi['mabacsi']);
     $tongketquaxetnghiemhomnay= $cketquaxetnghiem->count_ketquaxetnghiem($bacsi['mabacsi']);
@@ -20,7 +19,7 @@
         <div class="dashboard">
             <div class="notification-panel">
                 <h3>Chào mừng trở lại, <?php echo "bác sĩ ".$bacsi['hoten'] ?? 'Bác sĩ'; ?>!</h3>
-                <p>Bạn có lịch hẹn sắp tới với bệnh nhân <?php echo(!empty($lichkhamsapden))? $lichkhamsapden[0]['hotenbenhnhan']:" "; ?></p>
+                <p>Bạn có lịch hẹn sắp tới với bệnh nhân <?php echo(!empty($lichkhamsapden))? $lichkhamsapden[0]['hoten']:" "; ?></p>
                 <div class="notification-details">
                     <div class="notification-detail">
                         <i class="fas fa-calendar"></i>
@@ -95,7 +94,7 @@
                                 echo '<div class="appointment-item">';
                                 echo '<div class="appointment-icon"><i class="fas fa-user"></i></div>';
                                 echo '<div class="appointment-details">';
-                                echo '<h4>' . $i['hotenbenhnhan'] . '</h4>';
+                                echo '<h4>' . $i['hoten'] . '</h4>';
                                 echo '<p>' . $i['tenchuyenkhoa'] . ' - ' . $i['giobatdau'] . '</p>';
                                 echo '</div>';
                                 $giobatdau = new DateTime($i['giobatdau']);
@@ -118,7 +117,6 @@
                     <h2>Xét nghiệm gần đây</h2>
                     <div class="test-list">
                         <?php
-                        // Normally this would come from a database
                         $tests = [
                             ['patient' => 'Trần Thị B', 'type' => 'Xét nghiệm máu', 'date' => '28/04/2025'],
                             ['patient' => 'Nguyễn Văn A', 'type' => 'X-quang ngực', 'date' => '27/04/2025'],
@@ -129,12 +127,19 @@
                                 echo '<div class="test-item">';
                                 echo '<div class="test-icon"><i class="fas fa-file-medical"></i></div>';
                                 echo '<div class="test-details">';
-                                echo '<h4>' . $i['hotenbenhnhan'] . '</h4>';
+                                echo '<h4>' . $i['hoten'] . '</h4>';
                                 echo '<p>' . $i['tenchuyenkhoa'] . ' - ' . $i['thoigiantao'] . '</p>';
                                 echo '</div>';
                                 echo '<a href="?action=ketquaxetnghiem&id=' . $i['malichxetnghiem'] . '" class="btn-primary btn-small">Xem kết quả</a>';
                                 echo '</div>';
                             }
+                        }else{
+                                echo '<div class="test-item">';
+                                echo    '<div class="test-icon"><i class="fas fa-file-medical"></i></div>';
+                                echo    '<div class="">'; 
+                                echo        '<p> Chưa có lịch xét nghiệm nào</p>';
+                                echo    '</div>';
+                                echo '</div>';
                         }
                         ?>
                     </div>

@@ -6,10 +6,12 @@
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if($con){
-                $str = "select * from lichxetnghiem as l 
+                $str = "select * from lichxetnghiem as l
+                JOIN trangthai tt on tt.matrangthai = l.matrangthai
                 JOIN hosobenhan AS hs ON l.mahoso = hs.mahoso
                 JOIN chitiethoso AS ct ON ct.mahoso=hs.mahoso
                 join benhnhan as b on l.mabenhnhan=b.mabenhnhan
+                JOIN nguoidung as nd_bn on nd_bn.manguoidung = b.mabenhnhan
                 join loaixetnghiem as loai on l.maloaixetnghiem=loai.maloaixetnghiem 
                 join chuyenkhoa as c on loai.machuyenkhoa=c.machuyenkhoa
                 join khunggioxetnghiem as k on k.makhunggioxetnghiem = l.makhunggio
@@ -44,10 +46,13 @@
             if ($con) {
                 $sql = "SELECT * 
                         FROM lichxetnghiem AS l
+                        JOIN trangthai tt on tt.matrangthai=l.matrangthai
                         JOIN hosobenhan AS hs ON l.mahoso = hs.mahoso
                         JOIN chitiethoso AS ct ON ct.mahoso=hs.mahoso
                         JOIN bacsi AS bs ON ct.mabacsi= bs.mabacsi
+                        JOIN nguoidung as nd_bs on nd_bs.manguoidung=bs.mabacsi
                         JOIN benhnhan AS b ON l.mabenhnhan = b.mabenhnhan
+                        JOIN nguoidung as nd_bn on nd_bn.manguoidung=b.mabenhnhan
                         JOIN loaixetnghiem AS loai ON l.maloaixetnghiem = loai.maloaixetnghiem
                         JOIN chuyenkhoa AS c ON loai.machuyenkhoa = c.machuyenkhoa
                         JOIN khunggioxetnghiem AS k ON k.makhunggioxetnghiem = l.makhunggio
@@ -127,6 +132,7 @@
             if($con){
                 $str = "SELECT * 
                 FROM lichxetnghiem AS l
+                JOIN trangthai tt on tt.matrangthai = l.matrangthai
                 JOIN hosobenhan AS hs ON l.mahoso = hs.mahoso
                 JOIN benhnhan AS b ON hs.mabenhnhan = b.mabenhnhan
                 JOIN chitiethoso AS ct ON ct.mahoso=hs.mahoso
@@ -147,7 +153,7 @@
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if($con){
-                $str = "SELECT * from lichxetnghiem";
+                $str = "SELECT * from lichxetnghiem l JOIN trangthai tt on tt.matrangthai=l.matrangthai";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;
@@ -177,6 +183,7 @@
             $con->set_charset('utf8');
             if($con){
                 $str = "SELECT * from lichxetnghiem l 
+                JOIN trangthai tt on tt.matrangthai=l.matrangthai
                 JOIN  loaixetnghiem loai on loai.maloaixetnghiem = l.maloaixetnghiem
                 JOIN khunggioxetnghiem kg on kg.makhunggioxetnghiem = l.makhunggio
                 WHERE l.mahoso='$mahoso'";

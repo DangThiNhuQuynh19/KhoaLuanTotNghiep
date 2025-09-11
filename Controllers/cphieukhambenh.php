@@ -1,5 +1,6 @@
 <?php
 include_once("Models/mphieukhambenh.php");
+include_once("Assets/config.php");
 
 class cPhieuKhamBenh {
     public function insertphieukham($maphieukb,$ngaykham,$makhunggiokb,$mabacsi,$mabenhnhan,$matrangthai){
@@ -103,7 +104,10 @@ class cPhieuKhamBenh {
             } else {
                 if ($tbl->num_rows > 0) {
                     while($r=$tbl->fetch_assoc()){
-                        $list[]=$r;
+                        $r['sdt'] = decryptData($r['sdt']);
+                        $r['cccd'] = decryptData($r['cccd']);
+                        $r['email'] = decryptData($r['email']);
+                        $list[] = $r;
                     }
                     return $list;
                 } else {

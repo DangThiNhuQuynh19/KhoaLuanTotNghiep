@@ -25,10 +25,6 @@
 </div>
 
 <div class="tabs">
-    <div class="tab-header">
-        <a href="#" class="tab-link active" data-tab="list-view">Danh sách</a>
-    </div>
-    
     <div class="tab-content">
         <div id="list-view" class="tab-pane active">
             <div class="card">
@@ -83,27 +79,27 @@
                             <?php
                             if($lichkham_list){
                                 foreach ($lichkham_list as $i) {
-                                    switch ($i['trangthai']) {
-                                        case 'chưa khám':
+                                    switch ($i['tentrangthai']) {
+                                        case 'Chưa khám':
                                             $statusClass = 'status-pending';
                                             break;
-                                        case 'đã khám':
+                                        case 'Đã khám':
                                             $statusClass = 'status-completed';
                                             break;
-                                        case 'đã hủy':
+                                        case 'Đã hủy':
                                             $statusClass = 'status-canceled';
                                             break;
                                     }
                                     
                                     echo '<tr>';
-                                    echo '<td>' . $i['maphieukb'] . '</td>';
+                                    echo '<td>' . $i['maphieukhambenh'] . '</td>';
                                     echo '<td>' . date('d/m/Y', strtotime($i['ngaykham'])) . '</td>';
                                     echo '<td>' . $i['giobatdau'].'-'.$i['gioketthuc'] . '</td>';
-                                    echo '<td>' . $i['hotenbenhnhan'] . '</td>';
-                                    echo '<td>' . number_format($i['tongtien'], 0, ',', '.') . ' VND</td>';
-                                    echo '<td><span class="status-badge ' . $statusClass . '">' . $i['trangthai'] . '</span></td>';
+                                    echo '<td>' . $i['hoten'] . '</td>';
+                                    echo '<td>' . number_format($i['giakham'], 0, ',', '.') . ' VND</td>';
+                                    echo '<td><span class="status-badge ' . $statusClass . '">' . $i['tentrangthai'] . '</span></td>';
                                     echo '<td>';
-                                    if($i['trangthai']=='chưa khám'){
+                                    if($i['tentrangthai']=='Chưa khám'){
                                         echo '<a class="btn-primary btn-small" href="?action=tinnhan&id=mabenhnhan"><i class="fas fa-comment-medical"></i> nhắn tin</a>';
                                     }
                                     echo'</td>';

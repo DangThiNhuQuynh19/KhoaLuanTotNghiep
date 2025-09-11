@@ -79,8 +79,8 @@ class cBenhNhan{
         } else {
             if ($tbl->num_rows > 0) { 
                 while($r=$tbl->fetch_assoc()){
-                    $r['sdtbenhnhan'] = decryptData($r['sdtbenhnhan']);
-                    $r['cccdbenhnhan'] = decryptData($r['cccdbenhnhan']);
+                    $r['sdt'] = decryptData($r['sdt']);
+                    $r['cccd'] = decryptData($r['cccd']);
                     $r['email'] = decryptData($r['email']);
                     $list[] = $r;
                 }
@@ -138,6 +138,27 @@ class cBenhNhan{
             return $kq;
         }else{
             return false;
+        }
+    }
+
+    public function get_benhnhan_homnay($mabacsi){
+        $p = new mBenhNhan();
+        $kq = $p -> select_benhnhan_homnay($mabacsi);
+        $list = array();
+        if (!$kq) {
+            return -1; 
+        } else {
+            if ($kq->num_rows > 0) { 
+                while($r=$kq->fetch_assoc()){
+                    $r['sdt'] = decryptData($r['sdt']);
+                    $r['cccd'] = decryptData($r['cccd']);
+                    $r['email'] = decryptData($r['email']);
+                    $list[] = $r;
+                }
+                return $list ;                 
+            } else {
+                return 0; 
+            }
         }
     }
 

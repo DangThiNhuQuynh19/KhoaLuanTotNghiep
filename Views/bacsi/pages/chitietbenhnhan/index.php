@@ -30,7 +30,7 @@ $active_tab = $_GET['tab'] ?? 'medical-records';
                     <div class="patient-avatar">
                         <i class="fas fa-user"></i>
                     </div>
-                    <h2 class="patient-name"><?php echo $bn['hotenbenhnhan']; ?></h2>
+                    <h2 class="patient-name"><?php echo $bn['hoten']; ?></h2>
                     <p class="patient-id">Mã BN: <?php echo $bn['mabenhnhan']; ?></p>
                     
                     <div class="patient-info">
@@ -44,15 +44,11 @@ $active_tab = $_GET['tab'] ?? 'medical-records';
                         </div>
                         <div class="info-row">
                             <span class="info-label">Điện thoại:</span>
-                            <span class="info-value"><?php echo decryptData($bn['sdtbenhnhan']); ?></span>
+                            <span class="info-value"><?php echo decryptData($bn['sdt']); ?></span>
                         </div>
                         <div class="info-row">
                             <span class="info-label">Địa chỉ:</span>
-                            <span class="info-value"><?php echo $bn['sonha'].",". $bn['xa/phuong'].",".$bn['quan/huyen'].",".$bn['tinh/thanhpho']; ?></span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Nhóm máu:</span>
-                            <span class="info-value"><?php echo $bn['nhommau']; ?></span>
+                            <span class="info-value"><?php echo $bn['sonha'].",".$bn['tenxaphuong'].",".$bn['tentinhthanhpho']; ?></span>
                         </div>
                         <div class="info-row">
                             <span class="info-label">Tiền sử bệnh tật:</span>
@@ -125,14 +121,14 @@ $active_tab = $_GET['tab'] ?? 'medical-records';
                                     <?php
                                     if($lichxetnghiem_list){
                                         foreach ($lichxetnghiem_list as $i) {
-                                            switch ($i['trangthailichxetnghiem']) {
-                                                case 'Đã hoàn thành':
+                                            switch ($i['tentrangthai']) {
+                                                case 'Chờ thanh toán':
                                                     $style = 'status-completed';
                                                     break;
-                                                case 'Chờ xác nhận':
+                                                case 'Đang thực hiện':
                                                     $style = 'status-processing';
                                                     break;
-                                                case 'Đã đặt lịch':
+                                                case 'Hoàn thành':
                                                     $style = 'status-pending';
                                                     break;
                                                 case 'Đã hủy':
@@ -147,12 +143,12 @@ $active_tab = $_GET['tab'] ?? 'medical-records';
                                             echo '</div>';
                                             echo '<div class="test-details">';
                                             echo '<p><strong>Chuyên khoa:</strong> ' . $i['tenchuyenkhoa'] . '</p>';
-                                            echo '<p><strong>Trạng thái:</strong> <span class="status-badge ' . $style . '">' . $i['trangthailichxetnghiem'] . '</span></p>';
+                                            echo '<p><strong>Trạng thái:</strong> <span class="status-badge ' . $style . '">' . $i['tentrangthai'] . '</span></p>';
                                             echo '</div>';
                                             echo '<div class="test-actions">';
-                                            if ($i['trangthailichxetnghiem'] === 'Đã hoàn thành') {
+                                            if ($i['tentrangthai'] === 'Đã hoàn thành') {
                                                 echo '<a href="?action=ketquaxetnghiem&id=' . $i['malichxetnghiem'] . '" class="btn-small">Xem kết quả</a>';
-                                            } elseif ($i['trangthailichxetnghiem'] === 'Đã hủy') {
+                                            } elseif ($i['tentrangthai'] === 'Đã hủy') {
                                                 echo '<a href="#" class="btn-small disabled">Đã xóa</a>';
                                             }else{
                                                 echo '<a href="#" class="btn-small disabled">Chờ kết quả</a>';
