@@ -167,8 +167,8 @@
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if($con){
-                $str = "INSERT INTO lichxetnghiem(mabenhnhan,maloaixetnghiem,ngayhen,makhunggio,trangthailichxetnghiem,mahoso,qr) 
-                values('$mabenhnhan','$maloaixetnghiem','$ngayhen','$makhunggio','$trangthailichxetnghiem','$mahoso','$img')";
+                $str = "INSERT INTO lichxetnghiem(mabenhnhan,maloaixetnghiem,ngayhen,makhunggio,matrangthai,mahoso,qr) 
+                values('$mabenhnhan','$maloaixetnghiem','$ngayhen','$makhunggio','10','$mahoso','$img')";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;
