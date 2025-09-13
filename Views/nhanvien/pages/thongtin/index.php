@@ -49,8 +49,12 @@ if (!$nv || $nv === 0) {
         <p><strong>Ngày sinh:</strong> <?= date('d-m-Y', strtotime($nv['ngaysinh'])) ?></p>
         <p><strong>Địa chỉ:</strong> <?= htmlspecialchars($nv['diachi']) ?></p>
         <div class="text-center mt-3">
-            <a href="index.php" class="btn btn-primary">Quay lại trang chủ</a>
+            <a href="index.php" class="btn btn-primary me-2">Quay lại trang chủ</a>
+            <a href="http://localhost/KLTN/index.php?action=suathongtin&id=<?= htmlspecialchars($nv['manhanvien']) ?>" class="btn btn-warning">
+                <i class="bi bi-pencil-square"></i> Sửa thông tin
+            </a>
         </div>
+
     </div>
 </div>
 

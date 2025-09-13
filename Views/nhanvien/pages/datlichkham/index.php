@@ -11,17 +11,17 @@ $cBacSi = new cBacSi();
 $cChuyenGia = new cChuyenGia();
 $cBenhNhan = new cBenhNhan();
 
-// Lấy dữ liệu POST
+// POST data
 $chonTheo = $_POST['chonTheo'] ?? 'ngay';
 $ngaychon = $_POST['ngay'] ?? date('Y-m-d');
 $bacsi = $_POST['bacsi'] ?? null;
 $chuyengia = $_POST['chuyengia'] ?? null;
 
-// Nếu chọn bác sĩ thì reset chuyên gia và ngược lại
+// Reset
 if ($bacsi) $chuyengia = null;
 if ($chuyengia) $bacsi = null;
 
-// Lấy danh sách bác sĩ, chuyên gia, bệnh nhân
+// Lấy danh sách
 $dsBacSi = $cBacSi->getAllBacSi() ?: [];
 $dsChuyenGia = $cChuyenGia->getAllChuyenGia() ?: [];
 $dsBenhNhan = $cBenhNhan->getAllBenhNhan() ?: [];
@@ -32,11 +32,7 @@ if ($chonTheo == 'ngay') {
     $tatCaLich = $cLichKham->getAllLichKhamByNgay($ngaychon);
 } else {
     $manguoi = $bacsi ?? $chuyengia ?? null;
-    if ($manguoi) {
-        $tatCaLich = $cLichKham->getLichTrongCuaNguoi($ngaychon, $manguoi);
-    } else {
-        $tatCaLich = false;
-    }
+    $tatCaLich = $manguoi ? $cLichKham->getLichTrongCuaNguoi($ngaychon, $manguoi) : false;
 }
 
 // Gom dữ liệu theo người
@@ -58,8 +54,7 @@ if ($tatCaLich && $tatCaLich->num_rows > 0) {
             'ngaylam' => $row['ngaylam']
         ];
         $loai = strtolower(trim($row['hinhthuclamviec'] ?? 'offline'));
-        if ($loai === 'online') $lichTheoNguoi[$idnguoi]['online'][] = $ca;
-        else $lichTheoNguoi[$idnguoi]['offline'][] = $ca;
+        $lichTheoNguoi[$idnguoi][$loai][] = $ca;
     }
 }
 ?>
@@ -70,15 +65,30 @@ if ($tatCaLich && $tatCaLich->num_rows > 0) {
 <title>Đặt Lịch Khám</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
 <style>
-body { background-color: #f8f9fa; }
-.card-nguoi { margin-bottom: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-.btn-gio { margin: 3px 3px 3px 0; }
+body { background-color: #f1f5f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+.card-nguoi { margin-bottom: 20px; border-radius: 12px; box-shadow: 0 6px 15px rgba(0,0,0,0.1); border: none; transition: transform 0.2s; }
+.card-nguoi:hover { transform: translateY(-3px); }
+.card.mb-2 { border-radius: 10px; box-shadow: 0 3px 8px rgba(0,0,0,0.05); }
+.card-header { background-color: #e9ecef; font-weight: 600; font-size: 0.95rem; }
+.btn-gio { margin: 4px 4px 4px 0; padding: 6px 12px; font-size: 0.85rem; border-radius: 8px; transition: transform 0.2s, box-shadow 0.2s; }
+.btn-gio:hover { transform: scale(1.05); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
 .btn-online { background-color: #0dcaf0; color: white; }
 .btn-offline { background-color: #198754; color: white; }
 .btn-selected { border: 2px solid #ffc107 !important; background-color: #ffc107 !important; color: black !important; }
-.card-body h6 { margin-top: 10px; margin-bottom: 5px; font-weight: 600; }
-.ca-group { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
+.card-body h5 { margin-bottom: 15px; font-weight: 700; color: #343a40; }
+.card-body h6 { margin-top: 10px; margin-bottom: 8px; font-weight: 600; color: #495057; }
+.ca-group { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+form .form-label { font-weight: 600; font-size: 0.9rem; }
+.modal-content { border-radius: 12px; overflow: hidden; }
+.modal-header { background-color: #0d6efd; color: white; }
+.modal-footer button { border-radius: 8px; }
+.select2-container--default .select2-selection--single { border-radius: 8px; height: 38px; padding: 4px 12px; border: 1px solid #ced4da; }
+.select2-container--default .select2-selection--single .select2-selection__rendered { line-height: 28px; }
+.select2-container--default .select2-selection--single .select2-selection__arrow { height: 38px; }
+@media(max-width:768px){ .ca-group { justify-content: flex-start; } .card-body h5 { font-size: 1rem; } }
 </style>
 </head>
 <body>
@@ -108,7 +118,7 @@ body { background-color: #f8f9fa; }
     <?php elseif ($chonTheo=='nguoi'): ?>
         <div class="col-auto">
             <label>Bác sĩ</label>
-            <select name="bacsi" id="bacsi" class="form-select" onchange="onSelectNguoi('bacsi')">
+            <select name="bacsi" id="bacsi" class="form-select select2" onchange="onSelectNguoi('bacsi')">
                 <option value="">-- Chọn Bác sĩ --</option>
                 <?php foreach($dsBacSi as $row): ?>
                     <option value="<?= $row['mabacsi'] ?>" <?= $bacsi==$row['mabacsi']?'selected':'' ?>><?= htmlspecialchars($row['hoten']) ?></option>
@@ -117,7 +127,7 @@ body { background-color: #f8f9fa; }
         </div>
         <div class="col-auto">
             <label>Chuyên gia</label>
-            <select name="chuyengia" id="chuyengia" class="form-select" onchange="onSelectNguoi('chuyengia')">
+            <select name="chuyengia" id="chuyengia" class="form-select select2" onchange="onSelectNguoi('chuyengia')">
                 <option value="">-- Chọn Chuyên gia --</option>
                 <?php foreach($dsChuyenGia as $row): ?>
                     <option value="<?= $row['machuyengia'] ?>" <?= $chuyengia==$row['machuyengia']?'selected':'' ?>><?= htmlspecialchars($row['hoten']) ?></option>
@@ -140,7 +150,6 @@ body { background-color: #f8f9fa; }
         <div class="card card-nguoi mb-4">
             <div class="card-body">
                 <h5 class="card-title"><?= htmlspecialchars($nguoi['hoten']) ?> (<?= $roleText ?>)</h5>
-
                 <?php 
                 $lichTheoNgay = [];
                 foreach (['online','offline'] as $loai) {
@@ -210,7 +219,7 @@ body { background-color: #f8f9fa; }
             <select name="mabenhnhan" id="benhnhan" class="form-select" required>
               <option value="">-- Chọn bệnh nhân --</option>
               <?php foreach($dsBenhNhan as $bn): ?>
-                  <option value="<?= $bn['mabenhnhan'] ?>"><?= htmlspecialchars($bn['hoten']) ?></option>
+                  <option value="<?= $bn['mabenhnhan'] ?>"><?= htmlspecialchars($bn['hoten'] . ' ('.$bn['mabenhnhan'].')') ?></option>
               <?php endforeach; ?>
             </select>
           </div>
@@ -225,23 +234,36 @@ body { background-color: #f8f9fa; }
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
-function onSelectNguoi(type) {
-    const bacsiSelect = document.getElementById('bacsi');
-    const chuyengiaSelect = document.getElementById('chuyengia');
-    if (type === 'bacsi' && bacsiSelect.value) chuyengiaSelect.value = '';
-    if (type === 'chuyengia' && chuyengiaSelect.value) bacsiSelect.value = '';
+$(document).ready(function(){
+    // Select2 cho các select ngoài modal
+    $('.select2').not('#benhnhan').select2({ width:'100%' });
+});
+
+// Chọn bác sĩ / chuyên gia chỉ 1 loại
+function onSelectNguoi(type){
+    if(type==='bacsi' && $('#bacsi').val()) $('#chuyengia').val(null).trigger('change');
+    if(type==='chuyengia' && $('#chuyengia').val()) $('#bacsi').val(null).trigger('change');
 }
 
-// Highlight nút và gán dữ liệu modal
-var modalChonBenhNhan = document.getElementById('modalChonBenhNhan');
-modalChonBenhNhan.addEventListener('show.bs.modal', function (event) {
+// Modal chọn bệnh nhân
+$('#modalChonBenhNhan').on('show.bs.modal', function(event){
     var button = event.relatedTarget;
-    document.getElementById('modal_makhunggiokb').value = button.getAttribute('data-makhunggiokb');
-    document.getElementById('modal_manguoidung').value = button.getAttribute('data-manguoidung');
-    document.getElementById('modal_ngaylam').value = button.getAttribute('data-ngaylam');
-    document.querySelectorAll('.btn-gio').forEach(btn => btn.classList.remove('btn-selected'));
-    button.classList.add('btn-selected');
+    $('#modal_makhunggiokb').val(button.getAttribute('data-makhunggiokb'));
+    $('#modal_manguoidung').val(button.getAttribute('data-manguoidung'));
+    $('#modal_ngaylam').val(button.getAttribute('data-ngaylam'));
+
+    // Reset và khởi tạo Select2 cho modal
+    $('#benhnhan').val('').select2({
+        width: '100%',
+        dropdownParent: $('#modalChonBenhNhan')
+    });
+
+    // Highlight nút
+    $('.btn-gio').removeClass('btn-selected');
+    $(button).addClass('btn-selected');
 });
 </script>
 </body>
