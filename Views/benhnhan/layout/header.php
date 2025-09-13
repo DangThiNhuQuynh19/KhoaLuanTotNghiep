@@ -288,6 +288,52 @@
                 display: block;
             }
         }
+        .chatbot-icon {
+        position: fixed;
+        bottom: 10px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        background-color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        cursor: pointer;
+        transition: transform 0.2s ease;
+        z-index: 9999;
+        }
+
+        .chatbot-icon img {
+        width: 70%;
+        height: 70%;
+        }
+
+        .chatbot-icon:hover {
+        transform: scale(1.1);
+        }
+
+        /* Khung iframe chatbot */
+        .chatbot-frame {
+        position: fixed;
+        bottom: 80px;
+        right: 20px;
+        width: 300px;
+        height: 400px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        display: none;
+        z-index: 9998;
+        overflow: hidden;
+        }
+
+        .chatbot-frame iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+        }
     </style>
 </head>
 <body>

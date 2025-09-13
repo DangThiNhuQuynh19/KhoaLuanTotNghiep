@@ -131,6 +131,50 @@ $lichkham = $cLichKham->getLichKhamOfBacSiByNgay($ngay, $mabacsi, $gioHienTai);
     color: #4a148c;
     text-decoration: underline;
 }
+.shift-buttons a {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #3c1561;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: background 0.3s;
+    cursor: pointer;
+}
+.shift-buttons a:hover {
+    background: #6b409c;
+}
+
+/* popup */
+#login-popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+#login-popup .popup-content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 300px;
+}
+#login-popup button {
+    margin-top: 10px;
+    padding: 8px 16px;
+    background: #3c1561;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
 </style>
 
 <div class="container">
@@ -184,73 +228,60 @@ $lichkham = $cLichKham->getLichKhamOfBacSiByNgay($ngay, $mabacsi, $gioHienTai);
         }
     </script>
 
-<div class="shift-list">
-    <h3>Danh sách ca làm việc:</h3>
-    <?php
-    if ($lichkham === false || $lichkham->num_rows === 0) {
-        echo "<p>Không có ca làm trong ngày này.</p>";
-    } else {
-        $caOnline = [];
-        $caOffline = [];
+    <div class="shift-list">
+        <h3>Danh sách ca làm việc:</h3>
+        <?php
+        if ($lichkham === false || $lichkham->num_rows === 0) {
+            echo "<p>Không có ca làm trong ngày này.</p>";
+        } else {
+            $caOnline = [];
+            $caOffline = [];
 
-        while ($rowCa = $lichkham->fetch_assoc()) {
-            $makhunggiokb = $rowCa['makhunggiokb'];
-            $giobatdau = date('H:i', strtotime($rowCa['giobatdau']));
-            $gioketthuc = date('H:i', strtotime($rowCa['gioketthuc']));
-            $hinhthuc = $rowCa['hinhthuclamviec']; // 0 = offline, 1 = online
+            while ($rowCa = $lichkham->fetch_assoc()) {
+                $makhunggiokb = $rowCa['makhunggiokb'];
+                $giobatdau = date('H:i', strtotime($rowCa['giobatdau']));
+                $gioketthuc = date('H:i', strtotime($rowCa['gioketthuc']));
+                $hinhthuc = $rowCa['hinhthuclamviec']; 
 
-            $link = "";
-            if ($ngay == $ngayHienTai) {
-                if ($giobatdau >= $gioHienTai) {
-                    $link = '<a href="index.php?action=datlichkham&idbs=' . $mabacsi . '&ngay=' . $ngay . '&ca=' . $makhunggiokb . '">' 
-                          . $giobatdau . ' - ' . $gioketthuc . '</a>';
-                } else {
+                $urlDatLich = "index.php?action=datlichkham&idbs={$mabacsi}&ngay={$ngay}&ca={$makhunggiokb}";
+                
+                if ($ngay == $ngayHienTai && $giobatdau < $gioHienTai) {
                     continue;
                 }
-            } else {
-                $link = '<a href="index.php?action=datlichkham&idbs=' . $mabacsi . '&ngay=' . $ngay . '&ca=' . $makhunggiokb . '">' 
-                      . $giobatdau . ' - ' . $gioketthuc . '</a>';
-            }
-            
 
-            // Phân loại
-            if ($hinhthuc == "online") {
-                $caOnline[] = $link;
-            } else {
-                $caOffline[] = $link;
-            }
-        }
+                if (isset($_SESSION['dangnhap'])) {
+                    $link = "<a href='$urlDatLich'>$giobatdau - $gioketthuc</a>";
+                } else {
+                    // nếu chưa đăng nhập -> gọi hàm JS mở popup
+                    $link = "<a onclick=\"showLoginPopup('$urlDatLich')\">$giobatdau - $gioketthuc</a>";
+                }
 
-        // Hiển thị Online
-        echo "<div class='shift-group'>";
-        echo "<h4>Khám Online</h4>";
-        echo '<div class="shift-buttons">';
-        if (empty($caOnline)) {
-            echo "<p>Không có ca online.</p>";
-        } else {
-            foreach ($caOnline as $ca) {
-                echo $ca;
+                if ($hinhthuc == "online") {
+                    $caOnline[] = $link;
+                } else {
+                    $caOffline[] = $link;
+                }
             }
-        }
-        echo "</div></div>";
 
-        // Hiển thị Offline
-        echo "<div class='shift-group'>";
-        echo "<h4>Khám tại Bệnh viện</h4>";
-        echo '<div class="shift-buttons">';
-        if (empty($caOffline)) {
-            echo "<p>Không có ca offline.</p>";
-        } else {
-            foreach ($caOffline as $ca) {
-                echo $ca;
-            }
+            echo "<div class='shift-group'><h4>Khám Online</h4><div class='shift-buttons'>";
+            echo empty($caOnline) ? "<p>Không có ca online.</p>" : implode('', $caOnline);
+            echo "</div></div>";
+
+            echo "<div class='shift-group'><h4>Khám tại Bệnh viện</h4><div class='shift-buttons'>";
+            echo empty($caOffline) ? "<p>Không có ca offline.</p>" : implode('', $caOffline);
+            echo "</div></div>";
         }
-        echo "</div></div>";
-    }
-    ?>
+        ?>
+    </div>
 </div>
-
-</div>
+<!-- popup đăng nhập -->
+<div id="login-popup">
+    <div class="popup-content">
+        <p>Vui lòng đăng nhập để đặt lịch khám.</p>
+        <button onclick="redirectToLogin()">Đăng nhập</button>
+        <br>
+        <button onclick="closePopup()">Đóng</button>
+    </div>
 </div>
 <script>
     const toggleButton = document.getElementById('toggle-mota-button');
@@ -268,4 +299,27 @@ $lichkham = $cLichKham->getLichKhamOfBacSiByNgay($ngay, $mabacsi, $gioHienTai);
             toggleButton.textContent = "Xem thêm";
         }
     });
+
+    function showLoginPopup(redirectUrl) {
+        sessionStorage.setItem('redirectAfterLogin', redirectUrl);
+        document.getElementById('login-popup').style.display = 'flex';
+    }
+
+    function closePopup() {
+        document.getElementById('login-popup').style.display = 'none';
+    }
+
+    function redirectToLogin() {
+        // chuyển đến trang đăng nhập và sau khi đăng nhập sẽ quay lại redirectUrl
+        window.location.href = "index.php?action=dangnhap";
+    }
+
+    // khi người dùng quay lại sau khi đăng nhập thành công
+    <?php if (isset($_SESSION['dangnhap'])): ?>
+    let redirectUrl = sessionStorage.getItem('redirectAfterLogin');
+    if (redirectUrl) {
+        sessionStorage.removeItem('redirectAfterLogin');
+        window.location.href = redirectUrl;
+    }
+    <?php endif; ?>
 </script>

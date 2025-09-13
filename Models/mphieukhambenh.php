@@ -228,17 +228,20 @@
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if($con){
-                $str = "SELECT bs.hoten, pk.trangthai, pk.*, ca.*, bn.*
+                $str = "SELECT nd_bs.hoten, tt.tentrangthai, pk.*, kg.*, bn.*
                 FROM phieukhambenh AS pk
-                JOIN calamviec AS ca ON ca.macalamviec = pk.macalamviec
+                JOIN trangthai tt on tt.matrangthai = pk.matrangthai
+                JOIN khunggiokhambenh AS kg ON kg.makhunggiokb = pk.makhunggiokb
                 JOIN bacsi AS bs ON pk.mabacsi = bs.mabacsi
+                JOIN nguoidung nd_bs ON nd_bs.manguoidung = bs.mabacsi
                 JOIN benhnhan AS bn ON bn.mabenhnhan = pk.mabenhnhan
+                JOIN nguoidung nd_bn ON nd_bn.manguoidung = bn.mabenhnhan
                 WHERE bs.mabacsi = '$mabacsi'";
                 if (!empty($tukhoa)) {
-                    $str .= " AND (bn.hotenbenhnhan LIKE '%$tukhoa%' OR pk.maphieukb LIKE '%$tukhoa%')";
+                    $str .= " AND (nd_bn.hoten LIKE '%$tukhoa%' OR pk.maphieukhambenh LIKE '%$tukhoa%')";
                 }
                 if (!empty($trangthai)) {
-                    $str .= " AND pk.trangthai = '$trangthai'";
+                    $str .= " AND tt.tentrangthai = '$trangthai'";
                 }
                 if (!empty($ngay)) {
                     $ngay_mysql = date("Y-m-d", strtotime($ngay));

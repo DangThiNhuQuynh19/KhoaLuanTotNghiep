@@ -36,6 +36,7 @@
             $khung_gio = $ckhunggioxetnghiem->get_khunggioxetnghiem_makhunggio($_POST['gio_hen']);
             $loai_xn = $cloaixetnghiem->get_loaixetnghiem_maloaixetnghiem($_POST['loai_xet_nghiem']);
             $thong_tin_bn = $cbenhnhan->getbenhnhanbyid($_POST['ma_benh_nhan']);
+            $email_bn = decryptData($thong_tin_bn['email']);
             // Tạo QR code với thông tin tiếng Việt
             $builder = new Builder(
                 writer: new PngWriter(),
@@ -56,7 +57,7 @@
                 $xu_ly_email = new XuLyEmail();
                 $ket_qua_gui_email = $xu_ly_email->gui_email_yeu_cau_thanh_toan(
                     'nguyentrang2642003@gmail.com',
-                    'Nguyễn Thanh Thùy Trang',
+                    $_POST['ten_benh_nhan'],
                     $loai_xn[0]['tenloaixetnghiem'],
                     $_POST['ngay_hen'],
                     $khung_gio[0]['giobatdau'],
@@ -64,19 +65,33 @@
                 );
                 
                 if ($ket_qua_gui_email) {
-                    $thong_bao = '<strong>Thành công!</strong> Đã đặt lịch xét nghiệm và gửi email yêu cầu thanh toán đến bệnh nhân.';
-                    $loai_thong_bao = 'thanh_cong';
+                    $_SESSION['popup_success'] = true;
+                    $_SESSION['popup_title'] = 'Thành công!';
+                    $_SESSION['popup_message'] = 'Đã đặt lịch xét nghiệm và gửi email yêu cầu thanh toán đến bệnh nhân.';
+                    
+                    // Redirect để tránh insert lần nữa khi F5
+                    header("Location: " . $_SERVER['REQUEST_URI']);
+                    exit();
+                    
                 } else {
-                    $thong_bao = '<strong>Cảnh báo!</strong> Đã đặt lịch thành công nhưng không thể gửi email. Vui lòng liên hệ bệnh nhân trực tiếp.';
-                    $loai_thong_bao = 'canh_bao';
+                    $_SESSION['thong_bao'] = '<strong>Cảnh báo!</strong> Đã đặt lịch thành công nhưng không thể gửi email. Vui lòng liên hệ bệnh nhân trực tiếp.';
+                    $_SESSION['loai_thong_bao'] = 'canh_bao';
+                    header("Location: " . $_SERVER['REQUEST_URI']);
+                    exit();
+                    
                 }
             } else {
-                $thong_bao = '<strong>Thất bại!</strong> Đặt lịch xét nghiệm không thành công. Vui lòng thử lại.';
-                $loai_thong_bao = 'loi';
+                $_SESSION['thong_bao'] = '<strong>Thất bại!</strong> Đặt lịch xét nghiệm không thành công. Vui lòng thử lại.';
+                $_SESSION['loai_thong_bao'] = 'loi';
+                header("Location: " . $_SERVER['REQUEST_URI']);
+                exit();
+                
             }
         } else {
-            $thong_bao = '<strong>Lỗi!</strong> Vui lòng điền đầy đủ thông tin.';
-            $loai_thong_bao = 'loi';
+            $_SESSION['thong_bao'] = '<strong>Lỗi!</strong> Vui lòng điền đầy đủ thông tin.';
+            $_SESSION['loai_thong_bao'] = 'loi';
+            header("Location: " . $_SERVER['PHP_SELF']);
+            exit();
         }
     }
 ?>
@@ -86,6 +101,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đặt Lịch Xét Nghiệm - Bệnh Viện Hạnh Phúc</title>
+    <!-- Added Font Awesome and basic CSS styling -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .alert {
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            transition: opacity 0.5s ease-out;
+        }
+        
+        .alert-thanh_cong {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-canh_bao {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .alert-loi {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+    </style>
 </head>
 <body>
     <main class="container">
@@ -98,13 +146,49 @@
             </div>
         </div>
 
-        <?php if (!empty($thong_bao)): ?>
-        <div class="alert alert-<?php echo $loai_thong_bao; ?>">
-            <i class="fas fa-<?php echo $loai_thong_bao === 'thanh_cong' ? 'check-circle' : 'exclamation-circle'; ?>"></i>
-            <div>
-                <?php echo $thong_bao; ?>
+        <?php if (!empty($_SESSION['thong_bao'])): ?>
+            <div class="alert alert-<?php echo $_SESSION['loai_thong_bao']; ?>" id="thong_bao_alert">
+                <i class="fas fa-<?php echo $_SESSION['loai_thong_bao'] === 'thanh_cong' ? 'check-circle' : ($_SESSION['loai_thong_bao'] === 'canh_bao' ? 'exclamation-triangle' : 'exclamation-circle'); ?>"></i>
+                <div>
+                    <?php echo $_SESSION['thong_bao']; ?>
+                </div>
             </div>
-        </div>
+            <!-- Enhanced auto-hide notification script -->
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    setTimeout(function() {
+                        const alert = document.getElementById('thong_bao_alert');
+                        if (alert) {
+                            alert.style.transition = 'opacity 0.5s ease-out';
+                            alert.style.opacity = '0';
+                            setTimeout(function() {
+                                alert.style.display = 'none';
+                            }, 500);
+                        }
+                    }, 6000); // 6 seconds
+                });
+            </script>
+            <?php 
+                unset($_SESSION['thong_bao']); 
+                unset($_SESSION['loai_thong_bao']); 
+            ?>
+        <?php endif; ?>
+
+        <!-- Added popup success message handling -->
+        <?php if (!empty($_SESSION['popup_success'])): ?>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    hien_thi_popup_thanh_cong(
+                        '<?php echo $_SESSION['popup_title']; ?>', 
+                        '<?php echo $_SESSION['popup_message']; ?>'
+                    );
+                });
+            </script>
+            <?php 
+                unset($_SESSION['popup_success']); 
+                unset($_SESSION['popup_title']); 
+                unset($_SESSION['popup_message']); 
+            ?>
         <?php endif; ?>
 
         <div class="alert alert-info">
@@ -264,6 +348,103 @@
     </footer>
 
     <script>
+        function hien_thi_popup_thanh_cong(tieu_de, noi_dung) {
+            // Create popup overlay
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 9999;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                animation: fadeIn 0.3s ease-out;
+            `;
+            
+            // Create popup content
+            const popup = document.createElement('div');
+            popup.style.cssText = `
+                background: white;
+                padding: 40px;
+                border-radius: 15px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                max-width: 450px;
+                width: 90%;
+                text-align: center;
+                animation: popupSlideIn 0.4s ease-out;
+                position: relative;
+            `;
+            
+            popup.innerHTML = `
+                <div style="color: #28a745; font-size: 60px; margin-bottom: 20px;">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3 style="color: #28a745; margin-bottom: 15px; font-size: 26px; font-weight: 600;">${tieu_de}</h3>
+                <p style="color: #555; margin-bottom: 25px; line-height: 1.6; font-size: 16px;">${noi_dung}</p>
+                <button onclick="dong_popup()" style="
+                    background: linear-gradient(135deg, #28a745, #20c997);
+                    color: white;
+                    border: none;
+                    padding: 12px 30px;
+                    border-radius: 25px;
+                    cursor: pointer;
+                    font-size: 16px;
+                    font-weight: 500;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+                " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(40, 167, 69, 0.4)'" 
+                   onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(40, 167, 69, 0.3)'">
+                    <i class="fas fa-times"></i> Đóng
+                </button>
+            `;
+            
+            overlay.appendChild(popup);
+            document.body.appendChild(overlay);
+            
+            // Add CSS animations
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+                @keyframes popupSlideIn {
+                    from {
+                        opacity: 0;
+                        transform: scale(0.7) translateY(-50px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: scale(1) translateY(0);
+                    }
+                }
+                @keyframes fadeOut {
+                    from { opacity: 1; }
+                    to { opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // Auto close after 6 seconds
+            setTimeout(function() {
+                dong_popup();
+            }, 6000);
+        }
+        
+        function dong_popup() {
+            const overlay = document.querySelector('div[style*="position: fixed"][style*="z-index: 9999"]');
+            if (overlay) {
+                overlay.style.animation = 'fadeOut 0.3s ease-out';
+                setTimeout(function() {
+                    overlay.remove();
+                }, 300);
+            }
+        }
+
         function kiem_tra_form() {
             const ma_benh_nhan = document.getElementById('ma_benh_nhan').value;
             const ma_ho_so = document.getElementById('ma_ho_so').value;
@@ -271,32 +452,59 @@
             const ngay_hen = document.getElementById('ngay_hen').value;
             const gio_hen = document.getElementById('gio_hen').value;
             
+            
+            // Hàm hiển thị popup lỗi
+            const showError = (msg) => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Thiếu thông tin',
+                    text: msg,
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#d33'
+                });
+            };
+
             if (!ma_benh_nhan) {
-                alert('Vui lòng chọn bệnh nhân.');
+                showError('Vui lòng chọn bệnh nhân.');
                 return false;
             }
-            
             if (!ma_ho_so) {
-                alert('Vui lòng chọn hồ sơ bệnh nhân.');
+                showError('Vui lòng chọn hồ sơ bệnh nhân.');
                 return false;
             }
-            
             if (!loai_xet_nghiem) {
-                alert('Vui lòng chọn loại xét nghiệm.');
+                showError('Vui lòng chọn loại xét nghiệm.');
                 return false;
             }
-            
             if (!ngay_hen) {
-                alert('Vui lòng chọn ngày xét nghiệm.');
+                showError('Vui lòng chọn ngày xét nghiệm.');
                 return false;
             }
-            
             if (!gio_hen) {
-                alert('Vui lòng chọn giờ xét nghiệm.');
+                showError('Vui lòng chọn giờ xét nghiệm.');
                 return false;
             }
-            
-            return confirm('Bạn có chắc chắn muốn đặt lịch xét nghiệm này không? Hệ thống sẽ gửi email yêu cầu thanh toán đến bệnh nhân.');
+
+            // Xác nhận đặt lịch (popup xác nhận đẹp hơn confirm)
+            Swal.fire({
+                title: 'Xác nhận đặt lịch',
+                html: `
+                    <p>Bạn có chắc chắn muốn đặt lịch xét nghiệm?</p>
+                    <p><strong>Hệ thống sẽ gửi email yêu cầu thanh toán đến bệnh nhân.</strong></p>
+                `,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Đặt lịch',
+                cancelButtonText: 'Hủy',
+                confirmButtonColor: '#16a34a',
+                cancelButtonColor: '#d33'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('form_dat_lich').submit();
+                }
+            });
+
+            return false; // Ngăn submit form ngay lập tức
         }
         
         function lam_moi_form() {
@@ -337,6 +545,13 @@
             const chon_ho_so = document.getElementById('ma_ho_so');
             chon_ho_so.innerHTML = '<option value="">-- Chọn hồ sơ --</option>';
 
+            const chon_gio = document.getElementById('gio_hen');
+            chon_gio.innerHTML = '<option value="">-- Chọn giờ --</option>';
+            
+            document.querySelectorAll('input[name="loai_xet_nghiem"]').forEach(radio => {
+                radio.checked = false;
+            });
+            
             if (!ma_benh_nhan) return;
 
             const danh_sach_benh_nhan = <?php echo json_encode($danh_sach_benh_nhan); ?>;

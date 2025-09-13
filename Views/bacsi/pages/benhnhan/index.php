@@ -59,26 +59,26 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php
-                            if($benhnhan_list){
-                                foreach ($benhnhan_list as $i) {
-                                    echo '<tr>';
-                                    echo '<td>' . $i['mabenhnhan'] . '</td>';
-                                    echo '<td>' . $i['hoten'] . '</td>';
-                                    echo '<td>' . $i['ngaysinh'] . '</td>';
-                                    echo '<td>' . $i['gioitinh'] . '</td>';
-                                    echo '<td>' . $i['sdt'] . '</td>';
-                                    echo '<td>' . $i['cccd']. '</td>';
-                                    echo '<td>' . $i['email'] . '</td>';
-                                    echo '<td class="actions">';
-                                    echo '<a class="btn-primary btn-small" style="display: flex;" href="?action=chitietbenhnhan&id=' . $i['mabenhnhan'] . '" class="btn-small">Chi tiết</a>';
-                                    echo '</td>';
-                                    echo '</tr>';
-                                }
-                            }else{
-                                echo '<tr><td colspan="7" style="text-align:center; color:gray;">Chưa có bệnh nhân</td></tr>';
+                    <?php
+                        if($benhnhan_list){
+                            foreach ($benhnhan_list as $i) {
+                                echo '<tr>';
+                                echo '<td>' . $i['mabenhnhan'] . '</td>';
+                                echo '<td>' . $i['hoten'] . '</td>';
+                                echo '<td>' . $i['ngaysinh'] . '</td>';
+                                echo '<td>' . $i['gioitinh'] . '</td>';
+                                echo '<td>' . $i['sdt'] . '</td>';
+                                echo '<td>' . $i['cccd']. '</td>';
+                                echo '<td>' . $i['email'] . '</td>';
+                                echo '<td class="actions">';
+                                echo '<a class="btn-primary btn-small" style="display: flex;" href="?action=chitietbenhnhan&id=' . $i['mabenhnhan'] . '" class="btn-small">Chi tiết</a>';
+                                echo '</td>';
+                                echo '</tr>';
                             }
-                        ?>
+                        }else{
+                            echo '<tr><td colspan="7" style="text-align:center; color:gray;">Chưa có bệnh nhân</td></tr>';
+                        }
+                    ?>
                     </tbody>
                 </table>
             </div>

@@ -51,9 +51,9 @@
                     <div class="form-group">
                         <select name="trangthai">
                             <option value="">Trạng thái</option>
-                            <option value="Đã đặt lịch">Đã đặt lịch</option>
-                            <option value="Chờ xác nhận">Chờ xác nhận</option>
-                            <option value="Đã hoàn thành">Đã hoàn thành</option>
+                            <option value="Chờ thanh toán">Chờ thanh toán</option>
+                            <option value="Đang thực hiện">Đang thực hiện</option>
+                            <option value="Hoàn thành">Hoàn thành</option>
                             <option value="Đã hủy">Đã hủy</option>
                         </select>
                     </div>
