@@ -413,6 +413,10 @@ class SQLAdmin extends \Google\Service
                   'location' => 'query',
                   'type' => 'string',
                 ],
+                'flagScope' => [
+                  'location' => 'query',
+                  'type' => 'string',
+                ],
               ],
             ],
           ]
@@ -575,6 +579,21 @@ class SQLAdmin extends \Google\Service
                   'required' => true,
                 ],
               ],
+            ],'executeSql' => [
+              'path' => 'v1/projects/{project}/instances/{instance}/executeSql',
+              'httpMethod' => 'POST',
+              'parameters' => [
+                'project' => [
+                  'location' => 'path',
+                  'type' => 'string',
+                  'required' => true,
+                ],
+                'instance' => [
+                  'location' => 'path',
+                  'type' => 'string',
+                  'required' => true,
+                ],
+              ],
             ],'export' => [
               'path' => 'v1/projects/{project}/instances/{instance}/export',
               'httpMethod' => 'POST',
@@ -692,6 +711,16 @@ class SQLAdmin extends \Google\Service
                   'required' => true,
                 ],
                 'instance' => [
+                  'location' => 'path',
+                  'type' => 'string',
+                  'required' => true,
+                ],
+              ],
+            ],'pointInTimeRestore' => [
+              'path' => 'v1/{+parent}:pointInTimeRestore',
+              'httpMethod' => 'POST',
+              'parameters' => [
+                'parent' => [
                   'location' => 'path',
                   'type' => 'string',
                   'required' => true,
@@ -985,6 +1014,10 @@ class SQLAdmin extends \Google\Service
                   'location' => 'path',
                   'type' => 'string',
                   'required' => true,
+                ],
+                'sourceInstanceDeletionTime' => [
+                  'location' => 'query',
+                  'type' => 'string',
                 ],
               ],
             ],'performDiskShrink' => [

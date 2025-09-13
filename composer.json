@@ -4,6 +4,7 @@
         "endroid/qr-code": "^6.0",
         "guzzlehttp/guzzle": "7.7",
         "google/apiclient": "2.15",
-        "google/auth": "1.28"
+        "google/auth": "1.28",
+        "phpmailer/phpmailer": "^6.10"
     }
 }

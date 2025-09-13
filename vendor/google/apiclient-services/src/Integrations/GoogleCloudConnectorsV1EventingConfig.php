@@ -19,7 +19,7 @@ namespace Google\Service\Integrations;
 
 class GoogleCloudConnectorsV1EventingConfig extends \Google\Collection
 {
-  protected $collection_key = 'additionalVariables';
+  protected $collection_key = 'privateConnectivityAllowlistedProjects';
   protected $additionalVariablesType = GoogleCloudConnectorsV1ConfigVariable::class;
   protected $additionalVariablesDataType = 'array';
   protected $authConfigType = GoogleCloudConnectorsV1AuthConfig::class;
@@ -39,6 +39,10 @@ class GoogleCloudConnectorsV1EventingConfig extends \Google\Collection
   protected $listenerAuthConfigType = GoogleCloudConnectorsV1AuthConfig::class;
   protected $listenerAuthConfigDataType = '';
   /**
+   * @var string[]
+   */
+  public $privateConnectivityAllowlistedProjects;
+  /**
    * @var bool
    */
   public $privateConnectivityEnabled;
@@ -46,6 +50,8 @@ class GoogleCloudConnectorsV1EventingConfig extends \Google\Collection
   protected $proxyDestinationConfigDataType = '';
   protected $registrationDestinationConfigType = GoogleCloudConnectorsV1DestinationConfig::class;
   protected $registrationDestinationConfigDataType = '';
+  protected $sslConfigType = GoogleCloudConnectorsV1SslConfig::class;
+  protected $sslConfigDataType = '';
 
   /**
    * @param GoogleCloudConnectorsV1ConfigVariable[]
@@ -146,6 +152,20 @@ class GoogleCloudConnectorsV1EventingConfig extends \Google\Collection
     return $this->listenerAuthConfig;
   }
   /**
+   * @param string[]
+   */
+  public function setPrivateConnectivityAllowlistedProjects($privateConnectivityAllowlistedProjects)
+  {
+    $this->privateConnectivityAllowlistedProjects = $privateConnectivityAllowlistedProjects;
+  }
+  /**
+   * @return string[]
+   */
+  public function getPrivateConnectivityAllowlistedProjects()
+  {
+    return $this->privateConnectivityAllowlistedProjects;
+  }
+  /**
    * @param bool
    */
   public function setPrivateConnectivityEnabled($privateConnectivityEnabled)
@@ -186,6 +206,20 @@ class GoogleCloudConnectorsV1EventingConfig extends \Google\Collection
   public function getRegistrationDestinationConfig()
   {
     return $this->registrationDestinationConfig;
+  }
+  /**
+   * @param GoogleCloudConnectorsV1SslConfig
+   */
+  public function setSslConfig(GoogleCloudConnectorsV1SslConfig $sslConfig)
+  {
+    $this->sslConfig = $sslConfig;
+  }
+  /**
+   * @return GoogleCloudConnectorsV1SslConfig
+   */
+  public function getSslConfig()
+  {
+    return $this->sslConfig;
   }
 }
 

@@ -23,7 +23,13 @@ class Interconnect extends \Google\Collection
   /**
    * @var bool
    */
+  public $aaiEnabled;
+  /**
+   * @var bool
+   */
   public $adminEnabled;
+  protected $applicationAwareInterconnectType = InterconnectApplicationAwareInterconnect::class;
+  protected $applicationAwareInterconnectDataType = '';
   /**
    * @var string[]
    */
@@ -60,6 +66,10 @@ class Interconnect extends \Google\Collection
    * @var string[]
    */
   public $interconnectAttachments;
+  /**
+   * @var string[]
+   */
+  public $interconnectGroups;
   /**
    * @var string
    */
@@ -138,6 +148,20 @@ class Interconnect extends \Google\Collection
   /**
    * @param bool
    */
+  public function setAaiEnabled($aaiEnabled)
+  {
+    $this->aaiEnabled = $aaiEnabled;
+  }
+  /**
+   * @return bool
+   */
+  public function getAaiEnabled()
+  {
+    return $this->aaiEnabled;
+  }
+  /**
+   * @param bool
+   */
   public function setAdminEnabled($adminEnabled)
   {
     $this->adminEnabled = $adminEnabled;
@@ -148,6 +172,20 @@ class Interconnect extends \Google\Collection
   public function getAdminEnabled()
   {
     return $this->adminEnabled;
+  }
+  /**
+   * @param InterconnectApplicationAwareInterconnect
+   */
+  public function setApplicationAwareInterconnect(InterconnectApplicationAwareInterconnect $applicationAwareInterconnect)
+  {
+    $this->applicationAwareInterconnect = $applicationAwareInterconnect;
+  }
+  /**
+   * @return InterconnectApplicationAwareInterconnect
+   */
+  public function getApplicationAwareInterconnect()
+  {
+    return $this->applicationAwareInterconnect;
   }
   /**
    * @param string[]
@@ -288,6 +326,20 @@ class Interconnect extends \Google\Collection
   public function getInterconnectAttachments()
   {
     return $this->interconnectAttachments;
+  }
+  /**
+   * @param string[]
+   */
+  public function setInterconnectGroups($interconnectGroups)
+  {
+    $this->interconnectGroups = $interconnectGroups;
+  }
+  /**
+   * @return string[]
+   */
+  public function getInterconnectGroups()
+  {
+    return $this->interconnectGroups;
   }
   /**
    * @param string

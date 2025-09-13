@@ -18,6 +18,7 @@
 namespace Google\Service\SQLAdmin\Resource;
 
 use Google\Service\SQLAdmin\DatabaseInstance;
+use Google\Service\SQLAdmin\ExecuteSqlPayload;
 use Google\Service\SQLAdmin\InstancesAcquireSsrsLeaseRequest;
 use Google\Service\SQLAdmin\InstancesCloneRequest;
 use Google\Service\SQLAdmin\InstancesDemoteMasterRequest;
@@ -34,7 +35,9 @@ use Google\Service\SQLAdmin\InstancesRotateServerCaRequest;
 use Google\Service\SQLAdmin\InstancesRotateServerCertificateRequest;
 use Google\Service\SQLAdmin\InstancesTruncateLogRequest;
 use Google\Service\SQLAdmin\Operation;
+use Google\Service\SQLAdmin\PointInTimeRestoreContext;
 use Google\Service\SQLAdmin\SqlInstancesAcquireSsrsLeaseResponse;
+use Google\Service\SQLAdmin\SqlInstancesExecuteSqlResponse;
 use Google\Service\SQLAdmin\SqlInstancesReleaseSsrsLeaseResponse;
 
 /**
@@ -236,6 +239,24 @@ class Instances extends \Google\Service\Resource
     return $this->call('demoteMaster', [$params], Operation::class);
   }
   /**
+   * Execute SQL statements. (instances.executeSql)
+   *
+   * @param string $project Required. Project ID of the project that contains the
+   * instance.
+   * @param string $instance Required. Database instance ID. This does not include
+   * the project ID.
+   * @param ExecuteSqlPayload $postBody
+   * @param array $optParams Optional parameters.
+   * @return SqlInstancesExecuteSqlResponse
+   * @throws \Google\Service\Exception
+   */
+  public function executeSql($project, $instance, ExecuteSqlPayload $postBody, $optParams = [])
+  {
+    $params = ['project' => $project, 'instance' => $instance, 'postBody' => $postBody];
+    $params = array_merge($params, $optParams);
+    return $this->call('executeSql', [$params], SqlInstancesExecuteSqlResponse::class);
+  }
+  /**
    * Exports data from a Cloud SQL instance to a Cloud Storage bucket as a SQL
    * dump or CSV file. (instances.export)
    *
@@ -395,6 +416,23 @@ class Instances extends \Google\Service\Resource
     $params = ['project' => $project, 'instance' => $instance, 'postBody' => $postBody];
     $params = array_merge($params, $optParams);
     return $this->call('patch', [$params], Operation::class);
+  }
+  /**
+   * Point in time restore for an instance managed by Google Cloud Backup and
+   * Disaster Recovery. (instances.pointInTimeRestore)
+   *
+   * @param string $parent Required. The parent resource where you created this
+   * instance. Format: projects/{project}
+   * @param PointInTimeRestoreContext $postBody
+   * @param array $optParams Optional parameters.
+   * @return Operation
+   * @throws \Google\Service\Exception
+   */
+  public function pointInTimeRestore($parent, PointInTimeRestoreContext $postBody, $optParams = [])
+  {
+    $params = ['parent' => $parent, 'postBody' => $postBody];
+    $params = array_merge($params, $optParams);
+    return $this->call('pointInTimeRestore', [$params], Operation::class);
   }
   /**
    * Promotes the read replica instance to be an independent Cloud SQL primary

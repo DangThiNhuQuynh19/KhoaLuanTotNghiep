@@ -22,14 +22,20 @@ class GoogleCloudAiplatformV1Tool extends \Google\Collection
   protected $collection_key = 'functionDeclarations';
   protected $codeExecutionType = GoogleCloudAiplatformV1ToolCodeExecution::class;
   protected $codeExecutionDataType = '';
+  protected $enterpriseWebSearchType = GoogleCloudAiplatformV1EnterpriseWebSearch::class;
+  protected $enterpriseWebSearchDataType = '';
   protected $functionDeclarationsType = GoogleCloudAiplatformV1FunctionDeclaration::class;
   protected $functionDeclarationsDataType = 'array';
+  protected $googleMapsType = GoogleCloudAiplatformV1GoogleMaps::class;
+  protected $googleMapsDataType = '';
   protected $googleSearchType = GoogleCloudAiplatformV1ToolGoogleSearch::class;
   protected $googleSearchDataType = '';
   protected $googleSearchRetrievalType = GoogleCloudAiplatformV1GoogleSearchRetrieval::class;
   protected $googleSearchRetrievalDataType = '';
   protected $retrievalType = GoogleCloudAiplatformV1Retrieval::class;
   protected $retrievalDataType = '';
+  protected $urlContextType = GoogleCloudAiplatformV1UrlContext::class;
+  protected $urlContextDataType = '';
 
   /**
    * @param GoogleCloudAiplatformV1ToolCodeExecution
@@ -46,6 +52,20 @@ class GoogleCloudAiplatformV1Tool extends \Google\Collection
     return $this->codeExecution;
   }
   /**
+   * @param GoogleCloudAiplatformV1EnterpriseWebSearch
+   */
+  public function setEnterpriseWebSearch(GoogleCloudAiplatformV1EnterpriseWebSearch $enterpriseWebSearch)
+  {
+    $this->enterpriseWebSearch = $enterpriseWebSearch;
+  }
+  /**
+   * @return GoogleCloudAiplatformV1EnterpriseWebSearch
+   */
+  public function getEnterpriseWebSearch()
+  {
+    return $this->enterpriseWebSearch;
+  }
+  /**
    * @param GoogleCloudAiplatformV1FunctionDeclaration[]
    */
   public function setFunctionDeclarations($functionDeclarations)
@@ -58,6 +78,20 @@ class GoogleCloudAiplatformV1Tool extends \Google\Collection
   public function getFunctionDeclarations()
   {
     return $this->functionDeclarations;
+  }
+  /**
+   * @param GoogleCloudAiplatformV1GoogleMaps
+   */
+  public function setGoogleMaps(GoogleCloudAiplatformV1GoogleMaps $googleMaps)
+  {
+    $this->googleMaps = $googleMaps;
+  }
+  /**
+   * @return GoogleCloudAiplatformV1GoogleMaps
+   */
+  public function getGoogleMaps()
+  {
+    return $this->googleMaps;
   }
   /**
    * @param GoogleCloudAiplatformV1ToolGoogleSearch
@@ -100,6 +134,20 @@ class GoogleCloudAiplatformV1Tool extends \Google\Collection
   public function getRetrieval()
   {
     return $this->retrieval;
+  }
+  /**
+   * @param GoogleCloudAiplatformV1UrlContext
+   */
+  public function setUrlContext(GoogleCloudAiplatformV1UrlContext $urlContext)
+  {
+    $this->urlContext = $urlContext;
+  }
+  /**
+   * @return GoogleCloudAiplatformV1UrlContext
+   */
+  public function getUrlContext()
+  {
+    return $this->urlContext;
   }
 }
 

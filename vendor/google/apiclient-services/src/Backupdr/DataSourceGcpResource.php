@@ -19,8 +19,12 @@ namespace Google\Service\Backupdr;
 
 class DataSourceGcpResource extends \Google\Model
 {
+  protected $cloudSqlInstanceDatasourcePropertiesType = CloudSqlInstanceDataSourceProperties::class;
+  protected $cloudSqlInstanceDatasourcePropertiesDataType = '';
   protected $computeInstanceDatasourcePropertiesType = ComputeInstanceDataSourceProperties::class;
   protected $computeInstanceDatasourcePropertiesDataType = '';
+  protected $diskDatasourcePropertiesType = DiskDataSourceProperties::class;
+  protected $diskDatasourcePropertiesDataType = '';
   /**
    * @var string
    */
@@ -35,6 +39,20 @@ class DataSourceGcpResource extends \Google\Model
   public $type;
 
   /**
+   * @param CloudSqlInstanceDataSourceProperties
+   */
+  public function setCloudSqlInstanceDatasourceProperties(CloudSqlInstanceDataSourceProperties $cloudSqlInstanceDatasourceProperties)
+  {
+    $this->cloudSqlInstanceDatasourceProperties = $cloudSqlInstanceDatasourceProperties;
+  }
+  /**
+   * @return CloudSqlInstanceDataSourceProperties
+   */
+  public function getCloudSqlInstanceDatasourceProperties()
+  {
+    return $this->cloudSqlInstanceDatasourceProperties;
+  }
+  /**
    * @param ComputeInstanceDataSourceProperties
    */
   public function setComputeInstanceDatasourceProperties(ComputeInstanceDataSourceProperties $computeInstanceDatasourceProperties)
@@ -47,6 +65,20 @@ class DataSourceGcpResource extends \Google\Model
   public function getComputeInstanceDatasourceProperties()
   {
     return $this->computeInstanceDatasourceProperties;
+  }
+  /**
+   * @param DiskDataSourceProperties
+   */
+  public function setDiskDatasourceProperties(DiskDataSourceProperties $diskDatasourceProperties)
+  {
+    $this->diskDatasourceProperties = $diskDatasourceProperties;
+  }
+  /**
+   * @return DiskDataSourceProperties
+   */
+  public function getDiskDatasourceProperties()
+  {
+    return $this->diskDatasourceProperties;
   }
   /**
    * @param string

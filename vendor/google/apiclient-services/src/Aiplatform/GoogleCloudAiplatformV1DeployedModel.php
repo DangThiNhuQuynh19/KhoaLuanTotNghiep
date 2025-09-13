@@ -24,6 +24,10 @@ class GoogleCloudAiplatformV1DeployedModel extends \Google\Model
   /**
    * @var string
    */
+  public $checkpointId;
+  /**
+   * @var string
+   */
   public $createTime;
   protected $dedicatedResourcesType = GoogleCloudAiplatformV1DedicatedResources::class;
   protected $dedicatedResourcesDataType = '';
@@ -47,6 +51,10 @@ class GoogleCloudAiplatformV1DeployedModel extends \Google\Model
   protected $explanationSpecDataType = '';
   protected $fasterDeploymentConfigType = GoogleCloudAiplatformV1FasterDeploymentConfig::class;
   protected $fasterDeploymentConfigDataType = '';
+  /**
+   * @var string
+   */
+  public $gdcConnectedModel;
   /**
    * @var string
    */
@@ -91,6 +99,20 @@ class GoogleCloudAiplatformV1DeployedModel extends \Google\Model
   public function getAutomaticResources()
   {
     return $this->automaticResources;
+  }
+  /**
+   * @param string
+   */
+  public function setCheckpointId($checkpointId)
+  {
+    $this->checkpointId = $checkpointId;
+  }
+  /**
+   * @return string
+   */
+  public function getCheckpointId()
+  {
+    return $this->checkpointId;
   }
   /**
    * @param string
@@ -203,6 +225,20 @@ class GoogleCloudAiplatformV1DeployedModel extends \Google\Model
   public function getFasterDeploymentConfig()
   {
     return $this->fasterDeploymentConfig;
+  }
+  /**
+   * @param string
+   */
+  public function setGdcConnectedModel($gdcConnectedModel)
+  {
+    $this->gdcConnectedModel = $gdcConnectedModel;
+  }
+  /**
+   * @return string
+   */
+  public function getGdcConnectedModel()
+  {
+    return $this->gdcConnectedModel;
   }
   /**
    * @param string

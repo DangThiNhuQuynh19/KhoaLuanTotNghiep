@@ -23,6 +23,10 @@ class Cluster extends \Google\Collection
   /**
    * @var bool
    */
+  public $allowFewerZonesDeployment;
+  /**
+   * @var bool
+   */
   public $asyncClusterEndpointsDeletionEnabled;
   /**
    * @var string
@@ -56,6 +60,10 @@ class Cluster extends \Google\Collection
    * @var string
    */
   public $kmsKey;
+  /**
+   * @var string[]
+   */
+  public $labels;
   protected $maintenancePolicyType = ClusterMaintenancePolicy::class;
   protected $maintenancePolicyDataType = '';
   protected $maintenanceScheduleType = ClusterMaintenanceSchedule::class;
@@ -70,6 +78,10 @@ class Cluster extends \Google\Collection
    * @var string
    */
   public $nodeType;
+  /**
+   * @var bool
+   */
+  public $ondemandMaintenance;
   protected $persistenceConfigType = ClusterPersistenceConfig::class;
   protected $persistenceConfigDataType = '';
   public $preciseSizeGb;
@@ -88,9 +100,21 @@ class Cluster extends \Google\Collection
    */
   public $replicaCount;
   /**
+   * @var bool
+   */
+  public $satisfiesPzi;
+  /**
+   * @var bool
+   */
+  public $satisfiesPzs;
+  /**
    * @var int
    */
   public $shardCount;
+  /**
+   * @var bool
+   */
+  public $simulateMaintenanceEvent;
   /**
    * @var int
    */
@@ -112,6 +136,20 @@ class Cluster extends \Google\Collection
   protected $zoneDistributionConfigType = ZoneDistributionConfig::class;
   protected $zoneDistributionConfigDataType = '';
 
+  /**
+   * @param bool
+   */
+  public function setAllowFewerZonesDeployment($allowFewerZonesDeployment)
+  {
+    $this->allowFewerZonesDeployment = $allowFewerZonesDeployment;
+  }
+  /**
+   * @return bool
+   */
+  public function getAllowFewerZonesDeployment()
+  {
+    return $this->allowFewerZonesDeployment;
+  }
   /**
    * @param bool
    */
@@ -281,6 +319,20 @@ class Cluster extends \Google\Collection
     return $this->kmsKey;
   }
   /**
+   * @param string[]
+   */
+  public function setLabels($labels)
+  {
+    $this->labels = $labels;
+  }
+  /**
+   * @return string[]
+   */
+  public function getLabels()
+  {
+    return $this->labels;
+  }
+  /**
    * @param ClusterMaintenancePolicy
    */
   public function setMaintenancePolicy(ClusterMaintenancePolicy $maintenancePolicy)
@@ -349,6 +401,20 @@ class Cluster extends \Google\Collection
   public function getNodeType()
   {
     return $this->nodeType;
+  }
+  /**
+   * @param bool
+   */
+  public function setOndemandMaintenance($ondemandMaintenance)
+  {
+    $this->ondemandMaintenance = $ondemandMaintenance;
+  }
+  /**
+   * @return bool
+   */
+  public function getOndemandMaintenance()
+  {
+    return $this->ondemandMaintenance;
   }
   /**
    * @param ClusterPersistenceConfig
@@ -443,6 +509,34 @@ class Cluster extends \Google\Collection
     return $this->replicaCount;
   }
   /**
+   * @param bool
+   */
+  public function setSatisfiesPzi($satisfiesPzi)
+  {
+    $this->satisfiesPzi = $satisfiesPzi;
+  }
+  /**
+   * @return bool
+   */
+  public function getSatisfiesPzi()
+  {
+    return $this->satisfiesPzi;
+  }
+  /**
+   * @param bool
+   */
+  public function setSatisfiesPzs($satisfiesPzs)
+  {
+    $this->satisfiesPzs = $satisfiesPzs;
+  }
+  /**
+   * @return bool
+   */
+  public function getSatisfiesPzs()
+  {
+    return $this->satisfiesPzs;
+  }
+  /**
    * @param int
    */
   public function setShardCount($shardCount)
@@ -455,6 +549,20 @@ class Cluster extends \Google\Collection
   public function getShardCount()
   {
     return $this->shardCount;
+  }
+  /**
+   * @param bool
+   */
+  public function setSimulateMaintenanceEvent($simulateMaintenanceEvent)
+  {
+    $this->simulateMaintenanceEvent = $simulateMaintenanceEvent;
+  }
+  /**
+   * @return bool
+   */
+  public function getSimulateMaintenanceEvent()
+  {
+    return $this->simulateMaintenanceEvent;
   }
   /**
    * @param int

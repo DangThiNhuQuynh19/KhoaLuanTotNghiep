@@ -3,6 +3,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
+include_once('Controllers/cemailthanhtoan.php');
 class XuLyEmail {
     private $cau_hinh_email;
     
@@ -10,9 +11,9 @@ class XuLyEmail {
         $this->cau_hinh_email = [
             'host' => 'smtp.gmail.com',
             'port' => 587,
-            'username' => 'your-email@gmail.com', // Thay đổi email của bạn
-            'password' => 'your-app-password',    // Thay đổi mật khẩu ứng dụng
-            'from_email' => 'benhvien@hanhphuc.com',
+            'username' => 'nguyenthanhthuytrang12@gmail.com', // Thay đổi email của bạn
+            'password' => 'zxuf skva amck qced',    // Thay đổi mật khẩu ứng dụng
+            'from_email' => 'nguyenthanhthuytrang12@gmail.com',
             'from_name' => 'Bệnh Viện Hạnh Phúc'
         ];
     }
@@ -47,7 +48,10 @@ class XuLyEmail {
             $mail->send();
             
             // Lưu thông tin email đã gửi vào database
-            $this->luu_thong_tin_email_gui($ma_lich_hen, $email_benh_nhan);
+            $cemailthanhtoan = new cEmail();
+            $thoi_gian_gui = date('Y-m-d H:i:s');
+            $thoi_gian_het_han = date('Y-m-d H:i:s', strtotime('+30 minutes'));
+            $cemailthanhtoan->insert_emailyeucauthanhtoan($ma_lich_hen, $email_benh_nhan, $thoi_gian_gui, $thoi_gian_het_han);
             
             return true;
         } catch (Exception $e) {
@@ -121,18 +125,6 @@ class XuLyEmail {
             </div>
         </body>
         </html>";
-    }
-    
-    private function luu_thong_tin_email_gui($ma_lich_hen, $email_benh_nhan) {
-        global $conn;
-        $thoi_gian_gui = date('Y-m-d H:i:s');
-        $thoi_gian_het_han = date('Y-m-d H:i:s', strtotime('+30 minutes'));
-        
-        $sql = "INSERT INTO email_thanh_toan (ma_lich_hen, email_benh_nhan, thoi_gian_gui, thoi_gian_het_han, trang_thai) 
-                VALUES (?, ?, ?, ?, 'Đã gửi')";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("isss", $ma_lich_hen, $email_benh_nhan, $thoi_gian_gui, $thoi_gian_het_han);
-        $stmt->execute();
     }
 }
 ?>

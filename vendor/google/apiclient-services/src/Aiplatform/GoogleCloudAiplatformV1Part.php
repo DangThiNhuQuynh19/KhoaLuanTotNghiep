@@ -35,6 +35,14 @@ class GoogleCloudAiplatformV1Part extends \Google\Model
    * @var string
    */
   public $text;
+  /**
+   * @var bool
+   */
+  public $thought;
+  /**
+   * @var string
+   */
+  public $thoughtSignature;
   protected $videoMetadataType = GoogleCloudAiplatformV1VideoMetadata::class;
   protected $videoMetadataDataType = '';
 
@@ -135,6 +143,34 @@ class GoogleCloudAiplatformV1Part extends \Google\Model
   public function getText()
   {
     return $this->text;
+  }
+  /**
+   * @param bool
+   */
+  public function setThought($thought)
+  {
+    $this->thought = $thought;
+  }
+  /**
+   * @return bool
+   */
+  public function getThought()
+  {
+    return $this->thought;
+  }
+  /**
+   * @param string
+   */
+  public function setThoughtSignature($thoughtSignature)
+  {
+    $this->thoughtSignature = $thoughtSignature;
+  }
+  /**
+   * @return string
+   */
+  public function getThoughtSignature()
+  {
+    return $this->thoughtSignature;
   }
   /**
    * @param GoogleCloudAiplatformV1VideoMetadata

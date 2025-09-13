@@ -106,6 +106,16 @@ class AndroidManagement extends \Google\Service
                   'required' => true,
                 ],
               ],
+            ],'generateEnterpriseUpgradeUrl' => [
+              'path' => 'v1/{+name}:generateEnterpriseUpgradeUrl',
+              'httpMethod' => 'POST',
+              'parameters' => [
+                'name' => [
+                  'location' => 'path',
+                  'type' => 'string',
+                  'required' => true,
+                ],
+              ],
             ],'get' => [
               'path' => 'v1/{+name}',
               'httpMethod' => 'GET',
@@ -462,6 +472,16 @@ class AndroidManagement extends \Google\Service
                   'type' => 'string',
                 ],
               ],
+            ],'modifyPolicyApplications' => [
+              'path' => 'v1/{+name}:modifyPolicyApplications',
+              'httpMethod' => 'POST',
+              'parameters' => [
+                'name' => [
+                  'location' => 'path',
+                  'type' => 'string',
+                  'required' => true,
+                ],
+              ],
             ],'patch' => [
               'path' => 'v1/{+name}',
               'httpMethod' => 'PATCH',
@@ -474,6 +494,16 @@ class AndroidManagement extends \Google\Service
                 'updateMask' => [
                   'location' => 'query',
                   'type' => 'string',
+                ],
+              ],
+            ],'removePolicyApplications' => [
+              'path' => 'v1/{+name}:removePolicyApplications',
+              'httpMethod' => 'POST',
+              'parameters' => [
+                'name' => [
+                  'location' => 'path',
+                  'type' => 'string',
+                  'required' => true,
                 ],
               ],
             ],

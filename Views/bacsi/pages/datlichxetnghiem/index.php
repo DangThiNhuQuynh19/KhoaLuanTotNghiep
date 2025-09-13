@@ -55,7 +55,7 @@
                 
                 $xu_ly_email = new XuLyEmail();
                 $ket_qua_gui_email = $xu_ly_email->gui_email_yeu_cau_thanh_toan(
-                    'nguyenthanhthuytrang12@gmail.com',
+                    'nguyentrang2642003@gmail.com',
                     'Nguyễn Thanh Thùy Trang',
                     $loai_xn[0]['tenloaixetnghiem'],
                     $_POST['ngay_hen'],

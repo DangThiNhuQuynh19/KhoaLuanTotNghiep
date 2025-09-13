@@ -42,6 +42,10 @@ class Reservation extends \Google\Model
    */
   public $labels;
   /**
+   * @var string
+   */
+  public $maxSlots;
+  /**
    * @var bool
    */
   public $multiRegionAuxiliary;
@@ -59,6 +63,14 @@ class Reservation extends \Google\Model
   public $primaryLocation;
   protected $replicationStatusType = ReplicationStatus::class;
   protected $replicationStatusDataType = '';
+  /**
+   * @var string
+   */
+  public $reservationGroup;
+  /**
+   * @var string
+   */
+  public $scalingMode;
   /**
    * @var string
    */
@@ -157,6 +169,20 @@ class Reservation extends \Google\Model
     return $this->labels;
   }
   /**
+   * @param string
+   */
+  public function setMaxSlots($maxSlots)
+  {
+    $this->maxSlots = $maxSlots;
+  }
+  /**
+   * @return string
+   */
+  public function getMaxSlots()
+  {
+    return $this->maxSlots;
+  }
+  /**
    * @param bool
    */
   public function setMultiRegionAuxiliary($multiRegionAuxiliary)
@@ -225,6 +251,34 @@ class Reservation extends \Google\Model
   public function getReplicationStatus()
   {
     return $this->replicationStatus;
+  }
+  /**
+   * @param string
+   */
+  public function setReservationGroup($reservationGroup)
+  {
+    $this->reservationGroup = $reservationGroup;
+  }
+  /**
+   * @return string
+   */
+  public function getReservationGroup()
+  {
+    return $this->reservationGroup;
+  }
+  /**
+   * @param string
+   */
+  public function setScalingMode($scalingMode)
+  {
+    $this->scalingMode = $scalingMode;
+  }
+  /**
+   * @return string
+   */
+  public function getScalingMode()
+  {
+    return $this->scalingMode;
   }
   /**
    * @param string
