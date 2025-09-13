@@ -114,7 +114,11 @@ class cBenhNhan{
             if ($tbl->num_rows > 0) {
                 $ds = array();
                 while ($row = $tbl->fetch_assoc()) {
-                    $ds[] = $row;
+
+                    $r['sdt'] = decryptData($r['sdt']);
+                    $r['cccd'] = decryptData($r['cccd']);
+                    $r['email'] = decryptData($r['email']);
+                    $ds[] = $r;
                 }
                 return $ds;
             } else {

@@ -59,7 +59,7 @@
                         WHERE ct.mabacsi = '$mabacsi'";
         
                 if (!empty($tukhoa)) {
-                    $sql .= " AND (b.mabenhnhan LIKE '%$tukhoa%' OR b.hotenbenhnhan LIKE '%$tukhoa%')";
+                    $sql .= " AND (b.mabenhnhan LIKE '%$tukhoa%' OR nd_bn.hoten LIKE '%$tukhoa%' OR l.malichxetnghiem LIKE '%$tukhoa%' )";
                 }
         
                 if (!empty($machuyenkhoa)) {
@@ -67,7 +67,7 @@
                 }
         
                 if (!empty($trangthai)) {
-                    $sql .= " AND l.trangthailichxetnghiem = '$trangthai'";
+                    $sql .= " AND tt.tentrangthai = '$trangthai'";
                 }
         
                 $result = $con->query($sql);

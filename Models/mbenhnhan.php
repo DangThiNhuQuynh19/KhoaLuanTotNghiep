@@ -1,5 +1,6 @@
 <?php
  include_once('ketnoi.php');
+ include_once('Assets/config.php');
  class mBenhNhan{
         private $conn;
 
@@ -195,17 +196,18 @@
             $p = new clsKetNoi();
             $con = $p->moketnoi();
             $con->set_charset('utf8');
-        
+            $tukhoa = decryptData($tukhoa);
             if ($con) {
                 $sql = "SELECT * 
-                        FROM benhnhan AS b 
-                        JOIN phieukhambenh AS p ON b.mabenhnhan = p.mabenhnhan 
+                        FROM benhnhan AS b  
+                        JOIN nguoidung nd ON nd.manguoidung =b.mabenhnhan
+                        JOIN phieukhambenh AS p ON b.mabenhnhan = p.mabenhnhan
                         WHERE p.mabacsi = '$mabacsi'";
         
                 if (!empty($tukhoa)) {
                     $sql .= " AND (b.mabenhnhan = '$tukhoa' 
-                                OR b.hotenbenhnhan LIKE '%$tukhoa%' 
-                                OR b.cccdbenhnhan LIKE '%$tukhoa%')";
+                                OR nd.hoten LIKE '%$tukhoa%' 
+                                OR nd.cccd LIKE '%$tukhoa%')";
                 }
         
                 $sql .= " GROUP BY b.mabenhnhan 

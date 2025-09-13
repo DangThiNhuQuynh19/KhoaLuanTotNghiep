@@ -1,4 +1,5 @@
 <?php
+error_reporting(1);
 ob_start();
 session_start();
 
@@ -24,7 +25,18 @@ if (isset($_SESSION['dangnhap']) && ($_SESSION['dangnhap'] == 3 || $_SESSION['da
         include("Views/nhanvien/pages/404/index.php");
     }
 
-} elseif (isset($_SESSION['name']) && isset($_SESSION['email'])) {
+}elseif (isset($_SESSION['dangnhap']) && $_SESSION['dangnhap'] == 5) {
+    // Nhân viên
+    if (file_exists("Views/admin/pages/$page/index.php")) {
+        require("Views/admin/layout/header.php");
+        require("Views/admin/layout/sidebar.php");
+        include("Views/admin/pages/$page/index.php");
+    } else {
+        include("Views/admin/pages/404/index.php");
+    }
+
+}
+ elseif (isset($_SESSION['name']) && isset($_SESSION['email'])) {
     // Bệnh nhân đã đăng nhập
     if (file_exists("Views/benhnhan/pages/$page/index.php")) {
         require("Views/benhnhan/layout/header.php");

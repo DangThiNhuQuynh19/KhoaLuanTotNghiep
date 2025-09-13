@@ -103,3 +103,25 @@
     </div>
   </div>
 </footer>
+<div class="chatbot-icon" id="chatbotBtn">
+    <img src="Assets/img/logo-banner.png" alt="Hospital Icon">
+</div>
+
+<!-- Khung chatbot -->
+<div class="chatbot-frame" id="chatbotFrame">
+    <iframe src="https://xaito.vn/App/embed/Chatbot/1IdpBK8aNlIc48HC"></iframe>
+</div>
+<script>
+    const chatbotBtn = document.getElementById('chatbotBtn');
+    const chatbotFrame = document.getElementById('chatbotFrame');
+
+    chatbotBtn.addEventListener('click', () => {
+        chatbotFrame.style.display = chatbotFrame.style.display === 'block' ? 'none' : 'block';
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!chatbotFrame.contains(e.target) && !chatbotBtn.contains(e.target)) {
+            chatbotFrame.style.display = 'none';
+        }
+    });
+</script>
