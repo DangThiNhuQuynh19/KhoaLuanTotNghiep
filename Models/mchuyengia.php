@@ -23,7 +23,9 @@ require_once('ketnoi.php');
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if($con){
-                $str = "select * from chuyengia join linhvuc on chuyengia.malinhvuc = linhvuc.malinhvuc where chuyengia.malinhvuc='$id'";
+                $str = "select * from chuyengia join linhvuc on chuyengia.malinhvuc = linhvuc.malinhvuc 
+                join nguoidung on chuyengia.machuyengia = nguoidung.manguoidung
+                where chuyengia.malinhvuc='$id'";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;

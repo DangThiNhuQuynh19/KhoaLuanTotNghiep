@@ -1,9 +1,11 @@
 <?php
-    // include_once('Controllers/cbacsi.php');
-    // $cbacsi= new cbacsi();
-    // if(isset($_SESSION["dangnhap"]) && isset($_SESSION["user"])){
-    //     $bacsi = $cbacsi->getBacSiByTenTK($_SESSION["user"]["tentk"]);
-    // }
+    include_once('Controllers/cnhanvien.php');
+    $cnhanvien= new cnhanvien();
+    $nhanvien = null;
+
+    if(isset($_SESSION["dangnhap"]) && isset($_SESSION["user"])){
+        $nhanvien = $cnhanvien->getNhanVienByTenTK($_SESSION["user"]["tentk"]);
+    }
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -74,11 +76,20 @@
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg px-3">
   <div class="container-fluid">
-    <a class="navbar-brand fw-bold" href="#">🏥 Bệnh viện</a>
+    <a class="navbar-brand fw-bold" href="http://localhost/KLTN/index.php?action=trangchu">🏥 Bệnh viện</a>
     <div class="ms-auto dropdown">
       <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
         <img src="https://i.pravatar.cc/40?img=12" alt="avatar" class="rounded-circle me-2">
-        <span>Nhân viên</span>
+        <span>
+          <?php 
+            if (!empty($nhanvien) && isset($nhanvien["hoten"])) {
+                echo htmlspecialchars($nhanvien["hoten"]);
+            
+            } else {
+                echo "Nhân viên";
+            }
+          ?>
+        </span>
       </a>
       <ul class="dropdown-menu shadow">
         <li><a class="dropdown-item" href="?action=dangxuat"><i class="bi bi-box-arrow-right"></i> Đăng xuất</a></li>
@@ -86,8 +97,6 @@
     </div>
   </div>
 </nav>
-
-
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>

@@ -1,0 +1,122 @@
+<?php
+include_once("Controllers/cbacsi.php");
+include_once("Controllers/cchuyenkhoa.php");
+
+$cBacSi = new cBacSi();
+$cChuyenKhoa = new cChuyenKhoa();
+
+// Lấy danh sách chuyên khoa
+$dsKhoaResult = $cChuyenKhoa->getAllChuyenKhoa();
+$dsKhoa = [];
+if ($dsKhoaResult && method_exists($dsKhoaResult,'fetch_all')) {
+    $dsKhoa = $dsKhoaResult->fetch_all(MYSQLI_ASSOC);
+}
+
+// Lấy giá trị filter
+$name = trim($_GET['name'] ?? '');
+$khoa = $_GET['khoa'] ?? '';
+
+// Lấy danh sách bác sĩ theo filter
+if ($name && $khoa) {
+    $ds = $cBacSi->getBacSiByTenAndKhoa($name, $khoa);
+} elseif ($name) {
+    $ds = $cBacSi->getBacSiByName($name);
+} elseif ($khoa) {
+    $ds = $cBacSi->getBacSiByKhoa($khoa);
+} else {
+    $ds = $cBacSi->getAllBacSi();
+}
+?>
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Danh sách bác sĩ</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+body{font-family: Arial, sans-serif; background:#fff; margin:0; padding:0;}
+h1 {text-align:center; color:#3c1561; margin-top:30px; position: relative;}
+.search-forms {text-align:center; margin:20px 0;}
+.textsearch{border-radius:15px; width:200px; height:30px; padding-left:5px; border:1px solid #3c1561; margin-right:5px;}
+.btnsearch{width:90px; height:32px; border-radius:10px; color:#fff; background-color:#3c1561; border:none; cursor:pointer; margin-right:5px;}
+.btn-reset{background:#f0f0f0; color:#333; border:1px solid #ccc; border-radius:10px; padding:6px 12px; font-size:14px; cursor:pointer; text-decoration:none;}
+.btn-reset:hover{background:#ddd; color:#000;}
+.doctor-card{display:flex; gap:25px; background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.08); margin:20px auto; max-width:1100px; align-items:flex-start;}
+.doctor-img img{width:180px; border-radius:10px; border:1px solid #ddd; object-fit:cover;}
+.doctor-info{flex:1;}
+.doctor-name{font-size:22px; font-weight:bold; color:#222; margin-bottom:10px; text-transform:uppercase;}
+.doctor-position,.doctor-hospital{font-style:italic; color:#666; margin-bottom:6px;}
+.doctor-desc{margin:10px 0 20px; color:#444; line-height:1.6;}
+.doctor-buttons{text-align:right;}
+.doctor-buttons a{text-decoration:none; padding:10px 18px; margin-right:10px; border-radius:6px; font-weight:600; font-size:14px; background-color:#3c1561; color:#fff;}
+.btn-purple {background-color:#6f42c1; color:#fff; border:none; padding:8px 16px; border-radius:6px;}
+.btn-purple:hover {background-color:#5a32a3;}
+@media (max-width:768px){
+    .doctor-card{flex-direction:column; align-items:center; text-align:center;}
+    .doctor-img img{margin-bottom:15px;}
+    .doctor-buttons a{display:inline-block; margin:10px 5px 0;}
+}
+</style>
+</head>
+<body>
+
+<h1>
+    <a href="index.php" style="position:absolute; left:20px; top:0; text-decoration:none; color:#3c1561; display:flex; align-items:center; font-size:16px;">
+        <i class="bi bi-house-door-fill" style="font-size:20px; margin-right:5px;"></i> Trang chủ
+    </a>
+    <span><i class="bi bi-people"></i> Danh sách bác sĩ</span>
+</h1>
+
+<!-- Form tìm kiếm và lọc -->
+<div class="search-forms">
+    <form method="GET" action="">
+        <input type="hidden" name="action" value="bacsi">
+        <input class="textsearch" type="text" name="name" placeholder="Tên bác sĩ..." value="<?= htmlspecialchars($name) ?>">
+        <select name="khoa" class="textsearch">
+            <option value="">-- Chọn chuyên khoa --</option>
+            <?php foreach($dsKhoa as $row): 
+                $selected = ($row['machuyenkhoa'] == $khoa) ? "selected" : "";
+            ?>
+                <option value="<?= $row['machuyenkhoa'] ?>" <?= $selected ?>><?= htmlspecialchars($row['tenchuyenkhoa']) ?></option>
+            <?php endforeach; ?>
+        </select>
+        <button class="btnsearch" type="submit">Tìm kiếm</button>
+        <a href="?action=bacsi" class="btn-reset">Bỏ lọc</a>
+    </form>
+</div>
+
+<!-- Danh sách bác sĩ -->
+<?php
+if (is_int($ds) && $ds == -1) {
+    echo "<p style='text-align:center; color:red;'>Lỗi kết nối dữ liệu.</p>";
+} elseif (is_int($ds) && $ds == 0) {
+    echo "<p style='text-align:center;'>Không có bác sĩ nào.</p>";
+} else {
+    while ($row = $ds->fetch_assoc()) {
+?>
+<div class="doctor-card">
+    <div class="doctor-img">
+        <img src="Assets/img/<?= htmlspecialchars($row['imgbs']) ?>" alt="Ảnh bác sĩ">
+    </div>
+    <div class="doctor-info">
+        <h2 class="doctor-name"><?= htmlspecialchars($row['capbac']) . ' ' . htmlspecialchars($row['hoten']) ?></h2>
+        <p class="doctor-position"><?= htmlspecialchars($row['tenchuyenkhoa']) ?></p>
+        <p class="doctor-desc"><?= strlen(strip_tags($row['motabs']))>300 ? substr(strip_tags($row['motabs']),0,300).'...' : strip_tags($row['motabs']) ?></p>
+        <div class="doctor-buttons">
+            <a href="?action=chitietbacsi&id=<?= $row['mabacsi'] ?>">XEM CHI TIẾT</a>
+        </div>
+    </div>
+</div>
+<?php
+    }
+}
+?>
+
+<!-- Nút quay về -->
+<div class="text-center mt-4">
+    <a href="index.php" class="btn btn-purple"><i class="bi bi-arrow-left"></i> Quay về</a>
+</div>
+
+</body>
+</html>

@@ -152,8 +152,8 @@ if (!empty($_GET['name']) && !empty($_GET['linhvuc'])) {
     </style>
 </head>
 <body>
-
-<div class="search-forms">
+<h1>Danh sách chuyên gia</h1>
+<div class="search-forms" style="margin-top: 10px;">
  
     <form method="GET" action="index.php">
         <input type="hidden" name="action" value="chuyengiatuvan">
@@ -174,7 +174,7 @@ if (!empty($_GET['name']) && !empty($_GET['linhvuc'])) {
     </form>
 </div>
 
-<h1>Danh sách chuyên gia</h1>
+
 
 <?php 
     if (is_int($ds) && $ds == -1) {
