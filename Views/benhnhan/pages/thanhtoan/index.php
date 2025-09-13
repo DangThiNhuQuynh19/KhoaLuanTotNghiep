@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thanh toán viện phí</title>
+    <title>Thanh toán phí tư vấn</title>
     <link rel="stylesheet" href="Views/benhnhan/pages/thanhtoan/style.css">
 </head>
 <?php

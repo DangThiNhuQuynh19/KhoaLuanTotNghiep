@@ -6,7 +6,7 @@ class mLichHen {
         $p = new clsketnoi();
         $conn = $p->moketnoi();
 
-            $sql = "SELECT 
+            $sql = "SELECT distinct
             pkb.maphieukhambenh,
             pkb.ngaykham,
             kg.giobatdau,

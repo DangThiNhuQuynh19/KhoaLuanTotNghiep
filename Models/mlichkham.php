@@ -156,6 +156,138 @@ class mLichKham {
             return false;
         }
     }
+            // Lấy lịch bác sĩ theo ngày
+            public function getLichBacSiTheoNgay($ngay, $mabacsi){
+                $p = new clsKetNoi();
+                $con = $p->moketnoi();
+                $con->set_charset('utf8');
+            
+                if ($con) {
+                    $sql = "SELECT ll.*, cv.tenca, kg.giobatdau, kg.gioketthuc, nguoidung.hoten AS hoten 
+                            FROM lichlamviec ll
+                            JOIN calamviec cv ON cv.macalamviec = ll.macalamviec 
+                            JOIN bacsi b ON b.mabacsi = ll.manguoidung 
+                            JOIN nguoidung ON nguoidung.manguoidung = ll.manguoidung 
+                            JOIN khunggiokhambenh kg ON kg.macalamviec = ll.macalamviec 
+                            WHERE ll.manguoidung = '$mabacsi' AND DATE(ll.ngaylam) = '$ngay' 
+                            ORDER BY kg.giobatdau ASC";
+                    $tbl = $con->query($sql);
+                    $p->dongketnoi($con);
+                    return $tbl;
+                } else {
+                    return false;
+                }
+            }
+            
+
+        // Lấy lịch chuyên gia theo ngày
+        public function getLichChuyenGiaTheoNgay($ngay, $machuyengia){
+            $p = new clsKetNoi();
+            $con = $p->moketnoi();
+            $con->set_charset('utf8');
+        
+            if ($con) {
+                $sql = "SELECT ll.*, cv.tenca, kg.giobatdau, kg.gioketthuc, nguoidung.hoten AS hoten 
+                        FROM lichlamviec ll
+                        JOIN calamviec cv ON cv.macalamviec = ll.macalamviec 
+                        JOIN chuyengia cg ON cg.machuyengia = ll.manguoidung 
+                        JOIN nguoidung ON nguoidung.manguoidung = ll.manguoidung 
+                        JOIN khunggiokhambenh kg ON kg.macalamviec = ll.macalamviec 
+                        WHERE ll.manguoidung = '$machuyengia' AND DATE(ll.ngaylam) = '$ngay' 
+                        ORDER BY kg.giobatdau ASC";
+                $tbl = $con->query($sql);
+                $p->dongketnoi($con);
+                return $tbl;
+            } else {
+                return false;
+            }
+        }
+        public function getTatCaLichKhamTheoNgay($ngay) {
+            $p = new clsKetNoi();
+            $con = $p->moketnoi();
+            $con->set_charset('utf8');
+        
+            if ($con) {
+                $sql = "
+                    SELECT llv.*, c.*, kg.*, nd.*, bs.*, cg.*, ck.*, lv.*
+                    FROM khunggiokhambenh kg
+                    JOIN calamviec c ON kg.macalamviec = c.macalamviec
+                    JOIN lichlamviec llv ON llv.macalamviec = c.macalamviec
+                    JOIN nguoidung nd ON nd.manguoidung = llv.manguoidung
+                    LEFT JOIN bacsi bs ON bs.mabacsi = llv.manguoidung
+                    LEFT JOIN chuyengia cg ON cg.machuyengia = llv.manguoidung
+                    LEFT JOIN chuyenkhoa ck ON ck.machuyenkhoa = bs.machuyenkhoa
+                    LEFT JOIN linhvuc lv ON lv.malinhvuc = cg.malinhvuc
+                    LEFT JOIN phieukhambenh pkb 
+                        ON pkb.makhunggiokb = kg.makhunggiokb
+                        AND pkb.ngaykham = llv.ngaylam
+                        AND pkb.mabacsi = llv.manguoidung
+                        AND pkb.matrangthai = 6
+                    WHERE llv.ngaylam = '$ngay'
+                        AND pkb.maphieukhambenh IS NULL
+                ";
+        
+                $tbl = $con->query($sql);
+                $p->dongketnoi($con);
+                return $tbl;
+            } else {
+                return false;
+            }
+        }
+        public function getLichTrongTheoNguoi($tuNgay, $manguoi){
+            $p = new clsKetNoi();
+            $con = $p->moketnoi();
+            $con->set_charset('utf8');
+        
+            if($con){
+                $sql = "SELECT llv.*, c.*, kg.*, nd.*, bs.*, cg.*
+                        FROM khunggiokhambenh kg
+                        JOIN calamviec c ON kg.macalamviec = c.macalamviec
+                        JOIN lichlamviec llv ON llv.macalamviec = c.macalamviec
+                        JOIN nguoidung nd ON nd.manguoidung = llv.manguoidung
+                        LEFT JOIN bacsi bs ON bs.mabacsi = llv.manguoidung
+                        LEFT JOIN chuyengia cg ON cg.machuyengia = llv.manguoidung
+                        LEFT JOIN phieukhambenh pkb 
+                            ON pkb.makhunggiokb = kg.makhunggiokb
+                            AND pkb.mabacsi = llv.manguoidung
+                            AND pkb.ngaykham >= ?
+                            AND pkb.matrangthai = 6
+                        WHERE llv.manguoidung = ?
+                          AND llv.ngaylam >= ?
+                          AND pkb.maphieukhambenh IS NULL
+                        ORDER BY llv.ngaylam, kg.giobatdau";
+                
+                $stmt = $con->prepare($sql);
+                $stmt->bind_param("sis", $tuNgay, $manguoi, $tuNgay);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $p->dongketnoi($con);
+                return $result;
+            }else{
+                return false;
+            }
+        }
+        function getThongTinNguoi($manguoidung) {
+            $p = new clsKetNoi();
+            $con = $p->moketnoi();
+            $con->set_charset('utf8');
+        
+            // Kiểm tra bác sĩ
+            $sql = "SELECT mabacsi AS id, hoten, 0 AS vaitro FROM bacsi WHERE mabacsi='$manguoidung' LIMIT 1";
+            $result = $con->query($sql);
+            if ($result && $result->num_rows > 0) {
+                return $result->fetch_assoc();
+            }
+        
+            // Kiểm tra chuyên gia
+            $sql = "SELECT machuyengia AS id, hoten, 1 AS vaitro FROM chuyengia WHERE machuyengia='$manguoidung' LIMIT 1";
+            $result = $con->query($sql);
+            if ($result && $result->num_rows > 0) {
+                return $result->fetch_assoc();
+            }
+        
+            return null; // Không tìm thấy
+        }
 }
 
 ?>

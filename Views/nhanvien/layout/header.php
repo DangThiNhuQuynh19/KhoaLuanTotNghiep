@@ -2,7 +2,6 @@
     include_once('Controllers/cnhanvien.php');
     $cnhanvien= new cnhanvien();
     $nhanvien = null;
-
     if(isset($_SESSION["dangnhap"]) && isset($_SESSION["user"])){
         $nhanvien = $cnhanvien->getNhanVienByTenTK($_SESSION["user"]["tentk"]);
     }
@@ -83,7 +82,7 @@
         <span>
           <?php 
             if (!empty($nhanvien) && isset($nhanvien["hoten"])) {
-                echo htmlspecialchars($nhanvien["hoten"]);
+                echo $nhanvien["hoten"];
             
             } else {
                 echo "Nhân viên";
@@ -97,6 +96,7 @@
     </div>
   </div>
 </nav>
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>

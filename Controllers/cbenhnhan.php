@@ -16,6 +16,20 @@ class cBenhNhan{
             }
         }
     }
+    public function getAllBenhNhan() {
+        $p = new mBenhNhan();
+        $tbl = $p->getbenhnhan();
+        if (!$tbl) {
+            return -1; 
+        } else {
+            if ($tbl->num_rows > 0) {
+                return $tbl; 
+            } else {
+                return 0; 
+            }
+        }
+    }
+    
     public function getAllBenhNhanByTK($manguoigiamho) {
         $m = new mBenhNhan();
         $tbl = $m->select_benhnhan_manguoigiamho($manguoigiamho);

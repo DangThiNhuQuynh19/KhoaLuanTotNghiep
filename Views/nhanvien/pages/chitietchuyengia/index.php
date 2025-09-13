@@ -18,14 +18,7 @@ if (!$chuyengia || $chuyengia->num_rows === 0) {
     exit;
 }
 $row = $chuyengia->fetch_assoc();
-// Đặt múi giờ chính xác
-date_default_timezone_set('Asia/Ho_Chi_Minh');
-// Lấy giờ hiện tại
-$gioHienTai = date('H:i:s'); // Giờ hiện tại dưới định dạng H:i:s
-$ngayHienTai = date('Y-m-d'); // Ngày hiện tại
 
-$cLichKham = new cLichKham();
-$lichkham = $cLichKham->getLichKhamOfChuyenGiaByNgay($ngay, $machuyengia, $gioHienTai);
 ?>
 
 <style>
@@ -163,90 +156,6 @@ $lichkham = $cLichKham->getLichKhamOfChuyenGiaByNgay($ngay, $machuyengia, $gioHi
         </div>
 
     </div>
-
-    <!-- Form chọn ngày và giờ -->
-    <form method="get" id="form-ngay" class="date-picker">
-        <input type="hidden" name="action" value="chitietchuyengia">
-        <input type="hidden" name="idcg" value="<?php echo $machuyengia; ?>">
-        <input type="hidden" name="giohientai" id="giohientai" value="">
-
-        <label for="ngay">Chọn ngày khám:</label>
-        <input type="date" name="ngay" id="ngay" value="<?php echo $ngay; ?>" min="<?php echo date('Y-m-d'); ?>" onchange="updateTimeAndSubmit();">
-    </form>
-
-    <script>
-        function updateTimeAndSubmit() {
-            var now = new Date();
-            var gio = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0') + ':00';
-            document.getElementById('giohientai').value = gio;
-            document.getElementById('form-ngay').submit();
-        }
-    </script>
-
-<div class="shift-list">
-    <h3>Danh sách ca làm việc:</h3>
-    <?php
-    if ($lichkham === false || $lichkham->num_rows === 0) {
-        echo "<p>Không có ca làm trong ngày này.</p>";
-    } else {
-        $caOnline = [];
-        $caOffline = [];
-
-        while ($rowCa = $lichkham->fetch_assoc()) {
-            $makhunggiokb = $rowCa['makhunggiokb'];
-            $giobatdau = date('H:i', strtotime($rowCa['giobatdau']));
-            $gioketthuc = date('H:i', strtotime($rowCa['gioketthuc']));
-            $hinhthuc = $rowCa['hinhthuclamviec']; // 0 = offline, 1 = online
-
-            $link = "";
-            if ($ngay == $ngayHienTai) {
-                if ($giobatdau >= $gioHienTai) {
-                    $link = '<a href="index.php?action=datlichkham&idcg=' . $machuyengia . '&ngay=' . $ngay . '&ca=' . $makhunggiokb . '">' 
-                          . $giobatdau . ' - ' . $gioketthuc . '</a>';
-                } else {
-                    continue; 
-                }
-            } else {
-                $link = '<a href="index.php?action=datlichkham&idcg=' . $machuyengia . '&ngay=' . $ngay . '&ca=' . $makhunggiokb . '">' 
-                      . $giobatdau . ' - ' . $gioketthuc . '</a>';
-            }
-            
-
-            // Phân loại
-            if ($hinhthuc == "online") {
-                $caOnline[] = $link;
-            } else {
-                $caOffline[] = $link;
-            }
-        }
-
-        // Hiển thị Online
-        echo "<div class='shift-group'>";
-        echo "<h4>Khám Online</h4>";
-        echo '<div class="shift-buttons">';
-        if (empty($caOnline)) {
-            echo "<p>Không có ca online.</p>";
-        } else {
-            foreach ($caOnline as $ca) {
-                echo $ca;
-            }
-        }
-        echo "</div></div>";
-
-        // Hiển thị Offline
-        echo "<div class='shift-group'>";
-        echo "<h4>Khám tại Bệnh viện</h4>";
-        echo '<div class="shift-buttons">';
-        if (empty($caOffline)) {
-            echo "<p>Không có ca offline.</p>";
-        } else {
-            foreach ($caOffline as $ca) {
-                echo $ca;
-            }
-        }
-        echo "</div></div>";
-    }
-    ?>
 </div>
 
 </div>

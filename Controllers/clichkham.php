@@ -23,9 +23,60 @@ class cLichKham {
         }
     }
     
+    
     public function getlich($id){
         $p = new mLichKham();
         $tbl = $p->xemlich($id);
+        if(!$tbl){
+            return -1;
+        }else{
+            if($tbl->num_rows > 0){
+                return $tbl;
+            }else{
+                return 0;
+            }
+        }
+    }
+    public function getThongTinNguoi($manguoidung){
+        $p = new mLichKham();
+        $nguoi = $p->getThongTinNguoi($manguoidung);
+    
+        if (!$nguoi) {
+            return -1; 
+        }
+    
+        return $nguoi; 
+    }
+    
+    public function getLichBacSiTheoNgay($ngay, $mabacsi){
+        $p = new mLichKham();
+        $tbl = $p->getLichBacSiTheoNgay($ngay, $mabacsi);
+        if(!$tbl){
+            return -1;
+        }else{
+            if($tbl->num_rows > 0){
+                return $tbl;
+            }else{
+                return 0;
+            }
+        }
+    }
+    public function getAllLichKhamByNgay($ngay){
+        $p = new mLichKham();
+        $tbl = $p->getTatCaLichKhamTheoNgay($ngay);
+        if(!$tbl){
+            return -1;
+        }else{
+            if($tbl->num_rows > 0){
+                return $tbl;
+            }else{
+                return 0;
+            }
+        }
+    }
+    public function getLichTrongCuaNguoi($tuNgay, $manguoi){
+        $p = new mLichKham();
+        $tbl = $p->getLichTrongTheoNguoi($tuNgay, $manguoi);
         if(!$tbl){
             return -1;
         }else{

@@ -101,33 +101,17 @@
 
           default: ?>
               <h4 class="mb-4">📋 Tổng quan</h4>
-              <div class="row">
-                  <div class="col-md-6 mb-4">
-                      <div class="card">
-                          <div class="card-header">📅 Lịch hẹn hôm nay</div>
-                          <div class="card-body">
-                              <p>Hiển thị danh sách lịch hẹn bệnh nhân...</p>
-                          </div>
-                      </div>
-                  </div>
-                  <div class="col-md-6 mb-4">
-                      <div class="card">
-                          <div class="card-header">👨‍⚕️ Quản lý bác sĩ</div>
-                          <div class="card-body">
-                              <p>Danh sách bác sĩ và chuyên gia...</p>
-                          </div>
-                      </div>
-                  </div>
-              </div>
+            
               <div class="card">
-                  <div class="card-header">📝 Thông báo</div>
-                  <div class="card-body">
-                      <ul>
-                          <li>Ca trực mới đã được cập nhật</li>
-                          <li>Nhớ kiểm tra lịch hẹn vào cuối ngày</li>
-                      </ul>
-                  </div>
-              </div>
+            <div class="card-header">📝 Đặt lịch</div>
+            <div class="card-body">
+                <p>Nhấn nút bên dưới để đặt lịch khám cho bệnh nhân:</p>
+                <a href="index.php?action=datlichkham" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Đặt lịch khám
+                </a>
+            </div>
+        </div>
+
           <?php
               break;
       }

@@ -66,6 +66,20 @@
                 return false; 
             }
         }
+        public function getBenhNhan() {
+            $p = new clsKetNoi();
+            $con = $p->moketnoi();
+            $con->set_charset('utf8');
+            if($con){
+                $str = "select * from benhnhan join nguoidung on nguoidung.manguoidung = benhnhan.mabenhnhan";
+                $tbl = $con->query($str);
+                $p->dongketnoi($con);
+                return $tbl;
+            }else{
+                return false; 
+            }
+        }
+
         public function capnhatbenhnhan($mabenhnhan, $hotenbenhnhan, $ngaysinh, $gioitinh, $nghenghiep, $cccdbenhnhan,
                                 $dantoc, $email, $sdtbenhnhan, $tinh, $quan, $xa, $sonha, $quanhe,
                                 $tiensubenhtatcuagiadinh, $tiensubenhtatcuabenhnhan, $nhommau) {

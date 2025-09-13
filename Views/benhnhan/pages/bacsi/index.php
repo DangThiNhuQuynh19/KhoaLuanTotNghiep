@@ -153,7 +153,7 @@ if (!empty($_GET['name']) && !empty($_GET['khoa'])) {
     </style>
 </head>
 <body>
-<h1>Danh sách bác sĩ</h1>
+<h1>Danh sách bác sĩ</h1>                                  
 <div class="search-forms" style="margin-top: 10px;">
     <!-- Form tìm kiếm bác sĩ và lọc theo khoa -->
     <form method="GET" action="index.php">
