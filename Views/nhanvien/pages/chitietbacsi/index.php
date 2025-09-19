@@ -153,7 +153,7 @@ $row = $bacsi->fetch_assoc();
             <!-- Nút xem thêm -->
             <button id="toggle-mota-button">Xem thêm</button>
         </div>
-
+        <a href="index.php" class="btn btn-primary me-2">Quay lại trang chủ</a>
     </div>
 
     

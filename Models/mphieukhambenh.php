@@ -43,48 +43,61 @@
                 return false; 
             }
         }   
-        public function phieukhambenhcuataikhoan($tentk, $status) {
+        public function phieukhambenhcuataikhoan($tentk, $status = null, $ngay = null) {
             $p = new clsKetNoi();
             $con = $p->moketnoi();
             $con->set_charset('utf8');
         
             if ($con) {
-                $sql = "
-                    SELECT pk.*, nd_bn.hoten, nd_nd.hoten AS hotenbacsi, nd_bn.email, 'Bac si' AS loai, tt.tentrangthai, ck.tenchuyenkhoa as tenchuyenkhoa, kg.*
+                // SELECT cho bác sĩ
+                $sql1 = "
+                    SELECT pk.*, nd_bn.hoten, nd_nd.hoten AS hotenbacsi, nd_bn.email, 
+                           'Bac si' AS loai, tt.tentrangthai, ck.tenchuyenkhoa AS tenchuyenkhoa, kg.*
                     FROM phieukhambenh pk
-                    JOIN trangthai tt on tt.matrangthai = pk.matrangthai
-                    JOIN khunggiokhambenh kg on kg.makhunggiokb = pk.makhunggiokb
+                    JOIN trangthai tt ON tt.matrangthai = pk.matrangthai
+                    JOIN khunggiokhambenh kg ON kg.makhunggiokb = pk.makhunggiokb
                     JOIN benhnhan bn ON bn.mabenhnhan = pk.mabenhnhan
                     JOIN nguoidung nd_bn ON nd_bn.manguoidung = bn.mabenhnhan
                     JOIN bacsi bs ON bs.mabacsi = pk.mabacsi
                     JOIN chuyenkhoa ck ON ck.machuyenkhoa = bs.machuyenkhoa
                     JOIN nguoidung nd_nd ON nd_nd.manguoidung = bs.mabacsi
-                    WHERE (nd_bn.email = '$tentk'
+                    WHERE (nd_bn.email = '$tentk' 
                         OR bn.manguoigiamho IN (SELECT manguoidung FROM nguoidung WHERE email = '$tentk'))
                 ";
-
-                if (!empty($status)) {
-                    $sql .= " AND tt.tentrangthai = '$status'";
-                }
-
-                $sql .= "
-                    UNION
-                    SELECT pk.*, nd_bn.hoten, nd_nd.hoten AS hotennguoi_kham, nd_bn.email, 'Chuyen gia' AS loai, tt.tentrangthai, lv.tenlinhvuc as tenchuyenkhoa, kg.*
+        
+                // SELECT cho chuyên gia
+                $sql2 = "
+                    SELECT pk.*, nd_bn.hoten, nd_nd.hoten AS hotenbacsi, nd_bn.email, 
+                           'Chuyen gia' AS loai, tt.tentrangthai, lv.tenlinhvuc AS tenchuyenkhoa, kg.*
                     FROM phieukhambenh pk
-                    JOIN trangthai tt on tt.matrangthai = pk.matrangthai
-                    JOIN khunggiokhambenh kg on kg.makhunggiokb = pk.makhunggiokb
+                    JOIN trangthai tt ON tt.matrangthai = pk.matrangthai
+                    JOIN khunggiokhambenh kg ON kg.makhunggiokb = pk.makhunggiokb
                     JOIN benhnhan bn ON bn.mabenhnhan = pk.mabenhnhan
                     JOIN nguoidung nd_bn ON nd_bn.manguoidung = bn.mabenhnhan
                     JOIN chuyengia cg ON cg.machuyengia = pk.mabacsi
                     JOIN linhvuc lv ON lv.malinhvuc = cg.malinhvuc
                     JOIN nguoidung nd_nd ON nd_nd.manguoidung = cg.machuyengia
-                    WHERE (nd_bn.email = '$tentk'
+                    WHERE (nd_bn.email = '$tentk' 
                         OR bn.manguoigiamho IN (SELECT manguoidung FROM nguoidung WHERE email = '$tentk'))
                 ";
-
+        
+                // Thêm điều kiện trạng thái & ngày
                 if (!empty($status)) {
-                    $sql .= " AND tt.tentrangthai = '$status'";
+                    $sql1 .= " AND tt.tentrangthai = '$status'";
+                    $sql2 .= " AND tt.tentrangthai = '$status'";
                 }
+                if (!empty($ngay)) {
+                    $sql1 .= " AND pk.ngaykham = '$ngay'";
+                    $sql2 .= " AND pk.ngaykham = '$ngay'";
+                }
+        
+                // Gộp UNION và bọc subquery để ORDER BY
+                $sql = "
+                    ($sql1)
+                    UNION
+                    ($sql2)
+                    ORDER BY ngaykham DESC, giobatdau ASC
+                ";
         
                 $tbl = $con->query($sql);
         
@@ -94,6 +107,8 @@
                 return false;
             }
         }
+        
+        
         public function huyPhieuKhamBenh($maphieukb) {
             $p = new clsKetNoi();
             $con = $p->moketnoi();
@@ -155,28 +170,28 @@
                 return false; 
             }
         }
-        public function update_trangthai_phieukhambenh(){
-            $p = new clsKetNoi();
-            $con = $p->moketnoi();
-            $con->set_charset('utf8');
-            if ($con) {
-                $sql = "UPDATE phieukhambenh pk
-                        JOIN khunggiokhambenh kg ON pk.makhunggiokb = kg.makhunggiokb
-                        JOIN trangthai tt on tt.matrangthai = pk.matrangthai
-                        SET tt.tentrangthai = 'Đã khám'
-                        WHERE (
-                            CURDATE() > pk.ngaykham OR
-                            (CURDATE() = pk.ngaykham AND CURTIME() > kg.gioketthuc)
-                        )
-                        AND tt.tentrangthai != 'Đã khám'";
+        // public function update_trangthai_phieukhambenh(){
+        //     $p = new clsKetNoi();
+        //     $con = $p->moketnoi();
+        //     $con->set_charset('utf8');
+        //     if ($con) {
+        //         $sql = "UPDATE phieukhambenh pk
+        //                 JOIN khunggiokhambenh kg ON pk.makhunggiokb = kg.makhunggiokb
+        //                 JOIN trangthai tt on tt.matrangthai = pk.matrangthai
+        //                 SET tt.tentrangthai = 'Đã khám'
+        //                 WHERE (
+        //                     CURDATE() > pk.ngaykham OR
+        //                     (CURDATE() = pk.ngaykham AND CURTIME() > kg.gioketthuc)
+        //                 )
+        //                 AND tt.tentrangthai != 'Đã khám'";
                         
-                $result = $con->query($sql);
-                $p->dongketnoi($con);
-                return $result;
-            } else {
-                return false;
-            }
-        }
+        //         $result = $con->query($sql);
+        //         $p->dongketnoi($con);
+        //         return $result;
+        //     } else {
+        //         return false;
+        //     }
+        // }
 
         public function select_phieukham_homnay($mabacsi){
             $p = new clsKetNoi();

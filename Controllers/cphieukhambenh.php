@@ -34,19 +34,19 @@ class cPhieuKhamBenh {
         }
         return false; // Không có lịch trùng
     }
-    public function getAllPhieuKhamBenhOfTK($tentk,$trangthai) {
+    public function getAllPhieuKhamBenhOfTK($tentk, $trangthai = null, $ngay = null) {
         $p = new mPhieuKhamBenh();
-        $tbl = $p->phieukhambenhcuataikhoan($tentk,$trangthai);
-        if (!$tbl) {
-            return -1;
+        $tbl = $p->phieukhambenhcuataikhoan($tentk, $trangthai, $ngay);
+    
+        if ($tbl === false) {
+            return -1; // lỗi kết nối
+        } elseif ($tbl->num_rows > 0) {
+            return $tbl; // có dữ liệu
         } else {
-            if ($tbl->num_rows > 0) {
-                return $tbl;
-            } else {
-                return 0;
-            }
+            return 0; // không có dữ liệu
         }
     }
+    
     public function updatephieukhambenh($maphieukb) {
         $p = new mPhieuKhamBenh();
         $kq = $p->updatePhieuKhamBenh($maphieukb);
@@ -184,15 +184,15 @@ class cPhieuKhamBenh {
         }
     }
 
-    public function capnhat_trangthai_phieukham(){
-        $p = new mPhieuKhamBenh();
-        $kq = $p->update_trangthai_phieukhambenh();
-        if ($kq) { 
-            return true;
-        } else {
-            return false;
-        }
-    }
+    // public function capnhat_trangthai_phieukham(){
+    //     $p = new mPhieuKhamBenh();
+    //     $kq = $p->update_trangthai_phieukhambenh();
+    //     if ($kq) { 
+    //         return true;
+    //     } else {
+    //         return false;
+    //     }
+    // }
 
     public function get_sophieukham_trongtuan($mabacsi){
         $p = new mPhieuKhamBenh();

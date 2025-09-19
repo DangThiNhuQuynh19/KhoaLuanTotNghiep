@@ -6,7 +6,7 @@
     $chuyenkhoa_list=$cchuyenkhoa->getAllChuyenKhoa();
     $cbacsi = new cBacSi();
     $cphieukhambenh = new cPhieuKhamBenh();
-    $cphieukhambenh->capnhat_trangthai_phieukham();
+    //$cphieukhambenh->capnhat_trangthai_phieukham();
     $bacsi= $cbacsi->getBacSiByTenTK($_SESSION['user']['tentk']);
     $lichkham_list= $cphieukhambenh->get_lichkham_mabacsi($bacsi['mabacsi']);
     if(isset($_POST['homnay'])){

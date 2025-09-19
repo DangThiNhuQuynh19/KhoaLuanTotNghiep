@@ -35,20 +35,25 @@ if (!$nv || $nv === 0) {
 <body>
 <div class="card">
 <div class="card-header text-center">
-    <img src="<?= !empty($nv['imgnv']) ? '/Assets/img/' . htmlspecialchars($nv['imgnv']) : '/Assets/img/kimlien.png' ?>" 
-         alt="Ảnh nhân viên" 
-         style="width:100px; height:100px; object-fit:cover; border-radius:50%; border:2px solid #fff; margin-bottom:10px;">
+<img src="Assets/img/<?= htmlspecialchars($nv['imgnv']) ?>" 
+     alt="Ảnh nhân viên" 
+     style="width:100px; height:100px; object-fit:cover; border-radius:50%; border:2px solid #fff; margin-bottom:10px;">
     <div><?= htmlspecialchars($nv['hoten']) ?></div>
 </div>
 
     <div class="card-body">
         <p><strong>Mã nhân viên:</strong> <?= htmlspecialchars($nv['manhanvien']) ?></p>
+        <p><strong>Ngày bắt đầu làm việc:</strong> <?= date('d-m-Y', strtotime($nv['ngaybatdau'])) ?></p>
         <p><strong>Email:</strong> <?= htmlspecialchars(decryptData($nv['email'])) ?></p>
         <p><strong>Số điện thoại:</strong> <?= htmlspecialchars(decryptData($nv['sdt'])) ?></p>
         <p><strong>Chức vụ:</strong> <?= htmlspecialchars($nv['chucvu']) ?></p>
         <p><strong>Ngày sinh:</strong> <?= date('d-m-Y', strtotime($nv['ngaysinh'])) ?></p>
-        <p><strong>Địa chỉ:</strong> <?= htmlspecialchars($nv['diachi']) ?></p>
-        <div class="text-center mt-3">
+        <p><strong>Địa chỉ:</strong> 
+            <?= htmlspecialchars($nv['sonha']) . ', ' 
+            . htmlspecialchars($nv['tenxaphuong']) . ', ' 
+            . htmlspecialchars($nv['tentinhthanhpho']) ?>
+        </p>
+         <div class="text-center mt-3">
             <a href="index.php" class="btn btn-primary me-2">Quay lại trang chủ</a>
             <a href="http://localhost/KLTN/index.php?action=suathongtin&id=<?= htmlspecialchars($nv['manhanvien']) ?>" class="btn btn-warning">
                 <i class="bi bi-pencil-square"></i> Sửa thông tin
