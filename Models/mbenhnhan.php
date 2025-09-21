@@ -109,7 +109,13 @@
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if($con){
-                $str = "select * from benhnhan as b join phieukhambenh as p on b.mabenhnhan=p.mabenhnhan join nguoidung nd on nd.manguoidung = b.mabenhnhan where mabacsi='$mabacsi' GROUP BY b.mabenhnhan ORDER BY b.mabenhnhan DESC";
+                $str = "SELECT DISTINCT b.mabenhnhan, nd.ngaysinh, nd.gioitinh, nd.hoten, nd.sdt, nd.cccd, nd.email
+                FROM benhnhan AS b
+                JOIN phieukhambenh AS p ON b.mabenhnhan = p.mabenhnhan
+                JOIN nguoidung nd ON nd.manguoidung = b.mabenhnhan
+                WHERE p.mabacsi = '$mabacsi'
+                ORDER BY b.mabenhnhan DESC
+                ";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;
@@ -122,7 +128,12 @@
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if($con){
-                $str = "select * from benhnhan as b join phieukhambenh as p on b.mabenhnhan=p.mabenhnhan join nguoidung nd on nd.manguoidung = b.mabenhnhan where mabacsi='$machuyengia' GROUP BY b.mabenhnhan ORDER BY b.mabenhnhan DESC";
+                $str = "SELECT DISTINCT b.mabenhnhan, nd.ngaysinh, nd.gioitinh, nd.hoten, nd.sdt, nd.cccd, nd.email
+                FROM benhnhan AS b
+                JOIN phieukhambenh AS p ON b.mabenhnhan = p.mabenhnhan
+                JOIN nguoidung nd ON nd.manguoidung = b.mabenhnhan
+                WHERE p.mabacsi = '$machuyengia'
+                ORDER BY b.mabenhnhan DESC";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;
@@ -222,7 +233,6 @@
             $p = new clsKetNoi();
             $con = $p->moketnoi();
             $con->set_charset('utf8');
-            $tukhoa = decryptData($tukhoa);
             if ($con) {
                 $sql = "SELECT * 
                         FROM benhnhan AS b  
@@ -232,8 +242,7 @@
         
                 if (!empty($tukhoa)) {
                     $sql .= " AND (b.mabenhnhan = '$tukhoa' 
-                                OR nd.hoten LIKE '%$tukhoa%' 
-                                OR nd.cccd LIKE '%$tukhoa%')";
+                                OR nd.hoten LIKE '%$tukhoa%') ";
                 }
         
                 $sql .= " GROUP BY b.mabenhnhan 

@@ -19,16 +19,15 @@
     <header class="main-header">
         <div class="logo">
                 <a href="?action=trangchu"> 
-                    <img src="Assets/img/logo.png" alt="Hanh Phuc Hospital Logo" style="width:130px;">
+                    <img src="Assets/img/logo.png" alt="Hanh Phuc Hospital Logo" style="width:150px;">
                 </a>
         </div>
         <nav class="main-nav">
             <ul>
                 <li><a href="?action=trangchu"><i class="fas fa-home"></i> Trang chủ</a></li>
                 <li><a href="?action=benhnhan"><i class="fas fa-user-injured"></i> Bệnh nhân</a></li>
-                <li><a href="?action=lichhentructiep"><i class="fas fa-clipboard-list"></i> Lịch hẹn trực tiếp</a></li>
                 <li><a href="?action=lichhentructuyen"><i class="fas fa-laptop"></i> Lịch hẹn trực tuyến</a></li>
-                <li><a href="?action=tinnhan"><i class="fas fa-comment-medical"></i> Tin nhắn</a></li>
+                <li><a href="?action=lichhentructiep"><i class="fas fa-clipboard-list"></i> Lịch hẹn trực tiếp</a></li>
             </ul>
         </nav>
         <div class="user-menu">
@@ -37,7 +36,7 @@
                 <img src="<?php echo 'Assets/img/'.$chuyengia["imgcg"].'';?>"alt="Avatar" class="user-avatar">
             </div>
             <div class="dropdown-menu">
-                <a href="#"><i class="fas fa-user"></i> Hồ sơ</a>
+                <a href="?action=hoso"><i class="fas fa-user"></i> Hồ sơ</a>
                 <a href="#"><i class="fas fa-cog"></i> Cài đặt</a>
                 <a href="?action=dangxuat"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
             </div>

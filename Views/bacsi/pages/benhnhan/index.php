@@ -8,19 +8,53 @@
     $cbacsi = new cBacSi();
     $bacsi= $cbacsi->getBacSiByTenTK($_SESSION['user']['tentk']);
     $benhnhan_list= $cbenhnhan->get_benhnhan_mabacsi( $bacsi['mabacsi']);
+
     if(isset($_POST["btntimkiem"])){
-        $benhnhan_list= $cbenhnhan->get_benhnhan_tukhoa($_POST["tukhoa"],$bacsi['mabacsi'] );
+        $benhnhan_list = $cbenhnhan->get_benhnhan_tukhoa($_POST["tukhoa"], $bacsi['mabacsi']);
     }
+
     if(isset($_POST['homnay'])){
-        $benhnhan_list= $cbenhnhan->get_benhnhan_homnay($bacsi['mabacsi']);
+        $benhnhan_list = $cbenhnhan->get_benhnhan_homnay($bacsi['mabacsi']);
     }
+
+    if(isset($_POST['btnbo'])){ 
+        // Load lại danh sách ban đầu
+        $benhnhan_list = $cbenhnhan->get_benhnhan_mabacsi($bacsi['mabacsi']);
+    }
+
     
 ?>
+<style>
+.btn-secondary {
+    background-color: #f0f0f0;
+    color: #333;
+    border: 1px solid #ccc;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-secondary:hover {
+    background-color: #e6e6e6;
+    border-color: #999;
+    color: #000;
+    box-shadow: 0px 2px 6px rgba(0,0,0,0.1);
+}
+
+.btn-secondary i {
+    font-size: 14px;
+}
+</style>
+
 <body>
     <div class="container">
         <div class="content-header">
-            <h1>Quản lý bệnh nhân</h1>
-            <a href="#" class="btn-primary"><i class="fas fa-plus"></i> Thêm bệnh nhân</a>
+            <h1 style="text-align:center">Quản lý bệnh nhân</h1>
         </div>
         
         <div class="card">
@@ -29,14 +63,17 @@
               
             </div>
             <div class="card-body">
-                <form class="search-form" method="POST">
-                    <div class="search-input">
-                        <i class="fas fa-search"></i>
-                        <input type="text" name="tukhoa" placeholder="Tìm theo tên, mã bệnh nhân...">
-                    </div>
-                    <br>
-                    <button type="submit" class="btn-primary" name="btntimkiem">Tìm kiếm</button>
-                </form>
+            <form class="search-form" method="POST">
+                <div class="search-input">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="tukhoa" placeholder="Tìm theo tên, mã bệnh nhân...">
+                </div>
+                <br>
+                <button type="submit" class="btn-primary" name="btntimkiem">Tìm kiếm</button>
+                <button type="submit" class="btn-secondary" name="btnbo">
+                    <i class="fas fa-times"></i> Bỏ tìm kiếm
+                </button>
+            </form>
             </div>
         </div>
         <form method="POST" style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 10px;">

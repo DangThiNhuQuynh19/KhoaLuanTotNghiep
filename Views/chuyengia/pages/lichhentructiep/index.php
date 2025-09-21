@@ -1,27 +1,52 @@
-<?php
+
+
+        <?php
     include_once('Controllers/cphieukhambenh.php');
-    include_once('Controllers/cbacsi.php');
-    include_once('Controllers/cchuyenkhoa.php');
-    $cchuyenkhoa = new cChuyenKhoa();
-    $chuyenkhoa_list=$cchuyenkhoa->getAllChuyenKhoa();
-    $cbacsi = new cBacSi();
+    include_once('Controllers/cchuyengia.php');
+    $cchuyengia = new cChuyenGia();
     $cphieukhambenh = new cPhieuKhamBenh();
-    //$cphieukhambenh->capnhat_trangthai_phieukham();
-    $bacsi= $cbacsi->getBacSiByTenTK($_SESSION['user']['tentk']);
-    $lichkham_list= $cphieukhambenh->get_lichkham_mabacsi($bacsi['mabacsi']);
+    $chuyengia= $cchuyengia->getChuyenGiaByTenTK($_SESSION['user']['tentk']);
+    $lichkham_list= $cphieukhambenh->get_lichkhamoff_machuyengia($chuyengia['machuyengia']);
     if(isset($_POST['homnay'])){
-        $lichkham_list= $cphieukhambenh->get_lichkham_homnay($bacsi['mabacsi']);
+        $lichkham_list= $cphieukhambenh->get_lichkhamoff_homnay($chuyengia['machuyengia']);
     }
     if(isset($_POST["btntimkiem"])){
         $tukhoa=$_POST["tukhoa"];
         $trangthai=$_POST["trangthai"];
         $ngay=$_POST["ngay"];
-        $lichkham_list= $cphieukhambenh->search_phieukham($tukhoa,$trangthai,$ngay,$bacsi['mabacsi']);
+        $lichkham_list= $cphieukhambenh->search_phieukhamoff($tukhoa,$trangthai,$ngay,$chuyengia['machuyengia']);
     }
 ?>
+<style>
+.btn-secondary {
+    background-color: #f0f0f0;
+    color: #333;
+    border: 1px solid #ccc;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-secondary:hover {
+    background-color: #e6e6e6;
+    border-color: #999;
+    color: #000;
+    box-shadow: 0px 2px 6px rgba(0,0,0,0.1);
+}
+
+.btn-secondary i {
+    font-size: 14px;
+}
+</style>
+
 <div class="container">
 <div class="content-header">
-    <h1>Quản lý lịch hẹn</h1>
+    <h1>Quản lý lịch hẹn trực tuyến</h1>
 </div>
 
 <div class="tabs">
@@ -51,11 +76,16 @@
                             <div class="form-group">
                                 <input type="date" name="ngay" placeholder="Ngày khám">
                             </div>
-                            
+                        </div>
+
+                        <!-- hàng riêng cho nút -->
+                        <div class="form-actions" style="margin-top: 10px;">
                             <button type="submit" class="btn-primary" name="btntimkiem">Tìm kiếm</button>
+                            <button type="submit" class="btn-secondary" name="btnbo"><i class="fas fa-times"></i>Bỏ tìm kiếm</button>
                         </div>
                     </form>
                 </div>
+
             </div>
             <form method="POST" style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 10px;">
                 <input type="checkbox" name="homnay" id="homnay" onchange="this.form.submit()" <?php if (isset($_POST['homnay'])) echo 'checked'; ?>>
@@ -100,7 +130,8 @@
                                     echo '<td><span class="status-badge ' . $statusClass . '">' . $i['tentrangthai'] . '</span></td>';
                                     echo '<td>';
                                     if($i['tentrangthai']=='Chưa khám'){
-                                        echo '<a class="btn-primary btn-small" href="?action=tinnhan&id=mabenhnhan"><i class="fas fa-comment-medical"></i> nhắn tin</a>';
+                                        echo '<a class="btn-primary btn-small" href="?action=chitietbenhnhan&id=' . $i['mabenhnhan'] . '">
+                                        <i class="fas fa-comment-medical"></i> Khám bệnh</a>';
                                     }
                                     echo'</td>';
                                     echo '</tr>';
