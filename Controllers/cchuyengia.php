@@ -67,5 +67,20 @@ class cChuyenGia{
             }
         }
     }
+    public function getChuyenGiaByTenTK($tentk){
+        $p = new mChuyenGia();
+        $tbl = $p->xemchuyengiatheotentk($tentk);
+        if(!$tbl){
+            return -1;
+        }else{
+            if($tbl->num_rows > 0){
+                return $tbl->fetch_assoc();
+            }else{
+                return 0;
+            }
+        }
+    }
+    
+
 }
 ?>

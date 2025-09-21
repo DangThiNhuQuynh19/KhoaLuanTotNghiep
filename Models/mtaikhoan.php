@@ -24,7 +24,8 @@ class mtaikhoan{
     
         // Băm mật khẩu (tốt hơn nên dùng password_hash)
         $hashedPassword = md5($matkhau);
-    
+        $cccd_truoc_name = !empty($cccd_truoc_name) ? $cccd_truoc_name : null;
+        $cccd_sau_name   = !empty($cccd_sau_name)   ? $cccd_sau_name   : null;
         // Thêm vào bảng taikhoan
         $stmtInsertTK = $this->conn->prepare("INSERT INTO taikhoan (tentk, matkhau, mavaitro, matrangthai) VALUES (?, ?, 1,1)");
         $stmtInsertTK->bind_param("ss", $email, $hashedPassword);

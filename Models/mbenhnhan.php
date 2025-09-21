@@ -117,7 +117,19 @@
                 return false; 
             }
         }
-
+        public function select_benhnhan_machuyengia($machuyengia){
+            $p = new clsKetNoi();
+            $con = $p->moketnoi();
+            $con->set_charset('utf8');
+            if($con){
+                $str = "select * from benhnhan as b join phieukhambenh as p on b.mabenhnhan=p.mabenhnhan join nguoidung nd on nd.manguoidung = b.mabenhnhan where mabacsi='$machuyengia' GROUP BY b.mabenhnhan ORDER BY b.mabenhnhan DESC";
+                $tbl = $con->query($str);
+                $p->dongketnoi($con);
+                return $tbl;
+            }else{
+                return false; 
+            }
+        }
         public function select_benhnhan_id($id){
             $p = new clsKetNoi();
             $con = $p->moketnoi();

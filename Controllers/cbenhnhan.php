@@ -104,7 +104,26 @@ class cBenhNhan{
             }
         }
     }
-
+    public function get_benhnhan_machuyengia($machuyengia){
+        $p = new mBenhNhan();
+        $tbl = $p->select_benhnhan_machuyengia($machuyengia);
+        $list = array();
+        if (!$tbl) {
+            return -1; 
+        } else {
+            if ($tbl->num_rows > 0) { 
+                while($r=$tbl->fetch_assoc()){
+                    $r['sdt'] = decryptData($r['sdt']);
+                    $r['cccd'] = decryptData($r['cccd']);
+                    $r['email'] = decryptData($r['email']);
+                    $list[] = $r;
+                }
+                return $list ;                 
+            } else {
+                return 0; 
+            }
+        }
+    }
     public function get_benhnhan_id($id){
         $p = new mBenhNhan();
         $tbl = $p->select_benhnhan_id($id);

@@ -91,9 +91,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
             // Validate required file uploads based on age
             if ($age >= 18) {
-                if (empty($cccd_truoc_path) || empty($cccd_sau_path)) {
-                    $message = "Vui lòng upload đầy đủ ảnh CCCD mặt trước và mặt sau.";
-                }
+                
+                    $message = "";
+                
             } else {
                     $message = "Yêu cầu người đăng ký tài khoản phải từ 18 tuổi.";
             }

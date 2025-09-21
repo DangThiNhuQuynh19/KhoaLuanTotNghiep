@@ -82,5 +82,18 @@ require_once('ketnoi.php');
                 return false; 
             }
         }
+        public function xemchuyengiatheotentk($tentk){
+            $p = new clsKetNoi();
+            $con = $p->moketnoi();
+            $con->set_charset('utf8');
+            if($con){
+                $str = "select * from chuyengia b  join nguoidung d on b.machuyengia=d.manguoidung where email = '$tentk'";
+                $tbl = $con->query($str);
+                $p->dongketnoi($con);
+                return $tbl;
+            }else{
+                return false; 
+            }
+        }
     }
 ?>
