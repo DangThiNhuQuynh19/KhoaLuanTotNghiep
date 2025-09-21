@@ -805,12 +805,12 @@ ul {
   color: var(--gray);
 }
 
-/* Content Header */
 .content-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: center; /* căn giữa ngang */
+  align-items: center;     /* căn giữa dọc */
   margin-bottom: 24px;
+  text-align: center;
 }
 
 .content-header h1 {
@@ -818,6 +818,7 @@ ul {
   font-size: 28px;
   font-weight: 700;
 }
+
 
 .back-button {
   display: flex;

@@ -77,9 +77,9 @@ class cPhieuKhamBenh {
         }
     }
 
-    public function get_lichkham_mabacsi($mabacsi){
+    public function get_lichkhamonl_mabacsi($mabacsi){
         $p = new mPhieuKhamBenh();
-        $tbl = $p->select_lichkham_mabacsi($mabacsi);
+        $tbl = $p->select_lichkhamonl_mabacsi($mabacsi);
         $list=array();
             if (!$tbl) {
                 return -1;
@@ -94,10 +94,60 @@ class cPhieuKhamBenh {
                 }
         }
     }
-
-    public function get_lichkham_homnay($mabacsi){
+    public function get_lichkhamonl_machuyengia($machuyengia){
         $p = new mPhieuKhamBenh();
-        $tbl = $p->select_phieukham_homnay($mabacsi);
+        $tbl = $p->select_lichkhamonl_machuyengia($machuyengia);
+        $list=array();
+            if (!$tbl) {
+                return -1;
+            } else {
+                if ($tbl->num_rows > 0) {
+                    while($r=$tbl->fetch_assoc()){
+                        $list[]=$r;
+                    }
+                    return $list;
+                } else {
+                    return 0;
+                }
+        }
+    }
+    public function get_lichkhamoff_mabacsi($mabacsi){
+        $p = new mPhieuKhamBenh();
+        $tbl = $p->select_lichkhamoff_mabacsi($mabacsi);
+        $list=array();
+            if (!$tbl) {
+                return -1;
+            } else {
+                if ($tbl->num_rows > 0) {
+                    while($r=$tbl->fetch_assoc()){
+                        $list[]=$r;
+                    }
+                    return $list;
+                } else {
+                    return 0;
+                }
+        }
+    }
+    public function get_lichkhamoff_machuyengia($machuyengia){
+        $p = new mPhieuKhamBenh();
+        $tbl = $p->select_lichkhamoff_machuyengia($machuyengia);
+        $list=array();
+            if (!$tbl) {
+                return -1;
+            } else {
+                if ($tbl->num_rows > 0) {
+                    while($r=$tbl->fetch_assoc()){
+                        $list[]=$r;
+                    }
+                    return $list;
+                } else {
+                    return 0;
+                }
+        }
+    }
+    public function get_lichkhamonl_homnay($mabacsi){
+        $p = new mPhieuKhamBenh();
+        $tbl = $p->select_phieukhamonl_homnay($mabacsi);
         $list=array();
             if (!$tbl) {
                 return -1;
@@ -115,9 +165,29 @@ class cPhieuKhamBenh {
                 }
         }
     }
-
+    
+    public function get_lichkhamoff_homnay($mabacsi){
+        $p = new mPhieuKhamBenh();
+        $tbl = $p->select_phieukhamoff_homnay($mabacsi);
+        $list=array();
+            if (!$tbl) {
+                return -1;
+            } else {
+                if ($tbl->num_rows > 0) {
+                    while($r=$tbl->fetch_assoc()){
+                        $r['sdt'] = decryptData($r['sdt']);
+                        $r['cccd'] = decryptData($r['cccd']);
+                        $r['email'] = decryptData($r['email']);
+                        $list[] = $r;
+                    }
+                    return $list;
+                } else {
+                    return 0;
+                }
+        }
+    }
     public function count_benhnhan_homnay($mabacsi){
-        $list = $this->get_lichkham_homnay($mabacsi);
+        $list = $this->get_lichkhamonl_homnay($mabacsi);
         return is_array($list) ? count($list) : 0;
     }
 
@@ -166,9 +236,26 @@ class cPhieuKhamBenh {
         ];
     }
     
-    public function search_phieukham($tukhoa,$trangthai,$ngay,$mabacsi){
+    public function search_phieukhamonl($tukhoa,$trangthai,$ngay,$mabacsi){
         $p = new mPhieuKhamBenh();
-        $tbl = $p->timkiem_phieukham($tukhoa,$trangthai,$ngay,$mabacsi);
+        $tbl = $p->timkiem_phieukhamonl($tukhoa,$trangthai,$ngay,$mabacsi);
+        $list=array();
+            if (!$tbl) {
+                return -1;
+            } else {
+                if ($tbl->num_rows > 0) {
+                    while($r=$tbl->fetch_assoc()){
+                        $list[]=$r;
+                    }
+                    return $list;
+                } else {
+                    return 0;
+                }
+        }
+    }
+    public function search_phieukhamoff($tukhoa,$trangthai,$ngay,$mabacsi){
+        $p = new mPhieuKhamBenh();
+        $tbl = $p->timkiem_phieukhamoff($tukhoa,$trangthai,$ngay,$mabacsi);
         $list=array();
             if (!$tbl) {
                 return -1;

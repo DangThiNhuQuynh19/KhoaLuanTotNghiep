@@ -8,7 +8,7 @@
     $cbacsi = new cBacSi();
     $cphieukhambenh = new cPhieuKhamBenh();
     $bacsi= $cbacsi->getBacSiByTenTK($_SESSION['user']['tentk']);
-    $lichhenhomnay_list=$cphieukhambenh->get_lichkham_homnay($bacsi['mabacsi']);
+    $lichhenhomnay_list=$cphieukhambenh->get_lichkhamonl_homnay($bacsi['mabacsi']);
     $tongbenhnhanhomnay= $cphieukhambenh->count_benhnhan($bacsi['mabacsi']);
     $tongketquaxetnghiemhomnay= $cketquaxetnghiem->count_ketquaxetnghiem($bacsi['mabacsi']);
     $sophieukhamtrongtuan = $cphieukhambenh->get_sophieukham_trongtuan($bacsi['mabacsi']);

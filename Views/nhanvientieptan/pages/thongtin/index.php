@@ -1,5 +1,5 @@
 <?php
-include_once(__DIR__ . '/../../../../Controllers/cNhanVien.php');
+include_once(__DIR__ . '/../../../../Controllers/cnhanvien.php');
 include ("Assets/config.php");
 $cNhanVien = new cNhanVien();
 

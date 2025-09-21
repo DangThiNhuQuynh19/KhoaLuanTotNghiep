@@ -149,20 +149,95 @@
             }
         } 
         
-        public function select_lichkham_mabacsi($mabacsi){
+        public function select_lichkhamonl_mabacsi($mabacsi){
             $p = new clsKetNoi();
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if($con){
-                $str = "SELECT nd_bs.hoten, tt.tentrangthai, pk.*, kg.*, bn.*, nd_bn.*, bs.*
-                FROM phieukhambenh AS pk
-                JOIN khunggiokhambenh kg ON pk.makhunggiokb = kg.makhunggiokb
-                JOIN trangthai tt on tt.matrangthai = pk.matrangthai
-                JOIN bacsi AS bs ON pk.mabacsi = bs.mabacsi
-                JOIN nguoidung nd_bs ON nd_bs.manguoidung = bs.mabacsi
-                JOIN benhnhan AS bn ON bn.mabenhnhan = pk.mabenhnhan
-                JOIN nguoidung nd_bn ON nd_bn.manguoidung = bn.mabenhnhan
-                WHERE bs.mabacsi = '$mabacsi' ";
+                $str = "SELECT nd_bs.hoten AS tenbacsi, tt.tentrangthai, pk.*, kg.*, bn.*, nd_bn.*, bs.*, 
+                llv.ngaylam, llv.hinhthuclamviec FROM phieukhambenh AS pk 
+                JOIN khunggiokhambenh kg ON pk.makhunggiokb = kg.makhunggiokb 
+                JOIN trangthai tt ON tt.matrangthai = pk.matrangthai 
+                JOIN bacsi AS bs ON pk.mabacsi = bs.mabacsi 
+                JOIN nguoidung nd_bs ON nd_bs.manguoidung = bs.mabacsi 
+                JOIN benhnhan AS bn ON bn.mabenhnhan = pk.mabenhnhan 
+                JOIN nguoidung nd_bn ON nd_bn.manguoidung = bn.mabenhnhan 
+                JOIN lichlamviec llv ON llv.manguoidung = pk.mabacsi 
+                AND llv.ngaylam = pk.ngaykham AND llv.macalamviec = kg.macalamviec 
+                JOIN calamviec clv ON clv.macalamviec = llv.macalamviec 
+                WHERE bs.mabacsi = '$mabacsi' AND llv.hinhthuclamviec = 'online';";
+                $tbl = $con->query($str);
+                $p->dongketnoi($con);
+                return $tbl;
+            }else{
+                return false; 
+            }
+        }
+        public function select_lichkhamonl_machuyengia($machuyengia){
+            $p = new clsKetNoi();
+            $con = $p->moketnoi();
+            $con->set_charset('utf8');
+            if($con){
+                $str = "SELECT nd_bs.hoten AS tenbacsi, tt.tentrangthai, pk.*, kg.*, bn.*, nd_bn.*, bs.*, 
+                llv.ngaylam, llv.hinhthuclamviec FROM phieukhambenh AS pk 
+                JOIN khunggiokhambenh kg ON pk.makhunggiokb = kg.makhunggiokb 
+                JOIN trangthai tt ON tt.matrangthai = pk.matrangthai 
+                JOIN chuyengia AS bs ON pk.mabacsi = bs.machuyengia 
+                JOIN nguoidung nd_bs ON nd_bs.manguoidung = bs.machuyengia 
+                JOIN benhnhan AS bn ON bn.mabenhnhan = pk.mabenhnhan 
+                JOIN nguoidung nd_bn ON nd_bn.manguoidung = bn.mabenhnhan 
+                JOIN lichlamviec llv ON llv.manguoidung = pk.mabacsi 
+                AND llv.ngaylam = pk.ngaykham AND llv.macalamviec = kg.macalamviec 
+                JOIN calamviec clv ON clv.macalamviec = llv.macalamviec 
+                WHERE bs.machuyengia = '$machuyengia' AND llv.hinhthuclamviec = 'online';";
+                $tbl = $con->query($str);
+                $p->dongketnoi($con);
+                return $tbl;
+            }else{
+                return false; 
+            }
+        }
+        public function select_lichkhamoff_mabacsi($mabacsi){
+            $p = new clsKetNoi();
+            $con = $p->moketnoi();
+            $con->set_charset('utf8');
+            if($con){
+                $str = "SELECT nd_bs.hoten AS tenbacsi, tt.tentrangthai, pk.*, kg.*, bn.*, nd_bn.*, bs.*, 
+                llv.ngaylam, llv.hinhthuclamviec FROM phieukhambenh AS pk 
+                JOIN khunggiokhambenh kg ON pk.makhunggiokb = kg.makhunggiokb 
+                JOIN trangthai tt ON tt.matrangthai = pk.matrangthai 
+                JOIN bacsi AS bs ON pk.mabacsi = bs.mabacsi 
+                JOIN nguoidung nd_bs ON nd_bs.manguoidung = bs.mabacsi 
+                JOIN benhnhan AS bn ON bn.mabenhnhan = pk.mabenhnhan 
+                JOIN nguoidung nd_bn ON nd_bn.manguoidung = bn.mabenhnhan 
+                JOIN lichlamviec llv ON llv.manguoidung = pk.mabacsi 
+                AND llv.ngaylam = pk.ngaykham AND llv.macalamviec = kg.macalamviec 
+                JOIN calamviec clv ON clv.macalamviec = llv.macalamviec 
+                WHERE bs.mabacsi = '$mabacsi' AND llv.hinhthuclamviec = 'offline';";
+                $tbl = $con->query($str);
+                $p->dongketnoi($con);
+                return $tbl;
+            }else{
+                return false; 
+            }
+        }
+        public function select_lichkhamoff_machuyengia($machuyengia){
+            $p = new clsKetNoi();
+            $con = $p->moketnoi();
+            $con->set_charset('utf8');
+            if($con){
+                $str = "SELECT nd_bs.hoten AS tenbacsi, tt.tentrangthai, pk.*, kg.*, bn.*, nd_bn.*, bs.*, 
+                llv.ngaylam, llv.hinhthuclamviec FROM phieukhambenh AS pk 
+                JOIN khunggiokhambenh kg ON pk.makhunggiokb = kg.makhunggiokb 
+                JOIN trangthai tt ON tt.matrangthai = pk.matrangthai 
+                JOIN chuyengia AS bs ON pk.mabacsi = bs.machuyengia 
+                JOIN nguoidung nd_bs ON nd_bs.manguoidung = bs.machuyengia 
+                JOIN benhnhan AS bn ON bn.mabenhnhan = pk.mabenhnhan 
+                JOIN nguoidung nd_bn ON nd_bn.manguoidung = bn.mabenhnhan 
+                JOIN lichlamviec llv ON llv.manguoidung = pk.mabacsi 
+                AND llv.ngaylam = pk.ngaykham AND llv.macalamviec = kg.macalamviec 
+                JOIN calamviec clv ON clv.macalamviec = llv.macalamviec 
+                WHERE bs.machuyengia = '$machuyengia' AND llv.hinhthuclamviec = 'offline';";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;
@@ -193,21 +268,23 @@
         //     }
         // }
 
-        public function select_phieukham_homnay($mabacsi){
+        public function select_phieukhamonl_homnay($mabacsi){
             $p = new clsKetNoi();
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if($con){
-                $str = "SELECT nd_bs.hoten as hotenbacsi, tt.tentrangthai, pk.*, kg.*, bn.*, ck.tenchuyenkhoa, nd_bn.*, bs.*
-                FROM phieukhambenh AS pk
-                JOIN trangthai AS tt ON tt.matrangthai = pk.matrangthai
-                JOIN khunggiokhambenh AS kg ON kg.makhunggiokb = pk.makhunggiokb
-                JOIN bacsi AS bs ON pk.mabacsi = bs.mabacsi
-                JOIN nguoidung AS nd_bs ON nd_bs.manguoidung = bs.mabacsi
-                JOIN chuyenkhoa ck ON ck.machuyenkhoa=bs.machuyenkhoa
-                JOIN benhnhan AS bn ON bn.mabenhnhan = pk.mabenhnhan
-                JOIN nguoidung AS nd_bn ON nd_bn.manguoidung = bn.mabenhnhan
-                WHERE bs.mabacsi = '$mabacsi' AND  pk.ngaykham = CURDATE()";
+                $str = "SELECT nd_bs.hoten AS tenbacsi, tt.tentrangthai, pk.*, kg.*, bn.*, nd_bn.*, bs.*, 
+                llv.ngaylam, llv.hinhthuclamviec FROM phieukhambenh AS pk 
+                JOIN khunggiokhambenh kg ON pk.makhunggiokb = kg.makhunggiokb 
+                JOIN trangthai tt ON tt.matrangthai = pk.matrangthai 
+                JOIN bacsi AS bs ON pk.mabacsi = bs.mabacsi 
+                JOIN nguoidung nd_bs ON nd_bs.manguoidung = bs.mabacsi 
+                JOIN benhnhan AS bn ON bn.mabenhnhan = pk.mabenhnhan 
+                JOIN nguoidung nd_bn ON nd_bn.manguoidung = bn.mabenhnhan 
+                JOIN lichlamviec llv ON llv.manguoidung = pk.mabacsi 
+                AND llv.ngaylam = pk.ngaykham AND llv.macalamviec = kg.macalamviec 
+                JOIN calamviec clv ON clv.macalamviec = llv.macalamviec 
+                WHERE bs.mabacsi = '$mabacsi' AND llv.hinhthuclamviec = 'online' AND  pk.ngaykham = CURDATE()";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;
@@ -215,7 +292,30 @@
                 return false; 
             }
         }
-
+        public function select_phieukhamoff_homnay($mabacsi){
+            $p = new clsKetNoi();
+            $con = $p->moketnoi();
+            $con->set_charset('utf8');
+            if($con){
+                $str = "SELECT nd_bs.hoten AS tenbacsi, tt.tentrangthai, pk.*, kg.*, bn.*, nd_bn.*, bs.*, 
+                llv.ngaylam, llv.hinhthuclamviec FROM phieukhambenh AS pk 
+                JOIN khunggiokhambenh kg ON pk.makhunggiokb = kg.makhunggiokb 
+                JOIN trangthai tt ON tt.matrangthai = pk.matrangthai 
+                JOIN bacsi AS bs ON pk.mabacsi = bs.mabacsi 
+                JOIN nguoidung nd_bs ON nd_bs.manguoidung = bs.mabacsi 
+                JOIN benhnhan AS bn ON bn.mabenhnhan = pk.mabenhnhan 
+                JOIN nguoidung nd_bn ON nd_bn.manguoidung = bn.mabenhnhan 
+                JOIN lichlamviec llv ON llv.manguoidung = pk.mabacsi 
+                AND llv.ngaylam = pk.ngaykham AND llv.macalamviec = kg.macalamviec 
+                JOIN calamviec clv ON clv.macalamviec = llv.macalamviec 
+                WHERE bs.mabacsi = '$mabacsi' AND llv.hinhthuclamviec = 'offline' AND  pk.ngaykham = CURDATE()";
+                $tbl = $con->query($str);
+                $p->dongketnoi($con);
+                return $tbl;
+            }else{
+                return false; 
+            }
+        }
         public function select_phieukham_homqua($mabacsi){
             $p = new clsKetNoi();
             $con = $p->moketnoi();
@@ -238,20 +338,23 @@
             }
         }
 
-        public function timkiem_phieukham($tukhoa,$trangthai,$ngay,$mabacsi){
+        public function timkiem_phieukhamonl($tukhoa,$trangthai,$ngay,$mabacsi){
             $p = new clsKetNoi();
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if($con){
-                $str = "SELECT nd_bs.hoten, tt.tentrangthai, pk.*, kg.*, bn.*
-                FROM phieukhambenh AS pk
-                JOIN trangthai tt on tt.matrangthai = pk.matrangthai
-                JOIN khunggiokhambenh AS kg ON kg.makhunggiokb = pk.makhunggiokb
-                JOIN bacsi AS bs ON pk.mabacsi = bs.mabacsi
-                JOIN nguoidung nd_bs ON nd_bs.manguoidung = bs.mabacsi
-                JOIN benhnhan AS bn ON bn.mabenhnhan = pk.mabenhnhan
-                JOIN nguoidung nd_bn ON nd_bn.manguoidung = bn.mabenhnhan
-                WHERE bs.mabacsi = '$mabacsi'";
+                $str = "SELECT nd_bs.hoten AS tenbacsi, tt.tentrangthai, pk.*, kg.*, bn.*, nd_bn.*, bs.*, 
+                llv.ngaylam, llv.hinhthuclamviec FROM phieukhambenh AS pk 
+                JOIN khunggiokhambenh kg ON pk.makhunggiokb = kg.makhunggiokb 
+                JOIN trangthai tt ON tt.matrangthai = pk.matrangthai 
+                JOIN bacsi AS bs ON pk.mabacsi = bs.mabacsi 
+                JOIN nguoidung nd_bs ON nd_bs.manguoidung = bs.mabacsi 
+                JOIN benhnhan AS bn ON bn.mabenhnhan = pk.mabenhnhan 
+                JOIN nguoidung nd_bn ON nd_bn.manguoidung = bn.mabenhnhan 
+                JOIN lichlamviec llv ON llv.manguoidung = pk.mabacsi 
+                AND llv.ngaylam = pk.ngaykham AND llv.macalamviec = kg.macalamviec 
+                JOIN calamviec clv ON clv.macalamviec = llv.macalamviec 
+                WHERE bs.mabacsi = '$mabacsi' AND llv.hinhthuclamviec = 'online'";
                 if (!empty($tukhoa)) {
                     $str .= " AND (nd_bn.hoten LIKE '%$tukhoa%' OR pk.maphieukhambenh LIKE '%$tukhoa%')";
                 }
@@ -269,7 +372,40 @@
                 return false; 
             }
         }
-
+        public function timkiem_phieukhamoff($tukhoa,$trangthai,$ngay,$mabacsi){
+            $p = new clsKetNoi();
+            $con = $p->moketnoi();
+            $con->set_charset('utf8');
+            if($con){
+                $str = "SELECT nd_bs.hoten AS tenbacsi, tt.tentrangthai, pk.*, kg.*, bn.*, nd_bn.*, bs.*, 
+                llv.ngaylam, llv.hinhthuclamviec FROM phieukhambenh AS pk 
+                JOIN khunggiokhambenh kg ON pk.makhunggiokb = kg.makhunggiokb 
+                JOIN trangthai tt ON tt.matrangthai = pk.matrangthai 
+                JOIN bacsi AS bs ON pk.mabacsi = bs.mabacsi 
+                JOIN nguoidung nd_bs ON nd_bs.manguoidung = bs.mabacsi 
+                JOIN benhnhan AS bn ON bn.mabenhnhan = pk.mabenhnhan 
+                JOIN nguoidung nd_bn ON nd_bn.manguoidung = bn.mabenhnhan 
+                JOIN lichlamviec llv ON llv.manguoidung = pk.mabacsi 
+                AND llv.ngaylam = pk.ngaykham AND llv.macalamviec = kg.macalamviec 
+                JOIN calamviec clv ON clv.macalamviec = llv.macalamviec 
+                WHERE bs.mabacsi = '$mabacsi' AND llv.hinhthuclamviec = 'offline'";
+                if (!empty($tukhoa)) {
+                    $str .= " AND (nd_bn.hoten LIKE '%$tukhoa%' OR pk.maphieukhambenh LIKE '%$tukhoa%')";
+                }
+                if (!empty($trangthai)) {
+                    $str .= " AND tt.tentrangthai = '$trangthai'";
+                }
+                if (!empty($ngay)) {
+                    $ngay_mysql = date("Y-m-d", strtotime($ngay));
+                    $str .= " AND pk.ngaykham = '$ngay_mysql'";
+                }
+                $tbl = $con->query($str);
+                $p->dongketnoi($con);
+                return $tbl;
+            }else{
+                return false; 
+            }
+        }
         public function select_phieukham_trongtuan($mabacsi){
             $p = new clsKetNoi();
             $con = $p->moketnoi();
