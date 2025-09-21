@@ -29,7 +29,7 @@
                 <li class="pt-4 border-t border-gray-200">
                     <button class="w-full flex items-center space-x-3 px-4 py-3 text-left rounded-lg hover:bg-red-50 hover:text-red-600 transition-colors text-gray-600">
                         <i class="fas fa-sign-out-alt text-lg"></i>
-                        <span class="font-medium">Đăng xuất</span>
+                        <a href="?action=dangxuat" class="font-medium">Đăng xuất</a>
                     </button>
                 </li>
             </ul>

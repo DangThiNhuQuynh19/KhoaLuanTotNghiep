@@ -270,6 +270,7 @@ if ($dahuyPhieus && $dahuyPhieus !== -1 && $dahuyPhieus !== 0) $dahuyCount = $da
 </div>
 
 <table>
+<<<<<<< Updated upstream
     <thead>
     <tr>
         <th>Mã Lịch Hẹn</th>
@@ -325,6 +326,73 @@ if ($dahuyPhieus && $dahuyPhieus !== -1 && $dahuyPhieus !== 0) $dahuyCount = $da
         </tbody>
     <?php endif; ?>
 </table>
+=======
+        <thead>
+        <tr>
+            <th>Mã Lịch Hẹn</th>
+            <th>Bệnh Nhân</th>
+            <th>Ngày Khám</th>
+            <th>Thời Gian</th>
+            <th>Khoa</th>
+            <th>Bác Sĩ</th>
+            <th>Trạng Thái</th>
+            <th>Hành động</th>
+        </tr>
+        </thead>
+        <?php if ($phieus === -1): ?>
+            <tbody>
+                <tr>
+                    <td colspan="8">Lỗi kết nối.</td>
+                </tr>
+            </tbody>
+        <?php elseif ($phieus === 0): ?>
+            <tbody>
+                <tr>
+                    <td colspan="8">Không có lịch hẹn nào được tìm thấy.</td>
+                </tr>
+            </tbody>
+        <?php else: ?>
+            <tbody>
+            <?php while ($row = $phieus->fetch_assoc()): ?>
+                <?php
+                $trangthai = $row['tentrangthai'] ?? '';
+                ?>
+                <tr>
+                    <td><?= htmlspecialchars($row['maphieukhambenh']) ?></td>
+                    <td><?= htmlspecialchars($row['hoten']) ?></td>
+                    <td><?= htmlspecialchars($row['ngaykham']) ?></td>
+                    <td><?= htmlspecialchars($row['giobatdau']) . ' - ' . htmlspecialchars($row['gioketthuc']) ?></td>
+                    <td><?= htmlspecialchars($row['tenchuyenkhoa']) ?></td>
+                    <td><?= htmlspecialchars($row['hotenbacsi']) ?></td>
+                    <!-- Added status badge column -->
+                    <td>
+                        <?php if ($trangthai === 'Đã hủy'): ?>
+                            <span class="status-badge status-cancelled">Đã hủy</span>
+                        <?php elseif ($trangthai === 'Đã khám'): ?>
+                            <span class="status-badge status-completed">Đã khám</span>
+                        <?php elseif ($trangthai === 'Chưa khám'): ?>
+                            <span class="status-badge status-pending">Chưa khám</span>
+                        <?php endif; ?>
+                    </td>
+                    <td>
+                        <?php
+                        if ($trangthai === 'Đã hủy') {
+                            echo '<span class="muted-text">-</span>';
+                        } elseif ($trangthai === 'Đã khám') {
+                            echo '<span class="muted-text">-</span>';
+                        } else {
+                            echo '<a href="?action=lichhen&cancel_id=' . $row['maphieukhambenh'] . '" class="btn btn-danger btn-sm"
+                                    onclick="return confirm(\'Bạn có chắc chắn muốn hủy lịch hẹn này?\');"><i class="fa-solid fa-trash"></i></a>
+                                <a href="?action=lichhen&update_id=' . $row['maphieukhambenh'] . '" class="btn btn-warning btn-sm"><i class="fa-solid fa-pen-to-square"></i></a>';
+                        }
+                        ?>
+                    </td>
+                </tr>
+            <?php endwhile; ?>
+            </tbody>
+        </table>
+<?php endif; ?>
+>>>>>>> Stashed changes
 
 </body>
 </html>
