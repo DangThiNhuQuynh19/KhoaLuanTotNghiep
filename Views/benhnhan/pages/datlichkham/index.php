@@ -205,6 +205,34 @@ function checkMissingFields($record, $requiredFields) {
     }
     return false;
 }
+
+include_once('Controllers/cphieukhambenh.php'); 
+include_once('Controllers/clichlamviec.php');
+
+if (isset($_POST['datlich'])) {
+    $_SESSION['mabenhnhan'] = $_POST['mabenhnhan'];
+    $_SESSION['makhunggiokb'] = $_POST['makhunggiokb'];
+    if(isset($idbs)){
+        $_SESSION['mabacsi'] = $_POST['mabacsi'];
+    }
+    elseif(isset($idcg)){
+         $_SESSION['machuyengia'] = $_POST['machuyengia'];
+    }
+    $_SESSION['ngaykham'] = $_POST['ngaykham'];
+    $_SESSION['tongtien'] = $_POST['giakham'];
+    $_SESSION['matrangthai'] = '6';
+
+    // Tạo mã phiếu khám bệnh ngẫu nhiên
+    $maphieukb = 'PKB' . time() . rand(100, 999);
+    $_SESSION['maphieukhambenh']=$maphieukb;
+    $pPhieuKham = new cPhieuKhambenh();
+    if ($pPhieuKham->kiemTraTrungLich($_SESSION['mabenhnhan'], $_SESSION['ngaykham'], $_SESSION['makhunggiokb'])) {
+        echo '<div class="text-danger text-center">Bạn đã có lịch hẹn khám trong ca này vào ngày này rồi.</div>';
+    }else{
+        header("Location: ?action=thanhtoan");
+        exit;
+    }
+  }
 ?>
 <body>
 <?php if ($idbs && $ngay && $ca || $idcg): ?>
@@ -269,7 +297,8 @@ function checkMissingFields($record, $requiredFields) {
               <input type="hidden" id="ngaykham" name="ngaykham" value="<?php echo $ngay; ?>">
               <input type="hidden" id="giakham" name="giakham" value="<?php echo $gia; ?>">
               <div class="text-center mt-3">
-                <button type="submit" class="btn btn-primary w-100" onclick="return confirmBooking()">Đặt lịch khám</button>
+                <button type="submit" name="datlich" class="btn btn-primary">Đặt lịch khám</button>
+                <!-- <button type="submit" class="btn btn-primary w-100" onclick="return confirmBooking()">Đặt lịch khám</button> -->
               </div>
             </form>
           <?php else: ?>
@@ -290,42 +319,42 @@ function checkMissingFields($record, $requiredFields) {
   <a href="?action=taohoso" class="btn btn-success mt-3">+ Tạo hồ sơ bệnh nhân mới</a>
 </div>
 
-<script>
-function confirmBooking() {
-  event.preventDefault();
-  const thongtinhoadon = 'Thanh toán chi phí khám';
-  const giakham = document.getElementById("giakham").value;
-  const ngaykham = document.getElementById("ngaykham").value;
-  const khunggiokb = document.getElementById("makhunggiokb").value;
-  const chuyenkhoaEl = document.getElementById("tenchuyenkhoa");
-  const chuyenkhoa = chuyenkhoaEl ? chuyenkhoaEl.value : '';
-  const bacsiEl = document.getElementById("mabacsi");
-  const bacsi = bacsiEl ? bacsiEl.value : '';
+<!-- <script>
+  function confirmBooking() {
+    event.preventDefault();
+    const thongtinhoadon = 'Thanh toán chi phí khám';
+    const giakham = document.getElementById("giakham").value;
+    const ngaykham = document.getElementById("ngaykham").value;
+    const khunggiokb = document.getElementById("makhunggiokb").value;
+    const chuyenkhoaEl = document.getElementById("tenchuyenkhoa");
+    const chuyenkhoa = chuyenkhoaEl ? chuyenkhoaEl.value : '';
+    const bacsiEl = document.getElementById("mabacsi");
+    const bacsi = bacsiEl ? bacsiEl.value : '';
 
-  const data = new URLSearchParams();
-  data.append('giakham', giakham);
-  data.append('thongtinhoadon', thongtinhoadon);
-  data.append('ngaykham', ngaykham);
-  data.append('khunggiokb', khunggiokb);
-  data.append('chuyenkhoa', chuyenkhoa);
-  data.append('bacsi', bacsi);
+    const data = new URLSearchParams();
+    data.append('giakham', giakham);
+    data.append('thongtinhoadon', thongtinhoadon);
+    data.append('ngaykham', ngaykham);
+    data.append('khunggiokb', khunggiokb);
+    data.append('chuyenkhoa', chuyenkhoa);
+    data.append('bacsi', bacsi);
 
-  fetch('views/benhnhan/pages/vnpay/create-payment.php', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: data.toString()
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.success && data.paymentUrl) window.location.href = data.paymentUrl;
-    else alert('Có lỗi xảy ra trong quá trình tạo yêu cầu thanh toán.');
-  })
-  .catch(error => {
-    console.error('Lỗi:', error);
-    alert('Có lỗi xảy ra, vui lòng thử lại.');
-  });
-  return false;
-}
-</script>
+    fetch('views/benhnhan/pages/vnpay/create-payment.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: data.toString()
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success && data.paymentUrl) window.location.href = data.paymentUrl;
+      else alert('Có lỗi xảy ra trong quá trình tạo yêu cầu thanh toán.');
+    })
+    .catch(error => {
+      console.error('Lỗi:', error);
+      alert('Có lỗi xảy ra, vui lòng thử lại.');
+    });
+    return false;
+  }
+</script> -->
 </body>
 </html>
