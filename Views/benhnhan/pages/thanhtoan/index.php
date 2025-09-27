@@ -111,11 +111,10 @@
         .button {
             display: inline-block;
             padding: 12px 24px;
-            margin-top: 15px;
+            margin: 10px;
             font-size: 1rem;
             font-weight: 600;
             color: #fff;
-            background: linear-gradient(45deg, #6f42c1, #9c27b0);
             border: none;
             border-radius: 50px;
             cursor: pointer;
@@ -123,9 +122,24 @@
             box-shadow: 0 6px 15px rgba(156, 39, 176, 0.3);
         }
 
+        .button.primary {
+            background: linear-gradient(45deg, #6f42c1, #9c27b0);
+        }
+
+        .button.secondary {
+            background: linear-gradient(45deg, #dc3545, #c82333);
+        }
+
         .button:hover {
-            background: linear-gradient(45deg, #5a32a3, #7b1fa2);
             transform: translateY(-2px);
+        }
+
+        .button.primary:hover {
+            background: linear-gradient(45deg, #5a32a3, #7b1fa2);
+        }
+
+        .button.secondary:hover {
+            background: linear-gradient(45deg, #c82333, #a71e2a);
         }
 
         /* Responsive */
@@ -137,13 +151,14 @@
     </style>
 </head>
 <body>
+
 <?php
     session_start();
     include_once('Controllers/cbacsi.php');
     include_once('Controllers/cchuyengia.php');
     include_once('Controllers/cBenhNhan.php');
     include_once('Controllers/clichkham.php');
-    include_once('Controllers/cphieukhambenh.php'); 
+    include_once('Controllers/cphieukhambenh.php');
 
     $pPhieuKham  = new cPhieuKhambenh();
     $pBacSi      = new cBacSi();
@@ -175,6 +190,15 @@
     // Thông tin bệnh nhân
     $benhnhan = $pBenhNhan->getbenhnhanbyid($_SESSION['mabenhnhan']);
 
+    // Xử lý hủy thanh toán
+    if (isset($_POST['btnhuy'])) {
+        echo '<script>
+            alert("Đã hủy thanh toán!");
+            window.location.href = "?action=lichhen";
+        </script>';
+        exit();
+    }
+
     // Xác nhận thanh toán
     if (isset($_POST['btnxacnhan'])) {
         if (isset($_SESSION['mabacsi'])) {
@@ -198,66 +222,138 @@
         }
 
         if ($result) {
-            echo '<script>alert("Đặt lịch khám thành công!!!"); location.href="?action=lichhen";</script>';
+            // Chỉ xóa session khi thành công
+            echo '<script>
+                alert("Đặt lịch khám thành công!!!");
+                window.location.href = "?action=lichhen";
+            </script>';
+            exit();
         } else {
             echo '<div class="text-danger text-center">Đặt lịch khám thất bại. Vui lòng thử lại.</div>';
         }
     }
 ?>
+
 <div class="container">
     <div class="payment-info">
         <h2>Thông tin thanh toán</h2>
-        <div class="info-section">
-            <div class="info-item">
-                <label>Mã bệnh nhân:</label>
-                <span><?php echo $_SESSION['mabenhnhan']; ?></span>
-            </div>
-            <div class="info-item">
-                <label>Họ và tên:</label>
-                <span><?php echo $benhnhan['hoten']; ?></span>
-            </div>
-            <div class="info-item">
-                <label>Bác sĩ:</label>
-                <span><?php echo $tblBacSi['hoten']; ?></span>
-            </div>
-            <div class="info-item">
-                <label>Ngày khám:</label>
-                <span><?php echo $_SESSION['ngaykham']; ?></span>
-            </div>
-            <div class="info-item">
-                <label>Giờ khám:</label>
-                <span><?php echo $giokham; ?></span>
-            </div>
-            <div class="info-item">
-                <label>Thông tin:</label>
-                <span><?php echo $thongtin; ?></span>
-            </div>
-            <div class="info-item">
-                <label>Tổng tiền:</label>
-                <span class="total"><?php echo number_format($_SESSION['tongtien'], 0, ',', '.') . ' VND'; ?></span>
-            </div>
-        </div>
-
-        <form action="" method="post">
-            <div class="qr-section">
-                <h2>Quét mã QR để thanh toán</h2>
-                <div class="qr-code">
-                    <img src="https://img.vietqr.io/image/VCB-9355706358-compact.png?amount=<?php echo $_SESSION['tongtien']; ?>&addInfo=<?php echo $_SESSION['maphieukhambenh']; ?>&accountName=benhvienhanhphuc" alt="QR Code thanh toán">
+        <div class="content">
+            <div class="info-section">
+                <div class="info-item">
+                    <label>Mã bệnh nhân:</label>
+                    <span><?php echo $_SESSION['mabenhnhan']; ?></span>
                 </div>
-                <p>Hoặc chuyển khoản đến:</p>
-                <p><b>Ngân hàng:</b> VCB</p>
-                <p><b>Số TK:</b> 9355706358</p>
-                <p><b>Chủ TK:</b> BỆNH VIỆN HẠNH PHÚC</p>
-                <button type="submit" class="button" name="btnxacnhan">Xác nhận đã thanh toán</button>
+                <div class="info-item">
+                    <label>Họ và tên:</label>
+                    <span><?php echo $benhnhan['hoten']; ?></span>
+                </div>
+                <div class="info-item">
+                    <label>Bác sĩ:</label>
+                    <span><?php echo $tblBacSi['hoten']; ?></span>
+                </div>
+                <div class="info-item">
+                    <label>Ngày khám:</label>
+                    <span><?php echo $_SESSION['ngaykham']; ?></span>
+                </div>
+                <div class="info-item">
+                    <label>Giờ khám:</label>
+                    <span><?php echo $giokham; ?></span>
+                </div>
+                <div class="info-item">
+                    <label>Thông tin:</label>
+                    <span><?php echo $thongtin; ?></span>
+                </div>
+                <div class="info-item">
+                    <label>Tổng tiền:</label>
+                    <span class="total"><?php echo number_format($_SESSION['tongtien'], 0, ',', '.') . ' VND'; ?></span>
+                </div>
             </div>
-        </form>
+
+            <form action="" method="post">
+                <div class="qr-section">
+                    <h2>Quét mã QR để thanh toán</h2>
+                    <div class="qr-code">
+                        <img src="https://img.vietqr.io/image/VCB-9355706358-compact.png?amount=<?php echo $_SESSION['tongtien']; ?>&addInfo=<?php echo $_SESSION['maphieukhambenh']; ?>&accountName=benhvienhanhphuc" alt="QR Code thanh toán">
+                    </div>
+                    <p>Hoặc chuyển khoản đến:</p>
+                    <p><b>Ngân hàng:</b> VCB</p>
+                    <p><b>Số TK:</b> 9355706358</p>
+                    <p><b>Chủ TK:</b> BỆNH VIỆN HẠNH PHÚC</p>
+                    
+                    <div>
+                        <button type="submit" class="button primary" name="btnxacnhan">
+                            Xác nhận đã thanh toán
+                        </button>
+                        <button type="submit" class="button secondary" name="btnhuy" 
+                                onclick="return confirm('Bạn có chắc chắn muốn hủy thanh toán không?')">
+                            Hủy thanh toán
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
 <script>
-window.addEventListener("beforeunload", function () {
-    navigator.sendBeacon("Views/benhnhan/pages/thanhtoan/xoasession.php");
+// Biến để theo dõi trạng thái
+let isPaymentProcessing = false;
+let isLeavingIntentionally = false;
+
+// Đánh dấu khi đang xử lý thanh toán
+document.querySelector('button[name="btnxacnhan"]').addEventListener('click', function() {
+    isPaymentProcessing = true;
+});
+
+// Đánh dấu khi người dùng chủ động hủy
+document.querySelector('button[name="btnhuy"]').addEventListener('click', function() {
+    isLeavingIntentionally = true;
+});
+
+// Xử lý khi người dùng rời khỏi trang
+window.addEventListener("beforeunload", function (e) {
+    // Không xóa session nếu đang xử lý thanh toán (có thể do lag)
+    if (isPaymentProcessing) {
+        return;
+    }
+    
+    // Chỉ xóa session khi người dùng thực sự muốn rời khỏi
+    if (!isLeavingIntentionally) {
+        // Hiển thị cảnh báo xác nhận
+        const confirmationMessage = "Bạn có chắc chắn muốn rời khỏi trang thanh toán? Thông tin sẽ bị mất.";
+        e.preventDefault();
+        e.returnValue = confirmationMessage;
+        
+        // Nếu người dùng xác nhận rời khỏi, mới xóa session
+        setTimeout(function() {
+            navigator.sendBeacon("Views/benhnhan/pages/thanhtoan/xoasession.php");
+        }, 100);
+        
+        return confirmationMessage;
+    }
+});
+
+// Xử lý khi trang được tải lại (F5 hoặc reload)
+window.addEventListener('beforeunload', function(e) {
+    // Kiểm tra xem có phải là reload không
+    if (performance.navigation.type === performance.navigation.TYPE_RELOAD) {
+        // Đây là reload, không xóa session
+        return;
+    }
+});
+
+// Lưu trạng thái vào localStorage để theo dõi
+window.addEventListener('load', function() {
+    localStorage.setItem('paymentPageActive', 'true');
+});
+
+// Xóa localStorage khi rời khỏi trang (không phải reload)
+window.addEventListener('unload', function() {
+    if (!isPaymentProcessing && performance.navigation.type !== performance.navigation.TYPE_RELOAD) {
+        localStorage.removeItem('paymentPageActive');
+    }
 });
 </script>
+
 </body>
 </html>
