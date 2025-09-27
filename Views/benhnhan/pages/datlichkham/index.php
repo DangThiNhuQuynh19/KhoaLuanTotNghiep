@@ -10,128 +10,72 @@
     :root {
       --custom-purple: rgb(85, 45, 125);
       --custom-purple-dark: rgb(70, 35, 110);
-      --input-border: #ced4da;
-      --input-focus: var(--custom-purple);
+    }
+    body { 
+      background-color: #f4f6f9; 
+      margin-top: 100px; 
+      font-family: "Segoe UI", Tahoma, sans-serif; 
+    }
+    h2 { 
+      color: var(--custom-purple); 
+      font-weight: 600; 
+    }
+    .btn-primary { 
+      background: var(--custom-purple); 
+      border-radius: 50px; 
+    }
+    .btn-primary:hover { 
+      background: var(--custom-purple-dark); 
+    }
+    .container { 
+      max-width: 950px; 
+      background: #fff; 
+      padding: 35px; 
+      border-radius: 20px; 
+      box-shadow: 0 8px 20px rgba(0,0,0,0.05); 
     }
 
-    body {
-      background-color: #f4f6f9;
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      margin-top: 100px;
-    }
-
-    h2 {
-      color: var(--custom-purple);
-      font-weight: 600;
-    }
-
-    label {
-      font-weight: 500;
-      margin-bottom: 4px;
-    }
-
-    .form-control,
-    .form-select {
-      padding: 10px 12px;
-    }
-
-    .btn-primary {
-      background-color: var(--custom-purple);
-      border-color: var(--custom-purple);
-      border-radius: 50px;
-      font-weight: 500;
-      font-size: 16px;
-      transition: 0.3s;
-    }
-
-    .btn-primary:hover {
-      background-color: var(--custom-purple-dark);
-      border-color: var(--custom-purple-dark);
-    }
-
-    #thanNhanSection {
-      border: 2px dashed var(--custom-purple);
-      border-radius: 12px;
-      background-color: #fdf9ff;
-      padding: 20px;
-    }
-
-    .container {
-      max-width: 950px;
-      background-color: #ffffff;
-      padding: 35px 30px;
+    /* 🎨 Card thông tin bác sĩ */
+    .doctor-card {
+      border: none;
       border-radius: 20px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+      padding: 25px;
+      background: linear-gradient(135deg, #ffffff, #f9f9fc);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-
-    .card {
-      background-color: #ffffff;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      margin-bottom: 30px;
+    .doctor-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 35px rgba(0,0,0,0.12);
     }
-
-    .card-body {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 20px;
-      background-color: #f9f9f9;
-      border-radius: 10px;
+    .doctor-info h5 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--custom-purple);
+      margin-bottom: 12px;
     }
-
-    .doctor-info {
-      flex: 1;
+    .doctor-info p {
+      margin: 6px 0;
+      font-size: 0.98rem;
+      color: #444;
     }
-
     .doctor-image {
-      width: 130px;
-      height: 130px;
+      flex-shrink: 0;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 4px solid var(--custom-purple);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.12);
     }
-
     .doctor-image img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      border-radius: 50%;
     }
-
-    .card-title {
-      font-size: 1.5rem;
-      color: var(--custom-purple);
-      font-weight: 600;
-    }
-
-    .btn-success {
-      border-radius: 50px;
-      font-weight: 500;
-      padding: 10px 20px;
-      background-color: var(--custom-purple);
-    }
-
-    .text-danger {
-      color: #dc3545;
-      font-size: 1rem;
-      font-weight: bold;
-      padding: 10px;
-      background-color: #f8d7da;
-      border-radius: 5px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      margin-top: 10px;
-      display: inline-block;
-      animation: slideIn 0.3s ease-out;
-    }
-
-    @keyframes slideIn {
-      0% { transform: translateX(-100%); opacity: 0; }
-      100% { transform: translateX(0); opacity: 1; }
-    }
-
-    .btn-primary[disabled] {
-      background-color: #ccc;
-      border-color: #ccc;
-      cursor: not-allowed;
+    .text-danger { 
+      color: #dc3545; 
+      font-weight: bold; 
     }
   </style>
 </head>
@@ -141,49 +85,65 @@ include_once('Controllers/cbacsi.php');
 include_once('Controllers/clichkham.php');
 include_once('Controllers/cchuyengia.php');
 ini_set('display_errors', 1);
+
 $idbs = $_GET['idbs'] ?? null;
 $ngay = $_GET['ngay'] ?? null;
-$ca = $_GET['ca'] ?? null;
+$ca   = $_GET['ca'] ?? null;
 $idcg = $_GET['idcg'] ?? null;
 
+$hoten = $capbac = $chuyenKhoa = $gia = $anh = $giokham = $thongtin = '';
+$error = '';
+
 if ($idbs && $ngay && $ca) {
+    // Lấy thông tin bác sĩ
     $pBacSi = new cBacSi();
     $tblBacSi = $pBacSi->getBacSiById($idbs);
     if ($tblBacSi && $tblBacSi->num_rows > 0) {
-        $bacSi = $tblBacSi->fetch_assoc();
-        $hoten = $bacSi['hoten'];
-        $capbac = $bacSi['capbac'];
-        $chuyenKhoa = $bacSi['tenchuyenkhoa'];
-        $gia = $bacSi['giakham'];
-        $anh = $bacSi['imgbs'];
+        $bs = $tblBacSi->fetch_assoc();
+        $hoten = $bs['hoten'];
+        $capbac = $bs['capbac'];
+        $chuyenKhoa = $bs['tenchuyenkhoa'];
+        $gia = $bs['giakham'];
+        $anh = $bs['imgbs'];
     } else {
         $error = "Không tìm thấy thông tin bác sĩ.";
     }
+
+    // Lấy lịch khám
     $pLichKham = new cLichKham();
-    $tblLich = $pLichKham->getlich($ca);
-    if ($tblLich && $tblLich->num_rows > 0) {
-        $lich = $tblLich->fetch_assoc();
-        $giobatdau = $lich['giobatdau'];
-        $gioketthuc = $lich['gioketthuc'];
+    $tblLich = $pLichKham->getlich($ca, $ngay, $idbs);
+    if (is_array($tblLich) && count($tblLich) > 0) {
+        $lich = $tblLich[0];
+        $giokham = $lich['giokham'];
+        $thongtin = $lich['thongtin'];
+    } else {
+        $error = "Không tìm thấy lịch khám.";
     }
+
 } elseif ($idcg && $ngay && $ca) {
+    // Lấy thông tin chuyên gia
     $pChuyenGia = new cChuyenGia();
     $tblChuyenGia = $pChuyenGia->getChuyenGiaById($idcg);
     if ($tblChuyenGia && $tblChuyenGia->num_rows > 0) {
-        $chuyengia = $tblChuyenGia->fetch_assoc();
-        $hoten = $chuyengia['hoten'];
-        $capbac = $chuyengia['capbac'];
-        $chuyenKhoa = $chuyengia['tenlinhvuc'];
-        $gia = $chuyengia['giatuvan'];
-        $anh = $chuyengia['imgcg'];
+        $cg = $tblChuyenGia->fetch_assoc();
+        $hoten = $cg['hoten'];
+        $capbac = $cg['capbac'];
+        $chuyenKhoa = $cg['tenlinhvuc'];
+        $gia = $cg['giatuvan'];
+        $anh = $cg['imgcg'];
     }
+
+    // Lấy lịch khám
     $pLichKham = new cLichKham();
-    $tblLich = $pLichKham->getlich($ca);
-    if ($tblLich && $tblLich->num_rows > 0) {
-        $lich = $tblLich->fetch_assoc();
-        $giobatdau = $lich['giobatdau'];
-        $gioketthuc = $lich['gioketthuc'];
+    $tblLich = $pLichKham->getlich($ca, $ngay, $idcg);
+    if (is_array($tblLich) && count($tblLich) > 0) {
+        $lich = $tblLich[0];
+        $giokham = $lich['giokham'];
+        $thongtin = $lich['thongtin'];
+    } else {
+        $error = "Không tìm thấy lịch khám.";
     }
+
 } else {
     $error = "Thiếu tham số trên URL.";
 }
@@ -193,131 +153,123 @@ $benhnhans = [];
 if (isset($_SESSION['user']['tentk'])) {
     $tentk = $_SESSION['user']['tentk'];
     $pBenhNhan = new cBenhNhan();
-    $taikhoan = $pBenhNhan->getbenhnhanbytk($tentk);
-    $benhnhans = $pBenhNhan->getAllBenhNhanByTK($taikhoan['mabenhnhan']);
+    $tk = $pBenhNhan->getbenhnhanbytk($tentk);
+    $benhnhans = $pBenhNhan->getAllBenhNhanByTK($tk['mabenhnhan']);
 }
 
 $batBuoc = ['hoten','ngaysinh','gioitinh','dantoc','tentinhthanhpho','tenxaphuong','sonha'];
-
-function checkMissingFields($record, $requiredFields) {
-    foreach ($requiredFields as $field) {
-        if (!isset($record[$field]) || trim($record[$field]) === '') return true;
-    }
+function checkMissingFields($record, $required) {
+    foreach ($required as $f) if (!isset($record[$f]) || trim($record[$f]) === '') return true;
     return false;
 }
 
-include_once('Controllers/cphieukhambenh.php'); 
+include_once('Controllers/cphieukhambenh.php');
 include_once('Controllers/clichlamviec.php');
 
 if (isset($_POST['datlich'])) {
-    $_SESSION['mabenhnhan'] = $_POST['mabenhnhan'];
-    $_SESSION['makhunggiokb'] = $_POST['makhunggiokb'];
-    if(isset($idbs)){
-        $_SESSION['mabacsi'] = $_POST['mabacsi'];
-    }
-    elseif(isset($idcg)){
-         $_SESSION['machuyengia'] = $_POST['machuyengia'];
-    }
-    $_SESSION['ngaykham'] = $_POST['ngaykham'];
-    $_SESSION['tongtien'] = $_POST['giakham'];
-    $_SESSION['matrangthai'] = '6';
+  $_SESSION['mabenhnhan']   = $_POST['mabenhnhan'];
+  $_SESSION['makhunggiokb'] = $_POST['makhunggiokb'];
+  if ($idbs) $_SESSION['mabacsi'] = $_POST['mabacsi'];
+  elseif ($idcg) $_SESSION['machuyengia'] = $_POST['machuyengia'];
+  $_SESSION['ngaykham']     = $_POST['ngaykham'];
+  $_SESSION['tongtien']     = $_POST['giakham'];
+  $_SESSION['matrangthai']  = '6';
 
-    // Tạo mã phiếu khám bệnh ngẫu nhiên
     $maphieukb = 'PKB' . time() . rand(100, 999);
-    $_SESSION['maphieukhambenh']=$maphieukb;
-    $pPhieuKham = new cPhieuKhambenh();
-    if ($pPhieuKham->kiemTraTrungLich($_SESSION['mabenhnhan'], $_SESSION['ngaykham'], $_SESSION['makhunggiokb'])) {
-        echo '<div class="text-danger text-center">Bạn đã có lịch hẹn khám trong ca này vào ngày này rồi.</div>';
-    }else{
+    $_SESSION['maphieukhambenh'] = $maphieukb;
+
+    $pPhieu = new cPhieuKhambenh();
+    if ($pPhieu->kiemTraTrungLich($_SESSION['mabenhnhan'], $_SESSION['ngaykham'], $_SESSION['makhunggiokb'])) {
+        echo '<div class="text-danger text-center">Bạn đã có lịch hẹn trong ca này vào ngày này.</div>';
+    } else {
         header("Location: ?action=thanhtoan");
         exit;
     }
-  }
+}
 ?>
 <body>
-<?php if ($idbs && $ngay && $ca || $idcg): ?>
+<?php if ($error == ''): ?>
   <div class="container text-center">
-    <div class="card">
-      <div class="card-body d-flex justify-content-center align-items-center">
-        <div class="doctor-info text-start">
-          <h5 class="card-title"><?php echo htmlspecialchars($capbac); ?> - <?php echo htmlspecialchars($hoten); ?></h5>
-          <?php if ($idbs):?><p><strong>Chuyên khoa:</strong> <?php echo htmlspecialchars($chuyenKhoa); ?></p><?php endif?>
-          <?php if ($idcg):?><p><strong>Lĩnh vực:</strong> <?php echo htmlspecialchars($chuyenKhoa); ?></p><?php endif?>
-          <p><strong>Ngày khám:</strong> <?php echo htmlspecialchars($ngay); ?></p>
-          <p><strong>Giờ:</strong> <?php echo htmlspecialchars($giobatdau); ?> - <?php echo htmlspecialchars($gioketthuc); ?></p>
-          <p><strong>Giá:</strong> <?php echo htmlspecialchars($gia); ?> đồng</p>
-        </div>
-        <div class="doctor-image ms-4">
-          <img src="Assets/img/<?php echo htmlspecialchars($anh); ?>" alt="Ảnh" class="img-fluid rounded-circle">
-        </div>
+    <div class="doctor-card d-flex justify-content-between align-items-center flex-wrap">
+      <div class="doctor-info text-start">
+        <h5><?php echo htmlspecialchars($capbac).' - '.htmlspecialchars($hoten); ?></h5>
+        <?php if ($idbs): ?><p><strong>Chuyên khoa:</strong> <?php echo htmlspecialchars($chuyenKhoa); ?></p><?php endif; ?>
+        <?php if ($idcg): ?><p><strong>Lĩnh vực:</strong> <?php echo htmlspecialchars($chuyenKhoa); ?></p><?php endif; ?>
+        <p><strong>Ngày khám:</strong> <?php echo htmlspecialchars($ngay); ?></p>
+        <p><strong>Giờ:</strong> <?php echo htmlspecialchars($giokham); ?></p>
+        <p><strong>Thông tin:</strong> <?php echo htmlspecialchars($thongtin); ?></p>
+        <p><strong>Giá:</strong> <?php echo number_format($gia, 0, ',', '.'); ?> đ</p>
+      </div>
+      <div class="doctor-image ms-4 mt-3 mt-md-0">
+        <img src="Assets/img/<?php echo htmlspecialchars($anh); ?>" alt="Ảnh bác sĩ">
       </div>
     </div>
   </div>
 <?php else: ?>
-  <p class="text-danger text-center">Không có thông tin đặt lịch khám.</p>
+  <p class="text-danger text-center"><?php echo $error; ?></p>
 <?php endif; ?>
 
 <div class="container mt-5 mb-5">
   <h2 class="mb-4 text-center">Chọn hồ sơ bệnh nhân</h2>
   <?php if (!empty($benhnhans)): ?>
   <div class="accordion" id="benhNhanAccordion">
-  <?php foreach ($benhnhans as $index => $bn): ?>
-    <?php $thieuThongTin = checkMissingFields($bn, $batBuoc); ?>
-    <div class="accordion-item mb-3">
-      <h2 class="accordion-header" id="heading<?php echo $index; ?>">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<?php echo $index; ?>">
-          <?php echo htmlspecialchars($bn['hoten']); ?>
-        </button>
-      </h2>
-      <div id="collapse<?php echo $index; ?>" class="accordion-collapse collapse" data-bs-parent="#benhNhanAccordion">
-        <div class="accordion-body">
-          <div class="d-flex justify-content-between">
-            <div>
-              <p><strong>Ngày sinh:</strong> <?php echo htmlspecialchars($bn['ngaysinh']); ?></p>
-              <p><strong>Giới tính:</strong> <?php echo htmlspecialchars($bn['gioitinh']); ?></p>
-              <p><strong>CCCD:</strong> <?php echo htmlspecialchars(decryptData($bn['cccd'])); ?></p>
-              <p><strong>Địa chỉ:</strong> <?php echo htmlspecialchars($bn['sonha']).', '.htmlspecialchars($bn['tenxaphuong']).', '.htmlspecialchars($bn['tentinhthanhpho']); ?></p>
-            </div>
-            <div>
-              <p><strong>Điện thoại:</strong> <?php echo htmlspecialchars(decryptData($bn['sdt'])); ?></p>
-              <p><strong>Email:</strong> <?php echo htmlspecialchars(decryptData($bn['email'])); ?></p>
-              <p><strong>Dân tộc:</strong> <?php echo htmlspecialchars($bn['dantoc']); ?></p>
-            </div>
-          </div>
-          <?php if (!$thieuThongTin): ?>
-            <form method="POST">
-              <input type="hidden" id="mabenhnhan" name="mabenhnhan" value="<?php echo $bn['mabenhnhan']; ?>">
-              <input type="hidden" id="makhunggiokb" name="makhunggiokb" value="<?php echo $ca; ?>">
-              <?php if(isset($idbs)):?>
-                <input type="hidden" id="mabacsi" name="mabacsi" value="<?php echo $idbs; ?>">
-                <input type="hidden" id="tenchuyenkhoa" value="<?php echo $chuyenKhoa; ?>">
-              <?php elseif(isset($idcg)):?>
-                <input type="hidden" id="machuyengia" name="machuyengia" value="<?php echo $idcg; ?>">
-              <?php endif; ?>
-              <input type="hidden" id="ngaykham" name="ngaykham" value="<?php echo $ngay; ?>">
-              <input type="hidden" id="giakham" name="giakham" value="<?php echo $gia; ?>">
-              <div class="text-center mt-3">
-                <button type="submit" name="datlich" class="btn btn-primary">Đặt lịch khám</button>
-                <!-- <button type="submit" class="btn btn-primary w-100" onclick="return confirmBooking()">Đặt lịch khám</button> -->
+    <?php foreach ($benhnhans as $i => $bn): ?>
+      <?php $thieu = checkMissingFields($bn, $batBuoc); ?>
+      <div class="accordion-item mb-3">
+        <h2 class="accordion-header" id="heading<?php echo $i; ?>">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<?php echo $i; ?>">
+            <?php echo htmlspecialchars($bn['hoten']); ?>
+          </button>
+        </h2>
+        <div id="collapse<?php echo $i; ?>" class="accordion-collapse collapse" data-bs-parent="#benhNhanAccordion">
+          <div class="accordion-body">
+            <div class="d-flex justify-content-between">
+              <div>
+                <p><strong>Ngày sinh:</strong> <?php echo htmlspecialchars($bn['ngaysinh']); ?></p>
+                <p><strong>Giới tính:</strong> <?php echo htmlspecialchars($bn['gioitinh']); ?></p>
+                <p><strong>CCCD:</strong> <?php echo htmlspecialchars(decryptData($bn['cccd'])); ?></p>
+                <p><strong>Địa chỉ:</strong> <?php echo htmlspecialchars($bn['sonha']).', '.htmlspecialchars($bn['tenxaphuong']).', '.htmlspecialchars($bn['tentinhthanhpho']); ?></p>
               </div>
-            </form>
-          <?php else: ?>
-            <div class="text-danger text-center mt-3">Hồ sơ chưa đủ thông tin để đặt lịch.</div>
-          <?php endif; ?>
-          <div class="d-flex justify-content-center gap-2 mt-3">
-            <a href="?action=suahoso&mabenhnhan=<?php echo $bn['mabenhnhan']; ?>" class="btn btn-warning">Sửa hồ sơ</a>
-            <a href="xoahoso.php?mabenhnhan=<?php echo $bn['mabenhnhan']; ?>" class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa hồ sơ này?');">Xóa hồ sơ</a>
+              <div>
+                <p><strong>Điện thoại:</strong> <?php echo htmlspecialchars(decryptData($bn['sdt'])); ?></p>
+                <p><strong>Email:</strong> <?php echo htmlspecialchars(decryptData($bn['email'])); ?></p>
+                <p><strong>Dân tộc:</strong> <?php echo htmlspecialchars($bn['dantoc']); ?></p>
+              </div>
+            </div>
+            <?php if (!$thieu): ?>
+              <form method="POST">
+                <input type="hidden" name="mabenhnhan" value="<?php echo $bn['mabenhnhan']; ?>">
+                <input type="hidden" name="makhunggiokb" value="<?php echo $ca; ?>">
+                <?php if ($idbs): ?>
+                  <input type="hidden" name="mabacsi" value="<?php echo $idbs; ?>">
+                <?php elseif ($idcg): ?>
+                  <input type="hidden" name="machuyengia" value="<?php echo $idcg; ?>">
+                <?php endif; ?>
+                <input type="hidden" name="ngaykham" value="<?php echo $ngay; ?>">
+                <input type="hidden" name="giakham" value="<?php echo $gia; ?>">
+                <div class="text-center mt-3">
+                  <button type="submit" name="datlich" class="btn btn-primary">Đặt lịch khám</button>
+                </div>
+              </form>
+            <?php else: ?>
+              <div class="text-danger text-center mt-3">Hồ sơ chưa đủ thông tin để đặt lịch.</div>
+            <?php endif; ?>
+            <div class="d-flex justify-content-center gap-2 mt-3">
+              <a href="?action=suahoso&mabenhnhan=<?php echo $bn['mabenhnhan']; ?>" class="btn btn-warning">Sửa hồ sơ</a>
+              <a href="xoahoso.php?mabenhnhan=<?php echo $bn['mabenhnhan']; ?>" class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa hồ sơ này?');">Xóa hồ sơ</a>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  <?php endforeach; ?>
+    <?php endforeach; ?>
   </div>
   <?php else: ?>
     <p class="text-danger">Không có bệnh nhân nào được tìm thấy.</p>
   <?php endif; ?>
   <a href="?action=taohoso" class="btn btn-success mt-3">+ Tạo hồ sơ bệnh nhân mới</a>
 </div>
+</body>
+</html>
 
 <!-- <script>
   function confirmBooking() {
@@ -356,5 +308,5 @@ if (isset($_POST['datlich'])) {
     return false;
   }
 </script> -->
-</body>
-</html>
+
+

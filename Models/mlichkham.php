@@ -101,12 +101,29 @@ class mLichKham {
             return false;
         }
     }
-    public function xemlich($id){
+    public function xemlich($idca, $ngay, $idbs){
         $p = new clsKetNoi();
         $con = $p->moketnoi();
         $con->set_charset('utf8');
         if($con){
-            $str = "select * from khunggiokhambenh WHERE makhunggiokb='$id'";
+            $str = "SELECT 
+                        CONCAT(k.giobatdau, ' - ', k.gioketthuc) AS giokham,
+                        CASE 
+                            WHEN llv.hinhthuclamviec = 'Offline' 
+                                THEN CONCAT('Tòa: ', p.tentoa, ', Tầng: ', p.tang, ', Phòng: ', p.sophong)
+                            ELSE 'Khám trực tuyến (Online)'
+                        END AS thongtin
+                    FROM lichlamviec llv
+                    JOIN calamviec cv 
+                        ON llv.macalamviec = cv.macalamviec
+                    JOIN khunggiokhambenh k 
+                        ON k.macalamviec = cv.macalamviec
+                    LEFT JOIN phong p 
+                        ON p.malichlamviec = llv.malichlamviec
+                    WHERE k.makhunggiokb = '$idca'
+                    AND llv.ngaylam = '$ngay'
+                    AND llv.manguoidung = '$idbs'
+                    LIMIT 1;";
             $tbl = $con->query($str);
             $p->dongketnoi($con);
             return $tbl;
@@ -114,6 +131,8 @@ class mLichKham {
             return false; 
         }
     }
+    
+   
     public function kiemtragiohen($bs, $bn) {
         $p = new clsKetNoi();
         $con = $p->moketnoi();

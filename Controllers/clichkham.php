@@ -22,21 +22,29 @@ class cLichKham {
             return ($tbl->num_rows > 0) ? $tbl : false;
         }
     }
-    
-    
-    public function getlich($id){
+    public function getlich($idca, $ngay, $idbs) {
         $p = new mLichKham();
-        $tbl = $p->xemlich($id);
-        if(!$tbl){
-            return -1;
-        }else{
-            if($tbl->num_rows > 0){
-                return $tbl;
-            }else{
-                return 0;
+        $tbl = $p->xemlich($idca, $ngay, $idbs);
+    
+        if ($tbl === false) {
+            return -1; // lỗi kết nối DB
+        }
+    
+        if ($tbl->num_rows > 0) {
+            $result = [];
+            while ($row = $tbl->fetch_assoc()) {
+                $result[] = [
+                    'giokham'  => $row['giokham'],
+                    'thongtin' => $row['thongtin']
+                ];
             }
+            return $result; // trả về mảng dữ liệu
+        } else {
+            return 0; // không tìm thấy lịch
         }
     }
+    
+    
     public function getThongTinNguoi($manguoidung){
         $p = new mLichKham();
         $nguoi = $p->getThongTinNguoi($manguoidung);
