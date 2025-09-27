@@ -82,9 +82,22 @@ class cLichKham {
             }
         }
     }
-    public function getLichTrongCuaNguoi($tuNgay, $manguoi){
+    public function getLichTrongCuaNguoi($manguoi,$tuNgay){
         $p = new mLichKham();
-        $tbl = $p->getLichTrongTheoNguoi($tuNgay, $manguoi);
+        $tbl = $p->getLichTrongTheoNguoi($manguoi,$tuNgay);
+        if(!$tbl){
+            return -1;
+        }else{
+            if($tbl->num_rows > 0){
+                return $tbl;
+            }else{
+                return 0;
+            }
+        }
+    }
+    public function getLichTrongCuaNguoi1( $manguoi, $tuNgay){
+        $p = new mLichKham();
+        $tbl = $p->getLichTrongTheoNguoi1( $manguoi, $tuNgay);
         if(!$tbl){
             return -1;
         }else{

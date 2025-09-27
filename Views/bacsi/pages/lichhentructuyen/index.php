@@ -1,20 +1,39 @@
 <?php
-    include_once('Controllers/cphieukhambenh.php');
-    include_once('Controllers/cbacsi.php');
-    $cbacsi = new cBacSi();
-    $cphieukhambenh = new cPhieuKhamBenh();
-    //$cphieukhambenh->capnhat_trangthai_phieukham();
-    $bacsi= $cbacsi->getBacSiByTenTK($_SESSION['user']['tentk']);
-    $lichkham_list= $cphieukhambenh->get_lichkhamonl_mabacsi($bacsi['mabacsi']);
-    if(isset($_POST['homnay'])){
-        $lichkham_list= $cphieukhambenh->get_lichkhamonl_homnay($bacsi['mabacsi']);
-    }
-    if(isset($_POST["btntimkiem"])){
-        $tukhoa=$_POST["tukhoa"];
-        $trangthai=$_POST["trangthai"];
-        $ngay=$_POST["ngay"];
-        $lichkham_list= $cphieukhambenh->search_phieukhamonl($tukhoa,$trangthai,$ngay,$bacsi['mabacsi']);
-    }
+include_once('Controllers/cphieukhambenh.php');
+include_once('Controllers/cbacsi.php');
+
+$cbacsi = new cBacSi();
+$cphieukhambenh = new cPhieuKhamBenh();
+
+// Lấy thông tin bác sĩ hiện tại
+$bacsi = $cbacsi->getBacSiByTenTK($_SESSION['user']['tentk']);
+
+// Khởi tạo giá trị mặc định
+$lichkham_list = $cphieukhambenh->get_lichkhamonl_mabacsi($bacsi['mabacsi']);
+
+// Lấy dữ liệu tìm kiếm trước đó
+$tukhoa = $_POST['tukhoa'] ?? '';
+$trangthai = $_POST['trangthai'] ?? '';
+$ngay = $_POST['ngay'] ?? '';
+$homnay_checked = isset($_POST['homnay']) ? 'checked' : '';
+
+// Checkbox Hôm nay
+if(isset($_POST['homnay'])){
+    $lichkham_list = $cphieukhambenh->get_lichkhamonl_homnay($bacsi['mabacsi']);
+}
+
+// Tìm kiếm
+if(isset($_POST["btntimkiem"])){
+    $lichkham_list = $cphieukhambenh->search_phieukhamonl($tukhoa, $trangthai, $ngay, $bacsi['mabacsi']);
+}
+
+// Bỏ tìm kiếm
+if(isset($_POST["btnbo"])){
+    $lichkham_list = $cphieukhambenh->get_lichkhamonl_mabacsi($bacsi['mabacsi']);
+    $tukhoa = $trangthai = $ngay = '';
+    $homnay_checked = '';
+    $_POST = [];
+}
 ?>
 <style>
 .btn-secondary {
@@ -30,17 +49,16 @@
     align-items: center;
     gap: 6px;
 }
-
 .btn-secondary:hover {
     background-color: #e6e6e6;
     border-color: #999;
     color: #000;
     box-shadow: 0px 2px 6px rgba(0,0,0,0.1);
 }
-
-.btn-secondary i {
-    font-size: 14px;
-}
+.btn-secondary i { font-size: 14px; }
+.status-pending { color: orange; font-weight: bold; }
+.status-completed { color: green; font-weight: bold; }
+.status-canceled { color: red; font-weight: bold; }
 </style>
 
 <div class="container">
@@ -50,97 +68,95 @@
 
 <div class="tabs">
     <div class="tab-content">
-        <div id="list-view" class="tab-pane active">
-            <div class="card">
-                <div class="card-header">
-                    <h2>Tìm kiếm lịch hẹn</h2>
-                </div>
-                <div class="card-body">
-                    <form class="search-form" method="POST">
-                        <div class="search-grid">
-                            <div class="search-input">
-                                <i class="fas fa-search"></i>
-                                <input type="text" name="tukhoa" placeholder="Tìm theo tên bệnh nhân, mã phiếu...">
-                            </div>
-                            
-                            <div class="form-group">
-                                <select name="trangthai">
-                                    <option value="">Trạng thái</option>
-                                    <option value="chưa khám">Chưa khám</option>
-                                    <option value="đã khám">Đã khám</option>
-                                    <option value="đã hủy">Đã hủy</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group">
-                                <input type="date" name="ngay" placeholder="Ngày khám">
-                            </div>
-                        </div>
-
-                        <!-- hàng riêng cho nút -->
-                        <div class="form-actions" style="margin-top: 10px;">
-                            <button type="submit" class="btn-primary" name="btntimkiem">Tìm kiếm</button>
-                            <button type="submit" class="btn-secondary" name="btnbo"><i class="fas fa-times"></i>Bỏ tìm kiếm</button>
-                        </div>
-                    </form>
-                </div>
-
+        <!-- Form tìm kiếm -->
+        <div class="card">
+            <div class="card-header">
+                <h2>Tìm kiếm lịch hẹn</h2>
             </div>
-            <form method="POST" style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 10px;">
-                <input type="checkbox" name="homnay" id="homnay" onchange="this.form.submit()" <?php if (isset($_POST['homnay'])) echo 'checked'; ?>>
-                <label for="homnay" style="margin-left: 5px;"><b>Hôm nay</b></label>
-            </form>
-            <div class="card">
-                <div class="card-body no-padding">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Mã phiếu</th>
-                                <th>Ngày khám</th>
-                                <th>Ca làm việc</th>
-                                <th>Bệnh nhân</th>
-                                <th>Tổng tiền</th>
-                                <th>Trạng thái</th>
-                                <th>Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            if($lichkham_list){
-                                foreach ($lichkham_list as $i) {
-                                    switch ($i['tentrangthai']) {
-                                        case 'Chưa khám':
-                                            $statusClass = 'status-pending';
-                                            break;
-                                        case 'Đã khám':
-                                            $statusClass = 'status-completed';
-                                            break;
-                                        case 'Đã hủy':
-                                            $statusClass = 'status-canceled';
-                                            break;
-                                    }
-                                    
-                                    echo '<tr>';
-                                    echo '<td>' . $i['maphieukhambenh'] . '</td>';
-                                    echo '<td>' . date('d/m/Y', strtotime($i['ngaykham'])) . '</td>';
-                                    echo '<td>' . $i['giobatdau'].'-'.$i['gioketthuc'] . '</td>';
-                                    echo '<td>' . $i['hoten'] . '</td>';
-                                    echo '<td>' . number_format($i['giakham'], 0, ',', '.') . ' VND</td>';
-                                    echo '<td><span class="status-badge ' . $statusClass . '">' . $i['tentrangthai'] . '</span></td>';
-                                    echo '<td>';
-                                    if($i['tentrangthai']=='Chưa khám'){
-                                        echo '<a class="btn-primary btn-small" href="?action=tinnhan&id=mabenhnhan"><i class="fas fa-comment-medical"></i> Nhắn tin</a>';
-                                    }
-                                    echo'</td>';
-                                    echo '</tr>';
-                                }
-                            }else{
-                                echo '<tr><td colspan="7" style="text-align:center; color:gray;">Không có lịch hẹn</td></tr>';
-                            }
-                            
-                            ?>
-                        </tbody>
-                    </table>
-                </div>
+            <div class="card-body">
+                <form class="search-form" method="POST">
+                    <div class="search-grid">
+                        <div class="search-input">
+                            <i class="fas fa-search"></i>
+                            <input type="text" name="tukhoa" placeholder="Tìm theo tên bệnh nhân, mã phiếu..."
+                                value="<?php echo htmlspecialchars($tukhoa); ?>">
+                        </div>
+                        
+                        <div class="form-group">
+                            <select name="trangthai">
+                                <option value="">Trạng thái</option>
+                                <option value="chưa khám" <?php if($trangthai=='chưa khám') echo 'selected'; ?>>Chưa khám</option>
+                                <option value="đã khám" <?php if($trangthai=='đã khám') echo 'selected'; ?>>Đã khám</option>
+                                <option value="đã hủy" <?php if($trangthai=='đã hủy') echo 'selected'; ?>>Đã hủy</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <input type="date" name="ngay" value="<?php echo $ngay; ?>">
+                        </div>
+                    </div>
+
+                    <div class="form-actions" style="margin-top: 10px;">
+                        <button type="submit" class="btn-primary" name="btntimkiem">Tìm kiếm</button>
+                        <button type="submit" class="btn-secondary" name="btnbo"><i class="fas fa-times"></i>Bỏ tìm kiếm</button>
+                    </div>
+                </form>
             </div>
         </div>
+
+        <!-- Checkbox Hôm nay -->
+        <form method="POST" style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 10px;">
+            <input type="checkbox" name="homnay" id="homnay" onchange="this.form.submit()" <?php echo $homnay_checked; ?>>
+            <label for="homnay" style="margin-left: 5px;"><b>Hôm nay</b></label>
+        </form>
+
+        <!-- Bảng lịch hẹn -->
+        <div class="card">
+            <div class="card-body no-padding">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Mã phiếu</th>
+                            <th>Ngày khám</th>
+                            <th>Ca làm việc</th>
+                            <th>Bệnh nhân</th>
+                            <th>Tổng tiền</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        if($lichkham_list){
+                            foreach ($lichkham_list as $i) {
+                                switch ($i['tentrangthai']){
+                                    case 'Chưa khám': $statusClass='status-pending'; break;
+                                    case 'Đã khám': $statusClass='status-completed'; break;
+                                    case 'Đã hủy': $statusClass='status-canceled'; break;
+                                    default: $statusClass='';
+                                }
+
+                                echo '<tr>';
+                                echo '<td>'.$i['maphieukhambenh'].'</td>';
+                                echo '<td>'.date('d/m/Y', strtotime($i['ngaykham'])).'</td>';
+                                echo '<td>'.$i['giobatdau'].'-'.$i['gioketthuc'].'</td>';
+                                echo '<td>'.$i['hoten'].'</td>';
+                                echo '<td>'.number_format($i['giakham'],0,',','.').' VND</td>';
+                                echo '<td><span class="status-badge '.$statusClass.'">'.$i['tentrangthai'].'</span></td>';
+                                echo '<td>';
+                                if($i['tentrangthai']=='Chưa khám'){
+                                    echo '<a class="btn-primary btn-small" href="?action=tinnhan&id='.$i['mabenhnhan'].'"><i class="fas fa-comment-medical"></i> Nhắn tin</a>';
+                                }
+                                echo '</td>';
+                                echo '</tr>';
+                            }
+                        } else {
+                            echo '<tr><td colspan="7" style="text-align:center; color:gray;">Không có lịch hẹn</td></tr>';
+                        }
+                        ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -270,7 +270,40 @@ class cPhieuKhamBenh {
                 }
         }
     }
-
+    public function search_phieukhamonlcg($tukhoa,$trangthai,$ngay,$mabacsi){
+        $p = new mPhieuKhamBenh();
+        $tbl = $p->timkiem_phieukhamonlcg($tukhoa,$trangthai,$ngay,$mabacsi);
+        $list=array();
+            if (!$tbl) {
+                return -1;
+            } else {
+                if ($tbl->num_rows > 0) {
+                    while($r=$tbl->fetch_assoc()){
+                        $list[]=$r;
+                    }
+                    return $list;
+                } else {
+                    return 0;
+                }
+        }
+    }
+    public function search_phieukhamoffcg($tukhoa,$trangthai,$ngay,$mabacsi){
+        $p = new mPhieuKhamBenh();
+        $tbl = $p->timkiem_phieukhamoffcg($tukhoa,$trangthai,$ngay,$mabacsi);
+        $list=array();
+            if (!$tbl) {
+                return -1;
+            } else {
+                if ($tbl->num_rows > 0) {
+                    while($r=$tbl->fetch_assoc()){
+                        $list[]=$r;
+                    }
+                    return $list;
+                } else {
+                    return 0;
+                }
+        }
+    }
     // public function capnhat_trangthai_phieukham(){
     //     $p = new mPhieuKhamBenh();
     //     $kq = $p->update_trangthai_phieukhambenh();

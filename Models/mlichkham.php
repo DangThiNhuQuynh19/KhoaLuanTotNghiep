@@ -119,7 +119,7 @@ class mLichKham {
                     JOIN khunggiokhambenh k 
                         ON k.macalamviec = cv.macalamviec
                     LEFT JOIN phong p 
-                        ON p.malichlamviec = llv.malichlamviec
+                        ON p.maphong = llv.maphong
                     WHERE k.makhunggiokb = '$idca'
                     AND llv.ngaylam = '$ngay'
                     AND llv.manguoidung = '$idbs'
@@ -222,38 +222,113 @@ class mLichKham {
             }
         }
         public function getTatCaLichKhamTheoNgay($ngay) {
+            date_default_timezone_set('Asia/Ho_Chi_Minh');
             $p = new clsKetNoi();
             $con = $p->moketnoi();
             $con->set_charset('utf8');
         
-            if ($con) {
-                $sql = "
-                    SELECT llv.*, c.*, kg.*, nd.*, bs.*, cg.*, ck.*, lv.*
+            if (!$con) return false;
+        
+            $gioHienTai = date('H:i:s');
+        
+            $sql = "
+                SELECT llv.*, c.*, kg.*, nd.*, bs.*, cg.*, ck.*, lv.*
+                FROM khunggiokhambenh kg
+                JOIN calamviec c ON kg.macalamviec = c.macalamviec
+                JOIN lichlamviec llv ON llv.macalamviec = c.macalamviec
+                JOIN nguoidung nd ON nd.manguoidung = llv.manguoidung
+                LEFT JOIN bacsi bs ON bs.mabacsi = llv.manguoidung
+                LEFT JOIN chuyengia cg ON cg.machuyengia = llv.manguoidung
+                LEFT JOIN chuyenkhoa ck ON ck.machuyenkhoa = bs.machuyenkhoa
+                LEFT JOIN linhvuc lv ON lv.malinhvuc = cg.malinhvuc
+                LEFT JOIN phieukhambenh pkb 
+                    ON pkb.makhunggiokb = kg.makhunggiokb
+                    AND pkb.ngaykham = llv.ngaylam
+                    AND pkb.mabacsi = llv.manguoidung
+                    AND pkb.matrangthai = 6
+                WHERE llv.ngaylam >= ?
+                  AND pkb.maphieukhambenh IS NULL
+                  AND (
+                        llv.ngaylam > ?
+                        OR (llv.ngaylam = ? AND kg.giobatdau >= ?)
+                      )
+                ORDER BY llv.ngaylam, kg.giobatdau
+            ";
+        
+            $stmt = $con->prepare($sql);
+            $stmt->bind_param("ssss", $ngay, $ngay, $ngay, $gioHienTai);
+            $stmt->execute();
+            $result = $stmt->get_result();
+        
+            $p->dongketnoi($con);
+            return $result;
+        }
+        
+
+        public function getLichTrongTheoNguoi($manguoi, $ngaychon) {
+            date_default_timezone_set('Asia/Ho_Chi_Minh');
+        
+            $p = new clsKetNoi();
+            $con = $p->moketnoi();
+            $con->set_charset('utf8');
+        
+            if (!$con) return false;
+        
+            $gioHienTai = date('H:i:s');
+        
+            $sql = "
+                    SELECT 
+                        llv.*,
+                        c.*,
+                        kg.*,
+                        nd.*,
+                        bs.*,
+                        cg.*,
+                        kg.giobatdau AS kg_giobatdau,
+                        kg.gioketthuc AS kg_gioketthuc
                     FROM khunggiokhambenh kg
                     JOIN calamviec c ON kg.macalamviec = c.macalamviec
                     JOIN lichlamviec llv ON llv.macalamviec = c.macalamviec
                     JOIN nguoidung nd ON nd.manguoidung = llv.manguoidung
                     LEFT JOIN bacsi bs ON bs.mabacsi = llv.manguoidung
                     LEFT JOIN chuyengia cg ON cg.machuyengia = llv.manguoidung
-                    LEFT JOIN chuyenkhoa ck ON ck.machuyenkhoa = bs.machuyenkhoa
-                    LEFT JOIN linhvuc lv ON lv.malinhvuc = cg.malinhvuc
-                    LEFT JOIN phieukhambenh pkb 
-                        ON pkb.makhunggiokb = kg.makhunggiokb
-                        AND pkb.ngaykham = llv.ngaylam
-                        AND pkb.mabacsi = llv.manguoidung
+                    LEFT JOIN phieukhambenh pkb
+                        ON bs.mabacsi IS NOT NULL
+                        AND pkb.makhunggiokb = kg.makhunggiokb
+                        AND pkb.ngaykham >= ?
                         AND pkb.matrangthai = 6
-                    WHERE llv.ngaylam = '$ngay'
-                        AND pkb.maphieukhambenh IS NULL
+                        AND pkb.mabacsi = llv.manguoidung
+                    WHERE llv.manguoidung = ?
+                    AND llv.ngaylam >= ?
+                    AND pkb.maphieukhambenh IS NULL
+                    AND (
+                            llv.ngaylam > ?
+                            OR (llv.ngaylam = ? AND kg.giobatdau >= ?)
+                        )
+                    ORDER BY llv.ngaylam, kg.giobatdau
                 ";
+
         
-                $tbl = $con->query($sql);
-                $p->dongketnoi($con);
-                return $tbl;
-            } else {
-                return false;
-            }
+            $stmt = $con->prepare($sql);
+            $stmt->bind_param(
+                "ssssss",
+                $ngaychon,   // pkb.ngaykham >= ?
+                $manguoi,    // llv.manguoidung = ?
+                $ngaychon,   // llv.ngaylam >= ?
+                $ngaychon,   // llv.ngaylam > ?
+                $ngaychon,   // llv.ngaylam = ?
+                $gioHienTai  // kg.giobatdau >= ?
+            );
+        
+            $stmt->execute();
+            $result = $stmt->get_result();
+        
+            $p->dongketnoi($con);
+            return $result;
         }
-        public function getLichTrongTheoNguoi($tuNgay, $manguoi){
+        
+        
+        public function getLichTrongTheoNguoi1($tuNgay, $manguoi){
             $p = new clsKetNoi();
             $con = $p->moketnoi();
             $con->set_charset('utf8');
@@ -269,10 +344,10 @@ class mLichKham {
                         LEFT JOIN phieukhambenh pkb 
                             ON pkb.makhunggiokb = kg.makhunggiokb
                             AND pkb.mabacsi = llv.manguoidung
-                            AND pkb.ngaykham >= ?
+                            AND pkb.ngaykham = ?
                             AND pkb.matrangthai = 6
                         WHERE llv.manguoidung = ?
-                          AND llv.ngaylam >= ?
+                          AND llv.ngaylam = ?
                           AND pkb.maphieukhambenh IS NULL
                         ORDER BY llv.ngaylam, kg.giobatdau";
                 
