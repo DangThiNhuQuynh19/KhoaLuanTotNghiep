@@ -48,7 +48,7 @@
 
 <div class="container">
 <div class="content-header">
-    <h1>Quản lý lịch hẹn trực tuyến</h1>
+    <h1>Quản lý lịch hẹn trực tiếp</h1>
 </div>
 
 <div class="tabs">

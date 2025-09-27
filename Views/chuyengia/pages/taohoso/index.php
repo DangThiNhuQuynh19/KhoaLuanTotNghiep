@@ -451,7 +451,7 @@ if(isset($_POST['submit'])){
     <main class="container">
         <div class="content-header">
             <div class="back-button">
-                <a href="medical-records.php" class="btn-icon">
+                <a href="?action=benhnhan" class="btn-icon">
                     <i class="fas fa-arrow-left"></i>
                 </a>
                 <h1>Tạo Hồ Sơ Bệnh Án</h1>

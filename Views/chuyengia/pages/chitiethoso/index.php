@@ -175,7 +175,7 @@ if(isset($_POST['btnupdate'])) {
                             </div>
                             <div class="patient-data-item">
                                 <div class="data-label">Nhóm máu</div>
-                                <div class="data-value"><?php// echo $benhnhan[0]['nhommau']; ?></div>
+                                <div class="data-value"></div>
                             </div>
                             <div class="patient-data-item">
                                 <div class="data-label">Tiền sử bệnh tật của bản thân</div>

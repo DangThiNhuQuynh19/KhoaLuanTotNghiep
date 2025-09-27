@@ -55,10 +55,7 @@ $active_tab = $_GET['tab'] ?? 'medical-records';
                             <span class="info-value"><?php echo decryptData($bn['tiensubenhtatcuabenhnhan']); ?></span>
                         </div>
                     </div>
-                    
-                    <div class="patient-actions">
-                        <a href="?action=datlichxetnghiem&id=<?php echo $mabenhnhan;?>" class="btn-outline btn-full"><i class="fas fa-flask"></i> Thêm xét nghiệm</a>
-                    </div>
+                
                 </div>
             </div>
         </div>

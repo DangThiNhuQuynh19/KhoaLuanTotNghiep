@@ -6,28 +6,28 @@ class mLichHen {
         $p = new clsketnoi();
         $conn = $p->moketnoi();
 
-            $sql = "SELECT distinct
-            pkb.maphieukhambenh,
-            pkb.ngaykham,
-            kg.giobatdau,
-            bn.hoten AS ten_benhnhan,
-            nd.hoten AS ten_nguoi_kham,
-            CASE
-                WHEN bs.mabacsi IS NOT NULL THEN 'bacsi'
-                WHEN cg.machuyengia IS NOT NULL THEN 'chuyengia'
-                ELSE 'khac'
-            END AS loaikham,
-            llv.hinhthuclamviec,
-            tt.tentrangthai
-        FROM phieukhambenh pkb
-        JOIN khunggiokhambenh kg ON pkb.makhunggiokb = kg.makhunggiokb
-        JOIN lichlamviec llv ON llv.macalamviec = kg.macalamviec
-        JOIN nguoidung bn ON pkb.mabenhnhan = bn.manguoidung
-        JOIN nguoidung nd ON pkb.mabacsi = nd.manguoidung
-        LEFT JOIN bacsi bs ON nd.manguoidung = bs.mabacsi
-        LEFT JOIN chuyengia cg ON nd.manguoidung = cg.machuyengia
-        JOIN trangthai tt ON pkb.matrangthai = tt.matrangthai
-        WHERE 1=1";
+        $sql = "SELECT DISTINCT
+                pkb.maphieukhambenh,
+                pkb.ngaykham,
+                kg.giobatdau,
+                bn.hoten AS ten_benhnhan,
+                nd.hoten AS ten_nguoi_kham,  -- lấy từ bảng nguoidung
+                CASE
+                    WHEN bs.mabacsi IS NOT NULL THEN 'bacsi'
+                    WHEN cg.machuyengia IS NOT NULL THEN 'chuyengia'
+                    ELSE 'khac'
+                END AS loaikham,
+                llv.hinhthuclamviec,
+                tt.tentrangthai
+            FROM phieukhambenh pkb
+            JOIN khunggiokhambenh kg ON pkb.makhunggiokb = kg.makhunggiokb
+            JOIN lichlamviec llv ON llv.macalamviec = kg.macalamviec
+            JOIN nguoidung bn ON pkb.mabenhnhan = bn.manguoidung
+            JOIN nguoidung nd ON pkb.mabacsi = nd.manguoidung
+            LEFT JOIN bacsi bs ON pkb.mabacsi = bs.mabacsi
+            LEFT JOIN chuyengia cg ON pkb.mabacsi = cg.machuyengia
+            JOIN trangthai tt ON pkb.matrangthai = tt.matrangthai
+            WHERE 1=1 ";
 
         $params = [];
 
