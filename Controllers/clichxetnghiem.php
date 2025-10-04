@@ -94,6 +94,24 @@ class cLichXetNghiem{
         }
     }
 
+    
+    public function get_alllichxetnghiem($ngay = '', $matrangthai = ''){
+        $p = new mLichXetNghiem();
+        $tbl = $p->selectall_lichxetnghiem($ngay, $matrangthai);
+        $list = array();
+        if(!$tbl){
+            return -1;
+        } else {
+            if($tbl->num_rows > 0){
+                while($r = $tbl->fetch_assoc()){
+                    $list[] = $r;
+                }
+                return $list;
+            } else {
+                return 0;
+            }
+        }
+    }
     public function create_lichxetnghiem($mabenhnhan,$maloaixetnghiem,$ngayhen,$makhunggio,$trangthailichxetnghiem,$mahoso,$img){
         $p = new mLichXetNghiem();
         $tbl = $p->insert_lichxetnghiem($mabenhnhan,$maloaixetnghiem,$ngayhen,$makhunggio,$trangthailichxetnghiem,$mahoso,$img);
@@ -107,6 +125,23 @@ class cLichXetNghiem{
     public function get_lichxetnghiem_mahoso($mahoso){
         $p = new mLichXetNghiem();
         $tbl = $p->select_lichxetnghiem_mahoso($mahoso);
+        $list=array();
+        if(!$tbl){
+            return -1;
+        }else{
+            if($tbl->num_rows > 0){
+               while($r=$tbl->fetch_assoc()){
+                    $list[]=$r;
+               }
+               return $list;
+            }else{
+                return 0;
+            }
+        }
+    }
+    public function get_chitietlichxetnghiem($id){
+        $p = new mLichXetNghiem();
+        $tbl = $p->chitietlichxetnghiem($id);
         $list=array();
         if(!$tbl){
             return -1;

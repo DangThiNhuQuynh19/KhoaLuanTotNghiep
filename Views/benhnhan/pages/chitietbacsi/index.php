@@ -243,14 +243,14 @@ $lichkham = $cLichKham->getLichKhamOfBacSiByNgay($ngay, $mabacsi, $gioHienTai);
                 $gioketthuc = date('H:i', strtotime($rowCa['gioketthuc']));
                 $hinhthuc = $rowCa['hinhthuclamviec']; 
 
-                $urlDatLich = "index.php?action=datlichkham&idbs={$mabacsi}&ngay={$ngay}&ca={$makhunggiokb}";
+                $urlBacSi = "index.php?action=chitietbacsi&idbs={$mabacsi}";
                 
                 if ($ngay == $ngayHienTai && $giobatdau < $gioHienTai) {
                     continue;
                 }
 
                 if (isset($_SESSION['dangnhap'])) {
-                    $link = "<a href='$urlDatLich'>$giobatdau - $gioketthuc</a>";
+                    $link = "<a href='$urlBacSi'>$giobatdau - $gioketthuc</a>";
                 } else {
                     // nếu chưa đăng nhập -> gọi hàm JS mở popup
                     $link = "<a onclick=\"showLoginPopup('$urlDatLich')\">$giobatdau - $gioketthuc</a>";

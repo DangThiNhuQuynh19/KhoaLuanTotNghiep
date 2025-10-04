@@ -194,5 +194,67 @@
                 return false;
             }
         }
+        public function selectall_lichxetnghiem($ngay = '', $matrangthai = '') {
+            $p = new clsKetNoi();
+            $con = $p->moketnoi();
+            $con->set_charset('utf8');
+        
+            if($con){
+                $str = "SELECT l.*, tt.tentrangthai, nd.hoten, nd.sdt, loai.tenloaixetnghiem, kg.giobatdau, kg.gioketthuc
+                        FROM lichxetnghiem l
+                        JOIN trangthai tt ON tt.matrangthai = l.matrangthai
+                        JOIN benhnhan b ON b.mabenhnhan = l.mabenhnhan
+                        JOIN nguoidung nd ON nd.manguoidung = b.mabenhnhan
+                        JOIN loaixetnghiem loai ON loai.maloaixetnghiem = l.maloaixetnghiem
+                        JOIN khunggioxetnghiem kg ON kg.makhunggioxetnghiem = l.makhunggio
+                        WHERE 1=1";
+        
+                if($ngay != ''){
+                    $str .= " AND l.ngayhen = '".$con->real_escape_string($ngay)."'";
+                }
+        
+                $allowedStatus = [10,11,12];
+                if($matrangthai != '' && in_array($matrangthai, $allowedStatus)){
+                    $str .= " AND l.matrangthai = ".intval($matrangthai);
+                }
+        
+                $tbl = $con->query($str);
+                $p->dongketnoi($con);
+                return $tbl;
+            } else {
+                return false;
+            }
+        }
+        public function chitietlichxetnghiem($id) {
+            $p = new clsKetNoi();
+            $con = $p->moketnoi();
+            $con->set_charset('utf8');
+            if($con){
+                $str = "SELECT l.*, tt.tentrangthai, nd.hoten AS ten_benhnhan, nd.sdt AS sdt_benhnhan,
+                            loai.tenloaixetnghiem, kg.giobatdau, kg.gioketthuc,
+                            hs.*, ct.trieuchungbandau, ct.chandoan, ct.mabacsi,
+                            bs.hoten AS ten_bacsi, bs.sdt AS sdt_bacsi, bacsi.capbac AS chucvu_bacsi,
+                            kq.*, chuyenkhoa.tenchuyenkhoa
+                        FROM lichxetnghiem l
+                        JOIN trangthai tt ON tt.matrangthai = l.matrangthai
+                        JOIN benhnhan b ON b.mabenhnhan = l.mabenhnhan
+                        JOIN nguoidung nd ON nd.manguoidung = b.mabenhnhan
+                        JOIN loaixetnghiem loai ON loai.maloaixetnghiem = l.maloaixetnghiem
+                        JOIN khunggioxetnghiem kg ON kg.makhunggioxetnghiem = l.makhunggio
+                        JOIN hosobenhan hs ON hs.mahoso = l.mahoso
+                        JOIN chitiethoso ct ON ct.mahoso = hs.mahoso
+                        LEFT JOIN nguoidung bs ON bs.manguoidung = ct.mabacsi
+                        join bacsi on bacsi.mabacsi = ct.mabacsi
+                        join chuyenkhoa on chuyenkhoa.machuyenkhoa = bacsi.machuyenkhoa
+                        LEFT JOIN ketquaxetnghiem kq ON kq.malichxetnghiem = l.malichxetnghiem
+                        WHERE l.malichxetnghiem = '$id'";
+                $tbl = $con->query($str);
+                $p->dongketnoi($con);
+                return $tbl;
+            }else{
+                return false;
+            }
+        }
+        
     }
 ?>
