@@ -2,7 +2,7 @@
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 session_start();
 
-include_once('Controllers/cbacsi.php');
+include_once('Controllers/cchuyengia.php');
 include_once('Controllers/clichkham.php');
 include_once('Controllers/cbenhnhan.php'); // thêm controller lấy bệnh nhân
 
@@ -11,14 +11,14 @@ if (!isset($_SESSION["dangnhap"]) || !isset($_SESSION["user"])) {
     exit;
 }
 
-$cbacsi = new cBacSi();
-$bacsi = $cbacsi->getBacSiByTenTK($_SESSION["user"]["tentk"] ?? '');
+$cbacsi = new cChuyenGia();
+$bacsi = $cbacsi->getChuyenGiaByTenTK($_SESSION["user"]["tentk"] ?? '');
 if (!$bacsi) {
-    echo "<p>Không tìm thấy bác sĩ.</p>";
+    echo "<p>Không tìm thấy chuyên gia.</p>";
     exit;
 }
 
-$manguoi = $bacsi['mabacsi'] ?? null;
+$manguoi = $bacsi['machuyengia'] ?? null;
 if (!$manguoi) {
     echo "<p>Mã bác sĩ không hợp lệ.</p>";
     exit;
@@ -76,7 +76,7 @@ $benhnhanList = $cbenhnhan->get_benhnhan_mabacsi($manguoi);
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>Lịch Trống Bác Sĩ</title>
+<title>Lịch Trống Chuyên Gia</title>
 <style>
 /* --- giữ nguyên toàn bộ style của bạn --- */
 body { background: #f5f7fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0;}
@@ -111,7 +111,7 @@ h4 { font-size: 22px; font-weight: 700; color: #4b0082; margin-top: 30px; margin
 <body>
 
 <div class="lich-wrapper">
-<h2>Xem Lịch Khám Bác Sĩ</h2>
+<h2>Xem Lịch Khám Chuyên gia</h2>
 
 <form method="get" class="date-form">
     <input type="hidden" name="action" value="datlich">

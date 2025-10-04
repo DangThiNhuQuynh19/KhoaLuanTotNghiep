@@ -232,31 +232,67 @@ class mLichKham {
             $gioHienTai = date('H:i:s');
         
             $sql = "
-                SELECT llv.*, c.*, kg.*, nd.*, bs.*, cg.*, ck.*, lv.*
+                SELECT 
+                    llv.*,
+                    c.*,
+                    kg.*,
+                    nd.*,
+                    bs.*,
+                    cg.*,
+                    kg.giobatdau AS kg_giobatdau,
+                    kg.gioketthuc AS kg_gioketthuc,
+                    CONCAT(
+                    CASE 
+                        WHEN p.tentoa IS NOT NULL AND p.tentoa <> '' 
+                        THEN CONCAT('Tòa ', p.tentoa) 
+                        ELSE '' 
+                    END,
+                    CASE 
+                        WHEN p.tang IS NOT NULL AND p.tang <> '' 
+                        THEN CONCAT(
+                            CASE WHEN p.tentoa IS NOT NULL AND p.tentoa <> '' THEN ' - ' ELSE '' END,
+                            'Tầng ', p.tang
+                        )
+                        ELSE '' 
+                    END,
+                    CASE 
+                        WHEN p.sophong IS NOT NULL AND p.sophong <> '' 
+                        THEN CONCAT(
+                            CASE 
+                                WHEN (p.tentoa IS NOT NULL AND p.tentoa <> '') OR (p.tang IS NOT NULL AND p.tang <> '') 
+                                THEN ' - ' 
+                                ELSE '' 
+                            END,
+                            'Phòng ', p.sophong
+                        )
+                        ELSE '' 
+                    END
+                ) AS thongtin_phong
+
                 FROM khunggiokhambenh kg
                 JOIN calamviec c ON kg.macalamviec = c.macalamviec
                 JOIN lichlamviec llv ON llv.macalamviec = c.macalamviec
                 JOIN nguoidung nd ON nd.manguoidung = llv.manguoidung
                 LEFT JOIN bacsi bs ON bs.mabacsi = llv.manguoidung
                 LEFT JOIN chuyengia cg ON cg.machuyengia = llv.manguoidung
-                LEFT JOIN chuyenkhoa ck ON ck.machuyenkhoa = bs.machuyenkhoa
-                LEFT JOIN linhvuc lv ON lv.malinhvuc = cg.malinhvuc
-                LEFT JOIN phieukhambenh pkb 
+                LEFT JOIN phong p ON llv.maphong = p.maphong
+                LEFT JOIN phieukhambenh pkb
                     ON pkb.makhunggiokb = kg.makhunggiokb
-                    AND pkb.ngaykham = llv.ngaylam
-                    AND pkb.mabacsi = llv.manguoidung
+                    AND pkb.ngaykham = ?
                     AND pkb.matrangthai = 6
-                WHERE llv.ngaylam >= ?
-                  AND pkb.maphieukhambenh IS NULL
-                  AND (
-                        llv.ngaylam > ?
-                        OR (llv.ngaylam = ? AND kg.giobatdau >= ?)
-                      )
+                    AND pkb.mabacsi = llv.manguoidung
+                WHERE 
+                    llv.ngaylam = ?
+                    AND pkb.maphieukhambenh IS NULL
+                    AND (
+                        llv.ngaylam > CURDATE() 
+                        OR (llv.ngaylam = CURDATE() AND kg.giobatdau >= ?)
+                    )
                 ORDER BY llv.ngaylam, kg.giobatdau
             ";
         
             $stmt = $con->prepare($sql);
-            $stmt->bind_param("ssss", $ngay, $ngay, $ngay, $gioHienTai);
+            $stmt->bind_param("sss", $ngay, $ngay, $gioHienTai);
             $stmt->execute();
             $result = $stmt->get_result();
         
@@ -264,8 +300,7 @@ class mLichKham {
             return $result;
         }
         
-
-        public function getLichTrongTheoNguoi($manguoi, $ngaychon) {
+        public function getLichTrongTheoNguoi($manguoi, $ngayChon) {
             date_default_timezone_set('Asia/Ho_Chi_Minh');
         
             $p = new clsKetNoi();
@@ -277,90 +312,81 @@ class mLichKham {
             $gioHienTai = date('H:i:s');
         
             $sql = "
-                    SELECT 
-                        llv.*,
-                        c.*,
-                        kg.*,
-                        nd.*,
-                        bs.*,
-                        cg.*,
-                        kg.giobatdau AS kg_giobatdau,
-                        kg.gioketthuc AS kg_gioketthuc
-                    FROM khunggiokhambenh kg
-                    JOIN calamviec c ON kg.macalamviec = c.macalamviec
-                    JOIN lichlamviec llv ON llv.macalamviec = c.macalamviec
-                    JOIN nguoidung nd ON nd.manguoidung = llv.manguoidung
-                    LEFT JOIN bacsi bs ON bs.mabacsi = llv.manguoidung
-                    LEFT JOIN chuyengia cg ON cg.machuyengia = llv.manguoidung
-                    LEFT JOIN phieukhambenh pkb
-                        ON bs.mabacsi IS NOT NULL
-                        AND pkb.makhunggiokb = kg.makhunggiokb
-                        AND pkb.ngaykham >= ?
-                        AND pkb.matrangthai = 6
-                        AND pkb.mabacsi = llv.manguoidung
-                    WHERE llv.manguoidung = ?
-                    AND llv.ngaylam >= ?
-                    AND pkb.maphieukhambenh IS NULL
-                    AND (
-                            llv.ngaylam > ?
-                            OR (llv.ngaylam = ? AND kg.giobatdau >= ?)
-                        )
-                    ORDER BY llv.ngaylam, kg.giobatdau
-                ";
-
+                SELECT 
+                    llv.*,
+                    c.*,
+                    kg.*,
+                    nd.*,
+                    bs.*,
+                    cg.*,
+                    kg.giobatdau AS kg_giobatdau,
+                    kg.gioketthuc AS kg_gioketthuc,
+                    llv.hinhthuclamviec,
+                    CONCAT(
+                        CASE WHEN p.tentoa IS NOT NULL AND p.tentoa <> '' THEN CONCAT('Tòa ', p.tentoa) ELSE '' END,
+                        CASE WHEN p.tang IS NOT NULL AND p.tang <> '' THEN CONCAT(
+                            CASE WHEN p.tentoa IS NOT NULL AND p.tentoa <> '' THEN ' - ' ELSE '' END,
+                            'Tầng ', p.tang
+                        ) ELSE '' END,
+                        CASE WHEN p.sophong IS NOT NULL AND p.sophong <> '' THEN CONCAT(
+                            CASE WHEN (p.tentoa IS NOT NULL AND p.tentoa <> '') OR (p.tang IS NOT NULL AND p.tang <> '') THEN ' - ' ELSE '' END,
+                            'Phòng ', p.sophong
+                        ) ELSE '' END
+                    ) AS thongtin_phong
+                FROM khunggiokhambenh kg
+                JOIN calamviec c ON kg.macalamviec = c.macalamviec
+                JOIN lichlamviec llv ON llv.macalamviec = c.macalamviec
+                JOIN nguoidung nd ON nd.manguoidung = llv.manguoidung
+                LEFT JOIN bacsi bs ON bs.mabacsi = llv.manguoidung
+                LEFT JOIN chuyengia cg ON cg.machuyengia = llv.manguoidung
+                LEFT JOIN phong p ON llv.maphong = p.maphong
+                LEFT JOIN phieukhambenh pkb
+                    ON bs.mabacsi IS NOT NULL
+                    AND pkb.makhunggiokb = kg.makhunggiokb
+                    AND pkb.ngaykham = ?
+                    AND pkb.matrangthai = 6
+                    AND pkb.mabacsi = llv.manguoidung
+                WHERE llv.manguoidung = ?
+                AND llv.ngaylam = ?
+                AND pkb.maphieukhambenh IS NULL
+                AND (
+                    ? <> ? OR kg.giobatdau >= ?
+                )
+                ORDER BY llv.ngaylam, kg.giobatdau
+            ";
         
             $stmt = $con->prepare($sql);
+            if (!$stmt) {
+                error_log("Prepare failed: " . $con->error);
+                return false;
+            }
+        
+            // Nếu ngày chọn là hôm nay, lọc giờ đã qua
+            $isToday = $ngayChon === date('Y-m-d');
+        
             $stmt->bind_param(
                 "ssssss",
-                $ngaychon,   // pkb.ngaykham >= ?
+                $ngayChon,   // pkb.ngaykham = ?
                 $manguoi,    // llv.manguoidung = ?
-                $ngaychon,   // llv.ngaylam >= ?
-                $ngaychon,   // llv.ngaylam > ?
-                $ngaychon,   // llv.ngaylam = ?
+                $ngayChon,   // llv.ngaylam = ?
+                date('Y-m-d'), // so sánh với hôm nay
+                date('Y-m-d'), // so sánh với hôm nay
                 $gioHienTai  // kg.giobatdau >= ?
             );
         
-            $stmt->execute();
-            $result = $stmt->get_result();
-        
-            $p->dongketnoi($con);
-            return $result;
-        }
-        
-        
-        public function getLichTrongTheoNguoi1($tuNgay, $manguoi){
-            $p = new clsKetNoi();
-            $con = $p->moketnoi();
-            $con->set_charset('utf8');
-        
-            if($con){
-                $sql = "SELECT llv.*, c.*, kg.*, nd.*, bs.*, cg.*
-                        FROM khunggiokhambenh kg
-                        JOIN calamviec c ON kg.macalamviec = c.macalamviec
-                        JOIN lichlamviec llv ON llv.macalamviec = c.macalamviec
-                        JOIN nguoidung nd ON nd.manguoidung = llv.manguoidung
-                        LEFT JOIN bacsi bs ON bs.mabacsi = llv.manguoidung
-                        LEFT JOIN chuyengia cg ON cg.machuyengia = llv.manguoidung
-                        LEFT JOIN phieukhambenh pkb 
-                            ON pkb.makhunggiokb = kg.makhunggiokb
-                            AND pkb.mabacsi = llv.manguoidung
-                            AND pkb.ngaykham = ?
-                            AND pkb.matrangthai = 6
-                        WHERE llv.manguoidung = ?
-                          AND llv.ngaylam = ?
-                          AND pkb.maphieukhambenh IS NULL
-                        ORDER BY llv.ngaylam, kg.giobatdau";
-                
-                $stmt = $con->prepare($sql);
-                $stmt->bind_param("sis", $tuNgay, $manguoi, $tuNgay);
-                $stmt->execute();
-                $result = $stmt->get_result();
-                $p->dongketnoi($con);
-                return $result;
-            }else{
+            if (!$stmt->execute()) {
+                error_log("Execute failed: " . $stmt->error);
                 return false;
             }
+        
+            $result = $stmt->get_result();
+            $stmt->close();
+            $p->dongketnoi($con);
+        
+            return $result;
         }
+                
+        
         function getThongTinNguoi($manguoidung) {
             $p = new clsKetNoi();
             $con = $p->moketnoi();

@@ -17,7 +17,7 @@ $ngaychon = $_POST['ngay'] ?? date('Y-m-d');
 $bacsi = $_POST['bacsi'] ?? null;
 $chuyengia = $_POST['chuyengia'] ?? null;
 
-// Reset
+// Reset chọn người
 if ($bacsi) $chuyengia = null;
 if ($chuyengia) $bacsi = null;
 
@@ -26,13 +26,26 @@ $dsBacSi = $cBacSi->getAllBacSi() ?: [];
 $dsChuyenGia = $cChuyenGia->getAllChuyenGia() ?: [];
 $dsBenhNhan = $cBenhNhan->getAllBenhNhan() ?: [];
 
+// Hàm xác định ca khám
+function xacDinhCa($giobatdau) {
+    $time = strtotime($giobatdau);
+    if ($time >= strtotime('06:00') && $time <= strtotime('11:30')) return 'Sáng';
+    if ($time >= strtotime('12:30') && $time <= strtotime('18:00')) return 'Chiều';
+    if ($time >= strtotime('18:30') && $time <= strtotime('21:00')) return 'Tối';
+    return 'Khác';
+}
+
 // Lấy lịch khám
 $lichTheoNguoi = [];
 if ($chonTheo == 'ngay') {
     $tatCaLich = $cLichKham->getAllLichKhamByNgay($ngaychon);
 } else {
     $manguoi = $bacsi ?? $chuyengia ?? null;
-    $tatCaLich = $manguoi ? $cLichKham->getLichTrongCuaNguoi($ngaychon, $manguoi) : false;
+    if ($manguoi && $ngaychon >= date('Y-m-d')) {
+        $tatCaLich = $cLichKham->getLichTrongCuaNguoi($manguoi, $ngaychon);
+    } else {
+        $tatCaLich = false;
+    }
 }
 
 // Gom dữ liệu theo người
@@ -49,9 +62,10 @@ if ($tatCaLich && $tatCaLich->num_rows > 0) {
         }
         $ca = [
             'makhunggiokb' => $row['makhunggiokb'],
-            'giobatdau' => $row['giobatdau'],
-            'gioketthuc' => $row['gioketthuc'],
-            'ngaylam' => $row['ngaylam']
+            'giobatdau' => $row['kg_giobatdau'],
+            'gioketthuc' => $row['kg_gioketthuc'],
+            'ngaylam' => $row['ngaylam'],
+            'thongtin_phong' => $row['thongtin_phong'] ?? '',
         ];
         $loai = strtolower(trim($row['hinhthuclamviec'] ?? 'offline'));
         $lichTheoNguoi[$idnguoi][$loai][] = $ca;
@@ -66,7 +80,6 @@ if ($tatCaLich && $tatCaLich->num_rows > 0) {
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
 <style>
 body { background-color: #f1f5f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 .card-nguoi { margin-bottom: 20px; border-radius: 12px; box-shadow: 0 6px 15px rgba(0,0,0,0.1); border: none; transition: transform 0.2s; }
@@ -79,8 +92,12 @@ body { background-color: #f1f5f9; font-family: 'Segoe UI', Tahoma, Geneva, Verda
 .btn-offline { background-color: #198754; color: white; }
 .btn-selected { border: 2px solid #ffc107 !important; background-color: #ffc107 !important; color: black !important; }
 .card-body h5 { margin-bottom: 15px; font-weight: 700; color: #343a40; }
+.ten-loai-kham { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; font-weight: 700; font-size: 0.9rem; border-radius: 8px; color: #fff; margin-top: 15px; }
+.ten-loai-kham.online { background-color: #0dcaf0; color: #fff; }
+.ten-loai-kham.offline { background-color: #28a745; color: #fff; }
+.ten-loai-kham i, .ten-loai-kham { text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
 .card-body h6 { margin-top: 10px; margin-bottom: 8px; font-weight: 600; color: #495057; }
-.ca-group { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.ca-group { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 5px; margin-bottom: 10px; }
 form .form-label { font-weight: 600; font-size: 0.9rem; }
 .modal-content { border-radius: 12px; overflow: hidden; }
 .modal-header { background-color: #0d6efd; color: white; }
@@ -94,13 +111,11 @@ form .form-label { font-weight: 600; font-size: 0.9rem; }
 <body>
 <div class="container mt-5">
 
-<!-- Header -->
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="m-0"><i class="bi bi-people"></i> Đặt lịch khám</h1>
     <a href="index.php" class="btn btn-outline-primary"><i class="bi bi-house-door-fill"></i> Trang chủ</a>
 </div>
 
-<!-- Form lọc -->
 <form method="post" class="mb-4 row g-3 align-items-end">
     <div class="col-auto">
         <label>Chọn hiển thị</label>
@@ -113,7 +128,7 @@ form .form-label { font-weight: 600; font-size: 0.9rem; }
     <?php if ($chonTheo=='ngay'): ?>
         <div class="col-auto">
             <label>Chọn ngày</label>
-            <input type="date" name="ngay" class="form-control" value="<?= $ngaychon ?>" required>
+            <input type="date" name="ngay" class="form-control" value="<?= $ngaychon ?>" min="<?= date('Y-m-d') ?>" required>
         </div>
     <?php elseif ($chonTheo=='nguoi'): ?>
         <div class="col-auto">
@@ -121,7 +136,9 @@ form .form-label { font-weight: 600; font-size: 0.9rem; }
             <select name="bacsi" id="bacsi" class="form-select select2" onchange="onSelectNguoi('bacsi')">
                 <option value="">-- Chọn Bác sĩ --</option>
                 <?php foreach($dsBacSi as $row): ?>
-                    <option value="<?= $row['mabacsi'] ?>" <?= $bacsi==$row['mabacsi']?'selected':'' ?>><?= htmlspecialchars($row['hoten']) ?></option>
+                    <option value="<?= $row['mabacsi'] ?>" <?= $bacsi==$row['mabacsi']?'selected':'' ?>>
+                        <?= htmlspecialchars($row['hoten']) ?>
+                    </option>
                 <?php endforeach; ?>
             </select>
         </div>
@@ -130,9 +147,15 @@ form .form-label { font-weight: 600; font-size: 0.9rem; }
             <select name="chuyengia" id="chuyengia" class="form-select select2" onchange="onSelectNguoi('chuyengia')">
                 <option value="">-- Chọn Chuyên gia --</option>
                 <?php foreach($dsChuyenGia as $row): ?>
-                    <option value="<?= $row['machuyengia'] ?>" <?= $chuyengia==$row['machuyengia']?'selected':'' ?>><?= htmlspecialchars($row['hoten']) ?></option>
+                    <option value="<?= $row['machuyengia'] ?>" <?= $chuyengia==$row['machuyengia']?'selected':'' ?>>
+                        <?= htmlspecialchars($row['hoten']) ?>
+                    </option>
                 <?php endforeach; ?>
             </select>
+        </div>
+        <div class="col-auto">
+            <label>Chọn ngày khám</label>
+            <input type="date" name="ngay" class="form-control" value="<?= $ngaychon ?>" min="<?= date('Y-m-d') ?>" required>
         </div>
     <?php endif; ?>
 
@@ -141,7 +164,6 @@ form .form-label { font-weight: 600; font-size: 0.9rem; }
     </div>
 </form>
 
-<!-- Lịch khám -->
 <?php if (!empty($lichTheoNguoi)) : ?>
 <div class="row">
 <?php foreach ($lichTheoNguoi as $idnguoi => $nguoi): 
@@ -155,8 +177,14 @@ form .form-label { font-weight: 600; font-size: 0.9rem; }
                 foreach (['online','offline'] as $loai) {
                     foreach($nguoi[$loai] as $ca) {
                         $ngay = $ca['ngaylam'];
-                        if (!isset($lichTheoNgay[$ngay])) $lichTheoNgay[$ngay] = ['online'=>[], 'offline'=>[]];
-                        $lichTheoNgay[$ngay][$loai][] = $ca;
+                        $tenCa = xacDinhCa($ca['giobatdau']);
+                        if (!isset($lichTheoNgay[$ngay])) {
+                            $lichTheoNgay[$ngay] = [
+                                'online'=>['Sáng'=>[],'Chiều'=>[],'Tối'=>[]],
+                                'offline'=>['Sáng'=>[],'Chiều'=>[],'Tối'=>[]]
+                            ];
+                        }
+                        $lichTheoNgay[$ngay][$loai][$tenCa][] = $ca;
                     }
                 }
 
@@ -167,27 +195,50 @@ form .form-label { font-weight: 600; font-size: 0.9rem; }
                         </div>
                         <div class="card-body">
                             <?php foreach(['online','offline'] as $loai): ?>
-                                <?php if(!empty($caNgay[$loai])): ?>
-                                    <h6><?= $loai=='online'?'Khám Online':'Khám Bệnh viện' ?></h6>
-                                    <div class="ca-group">
-                                        <?php foreach($caNgay[$loai] as $ca): ?>
-                                            <button type="button"
-                                                class="btn <?= $loai=='online'?'btn-online':'btn-offline' ?> btn-sm btn-gio"
-                                                data-makhunggiokb="<?= $ca['makhunggiokb'] ?>"
-                                                data-manguoidung="<?= $idnguoi ?>"
-                                                data-ngaylam="<?= $ca['ngaylam'] ?>"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#modalChonBenhNhan">
-                                                <?= $ca['giobatdau'] ?> - <?= $ca['gioketthuc'] ?>
-                                            </button>
-                                        <?php endforeach; ?>
-                                    </div>
+                                <?php 
+                                $tenLoai = $loai=='online' ? 'Khám Online' : 'Khám Bệnh viện';
+                                $coLich = false;
+                                foreach(['Sáng','Chiều','Tối'] as $tenCa) {
+                                    if (!empty($caNgay[$loai][$tenCa])) { $coLich = true; break; }
+                                }
+                                ?>
+                                <?php if($coLich): ?>
+                                    <h6 class="ten-loai-kham <?= $loai ?>">
+                                        <i class="bi <?= $loai=='online'?'bi-laptop':'bi-hospital' ?>"></i>
+                                        <?= $tenLoai ?>
+                                    </h6>
+                                    <?php foreach(['Sáng','Chiều','Tối'] as $tenCa): ?>
+                                        <?php if(!empty($caNgay[$loai][$tenCa])): 
+                                            $thongtinPhong = $caNgay[$loai][$tenCa][0]['thongtin_phong'] ?? '';
+                                        ?>
+                                            <div class="mt-2">
+                                                <strong>
+                                                    <?= $tenCa ?>
+                                                    <?php if (!empty($thongtinPhong)): ?>
+                                                        (<?= htmlspecialchars($thongtinPhong) ?>)
+                                                    <?php endif; ?>:
+                                                </strong>
+                                                <div class="ca-group">
+                                                    <?php foreach($caNgay[$loai][$tenCa] as $ca): ?>
+                                                        <button type="button"
+                                                            class="btn <?= $loai=='online'?'btn-online':'btn-offline' ?> btn-sm btn-gio"
+                                                            data-makhunggiokb="<?= $ca['makhunggiokb'] ?>"
+                                                            data-manguoidung="<?= $idnguoi ?>"
+                                                            data-ngaylam="<?= $ca['ngaylam'] ?>"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#modalChonBenhNhan">
+                                                            <?= $ca['giobatdau'] ?> - <?= $ca['gioketthuc'] ?>
+                                                        </button>
+                                                    <?php endforeach; ?>
+                                                </div>
+                                            </div>
+                                        <?php endif; ?>
+                                    <?php endforeach; ?>
                                 <?php endif; ?>
                             <?php endforeach; ?>
                         </div>
                     </div>
                 <?php endforeach; ?>
-
             </div>
         </div>
     </div>
@@ -201,7 +252,6 @@ form .form-label { font-weight: 600; font-size: 0.9rem; }
 
 </div>
 
-<!-- Modal chọn bệnh nhân -->
 <div class="modal fade" id="modalChonBenhNhan" tabindex="-1" aria-labelledby="modalChonBenhNhanLabel" aria-hidden="true">
   <div class="modal-dialog">
     <form method="post" action="xulydatlich.php" id="formChonBenhNhan">
@@ -238,7 +288,6 @@ form .form-label { font-weight: 600; font-size: 0.9rem; }
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
 $(document).ready(function(){
-    // Select2 cho các select ngoài modal
     $('.select2').not('#benhnhan').select2({ width:'100%' });
 });
 
@@ -248,22 +297,49 @@ function onSelectNguoi(type){
     if(type==='chuyengia' && $('#chuyengia').val()) $('#bacsi').val(null).trigger('change');
 }
 
-// Modal chọn bệnh nhân
-$('#modalChonBenhNhan').on('show.bs.modal', function(event){
+// Modal chọn bệnh nhân + highlight ca
+var modal = document.getElementById('modalChonBenhNhan');
+var lastSelectedBtn = null;
+
+modal.addEventListener('show.bs.modal', function (event) {
     var button = event.relatedTarget;
-    $('#modal_makhunggiokb').val(button.getAttribute('data-makhunggiokb'));
-    $('#modal_manguoidung').val(button.getAttribute('data-manguoidung'));
-    $('#modal_ngaylam').val(button.getAttribute('data-ngaylam'));
 
-    // Reset và khởi tạo Select2 cho modal
-    $('#benhnhan').val('').select2({
-        width: '100%',
-        dropdownParent: $('#modalChonBenhNhan')
+    if(lastSelectedBtn) lastSelectedBtn.classList.remove('btn-selected');
+    button.classList.add('btn-selected');
+    lastSelectedBtn = button;
+
+    document.getElementById('modal_makhunggiokb').value = button.getAttribute('data-makhunggiokb');
+    document.getElementById('modal_manguoidung').value = button.getAttribute('data-manguoidung');
+    document.getElementById('modal_ngaylam').value = button.getAttribute('data-ngaylam');
+
+    var nguoiName = button.closest('.card-nguoi').querySelector('.card-title').innerText;
+    var loaiKham = button.classList.contains('btn-online') ? 'Khám Online' : 'Khám Bệnh viện';
+    var caText = button.innerText;
+
+    var infoDiv = document.getElementById('thongTinCa');
+    if(!infoDiv){
+        infoDiv = document.createElement('div');
+        infoDiv.id = 'thongTinCa';
+        infoDiv.className = 'mb-2';
+        var modalBody = modal.querySelector('.modal-body');
+        modalBody.insertBefore(infoDiv, modalBody.firstChild);
+    }
+    infoDiv.innerHTML = `<strong>Người khám:</strong> ${nguoiName}<br>
+                         <strong>Loại khám:</strong> ${loaiKham}<br>
+                         <strong>Ca:</strong> ${caText}`;
+});
+
+// Ngăn chọn ngày nhỏ hơn hôm nay
+var ngayInput = document.querySelectorAll('input[type="date"]');
+var today = new Date().toISOString().split('T')[0];
+ngayInput.forEach(function(input) {
+    input.setAttribute('min', today);
+    input.addEventListener('change', function() {
+        if(this.value < today){
+            alert('Vui lòng chọn ngày');
+            this.value = today;
+        }
     });
-
-    // Highlight nút
-    $('.btn-gio').removeClass('btn-selected');
-    $(button).addClass('btn-selected');
 });
 </script>
 </body>

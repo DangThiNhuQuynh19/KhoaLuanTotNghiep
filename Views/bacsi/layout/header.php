@@ -19,7 +19,7 @@
     <header class="main-header">
         <div class="logo">
                 <a href="?action=trangchu"> 
-                    <img src="Assets/img/logo.png" alt="Hanh Phuc Hospital Logo" style="width:150px;">
+                    <img src="Assets/img/logo.png" alt="Hanh Phuc Hospital Logo" style="width:130px;">
                 </a>
         </div>
         <nav class="main-nav">
