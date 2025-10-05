@@ -4,7 +4,12 @@
   padding: 0;
   box-sizing: border-box;
 }
-
+.content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
 :root {
   --primary: #5e4b93;
   --primary-dark: #483a73;

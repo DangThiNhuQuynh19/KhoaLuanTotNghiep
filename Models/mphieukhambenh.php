@@ -544,5 +544,21 @@
                 return false; 
             }
         }
+
+        public function select_phieukhambenh(){
+            $p = new clsKetNoi();
+            $con = $p->moketnoi();
+            $con->set_charset('utf8');
+            if($con){
+                $str = "select * from phieukhambenh pk 
+                        join khunggiokhambenh kg on pk.makhunggiokb
+                        join calamviec ca on ca.macalamviec=kg.macalamviec";
+                $tbl = $con->query($str);
+                $p->dongketnoi($con);
+                return $tbl;
+            }else{
+                return false; 
+            }
+        }
     }
 ?>

@@ -1,218 +1,620 @@
 <?php
-date_default_timezone_set('Asia/Ho_Chi_Minh');
-session_start();
+    require 'vendor/autoload.php';
+    use Endroid\QrCode\Builder\Builder;
+    use Endroid\QrCode\Writer\PngWriter;
+    include_once("Assets/config.php");
+    include_once('xu-ly-email.php');
+    include_once('xu-ly-thanh-toan.php');
 
-include_once('Controllers/cbacsi.php');
-include_once('Controllers/clichkham.php');
-include_once('Controllers/cbenhnhan.php'); // thêm controller lấy bệnh nhân
+    include_once('Controllers/cbenhnhan.php');
+    include_once('Controllers/cbacsi.php');
+    include_once('Controllers/chosobenhandientu.php');
+    include_once('Controllers/clichkham.php');
+    include_once('Controllers/cPhieuKhambenh.php');
 
-if (!isset($_SESSION["dangnhap"]) || !isset($_SESSION["user"])) {
-    echo "<p>Bạn chưa đăng nhập!</p>";
-    exit;
-}
+    // Khởi tạo các đối tượng controller
+    $cbenhnhan = new cBenhNhan();
+    $chosobenhandientu = new cHoSoBenhAnDienTu();
+    $cbacsi = new cBacSi();
+    $clichkham = new cLichKham();
+    $cphieukhambenh = new cPhieuKhamBenh();
 
-$cbacsi = new cBacSi();
-$bacsi = $cbacsi->getBacSiByTenTK($_SESSION["user"]["tentk"] ?? '');
-if (!$bacsi) {
-    echo "<p>Không tìm thấy bác sĩ.</p>";
-    exit;
-}
-
-$manguoi = $bacsi['mabacsi'] ?? null;
-if (!$manguoi) {
-    echo "<p>Mã bác sĩ không hợp lệ.</p>";
-    exit;
-}
-
-// Xử lý ngày được chọn từ input
-$tuNgay = isset($_GET['ngaychon']) && $_GET['ngaychon'] !== ''
-    ? $_GET['ngaychon']
-    : date('Y-m-d');
-
-$lich = new cLichKham();
-$tbl = $lich->getLichTrongCuaNguoi($manguoi, $tuNgay);
-
-$lichOnline = [];
-$lichOffline = [];
-
-if ($tbl && $tbl !== -1 && $tbl !== 0) {
-    while ($row = $tbl->fetch_assoc()) {
-        $loai = strtolower($row['hinhthuclamviec']);
-        if ($loai === 'online') $lichOnline[] = $row;
-        else $lichOffline[] = $row;
-    }
-}
-
-// Hàm xác định ca theo giờ
-function xacDinhCa($gio) {
-    $time = strtotime($gio);
-    if ($time >= strtotime('06:00') && $time <= strtotime('11:30')) return 'Sáng';
-    if ($time >= strtotime('12:30') && $time <= strtotime('18:00')) return 'Chiều';
-    if ($time >= strtotime('18:30') && $time <= strtotime('21:00')) return 'Tối';
-    return 'Khác';
-}
-
-// Gom lịch theo ca
-function gomTheoCa($lich) {
-    $result = ['Sáng'=>[], 'Chiều'=>[], 'Tối'=>[]];
-    foreach ($lich as $row) {
-        $ca = xacDinhCa($row['kg_giobatdau']);
-        if ($ca !== 'Khác') {
-            $result[$ca][] = $row;
-        }
-    }
-    return $result;
-}
-
-$lichOnlineCa = gomTheoCa($lichOnline);
-$lichOfflineCa = gomTheoCa($lichOffline);
-
-// Lấy danh sách bệnh nhân
-$cbenhnhan = new cBenhNhan();
-$benhnhanList = $cbenhnhan->get_benhnhan_mabacsi($manguoi);
+    $phieukham = $cphieukhambenh->get_phieukhambenh();
+    $bacsi = $cbacsi->getBacSiByTenTK($_SESSION['user']['tentk']);
+    $danh_sach_benh_nhan = $cbenhnhan->get_benhnhan_mabacsi($bacsi['mabacsi']);
+    $lichbacsi = $clichkham->get_lickham_mabacsi($bacsi['mabacsi']);
+   
+    $thong_bao = '';
+    $loai_thong_bao = 'thanh_cong';
 
 ?>
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-<meta charset="UTF-8">
-<title>Lịch Trống Bác Sĩ</title>
-<style>
-/* --- giữ nguyên toàn bộ style của bạn --- */
-body { background: #f5f7fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0;}
-.lich-wrapper { max-width: 980px; margin: 40px auto; background: linear-gradient(145deg, #ffffff, #f0e7ff); padding: 30px 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(108, 52, 131, 0.15); transition: transform 0.2s;}
-.lich-wrapper:hover { transform: translateY(-3px);}
-.lich-wrapper h2 { text-align: center; color: #6c3483; font-size: 30px; font-weight: 800; margin-bottom: 30px; text-shadow: 1px 1px 2px rgba(108, 52, 131, 0.3);}
-.date-form { display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap; margin-bottom: 30px;}
-.date-form input[type="date"] { padding: 8px 14px; border-radius: 8px; border: 1px solid #ccc; font-size: 14px; cursor: pointer; background-color: #fff; transition: all 0.3s;}
-.date-form input[type="date"]:focus { outline: none; border-color: #6c3483; box-shadow: 0 0 5px rgba(108, 52, 131, 0.3);}
-.date-form button { padding: 8px 20px; border-radius: 8px; border: none; background: #6c3483; color: #fff; font-weight: 600; cursor: pointer; font-size: 14px; transition: 0.3s;}
-.date-form button:hover { background: #4b0082; transform: scale(1.05); box-shadow: 0 5px 15px rgba(108, 52, 131, 0.3);}
-h4 { font-size: 22px; font-weight: 700; color: #4b0082; margin-top: 30px; margin-bottom: 15px; border-bottom: 2px solid #6c3483; display: inline-block; padding-bottom: 3px;}
-.title-ca { font-size: 16px; font-weight: 600; color: #6c3483; margin: 12px 0 6px;}
-.ca-group { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;}
-.btn-ca { padding: 8px 16px; border-radius: 10px; font-size: 14px; font-weight: 500; border: none; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s, background 0.2s;}
-.btn-online { background: #0dcaf0; color: #fff;}
-.btn-online:hover { background: #0bb7d0; transform: scale(1.07); box-shadow: 0 5px 15px rgba(13, 202, 240, 0.4);}
-.btn-offline { background: #198754; color: #fff;}
-.btn-offline:hover { background: #146c43; transform: scale(1.07); box-shadow: 0 5px 15px rgba(25, 135, 84, 0.4);}
-.btn-ca:disabled, .btn-ca.btn-disabled { background: #ccc !important; cursor: not-allowed; opacity: 0.6;}
-/* Modal */
-.modal { display: none; position: fixed; z-index: 1000; padding-top: 100px; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5);}
-.modal-content { background-color: #fff; margin: auto; padding: 20px; border-radius: 12px; width: 90%; max-width: 400px; box-shadow: 0 10px 25px rgba(108,52,131,0.3);}
-.close { color: #aaa; float: right; font-size: 24px; font-weight: bold; cursor: pointer; }
-.close:hover { color: #6c3483; }
-#formBenhNhan select, #formBenhNhan button { width: 100%; padding: 8px 10px; margin-top: 8px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px;}
-#formBenhNhan button { background: #6c3483; color: #fff; border: none; cursor: pointer; }
-#formBenhNhan button:hover { background: #4b0082;}
-@media (max-width: 768px) { .lich-wrapper { margin: 20px 15px; padding: 25px 20px;} .lich-wrapper h2 { font-size: 24px;} h4 { font-size: 20px;} .title-ca { font-size: 14px;} .btn-ca { font-size: 13px; padding: 6px 12px;} .date-form { flex-direction: column; } }
-</style>
+    <style>
+        .alert {
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            transition: opacity 0.5s ease-out;
+        }
+        
+        .alert-thanh_cong {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-canh_bao {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .alert-loi {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .hinh-thuc-kham {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background: #f9f9f9;
+        }
+
+        .hinh-thuc-kham h3 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+            font-size: 18px;
+        }
+
+        .ca-kham {
+            margin-bottom: 20px;
+        }
+
+        .ca-kham h4 {
+            margin-bottom: 10px;
+            color: #555;
+            font-size: 16px;
+        }
+
+        .khung-gio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+        }
+
+        .khung-gio-btn {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .khung-gio-btn:hover {
+            border-color: #4CAF50;
+            background: #f0f8f0;
+            transform: translateY(-2px);
+        }
+
+        .khung-gio-btn.selected {
+            border-color: #4CAF50;
+            background: #4CAF50;
+            color: white;
+        }
+
+        .khung-gio-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #f5f5f5;
+        }
+
+        .khung-gio-btn .time {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .khung-gio-btn .status {
+            font-size: 12px;
+            margin-top: 5px;
+            color: #666;
+        }
+
+        .khung-gio-btn.selected .status {
+            color: white;
+        }
+    </style>
 </head>
 <body>
-
-<div class="lich-wrapper">
-<h2>Xem Lịch Khám Bác Sĩ</h2>
-
-<form method="get" class="date-form">
-    <input type="hidden" name="action" value="datlich">
-    <label for="ngaychon">Chọn ngày: </label>
-    <?php $today = date('Y-m-d'); ?>
-    <input type="date" id="ngaychon" name="ngaychon" value="<?= htmlspecialchars($tuNgay) ?>" min="<?= $today ?>" required>
-    <button type="submit">Xem lịch</button>
-</form>
-<?php foreach (['online'=>'Khám Online','offline'=>'Khám Bệnh viện'] as $loai => $title): ?>
-    <div style="margin-top: 30px; margin-bottom: 10px;">
-        <h4><?= $title ?></h4>
-    </div>
-    <?php 
-        $lichCa = $loai=='online' ? $lichOnlineCa : $lichOfflineCa;
-        $btnClass = $loai=='online' ? 'btn-online' : 'btn-offline';
-    ?>
-    <?php foreach(['Sáng','Chiều','Tối'] as $caTen): ?>
-        <?php if(!empty($lichCa[$caTen])): 
-            $gioBatDau = $lichCa[$caTen][0]['kg_giobatdau'];
-            $gioKetThuc = $lichCa[$caTen][count($lichCa[$caTen])-1]['kg_gioketthuc'];
-            $thongTinPhong = $loai=='offline' ? ($lichCa[$caTen][0]['thongtin_phong'] ?? '') : '';
-        ?>
-            <div class="title-ca">
-                <?= $caTen ?><?php if($thongTinPhong): ?> (<?= htmlspecialchars($thongTinPhong) ?>)<?php endif; ?>:
+    <main class="container">
+        <div class="content-header">
+            <div class="back-button">
+                <a href="index.php" class="btn-icon">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <h1>Đặt Lịch khám bệnh</h1>
             </div>
-            <div class="ca-group">
-                <?php foreach($lichCa[$caTen] as $row): ?>
-                    <button type="button" class="btn-ca <?= $btnClass ?>" 
-                        data-ca="<?= $caTen ?>"
-                        data-giobd="<?= $row['kg_giobatdau'] ?>"
-                        data-giokt="<?= $row['kg_gioketthuc'] ?>">
-                        <?= $row['kg_giobatdau'] ?> - <?= $row['kg_gioketthuc'] ?>
-                    </button>
-                <?php endforeach; ?>
+        </div>
+        <!-- Thông báo -->
+        <?php if (!empty($_SESSION['thong_bao'])): ?>
+            <div class="alert alert-<?php echo $_SESSION['loai_thong_bao']; ?>" id="thong_bao_alert">
+                <i class="fas fa-<?php echo $_SESSION['loai_thong_bao'] === 'thanh_cong' ? 'check-circle' : ($_SESSION['loai_thong_bao'] === 'canh_bao' ? 'exclamation-triangle' : 'exclamation-circle'); ?>"></i>
+                <div>
+                    <?php echo $_SESSION['thong_bao']; ?>
+                </div>
             </div>
+            <!-- Enhanced auto-hide notification script -->
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    setTimeout(function() {
+                        const alert = document.getElementById('thong_bao_alert');
+                        if (alert) {
+                            alert.style.transition = 'opacity 0.5s ease-out';
+                            alert.style.opacity = '0';
+                            setTimeout(function() {
+                                alert.style.display = 'none';
+                            }, 500);
+                        }
+                    }, 6000); // 6 seconds
+                });
+            </script>
+            <?php 
+                unset($_SESSION['thong_bao']); 
+                unset($_SESSION['loai_thong_bao']); 
+            ?>
         <?php endif; ?>
-    <?php endforeach; ?>
-<?php endforeach; ?>
+        <!-- Added popup success message handling -->
+        <?php if (!empty($_SESSION['popup_success'])): ?>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    hien_thi_popup_thanh_cong(
+                        '<?php echo $_SESSION['popup_title']; ?>', 
+                        '<?php echo $_SESSION['popup_message']; ?>'
+                    );
+                });
+            </script>
+            <?php 
+                unset($_SESSION['popup_success']); 
+                unset($_SESSION['popup_title']); 
+                unset($_SESSION['popup_message']); 
+            ?>
+        <?php endif; ?>
 
-</div>
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            <div>
+                <strong>Lưu ý:</strong> Sau khi đặt lịch, bệnh nhân sẽ nhận email thông báo. Vui lòng yêu cầu bệnh nhân thanh toán trong vòng 30 phút, nếu không lịch hẹn sẽ tự động bị hủy.
+            </div>
+        </div>
+        
+        <div class="content-header"> 
+            <a href="?action=taohoso" style="float:right; margin-bottom: 5px;" class="btn-primary btn-small">Tạo hồ sơ</a>
+        </div>
+        
+        <form action="" method="post" id="form_dat_lich" onsubmit="return kiem_tra_form()">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Thông Tin Bệnh Nhân</h2>
+                </div>
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="ma_benh_nhan">Mã bệnh nhân <span style="color: red;">*</span></label> 
+                                <input list="ds_benh_nhan" id="ma_benh_nhan" name="ma_benh_nhan" placeholder="Nhập mã hoặc tên bệnh nhân..." autocomplete="off" required> 
+                                <datalist id="ds_benh_nhan"> 
+                                    <?php foreach ($danh_sach_benh_nhan as $benh_nhan): ?> 
+                                        <option value="<?php echo $benh_nhan['mabenhnhan']; ?>"> <?php echo $benh_nhan['mabenhnhan'] . ' - ' . $benh_nhan['hoten']; ?> </option> 
+                                    <?php endforeach; ?>
+                                </datalist>
+                            </div>
+                        </div>
 
-<!-- Modal chọn bệnh nhân -->
-<div id="modalBenhNhan" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <h3>Chọn bệnh nhân</h3>
-        <form id="formBenhNhan">
-            <label for="benhnhanSelect">Bệnh nhân:</label>
-            <select id="benhnhanSelect" required>
-                <option value="">-- Chọn bệnh nhân --</option>
-                <?php
-                if(is_array($benhnhanList)){
-                    foreach($benhnhanList as $bn){
-                        echo '<option value="'.$bn['mabenhnhan'].'">'.htmlspecialchars($bn['hoten']).' - '.htmlspecialchars($bn['sdt']).'</option>';
-                    }
-                }
-                ?>
-            </select>
-            <input type="hidden" id="caChon">
-            <input type="hidden" id="gioBatDau">
-            <input type="hidden" id="gioKetThuc">
-            <div style="margin-top: 15px; text-align: right;">
-                <button type="submit">Xác nhận</button>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="ma_ho_so">Hồ sơ bệnh nhân</label>
+                                <select name="ma_ho_so" id="ma_ho_so" required>
+                                    <option value="">-- Chọn hồ sơ --</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="ten_benh_nhan">Họ và tên</label>
+                                <input type="text" id="ten_benh_nhan" name="ten_benh_nhan" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="ngay_sinh_benh_nhan">Ngày sinh</label>
+                                <input type="text" id="ngay_sinh_benh_nhan" name="ngay_sinh_benh_nhan" readonly>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="gioi_tinh_benh_nhan">Giới tính</label>
+                                <input type="text" id="gioi_tinh_benh_nhan" name="gioi_tinh_benh_nhan" readonly>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="sdt_benh_nhan">Số điện thoại</label>
+                                <input type="text" id="sdt_benh_nhan" name="sdt_benh_nhan" readonly>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2>Thông Tin Lịch Hẹn</h2>
+                </div>
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="ngay_hen">Ngày khám</label>
+                                <input type="date" id="ngay_hen" name="ngay_hen" required min="<?php echo date('Y-m-d', strtotime('+1 day')); ?>">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="khung_gio_kham" style="display: none;">
+                        <label>Chọn khung giờ khám <span style="color: red;">*</span></label>
+                        <div class="hinh-thuc-kham">
+                            <h3><i class="fas fa-video"></i> Khám Online</h3>
+                            
+                            <div class="ca-kham">
+                                <h4>Ca Sáng</h4>
+                                <div class="khung-gio-grid" id="online_ca_sang"></div>
+                            </div>
+                            
+                            <div class="ca-kham">
+                                <h4>Ca Chiều</h4>
+                                <div class="khung-gio-grid" id="online_ca_chieu"></div>
+                            </div>
+                            
+                            <div class="ca-kham">
+                                <h4>Ca Tối</h4>
+                                <div class="khung-gio-grid" id="online_ca_toi"></div>
+                            </div>
+                        </div>
+
+                        <div class="hinh-thuc-kham">
+                            <h3><i class="fas fa-hospital"></i> Khám Tại Bệnh Viện</h3>
+                            
+                            <div class="ca-kham">
+                                <h4>Ca Sáng</h4>
+                                <div class="khung-gio-grid" id="offline_ca_sang"></div>
+                            </div>
+                            
+                            <div class="ca-kham">
+                                <h4>Ca Chiều</h4>
+                                <div class="khung-gio-grid" id="offline_ca_chieu"></div>
+                            </div>
+                            
+                            <div class="ca-kham">
+                                <h4>Ca Tối</h4>
+                                <div class="khung-gio-grid" id="offline_ca_toi"></div>
+                            </div>
+                        </div>
+                        
+                        <input type="hidden" name="gio_hen" id="gio_hen_selected" required>
+                        <input type="hidden" name="hinh_thuc" id="hinh_thuc_selected" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="ghi_chu">Ghi chú</label>
+                        <textarea name="ghi_chu" id="ghi_chu" rows="4" placeholder="Nhập các yêu cầu đặc biệt hoặc thông tin bổ sung..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; margin-top: 24px;">
+                <button type="reset" class="btn-outline" onclick="lam_moi_form()">
+                    <i class="fas fa-redo"></i> Làm mới
+                </button>
+                <button type="submit" name="btn_xac_nhan" class="btn-primary" id="nut_xac_nhan">
+                    <i class="fas fa-calendar-check"></i> Xác nhận đặt lịch
+                </button>
             </div>
         </form>
-    </div>
-</div>
+    </main>
 
-<script>
-const dateInput = document.getElementById('ngaychon');
-dateInput.addEventListener('keydown', e => e.preventDefault());
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="copyright">
+                &copy; <?php echo date('Y'); ?> Bệnh Viện Hạnh Phúc. Tất cả các quyền được bảo lưu.
+            </div>
+            <div class="footer-links">
+                <a href="about.php">Về chúng tôi</a>
+                <a href="privacy.php">Chính sách bảo mật</a>
+                <a href="terms.php">Điều khoản sử dụng</a>
+                <a href="contact.php">Liên hệ</a>
+            </div>
+        </div>
+    </footer>
 
-// Modal
-const modal = document.getElementById("modalBenhNhan");
-const spanClose = document.querySelector(".modal .close");
-const formBenhNhan = document.getElementById("formBenhNhan");
+    <script>
+        function hien_thi_popup_thanh_cong(tieu_de, noi_dung) {
+            // Create popup overlay
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 9999;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                animation: fadeIn 0.3s ease-out;
+            `;
+            
+            // Create popup content
+            const popup = document.createElement('div');
+            popup.style.cssText = `
+                background: white;
+                padding: 40px;
+                border-radius: 15px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                max-width: 450px;
+                width: 90%;
+                text-align: center;
+                animation: popupSlideIn 0.4s ease-out;
+                position: relative;
+            `;
+            
+            popup.innerHTML = `
+                <div style="color: #28a745; font-size: 60px; margin-bottom: 20px;">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3 style="color: #28a745; margin-bottom: 15px; font-size: 26px; font-weight: 600;">${tieu_de}</h3>
+                <p style="color: #555; margin-bottom: 25px; line-height: 1.6; font-size: 16px;">${noi_dung}</p>
+                <button onclick="dong_popup()" style="
+                    background: linear-gradient(135deg, #28a745, #20c997);
+                    color: white;
+                    border: none;
+                    padding: 12px 30px;
+                    border-radius: 25px;
+                    cursor: pointer;
+                    font-size: 16px;
+                    font-weight: 500;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+                " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(40, 167, 69, 0.4)'" 
+                   onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(40, 167, 69, 0.3)'">
+                    <i class="fas fa-times"></i> Đóng
+                </button>
+            `;
+            
+            overlay.appendChild(popup);
+            document.body.appendChild(overlay);
+            
+            // Add CSS animations
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+                @keyframes popupSlideIn {
+                    from {
+                        opacity: 0;
+                        transform: scale(0.7) translateY(-50px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: scale(1) translateY(0);
+                    }
+                }
+                @keyframes fadeOut {
+                    from { opacity: 1; }
+                    to { opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // Auto close after 6 seconds
+            setTimeout(function() {
+                dong_popup();
+            }, 6000);
+        }
+        
+        function dong_popup() {
+            const overlay = document.querySelector('div[style*="position: fixed"][style*="z-index: 9999"]');
+            if (overlay) {
+                overlay.style.animation = 'fadeOut 0.3s ease-out';
+                setTimeout(function() {
+                    overlay.remove();
+                }, 300);
+            }
+        }
 
-document.querySelectorAll('.btn-ca').forEach(btn => {
-    btn.addEventListener('click', function(){
-        modal.style.display = "block";
-        document.getElementById('caChon').value = this.dataset.ca;
-        document.getElementById('gioBatDau').value = this.dataset.giobd;
-        document.getElementById('gioKetThuc').value = this.dataset.giokt;
-    });
-});
+        function kiem_tra_form() {
+            const ma_benh_nhan = document.getElementById('ma_benh_nhan').value;
+            const ma_ho_so = document.getElementById('ma_ho_so').value;
+            const ngay_hen = document.getElementById('ngay_hen').value;
+            const gio_hen = document.getElementById('gio_hen_selected').value;
+            
+            const showError = (msg) => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Thiếu thông tin',
+                    text: msg,
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#d33'
+                });
+            };
 
-spanClose.onclick = () => modal.style.display = "none";
-window.onclick = (e) => { if(e.target==modal) modal.style.display = "none"; }
+            if (!ma_benh_nhan) {
+                showError('Vui lòng chọn bệnh nhân.');
+                return false;
+            }
+            if (!ma_ho_so) {
+                showError('Vui lòng chọn hồ sơ bệnh nhân.');
+                return false;
+            }
+            if (!ngay_hen) {
+                showError('Vui lòng chọn ngày khám.');
+                return false;
+            }
+            if (!gio_hen) {
+                showError('Vui lòng chọn khung giờ khám.');
+                return false;
+            }
+            
+            Swal.fire({
+                title: 'Xác nhận đặt lịch',
+                html: `
+                    <p>Bạn có chắc chắn muốn đặt lịch khám?</p>
+                    <p><strong>Hệ thống sẽ gửi email thông báo đến bệnh nhân.</strong></p>
+                `,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Đặt lịch',
+                cancelButtonText: 'Hủy',
+                confirmButtonColor: '#16a34a',
+                cancelButtonColor: '#d33'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('form_dat_lich').submit();
+                }
+            });
 
-formBenhNhan.addEventListener('submit', e => {
-    e.preventDefault();
-    const benhnhan = document.getElementById('benhnhanSelect').value;
-    const ca = document.getElementById('caChon').value;
-    const gioBD = document.getElementById('gioBatDau').value;
-    const gioKT = document.getElementById('gioKetThuc').value;
-    if(benhnhan){
-        alert(`Đặt lịch cho bệnh nhân ${benhnhan}\nCa: ${ca}\nThời gian: ${gioBD} - ${gioKT}`);
-        modal.style.display = "none";
-    }
-});
-</script>
+            return false;
+        }
+        
+        function lam_moi_form() {
+            document.getElementById('ten_benh_nhan').value = '';
+            document.getElementById('ngay_sinh_benh_nhan').value = '';
+            document.getElementById('gioi_tinh_benh_nhan').value = '';
+            document.getElementById('sdt_benh_nhan').value = '';
+            
+            const chon_ho_so = document.getElementById('ma_ho_so');
+            chon_ho_so.innerHTML = '<option value="">-- Chọn hồ sơ --</option>';
 
+        }
+    
+
+        document.getElementById('ma_benh_nhan').addEventListener('change', function() {
+            const ma_benh_nhan = this.value;
+
+            document.getElementById('ten_benh_nhan').value = '';
+            document.getElementById('ngay_sinh_benh_nhan').value = '';
+            document.getElementById('gioi_tinh_benh_nhan').value = '';
+            document.getElementById('sdt_benh_nhan').value = '';
+            
+            const chon_ho_so = document.getElementById('ma_ho_so');
+            chon_ho_so.innerHTML = '<option value="">-- Chọn hồ sơ --</option>';
+   
+            if (!ma_benh_nhan) return;
+
+            const danh_sach_benh_nhan = <?php echo json_encode($danh_sach_benh_nhan); ?>;
+            const benh_nhan = danh_sach_benh_nhan.find(bn => bn.mabenhnhan === ma_benh_nhan);
+
+            const danh_sach_ho_so = <?php echo json_encode($chosobenhandientu->get_hsba()); ?>;
+            const ho_so_benh_nhan = danh_sach_ho_so.filter(hs => hs.mabenhnhan === ma_benh_nhan);
+
+            if (benh_nhan) {
+                document.getElementById('ten_benh_nhan').value = benh_nhan.hoten;
+                document.getElementById('ngay_sinh_benh_nhan').value = benh_nhan.ngaysinh;
+                document.getElementById('gioi_tinh_benh_nhan').value = benh_nhan.gioitinh;
+                document.getElementById('sdt_benh_nhan').value = benh_nhan.sdt;
+            }
+
+            ho_so_benh_nhan.forEach(hs => {
+                const tuy_chon = document.createElement('option');
+                tuy_chon.value = hs.mahoso;
+                tuy_chon.textContent = `${hs.mahoso} - ${hs.ngaytao}`;
+                chon_ho_so.appendChild(tuy_chon);
+            });
+        });
+
+        document.getElementById('ngay_hen').addEventListener('change', cap_nhat_khung_gio);
+        function cap_nhat_khung_gio() {
+            const ngay_chon = document.getElementById('ngay_hen').value;
+            const ma_benh_nhan = document.getElementById('ma_benh_nhan').value;
+            const khungGioKham = document.getElementById('khung_gio_kham');
+            // Reset giao diện khung giờ
+            const khung_gio_ids = [
+                'online_ca_sang','online_ca_chieu','online_ca_toi',
+                'offline_ca_sang','offline_ca_chieu','offline_ca_toi'
+            ];
+            khung_gio_ids.forEach(id => document.getElementById(id).innerHTML = '');
+            
+            if (!ngay_chon || !ma_benh_nhan) return;
+
+            khungGioKham.style.display = 'block';
+
+            const phieuKham = <?php echo json_encode($phieukham); ?>;
+            const lichBacSi = <?php echo json_encode($lichbacsi); ?>;
+
+            console.log(lichBacSi);
+        
+            // --- Lọc khung giờ bệnh nhân đã có trong ngày được chọn ---
+            const phieuKhamBenhNhan = phieuKham.filter(pk => 
+                pk.mabenhnhan === ma_benh_nhan && pk.ngaykham === ngay_chon
+            );
+
+            // Lấy ra danh sách mã khung giờ đã đặt của bệnh nhân đó trong ngày này
+            const khungDaDat = phieuKhamBenhNhan.map(pk => pk.makhunggiokb);
+
+            // --- Lọc các khung giờ trống trong lịch làm việc của bác sĩ ---
+            const khungTrong = lichBacSi.filter(lh => 
+                lh.ngaykham === ngay_chon && !khungDaDat.includes(lh.makhunggiokb)
+            );
+
+
+            if (khungTrong.length === 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Không có khung giờ trống',
+                    text: 'Vui lòng chọn ngày khác hoặc liên hệ bác sĩ để sắp xếp lịch.',
+                });
+                khungGioKham.style.display = 'none';
+                return;
+            }
+
+            // Nhóm khung giờ theo hình thức và ca
+            khungTrong.forEach(kg => {
+                const id_target = `${kg.hinhthuclamviec}_${kg.macalam === '4' ? 'ca_sang' : kg.macalam === '5' ? 'ca_chieu' : 'ca_toi'}`;
+                const container = document.getElementById(id_target);
+
+                if (container) {
+                    const btn = document.createElement('div');
+                    btn.className = 'khung-gio-btn';
+                    btn.dataset.makhunggio = kg.makhunggiokb;
+                    btn.dataset.hinhthuc = kg.hinhthuclamviec;
+                    btn.innerHTML = `
+                        <div class="time">${kg.giobatdau} - ${kg.gioketthuc}</div>
+                        <div class="status">${kg.hinhthuclamviec === 'online' ? 'Khám Online' : 'Tại Bệnh Viện'}</div>
+                    `;
+
+                    btn.addEventListener('click', function() {
+                        document.querySelectorAll('.khung-gio-btn').forEach(b => b.classList.remove('selected'));
+                        this.classList.add('selected');
+                        document.getElementById('gio_hen_selected').value = this.dataset.makhunggio;
+                        document.getElementById('hinh_thuc_selected').value = this.dataset.hinhthuc;
+                    });
+
+                    container.appendChild(btn);
+                }
+            });
+        }
+    </script>
 </body>
 </html>

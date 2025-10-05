@@ -408,6 +408,32 @@ class mLichKham {
         
             return null; // Không tìm thấy
         }
+
+        public function select_lichkham_mabacsi($mabacsi){
+            $p = new clsKetNoi();
+            $con = $p->moketnoi();
+            $con->set_charset('utf8');
+            if($con){
+                $str = "SELECT 
+                            ca.macalamviec, 
+                            ca.tenca, 
+                            l.*, 
+                            kg.*, 
+                            p.*, 
+                            nd.* 
+                        FROM lichlamviec l
+                        JOIN calamviec ca ON ca.macalamviec = l.macalamviec
+                        JOIN khunggiokhambenh kg ON kg.macalamviec = l.macalamviec
+                        JOIN phong p ON p.maphong = l.maphong
+                        JOIN nguoidung nd ON nd.manguoidung = l.manguoidung
+                        WHERE l.manguoidung = '$mabacsi'";
+                $tbl = $con->query($str);
+                $p->dongketnoi($con);
+                return $tbl;
+            }else{
+                return false; 
+            }
+        }
 }
 
 ?>
