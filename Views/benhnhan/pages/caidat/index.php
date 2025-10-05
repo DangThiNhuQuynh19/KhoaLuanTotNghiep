@@ -2,6 +2,7 @@
 session_start();
 include_once('Controllers/cBenhNhan.php');
 include_once("Assets/config.php");
+
 if (!isset($_SESSION['user']) || !isset($_SESSION['user']['tentk'])) {
     echo "<p>Bạn chưa đăng nhập.</p>";
     exit;
@@ -9,24 +10,21 @@ if (!isset($_SESSION['user']) || !isset($_SESSION['user']['tentk'])) {
 
 $email = $_SESSION['user']['tentk'];
 $pBenhNhan = new cBenhNhan();
-$taikhoan = $pBenhNhan ->getbenhnhanbytk($email);
+$taikhoan = $pBenhNhan->getbenhnhanbytk($email);
 $benhnhans = $pBenhNhan->getAllBenhNhanByTK($taikhoan['mabenhnhan']);
 
 $currentTab = isset($_GET['tab']) ? $_GET['tab'] : 'all';
 
 $filteredBenhnhans = [];
 if ($currentTab === 'active') {
-    // Filter for active patients (assuming status field exists)
     $filteredBenhnhans = array_filter($benhnhans, function($bn) {
         return isset($bn['tentrangthai']) && $bn['tentrangthai'] === 'Đang hoạt động';
     });
-} elseif ($currentTab === 'cancelled') {
-    // Filter for cancelled patients
+} elseif ($currentTab === 'inactive') {
     $filteredBenhnhans = array_filter($benhnhans, function($bn) {
-        return isset($bn['tentrangthai']) && $bn['tentrangthai'] === 'Đã hủy';
+        return isset($bn['tentrangthai']) && $bn['tentrangthai'] === 'Ngưng hoạt động';
     });
 } else {
-    // Show all patients
     $filteredBenhnhans = $benhnhans;
 }
 ?>
@@ -37,13 +35,12 @@ if ($currentTab === 'active') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/8e3f8c6c44.js" crossorigin="anonymous"></script>
     <title>Hồ sơ bệnh nhân</title>
     <style>
         :root {
             --custom-purple: rgb(85, 45, 125);
             --custom-purple-dark: rgb(70, 35, 110);
-            --input-border: #ced4da;
-            --input-focus: var(--custom-purple);
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -55,10 +52,31 @@ if ($currentTab === 'active') {
         h2 {
             text-align: center;
             color: #6c3483;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
-        /* Added tab navigation styles */
+        /* Nút tạo hồ sơ đưa lên đầu */
+        .them {
+            width: 90%;
+            max-width: 1100px;
+            display: flex;
+            justify-content: flex-end;
+            margin: 0 auto 15px auto;
+        }
+
+        .btn-primary {
+            background-color: var(--custom-purple);
+            border-color: var(--custom-purple);
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: var(--custom-purple-dark);
+            border-color: var(--custom-purple-dark);
+        }
+
         .tab-navigation {
             width: 90%;
             max-width: 1100px;
@@ -83,7 +101,6 @@ if ($currentTab === 'active') {
 
         .tab-button:hover {
             color: var(--custom-purple);
-            text-decoration: none;
         }
 
         .tab-button.active {
@@ -124,9 +141,11 @@ if ($currentTab === 'active') {
             text-transform: uppercase;
             font-size: 13px;
         }
-        td{
+
+        td {
             font-size: 12px;
         }
+
         tr:nth-child(even) {
             background-color: #faf5ff;
         }
@@ -155,12 +174,12 @@ if ($currentTab === 'active') {
             font-size: 13px;
             display: inline-block;
             margin: 0 4px;
-            transition: background-color 0.3s ease;
         }
 
         .btn-edit:hover {
             background-color: #884ea0;
         }
+
         .btn-delete {
             background-color: #e74c3c;
         }
@@ -174,26 +193,7 @@ if ($currentTab === 'active') {
             font-size: 18px;
             color: #c0392b;
         }
-        .btn-primary{
-            background-color: var(--custom-purple);
-            border-color: var(--custom-purple);
-            border-radius: 50px;
-            font-weight: 500;
-            font-size: 16px;
-            transition: 0.3s;
-        }
-        .btn-primary:hover {
-            background-color: var(--custom-purple-dark);
-            border-color: var(--custom-purple-dark);
-        }
-        .them {
-            width: 85%;
-            display: flex;
-            justify-content: flex-end;
-            margin: 10px auto;
-        }
 
-        /* Added status badge styles */
         .status-badge {
             padding: 4px 8px;
             border-radius: 12px;
@@ -206,29 +206,42 @@ if ($currentTab === 'active') {
             color: #155724;
         }
 
-        .status-cancelled {
+        .status-inactive {
             background-color: #f8d7da;
             color: #721c24;
         }
+
+        /* Tăng độ rộng cho cột Trạng thái và Hành động */
+        th:nth-child(7),
+        td:nth-child(7) {
+            width: 150px;
+        }
+
+        th:nth-child(8),
+        td:nth-child(8) {
+            width: 130px;
+        }
+
     </style>
 </head>
 <body>
 
 <h2>Danh sách bệnh nhân</h2>
+
+<div class="them">
+    <a href="?action=taohoso" class="btn btn-primary">+ Tạo hồ sơ</a>
+</div>
+
 <div class="tab-navigation">
     <a href="?action=caidat&tab=all" class="tab-button <?= $currentTab === 'all' ? 'active' : '' ?>">
         Tất cả <span class="tab-count"><?= count($benhnhans) ?></span>
     </a>
     <a href="?action=caidat&tab=active" class="tab-button <?= $currentTab === 'active' ? 'active' : '' ?>">
-        Đang sử dụng <span class="tab-count"><?= count(array_filter($benhnhans, function($bn) { return isset($bn['tentrangthai']) && $bn['tentrangthai'] === 'Đang hoạt động'; })) ?></span>
+        Đang hoạt động <span class="tab-count"><?= count(array_filter($benhnhans, fn($bn) => isset($bn['tentrangthai']) && $bn['tentrangthai'] === 'Đang hoạt động')) ?></span>
     </a>
-    <a href="?action=caidat&tab=cancelled" class="tab-button <?= $currentTab === 'cancelled' ? 'active' : '' ?>">
-        Đã hủy <span class="tab-count"><?= count(array_filter($benhnhans, function($bn) { return isset($bn['tentrangthai']) && $bn['tentrangthai'] === 'Đã hủy'; })) ?></span>
+    <a href="?action=caidat&tab=inactive" class="tab-button <?= $currentTab === 'inactive' ? 'active' : '' ?>">
+        Ngưng hoạt động <span class="tab-count"><?= count(array_filter($benhnhans, fn($bn) => isset($bn['tentrangthai']) && $bn['tentrangthai'] === 'Ngưng hoạt động')) ?></span>
     </a>
-</div>
-
-<div class="them">
-    <a href="?action=taohoso" class="btn btn-primary" style ="font-size: 14px;"> + Tạo hồ sơ</a>
 </div>
 
 <?php if (!empty($filteredBenhnhans)) : ?>
@@ -251,43 +264,41 @@ if ($currentTab === 'active') {
                     <td><?= htmlspecialchars($bn['mabenhnhan']) ?></td>
                     <td><?= htmlspecialchars($bn['hoten']) ?></td>
                     <td><?= htmlspecialchars($bn['ngaysinh']) ?></td>
-                    <td><?= htmlspecialchars($bn['gioitinh'])?></td>
+                    <td><?= htmlspecialchars($bn['gioitinh']) ?></td>
                     <td><?= htmlspecialchars(decryptData($bn['sdt'])); ?></td>
-                    <td><?= htmlspecialchars($bn['sonha']) . ', ' . htmlspecialchars($bn['tenxaphuong']) . ', ' . htmlspecialchars($bn['tentinhthanhpho']);?></td>
+                    <td><?= htmlspecialchars($bn['sonha']) . ', ' . htmlspecialchars($bn['tenxaphuong']) . ', ' . htmlspecialchars($bn['tentinhthanhpho']); ?></td>
                     <td>
                         <?php 
-                        $status = isset($bn['tentrangthai']) ? $bn['tentrangthai'] : 'active';
+                        $status = $bn['tentrangthai'] ?? 'Đang hoạt động';
                         if ($status === 'Đang hoạt động') {
-                            echo '<span class="status-badge status-active">Đang sử dụng</span>';
-                        } elseif ($status === 'Đã hủy') {
-                            echo '<span class="status-badge status-cancelled">Đã hủy</span>';
+                            echo '<span class="status-badge status-active">Đang hoạt động</span>';
                         } else {
-                            echo '<span class="status-badge status-active">Đang sử dụng</span>';
+                            echo '<span class="status-badge status-inactive">Ngưng hoạt động</span>';
                         }
                         ?>
                     </td>
                     <?php if($bn['tentrangthai']== 'Đang hoạt động'): ?>
                         <td class="action-buttons">
-                            <a href="?action=suahoso&mabenhnhan=<?= $bn['mabenhnhan'] ?>" class="btn-edit"> <i class="fa-solid fa-pen-to-square"></i></a>
-
-                            <form action="?action=xoahoso&mabenhnhan=<?= $bn['mabenhnhan'] ?>" method="post" style="display:inline;" onsubmit="return confirm('Bạn chắc chắn muốn hủy hồ sơ này không?');">
+                            <a href="?action=suahoso&mabenhnhan=<?= $bn['mabenhnhan'] ?>" class="btn-edit"><i class="fa-solid fa-pen-to-square"></i></a>
+                            <form action="?action=xoahoso&mabenhnhan=<?= $bn['mabenhnhan'] ?>" method="post" style="display:inline;" onsubmit="return confirm('Bạn chắc chắn muốn ngưng hoạt động hồ sơ này không?');">
                                 <input type="hidden" name="mabenhnhan" value="<?= $bn['mabenhnhan'] ?>">
-                                <button type="submit" class="btn-delete"> <i class="fa-solid fa-trash"></i></button>
+                                <button type="submit" class="btn-delete"><i class="fa-solid fa-power-off"></i></button>
                             </form>
                         </td>
+                    <?php else: ?>
+                        <td></td>
                     <?php endif; ?>
                 </tr>
             <?php endforeach; ?>
         </tbody>
     </table>
-    
 <?php else : ?>
     <p>
         <?php 
         if ($currentTab === 'active') {
-            echo "Không tìm thấy hồ sơ bệnh nhân đang sử dụng nào.";
-        } elseif ($currentTab === 'cancelled') {
-            echo "Không tìm thấy hồ sơ bệnh nhân đã hủy nào.";
+            echo "Không tìm thấy hồ sơ bệnh nhân đang hoạt động.";
+        } elseif ($currentTab === 'inactive') {
+            echo "Không tìm thấy hồ sơ bệnh nhân ngưng hoạt động.";
         } else {
             echo "Không tìm thấy hồ sơ bệnh nhân nào.";
         }
