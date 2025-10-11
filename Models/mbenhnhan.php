@@ -82,28 +82,116 @@
             }
         }
 
-        public function capnhatbenhnhan($mabenhnhan, $hotenbenhnhan, $ngaysinh, $gioitinh, $nghenghiep, $cccdbenhnhan,
-                                $dantoc, $email, $sdtbenhnhan, $tinh, $quan, $xa, $sonha, $quanhe,
-                                $tiensubenhtatcuagiadinh, $tiensubenhtatcuabenhnhan, $nhommau) {
-            $p = new clsKetNoi();
-            $con = $p->moketnoi();
-            $con->set_charset('utf8');
-            if ($con) {
-                // Sử dụng dấu backtick để bao quanh tên cột
-                $str = "UPDATE benhnhan 
-                        SET hotenbenhnhan='$hotenbenhnhan', ngaysinh='$ngaysinh', gioitinh='$gioitinh', nghenghiep='$nghenghiep', 
-                            cccdbenhnhan='$cccdbenhnhan', dantoc='$dantoc', email='$email', sdtbenhnhan='$sdtbenhnhan',
-                            `tinh/thanhpho`='$tinh', `quan/huyen`='$quan', `xa/phuong`='$xa', sonha='$sonha', quanhe='$quanhe',
-                            tiensubenhtatcuagiadinh='$tiensubenhtatcuagiadinh', tiensubenhtatcuabenhnhan='$tiensubenhtatcuabenhnhan', 
-                            nhommau='$nhommau' 
-                        WHERE mabenhnhan='$mabenhnhan'";
-                $tbl = $con->query($str);
-                $p->dongketnoi($con);
-                return $tbl;
-            } else {
-                return false;
+        // Hàm giữ dữ liệu cũ nếu giá trị mới rỗng
+    private function keepOld($newValue, $oldValue) {
+        return (isset($newValue) && $newValue !== '' && $newValue !== null) ? $newValue : $oldValue;
+    }
+
+    // Hàm cập nhật bệnh nhân
+    public function capnhatbenhnhan(
+        $mabenhnhan, $hoten, $ngaysinh, $gioitinh, $cccd, $dantoc, $sdt, $emailcanhan, $sonha, $maxaphuong,
+        $nghenghiep, $tiensubenhtatcuagiadinh, $tiensubenhtatcuabenhnhan,
+        $giaykhaisinh = null, $cccd_truoc = null, $cccd_sau = null, $quanhe = null,
+        $manguoigiamho = null, $matrangthai = null
+    ) {
+        $p = new clsKetNoi();
+        $con = $p->moketnoi();
+        $con->set_charset('utf8');
+
+        if (!$con) return false;
+
+        $con->begin_transaction();
+        try {
+            // Lấy dữ liệu cũ từ bảng nguoidung (mã bệnh nhân là string)
+            $stmtOld = $con->prepare("SELECT * FROM nguoidung WHERE manguoidung=?");
+            if (!$stmtOld) throw new Exception("Prepare lỗi SELECT nguoidung");
+            $stmtOld->bind_param("s", $mabenhnhan);
+            $stmtOld->execute();
+            $oldData = $stmtOld->get_result()->fetch_assoc();
+            $stmtOld->close();
+            if (!$oldData) throw new Exception("Không tìm thấy người dùng");
+
+            // Lấy dữ liệu cũ từ bảng benhnhan
+            $stmtOldBn = $con->prepare("SELECT * FROM benhnhan WHERE mabenhnhan=?");
+            if (!$stmtOldBn) throw new Exception("Prepare lỗi SELECT benhnhan");
+            $stmtOldBn->bind_param("s", $mabenhnhan);
+            $stmtOldBn->execute();
+            $oldBnData = $stmtOldBn->get_result()->fetch_assoc();
+            $stmtOldBn->close();
+            if (!$oldBnData) throw new Exception("Không tìm thấy bệnh nhân");
+
+            // Giữ dữ liệu cũ nếu rỗng
+            $hoten = $this->keepOld($hoten, $oldData['hoten']);
+            $ngaysinh = $this->keepOld($ngaysinh, $oldData['ngaysinh']);
+            $gioitinh = $this->keepOld($gioitinh, $oldData['gioitinh']);
+            $cccd = $this->keepOld($cccd, $oldData['cccd']);
+            $dantoc = $this->keepOld($dantoc, $oldData['dantoc']);
+            $sdt = $this->keepOld($sdt, $oldData['sdt']);
+            $emailcanhan = $this->keepOld($emailcanhan, $oldData['emailcanhan']);
+            $sonha = $this->keepOld($sonha, $oldData['sonha']);
+            $maxaphuong = $this->keepOld($maxaphuong, $oldData['maxaphuong']);
+            $cccd_truoc = $this->keepOld($cccd_truoc, $oldData['cccd_matruoc']);
+            $cccd_sau = $this->keepOld($cccd_sau, $oldData['cccd_matsau']);
+
+            $nghenghiep = $this->keepOld($nghenghiep, $oldBnData['nghenghiep']);
+            $tiensubenhtatcuagiadinh = $this->keepOld($tiensubenhtatcuagiadinh, $oldBnData['tiensubenhtatcuagiadinh']);
+            $tiensubenhtatcuabenhnhan = $this->keepOld($tiensubenhtatcuabenhnhan, $oldBnData['tiensubenhtatcuabenhnhan']);
+            $giaykhaisinh = $this->keepOld($giaykhaisinh, $oldBnData['giaykhaisinh']);
+            $quanhe = $this->keepOld($quanhe, $oldBnData['moiquanhevoinguoithan']);
+            $manguoigiamho = $this->keepOld($manguoigiamho, $oldBnData['manguoigiamho']);
+            $matrangthai = $this->keepOld($matrangthai, $oldBnData['matrangthai']);
+
+            // Cập nhật bảng nguoidung
+            $sql1 = "UPDATE nguoidung 
+                     SET hoten=?, ngaysinh=?, gioitinh=?, cccd=?, dantoc=?, sdt=?, emailcanhan=?, sonha=?, maxaphuong=?, cccd_matruoc=?, cccd_matsau=?
+                     WHERE manguoidung=?";
+            $stmt1 = $con->prepare($sql1);
+            if (!$stmt1) throw new Exception("Prepare lỗi UPDATE nguoidung");
+            // tất cả là string, mabenhnhan là string -> "s"
+            $stmt1->bind_param(
+                "ssssssssssss",
+                $hoten, $ngaysinh, $gioitinh, $cccd, $dantoc, $sdt, $emailcanhan, $sonha, $maxaphuong, $cccd_truoc, $cccd_sau, $mabenhnhan
+            );
+            if (!$stmt1->execute()) {
+                $stmt1->close();
+                throw new Exception("Execute lỗi UPDATE nguoidung: " . $stmt1->error);
             }
+            $stmt1->close();
+
+            // Cập nhật bảng benhnhan
+            $sql2 = "UPDATE benhnhan 
+            SET nghenghiep=?, 
+                tiensubenhtatcuagiadinh=?, 
+                tiensubenhtatcuabenhnhan=?, 
+                giaykhaisinh=?, 
+                moiquanhevoinguoithan=?, 
+                manguoigiamho=?, 
+                matrangthai=? 
+            WHERE mabenhnhan=?";
+            $stmt2 = $con->prepare($sql2);
+            if (!$stmt2) throw new Exception("Prepare lỗi UPDATE benhnhan");
+            $stmt2->bind_param(
+                "ssssssss",
+                $nghenghiep, $tiensubenhtatcuagiadinh, $tiensubenhtatcuabenhnhan, $giaykhaisinh, $quanhe, $manguoigiamho, $matrangthai, $mabenhnhan
+            );
+            if (!$stmt2->execute()) {
+                $stmt2->close();
+                throw new Exception("Execute lỗi UPDATE benhnhan: " . $stmt2->error);
+            }
+            $stmt2->close();
+
+            $con->commit();
+            $p->dongketnoi($con);
+            return true;
+
+        } catch (Exception $e) {
+            $con->rollback();
+            $p->dongketnoi($con);
+            // tùy bạn có log $e->getMessage() không
+            return false;
         }
+    }
+        
 
         public function select_benhnhan_mabacsi($mabacsi){
             $p = new clsKetNoi();
@@ -183,8 +271,7 @@
             }
         }
 
-        public function insertbenhnhan($mabenhnhan, $email, $hoten, $ngaysinh, $sdt,$dantoc, $cccd, $cccd_truoc_name, $birth_cert_name, $cccd_sau_name, $gioitinh, $nghenghiep, $tiensucuagiadinh, $tiensucuabanthan, $sonha, $xa, $tinh, $manguoithan, $quanhe) {
-            // --- 1. Tính tuổi bệnh nhân ---
+        public function insertbenhnhan($mabenhnhan, $email, $hoten, $ngaysinh, $sdt, $dantoc, $cccd, $cccd_truoc_name, $birth_cert_name, $cccd_sau_name, $gioitinh, $nghenghiep, $tiensucuagiadinh, $tiensucuabanthan, $sonha, $xa, $tinh, $manguoithan, $quanhe) {
             $today = new DateTime();
             $dob = new DateTime($ngaysinh);
             $age = $today->diff($dob)->y;
@@ -193,8 +280,8 @@
                 return "Chỉ được tạo hồ sơ cho trẻ em dưới 18 tuổi hoặc người già trên 60 tuổi.";
             }
         
-            // --- 2. Kiểm tra số lượng hồ sơ đã có của người giám hộ ---
-            $stmtCheck = $this->conn->prepare("SELECT COUNT(*) as total FROM benhnhan WHERE manguoigiamho = ?");
+            // Kiểm tra số lượng hồ sơ
+            $stmtCheck = $this->conn->prepare("SELECT COUNT(*) as total FROM benhnhan WHERE manguoigiamho = ? and matrangthai=1");
             $stmtCheck->bind_param("s", $manguoithan);
             $stmtCheck->execute();
             $result = $stmtCheck->get_result()->fetch_assoc();
@@ -203,14 +290,14 @@
                 return "Một người giám hộ chỉ được tạo tối đa 4 hồ sơ.";
             }
         
-            // --- 3. Thêm vào bảng nguoidung ---
+            // Thêm vào bảng nguoidung
             $stmtInsertND = $this->conn->prepare("INSERT INTO nguoidung (manguoidung, hoten, ngaysinh, gioitinh, cccd, cccd_matruoc, cccd_matsau, dantoc, sdt, sonha, maxaphuong, emailcanhan) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             $stmtInsertND->bind_param("ssssssssssss", $mabenhnhan, $hoten, $ngaysinh, $gioitinh, $cccd, $cccd_truoc_name, $cccd_sau_name, $dantoc, $sdt, $sonha, $xa, $email);
         
             if ($stmtInsertND->execute()) {
-                // --- 4. Thêm vào bảng benhnhan ---
-                $stmtInsertBN = $this->conn->prepare("INSERT INTO benhnhan(mabenhnhan, nghenghiep, tiensubenhtatcuagiadinh, tiensubenhtatcuabenhnhan, manguoigiamho, moiquanhevoinguoithan) VALUES (?, ?, ?, ?, ?, ?)");
-                $stmtInsertBN->bind_param("ssssss", $mabenhnhan, $nghenghiep, $tiensucuagiadinh, $tiensucuabanthan, $manguoithan, $quanhe);
+                // Thêm vào bảng benhnhan
+                $stmtInsertBN = $this->conn->prepare("INSERT INTO benhnhan(mabenhnhan, nghenghiep, tiensubenhtatcuagiadinh, tiensubenhtatcuabenhnhan, manguoigiamho, moiquanhevoinguoithan,matrangthai, giaykhaisinh) VALUES (?, ?, ?, ?, ?, ?,1, ?)");
+                $stmtInsertBN->bind_param("sssssss", $mabenhnhan, $nghenghiep, $tiensucuagiadinh, $tiensucuabanthan, $manguoithan, $quanhe, $birth_cert_name);
         
                 if (!$stmtInsertBN->execute()) {
                     return "Lỗi khi thêm bệnh nhân: " . $stmtInsertBN->error;
@@ -220,10 +307,11 @@
                 return "Lỗi khi thêm người dùng: " . $stmtInsertND->error;
             }
         }
+        
         public function deletebenhnhan($id) {
             $p = new clsketnoi();
             $con = $p->moketnoi();
-            $truyvan = "update benhnhan set matrangthai=8 where mabenhnhan='$id'";
+            $truyvan = "update benhnhan set matrangthai= where mabenhnhan='$id'";
             $tbl = mysqli_query($con, $truyvan);
             $p->dongketnoi($con);
             return $tbl;

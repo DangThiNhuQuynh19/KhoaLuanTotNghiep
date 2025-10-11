@@ -69,13 +69,12 @@ class cBenhNhan{
             }
         }
     }
-    public function updateBenhNhan($mabenhnhan,$hotenbenhnhan,$ngaysinh,$gioitinh,$nghenghiep,$cccdbenhnhan,
-                                    $dantoc,$email,$sdtbenhnhan,$tinh,$quan,$xa,$sonha,$quanhe,
-                                    $tiensubenhtatcuagiadinh,$tiensubenhtatcuabenhnhan,$nhommau) {
+    public function updateBenhNhan($mabenhnhan,$hotenbenhnhan,$ngaysinh,$gioitinh,$cccdbenhnhan,$dantoc,$sdtbenhnhan,$emailcanhan,$sonha,$maxaphuong,$nghenghiep,
+                                    $tiensubenhtatcuagiadinh,$tiensubenhtatcuabenhnhan,$giaykhaisinh = null,$cccd_truoc = null,$cccd_sau = null,$quanhe = null,
+                                    $manguoigiamho = null,$matrangthai = null) {
         $p = new mBenhNhan();
-        $kq = $p->capnhatbenhnhan($mabenhnhan,$hotenbenhnhan,$ngaysinh,$gioitinh,$nghenghiep,$cccdbenhnhan,
-                                    $dantoc,$email,$sdtbenhnhan,$tinh,$quan,$xa,$sonha,$quanhe,
-                                    $tiensubenhtatcuagiadinh,$tiensubenhtatcuabenhnhan,$nhommau);
+        $kq = $p->capnhatbenhnhan($mabenhnhan,$hotenbenhnhan,$ngaysinh,$gioitinh,$cccdbenhnhan,$dantoc,$sdtbenhnhan,$emailcanhan,$sonha,$maxaphuong,$nghenghiep,
+                                    $tiensubenhtatcuagiadinh,$tiensubenhtatcuabenhnhan,$giaykhaisinh,$cccd_truoc,$cccd_sau,$quanhe,$manguoigiamho,$matrangthai);
         if ($kq) { 
             return true;
         } else {

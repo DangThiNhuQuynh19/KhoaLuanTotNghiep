@@ -90,16 +90,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $gh_cccd_truoc_path = uploadFile('gh_cccd_truoc');
             $gh_cccd_sau_path = uploadFile('gh_cccd_sau');
             
-            // Validate required file uploads based on age
-            if ($age >= 16) {
-                if (empty($cccd_truoc_path) || empty($cccd_sau_path)) {
-                    $message = "Vui lòng upload đầy đủ ảnh CCCD mặt trước và mặt sau.";
-                }
-            } else {
-                if (empty($birth_cert_path)) {
-                    $message = "Vui lòng upload ảnh giấy khai sinh.";
-                }
-            }
+            // // Validate required file uploads based on age
+            // if ($age >= 16) {
+            //     if (empty($cccd_truoc_path) || empty($cccd_sau_path)) {
+            //         $message = "Vui lòng upload đầy đủ ảnh CCCD mặt trước và mặt sau.";
+            //     }
+            // } else {
+            //     if (empty($birth_cert_path)) {
+            //         $message = "Vui lòng upload ảnh giấy khai sinh.";
+            //     }
+            // }
             
             $cccd_truoc_name = is_array($cccd_truoc_path) ? $cccd_truoc_path['name'] : '';
             $cccd_sau_name = is_array($cccd_sau_path) ? $cccd_sau_path['name'] : '';
