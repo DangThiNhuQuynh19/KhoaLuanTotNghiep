@@ -10,7 +10,26 @@ require_once('ketnoi.php');
                         join linhvuc on chuyengia.malinhvuc = linhvuc.malinhvuc 
                         join nguoidung on chuyengia.machuyengia = nguoidung.manguoidung
                         join taikhoan on nguoidung.email = taikhoan.tentk
-                        where taikhoan.matrangthai = 1 order by chuyengia.machuyengia desc";
+                        join trangthai on chuyengia.matrangthai = trangthai.matrangthai
+                        order by chuyengia.machuyengia desc";
+                $tbl = $con->query($str);
+                $p->dongketnoi($con);
+                return $tbl;
+            }else{
+                return false; 
+            }
+        }
+        public function dschuyengia1(){
+            $p = new clsKetNoi();
+            $con = $p->moketnoi();
+            $con->set_charset('utf8');
+            if($con){
+                $str = "select * from chuyengia 
+                        join linhvuc on chuyengia.malinhvuc = linhvuc.malinhvuc 
+                        join nguoidung on chuyengia.machuyengia = nguoidung.manguoidung
+                        join taikhoan on nguoidung.email = taikhoan.tentk
+                        join trangthai on chuyengia.matrangthai = trangthai.matrangthai
+                        where trangthai.matrangthai=1 order by chuyengia.machuyengia desc";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;
@@ -25,6 +44,8 @@ require_once('ketnoi.php');
             if($con){
                 $str = "select * from chuyengia join linhvuc on chuyengia.malinhvuc = linhvuc.malinhvuc 
                 join nguoidung on chuyengia.machuyengia = nguoidung.manguoidung
+                join taikhoan on nguoidung.email = taikhoan.tentk
+                join trangthai on chuyengia.matrangthai = trangthai.matrangthai
                 where chuyengia.malinhvuc='$id'";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
@@ -41,6 +62,8 @@ require_once('ketnoi.php');
                 $str = "SELECT * FROM chuyengia 
                 JOIN linhvuc ON chuyengia.malinhvuc = linhvuc.malinhvuc
                 JOIN nguoidung ON chuyengia.machuyengia = nguoidung.manguoidung
+                join taikhoan on nguoidung.email = taikhoan.tentk
+                join trangthai on chuyengia.matrangthai = trangthai.matrangthai
                 WHERE nguoidung.hoten LIKE '%$name%' AND chuyengia.malinhvuc='$id'";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
@@ -57,6 +80,8 @@ require_once('ketnoi.php');
                 $str = "SELECT * FROM chuyengia
                 JOIN linhvuc ON chuyengia.malinhvuc = linhvuc.malinhvuc
                 JOIN nguoidung ON chuyengia.machuyengia = nguoidung.manguoidung
+                join taikhoan on nguoidung.email = taikhoan.tentk
+                join trangthai on chuyengia.matrangthai = trangthai.matrangthai
                 WHERE nguoidung.hoten LIKE '%$name%'";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
@@ -74,7 +99,10 @@ require_once('ketnoi.php');
                         join linhvuc on chuyengia.malinhvuc = linhvuc.malinhvuc 
                         join nguoidung on chuyengia.machuyengia = nguoidung.manguoidung
                         join taikhoan on nguoidung.email = taikhoan.tentk
-                        where taikhoan.matrangthai = 1 and chuyengia.machuyengia='$id'";
+                        join xaphuong on nguoidung.maxaphuong = xaphuong.maxaphuong
+                        join tinhthanhpho on xaphuong.matinhthanhpho = tinhthanhpho.matinhthanhpho
+                        join trangthai on chuyengia.matrangthai = trangthai.matrangthai
+                        where chuyengia.machuyengia='$id'";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;

@@ -19,7 +19,7 @@ if (!empty($_GET['name']) && !empty($_GET['linhvuc'])) {
     $ds = $cChuyenGia->getChuyenGiaByLinhVuc($_GET['linhvuc']);
 } else {
     // Không lọc gì cả
-    $ds = $cChuyenGia->getAllChuyenGia();
+    $ds = $cChuyenGia->getAllChuyenGia1();
 }
 ?>
 

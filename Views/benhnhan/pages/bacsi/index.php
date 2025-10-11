@@ -20,7 +20,7 @@ if (!empty($_GET['name']) && !empty($_GET['khoa'])) {
     $ds = $cBacSi->getBacSiByKhoa($_GET['khoa']);
 } else {
     // Không lọc gì cả
-    $ds = $cBacSi->getAllBacSi();
+    $ds = $cBacSi->getAllBacSi1();
 }
 ?>
 

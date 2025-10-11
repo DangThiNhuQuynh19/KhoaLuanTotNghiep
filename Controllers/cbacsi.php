@@ -15,6 +15,19 @@ class cBacSi{
             }
         }
     }
+    public function getAllBacSi1(){
+        $p = new mBacSi();
+        $tbl = $p->dsbacsi1();
+        if(!$tbl){
+            return -1;
+        }else{
+            if($tbl->num_rows > 0){
+                return $tbl;
+            }else{
+                return 0;
+            }
+        }
+    }
     public function getBacSiById($id){
         $p = new mBacSi();
         $tbl = $p->chitietbacsi($id);
@@ -81,6 +94,10 @@ class cBacSi{
             }
         }
     }
-    
+    public function updateBacSi($mabacsi, $data) {
+        $p = new mBacSi();
+        return $p->updateBacSi($mabacsi, $data);
+    }
+
 }
 ?>

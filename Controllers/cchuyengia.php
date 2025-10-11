@@ -15,6 +15,19 @@ class cChuyenGia{
             }
         }
     }
+    public function getAllChuyenGia1(){
+        $p = new mChuyenGia();
+        $tbl = $p->dschuyengia1();
+        if(!$tbl){
+            return -1;
+        }else{
+            if($tbl->num_rows > 0){
+                return $tbl;
+            }else{
+                return 0;
+            }
+        }
+    }
     public function getChuyenGiaByLinhVuc($id){
         $p = new mChuyenGia();
         $tbl = $p->chuyengiatheolinhvuc($id);
