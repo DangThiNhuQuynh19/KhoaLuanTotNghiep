@@ -149,5 +149,24 @@ class cLichKham {
             }
         }
     }
+
+    public function get_lickham_mabacsi($mabacsi){
+        $p = new mLichKham();
+        $tbl = $p->select_lichkham_mabacsi($mabacsi);
+        $list =[];
+        if(!$tbl){
+            return -1;
+        }else{
+            if($tbl->num_rows > 0){
+                while ($row = $tbl->fetch_assoc()) {
+                    $list[] = $row;
+                }
+                return $list;
+            }else{
+                return 0;
+            }
+        }
+    }
+
 }
 ?>
