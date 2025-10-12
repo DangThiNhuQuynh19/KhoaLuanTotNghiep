@@ -112,7 +112,7 @@ class mLichKham {
                             WHEN llv.hinhthuclamviec = 'Offline' 
                                 THEN CONCAT('Tòa: ', p.tentoa, ', Tầng: ', p.tang, ', Phòng: ', p.sophong)
                             ELSE 'Khám trực tuyến (Online)'
-                        END AS thongtin
+                        END AS thongtin, k.makhunggiokb
                     FROM lichlamviec llv
                     JOIN calamviec cv 
                         ON llv.macalamviec = cv.macalamviec
@@ -139,12 +139,36 @@ class mLichKham {
         $con->set_charset('utf8');
 
         if ($con) {
-            $sql = "SELECT pkb.ngaykham, clv.giobatdau, clv.gioketthuc, bs.tentk, bn.tentk
-                    FROM phieukhambenh pkb
-                    JOIN calamviec clv ON pkb.macalamviec = clv.macalamviec
-                    JOIN bacsi bs ON pkb.mabacsi = bs.mabacsi
-                    JOIN benhnhan bn ON pkb.mabenhnhan = bn.mabenhnhan
-                    WHERE bs.tentk = '$bs' AND bn.tentk = '$bn'";
+            $sql = "SELECT 
+                pkb.ngaykham, 
+                clv.giobatdau, 
+                clv.gioketthuc, 
+                tk_bs.tentk AS tentk_bacsi,
+                tk_bn.tentk AS tentk_benhnhan
+            FROM phieukhambenh pkb
+            -- JOIN khunggiokhambenh trước
+            JOIN khunggiokhambenh kgb 
+                ON pkb.makhunggiokb = kgb.makhunggiokb
+            -- JOIN calamviec sau
+            JOIN calamviec clv 
+                ON kgb.macalamviec = clv.macalamviec
+            -- Thông tin Bác sĩ
+            JOIN bacsi bs 
+                ON pkb.mabacsi = bs.mabacsi
+            JOIN nguoidung nd_bs 
+                ON nd_bs.manguoidung = bs.mabacsi
+            JOIN taikhoan tk_bs 
+                ON tk_bs.tentk = nd_bs.email
+            -- Thông tin Bệnh nhân
+            JOIN benhnhan bn 
+                ON pkb.mabenhnhan = bn.mabenhnhan
+            JOIN nguoidung nd_bn 
+                ON nd_bn.manguoidung = bn.mabenhnhan
+            JOIN taikhoan tk_bn 
+                ON tk_bn.tentk = nd_bn.email
+            WHERE tk_bs.tentk = '$bs' 
+            AND tk_bn.tentk = '$bn';
+            ";
             $result = $con->query($sql);
             $p->dongketnoi($con);
             return $result;

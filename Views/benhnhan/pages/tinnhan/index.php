@@ -233,7 +233,7 @@ $('#sendButton').click(() => {
     });
     // Gửi AJAX kiểm tra giờ hẹn
         $.ajax({
-        url: '/hanhphuchospital3/Ajax/getlichhen.php',
+        url: '/KLTN/Ajax/getlichhen.php',
         type: 'POST',
         dataType: 'json', 
         data: {

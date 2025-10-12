@@ -88,7 +88,7 @@ ini_set('display_errors', 1);
 
 $idbs = $_GET['idbs'] ?? null;
 $ngay = $_GET['ngay'] ?? null;
-$ca   = $_GET['ca'] ?? null;
+$ca   = $_GET['makhunggiokb'] ?? null;
 $idcg = $_GET['idcg'] ?? null;
 
 $hoten = $capbac = $chuyenKhoa = $gia = $anh = $giokham = $thongtin = '';
