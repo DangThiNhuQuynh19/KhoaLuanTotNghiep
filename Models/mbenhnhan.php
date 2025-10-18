@@ -31,7 +31,8 @@
                         join nguoidung as n on b.mabenhnhan=n.manguoidung 
                         join xaphuong as p on p.maxaphuong = n.maxaphuong 
                         join tinhthanhpho as t on t.matinhthanhpho = p.matinhthanhpho 
-                        where mabenhnhan = '$manguoigiamho' OR manguoigiamho = '$manguoigiamho'";
+                        where mabenhnhan = '$manguoigiamho' OR manguoigiamho = '$manguoigiamho'
+                        and b.matrangthai=1";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;

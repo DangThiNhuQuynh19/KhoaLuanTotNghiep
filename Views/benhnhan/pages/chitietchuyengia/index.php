@@ -1,4 +1,16 @@
 <?php
+
+
+// Kiểm tra đăng nhập
+if (!isset($_SESSION['dangnhap']) || $_SESSION['dangnhap'] != 1) {
+    // Lưu URL hiện tại để quay lại sau khi đăng nhập
+    $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
+    // Chuyển hướng sang trang đăng nhập
+    header("Location: index.php?action=dangnhap");
+    exit;
+}
+
+
 include_once("Controllers/cchuyengia.php");
 include_once("Controllers/clichkham.php");
 
@@ -222,26 +234,23 @@ $lichkham = $cLichKham->getLichKhamOfChuyenGiaByNgay($ngay, $machuyengia, $gioHi
         $caOffline = [];
 
         while ($rowCa = $lichkham->fetch_assoc()) {
+            $makhunggiokb = $rowCa['makhunggiokb'];
             $giobatdau = date('H:i', strtotime($rowCa['giobatdau']));
             $gioketthuc = date('H:i', strtotime($rowCa['gioketthuc']));
-            $hinhthuc   = $rowCa['hinhthuclamviec'];
-        
-            // URL quay về trang chuyên gia hiện tại
-            $urlChuyenGia = "index.php?action=chitietchuyengia&idcg={$machuyengia}";
-        
-            // Bỏ qua các ca đã trôi qua trong ngày hiện tại
-            if ($ngay == $ngayHienTai && $giobatdau < $gioHienTai) {
-                continue;
-            }
-        
-            if (isset($_SESSION['dangnhap'])) {
-                // Khi đã đăng nhập -> quay lại trang chuyên gia đang xem
-                $link = "<a href='$urlChuyenGia'>$giobatdau - $gioketthuc</a>";
+            $hinhthuc = $rowCa['hinhthuclamviec']; // "online" hoặc "offline"
+            
+            $link = "";
+            if ($ngay == $ngayHienTai) {
+                if ($giobatdau >= $gioHienTai) {
+                    $link = '<a href="index.php?action=datlichkham&idcg=' . $machuyengia . '&ngay=' . $ngay . '&makhunggiokb=' . $makhunggiokb . '">' . $giobatdau . ' - ' . $gioketthuc . '</a>';
+                } else {
+                    $link = "<p>Ca này đã qua.</p>";
+                }
             } else {
-                // Nếu chưa đăng nhập -> gọi hàm JS mở popup đăng nhập
-                $link = "<a onclick=\"showLoginPopup('$urlChuyenGia')\">$giobatdau - $gioketthuc</a>";
+                $link = '<a href="index.php?action=datlichkham&idcg=' . $machuyengia . '&ngay=' . $ngay . '&makhunggiokb=' . $makhunggiokb . '">' . $giobatdau . ' - ' . $gioketthuc . '</a>';
             }
-        
+            
+            // Phân loại
             if ($hinhthuc == "online") {
                 $caOnline[] = $link;
             } else {

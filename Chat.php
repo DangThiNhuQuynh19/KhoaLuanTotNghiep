@@ -1,7 +1,7 @@
 <?php
 require_once('vendor/autoload.php');
 require_once('Models/ChatUserModel.php');
-
+include_once('Assets/config.php');
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 date_default_timezone_set('Asia/Ho_Chi_Minh'); 
@@ -108,6 +108,7 @@ class ChatServer implements MessageComponentInterface {
         }
 
         // Lệnh "load_messages" - Lấy tin nhắn cũ
+        // Lệnh "load_messages" - Lấy tin nhắn cũ
         if ($command === 'load_messages') {
             $sender = $data['tentk'] ?? null;
             $receiver = $data['receiver_tentk'] ?? null;
@@ -117,7 +118,9 @@ class ChatServer implements MessageComponentInterface {
                 return;
             }
 
-            // Truy vấn tin nhắn từ CSDL
+            // Giải mã receiver nếu được mã hóa Base64
+            $receiver = base64_decode($receiver);
+
             $chat = new ChatUserModel();
             $messages = $chat->getMessages($sender, $receiver);
 
@@ -126,7 +129,6 @@ class ChatServer implements MessageComponentInterface {
                 return;
             }
 
-            // Trả về tin nhắn đã tải
             $from->send(json_encode([
                 'command' => 'messages',
                 'messages' => $messages,
@@ -134,6 +136,7 @@ class ChatServer implements MessageComponentInterface {
             ]));
             return;
         }
+
 
     }
 

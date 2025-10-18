@@ -1,4 +1,15 @@
 <?php
+
+// Kiểm tra đăng nhập
+if (!isset($_SESSION['dangnhap']) || $_SESSION['dangnhap'] != 1) {
+    // Lưu URL hiện tại để quay lại sau khi đăng nhập
+    $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
+    // Chuyển hướng sang trang đăng nhập
+    header("Location: index.php?action=dangnhap");
+    exit;
+}
+
+
 include_once("Controllers/cbacsi.php");
 include_once("Controllers/clichkham.php");
 
@@ -228,51 +239,68 @@ $lichkham = $cLichKham->getLichKhamOfBacSiByNgay($ngay, $mabacsi, $gioHienTai);
         }
     </script>
 
-    <div class="shift-list">
-        <h3>Danh sách ca làm việc:</h3>
-        <?php
-        if ($lichkham === false || $lichkham->num_rows === 0) {
-            echo "<p>Không có ca làm trong ngày này.</p>";
-        } else {
-            $caOnline = [];
-            $caOffline = [];
+<div class="shift-list">
+    <h3>Danh sách ca làm việc:</h3>
+    <?php
+    if ($lichkham === false || $lichkham->num_rows === 0) {
+        echo "<p>Không có ca làm trong ngày này.</p>";
+    } else {
+        $caOnline = [];
+        $caOffline = [];
 
-            while ($rowCa = $lichkham->fetch_assoc()) {
-                $makhunggiokb = $rowCa['makhunggiokb'];
-                $giobatdau = date('H:i', strtotime($rowCa['giobatdau']));
-                $gioketthuc = date('H:i', strtotime($rowCa['gioketthuc']));
-                $hinhthuc = $rowCa['hinhthuclamviec']; 
-
-                $urlBacSi = "index.php?action=chitietbacsi&idbs={$mabacsi}";
-                
-                if ($ngay == $ngayHienTai && $giobatdau < $gioHienTai) {
-                    continue;
-                }
-
-                if (isset($_SESSION['dangnhap'])) {
-                    $link = "<a href='$urlBacSi'>$giobatdau - $gioketthuc</a>";
+        while ($rowCa = $lichkham->fetch_assoc()) {
+            $makhunggiokb = $rowCa['makhunggiokb'];
+            $giobatdau = date('H:i', strtotime($rowCa['giobatdau']));
+            $gioketthuc = date('H:i', strtotime($rowCa['gioketthuc']));
+            $hinhthuc = $rowCa['hinhthuclamviec']; // "online" hoặc "offline"
+            
+            $link = "";
+            if ($ngay == $ngayHienTai) {
+                if ($giobatdau >= $gioHienTai) {
+                    $link = '<a href="index.php?action=datlichkham&idbs=' . $mabacsi . '&ngay=' . $ngay . '&makhunggiokb=' . $makhunggiokb . '">' . $giobatdau . ' - ' . $gioketthuc . '</a>';
                 } else {
-                    // nếu chưa đăng nhập -> gọi hàm JS mở popup
-                    $link = "<a onclick=\"showLoginPopup('$urlDatLich')\">$giobatdau - $gioketthuc</a>";
+                    $link = "<p>Ca này đã qua.</p>";
                 }
-
-                if ($hinhthuc == "online") {
-                    $caOnline[] = $link;
-                } else {
-                    $caOffline[] = $link;
-                }
+            } else {
+                $link = '<a href="index.php?action=datlichkham&idbs=' . $mabacsi . '&ngay=' . $ngay . '&makhunggiokb=' . $makhunggiokb . '">' . $giobatdau . ' - ' . $gioketthuc . '</a>';
             }
-
-            echo "<div class='shift-group'><h4>Khám Online</h4><div class='shift-buttons'>";
-            echo empty($caOnline) ? "<p>Không có ca online.</p>" : implode('', $caOnline);
-            echo "</div></div>";
-
-            echo "<div class='shift-group'><h4>Khám tại Bệnh viện</h4><div class='shift-buttons'>";
-            echo empty($caOffline) ? "<p>Không có ca offline.</p>" : implode('', $caOffline);
-            echo "</div></div>";
+            
+            // Phân loại
+            if ($hinhthuc == "online") {
+                $caOnline[] = $link;
+            } else {
+                $caOffline[] = $link;
+            }
         }
-        ?>
-    </div>
+
+        // Hiển thị Online
+        echo "<div class='shift-group'>";
+        echo "<h4>Khám Online</h4>";
+        echo '<div class="shift-buttons">';
+        if (empty($caOnline)) {
+            echo "<p>Không có ca online.</p>";
+        } else {
+            foreach ($caOnline as $ca) {
+                echo $ca;
+            }
+        }
+        echo "</div></div>";
+
+        // Hiển thị Offline
+        echo "<div class='shift-group'>";
+        echo "<h4>Khám tại Bệnh viện</h4>";
+        echo '<div class="shift-buttons">';
+        if (empty($caOffline)) {
+            echo "<p>Không có ca offline.</p>";
+        } else {
+            foreach ($caOffline as $ca) {
+                echo $ca;
+            }
+        }
+        echo "</div></div>";
+    }
+    ?>
+</div>
 </div>
 <!-- popup đăng nhập -->
 <div id="login-popup">

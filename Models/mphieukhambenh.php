@@ -49,90 +49,123 @@
             $con->set_charset('utf8');
         
             if ($con) {
-                // SELECT cho bác sĩ
+                // 🔒 Escape dữ liệu đầu vào để chống SQL Injection
+                $email = mysqli_real_escape_string($con, trim($tentk));
+                $status = $status !== null ? mysqli_real_escape_string($con, trim($status)) : null;
+                $ngay = $ngay !== null ? mysqli_real_escape_string($con, trim($ngay)) : null;
+        
+                // 📌 Điều kiện WHERE chung cho cả 2 loại phiếu
+                $whereCondition = "
+                    (nd_bn.email = '$email' 
+                    OR bn.manguoigiamho IN (SELECT manguoidung FROM nguoidung WHERE email = '$email'))
+                ";
+        
+                // 👨‍⚕️ Truy vấn cho BÁC SĨ
                 $sql1 = "
-                    SELECT pk.*, nd_bn.hoten, nd_nd.hoten AS hotenbacsi, nd_bn.email, 
-                           'Bac si' AS loai, tt.tentrangthai, ck.tenchuyenkhoa AS tenchuyenkhoa,
-                           kg.*, clv.tenca AS tenca, llv.malichlamviec, llv.hinhthuclamviec, 
-                            CASE 
-                                WHEN llv.maphong IS NULL THEN 'Online'
-                                ELSE CONCAT(
-                                    'Tòa ', COALESCE(p.tentoa,''), 
-                                    ' / Tầng ', COALESCE(p.tang,''), 
-                                    ' / Số phòng ', COALESCE(p.sophong,'')
-                                )
-                            END AS tenphongdaydu
+                    SELECT 
+                        pk.*, 
+                        nd_bn.hoten, 
+                        nd_nd.hoten AS hotenbacsi, 
+                        nd_bn.email, 
+                        'Bac si' AS loai, 
+                        tt.tentrangthai, 
+                        ck.tenchuyenkhoa AS tenchuyenkhoa,
+                        kg.*, 
+                        clv.tenca AS tenca, 
+                        llv.malichlamviec, 
+                        llv.hinhthuclamviec, 
+                        CASE 
+                            WHEN llv.maphong IS NULL THEN 'Online'
+                            ELSE CONCAT(
+                                'Tòa ', COALESCE(p.tentoa,''), 
+                                ' / Tầng ', COALESCE(p.tang,''), 
+                                ' / Số phòng ', COALESCE(p.sophong,'')
+                            )
+                        END AS tenphongdaydu
                     FROM phieukhambenh pk
                     JOIN trangthai tt ON tt.matrangthai = pk.matrangthai
                     JOIN khunggiokhambenh kg ON kg.makhunggiokb = pk.makhunggiokb
                     JOIN calamviec clv ON clv.macalamviec = kg.macalamviec
-                    LEFT JOIN lichlamviec llv ON llv.manguoidung = pk.mabacsi 
-                                             AND llv.ngaylam = pk.ngaykham
-                                             AND llv.macalamviec = kg.macalamviec
+                    LEFT JOIN lichlamviec llv 
+                        ON llv.manguoidung = pk.mabacsi 
+                        AND llv.ngaylam = pk.ngaykham
+                        AND llv.macalamviec = kg.macalamviec
                     JOIN benhnhan bn ON bn.mabenhnhan = pk.mabenhnhan
                     JOIN nguoidung nd_bn ON nd_bn.manguoidung = bn.mabenhnhan
                     JOIN bacsi bs ON bs.mabacsi = pk.mabacsi
                     JOIN chuyenkhoa ck ON ck.machuyenkhoa = bs.machuyenkhoa
                     JOIN nguoidung nd_nd ON nd_nd.manguoidung = bs.mabacsi
                     LEFT JOIN phong p ON p.maphong = llv.maphong
-                    WHERE nd_bn.email = '$tentk' 
-                       OR bn.manguoigiamho IN (SELECT manguoidung FROM nguoidung WHERE email = '$tentk')
+                    WHERE $whereCondition
                 ";
         
-                // SELECT cho chuyên gia
+                // 🧠 Truy vấn cho CHUYÊN GIA
                 $sql2 = "
-                    SELECT pk.*, nd_bn.hoten, nd_nd.hoten AS hotenbacsi, nd_bn.email, 
-                           'Chuyen gia' AS loai, tt.tentrangthai, lv.tenlinhvuc AS tenchuyenkhoa,
-                           kg.*, clv.tenca AS tenca, llv.malichlamviec, llv.hinhthuclamviec,
-                     CASE 
-                        WHEN llv.maphong IS NULL THEN 'Online'
-                        ELSE CONCAT(
-                            'Tòa ', COALESCE(p.tentoa,''), 
-                            ' / Tầng ', COALESCE(p.tang,''), 
-                            ' / Số phòng ', COALESCE(p.sophong,'')
-                        )
-                    END AS tenphongdaydu
+                    SELECT 
+                        pk.*, 
+                        nd_bn.hoten, 
+                        nd_nd.hoten AS hotenbacsi, 
+                        nd_bn.email, 
+                        'Chuyen gia' AS loai, 
+                        tt.tentrangthai, 
+                        lv.tenlinhvuc AS tenchuyenkhoa,
+                        kg.*, 
+                        clv.tenca AS tenca, 
+                        llv.malichlamviec, 
+                        llv.hinhthuclamviec,
+                        CASE 
+                            WHEN llv.maphong IS NULL THEN 'Online'
+                            ELSE CONCAT(
+                                'Tòa ', COALESCE(p.tentoa,''), 
+                                ' / Tầng ', COALESCE(p.tang,''), 
+                                ' / Số phòng ', COALESCE(p.sophong,'')
+                            )
+                        END AS tenphongdaydu
                     FROM phieukhambenh pk
                     JOIN trangthai tt ON tt.matrangthai = pk.matrangthai
                     JOIN khunggiokhambenh kg ON kg.makhunggiokb = pk.makhunggiokb
                     JOIN calamviec clv ON clv.macalamviec = kg.macalamviec
-                    LEFT JOIN lichlamviec llv ON llv.manguoidung = pk.mabacsi 
-                                             AND llv.ngaylam = pk.ngaykham
-                                             AND llv.macalamviec = kg.macalamviec
+                    LEFT JOIN lichlamviec llv 
+                        ON llv.manguoidung = pk.mabacsi 
+                        AND llv.ngaylam = pk.ngaykham
+                        AND llv.macalamviec = kg.macalamviec
                     JOIN benhnhan bn ON bn.mabenhnhan = pk.mabenhnhan
                     JOIN nguoidung nd_bn ON nd_bn.manguoidung = bn.mabenhnhan
                     JOIN chuyengia cg ON cg.machuyengia = pk.mabacsi
                     JOIN linhvuc lv ON lv.malinhvuc = cg.malinhvuc
                     JOIN nguoidung nd_nd ON nd_nd.manguoidung = cg.machuyengia
                     LEFT JOIN phong p ON p.maphong = llv.maphong
-                    WHERE nd_bn.email = '$tentk' 
-                       OR bn.manguoigiamho IN (SELECT manguoidung FROM nguoidung WHERE email = '$tentk')
+                    WHERE $whereCondition
                 ";
         
-                // Thêm điều kiện trạng thái & ngày
+                // 📝 Thêm điều kiện lọc nếu có
                 if (!empty($status)) {
-                    $sql1 .= " AND tt.tentrangthai = '$status'";
-                    $sql2 .= " AND tt.tentrangthai = '$status'";
+                    $sql1 .= " AND LOWER(TRIM(tt.tentrangthai)) = LOWER(TRIM('$status'))";
+                    $sql2 .= " AND LOWER(TRIM(tt.tentrangthai)) = LOWER(TRIM('$status'))";
                 }
                 if (!empty($ngay)) {
                     $sql1 .= " AND pk.ngaykham = '$ngay'";
                     $sql2 .= " AND pk.ngaykham = '$ngay'";
                 }
         
-                // Gộp UNION ALL và ORDER BY
+                // 🔗 Gộp 2 truy vấn lại bằng UNION ALL
                 $sql = "
                     ($sql1)
                     UNION ALL
                     ($sql2)
-                    ORDER BY ngaykham DESC, giobatdau ASC";
+                    ORDER BY ngaykham DESC, giobatdau ASC
+                ";
         
+                // ⏳ Thực thi và trả kết quả
                 $tbl = $con->query($sql);
                 $p->dongketnoi($con);
+        
                 return $tbl;
             } else {
                 return false;
             }
         }
+        
         
         
         public function huyPhieuKhamBenh($maphieukb) {

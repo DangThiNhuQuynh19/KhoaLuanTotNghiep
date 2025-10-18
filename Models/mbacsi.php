@@ -1,7 +1,7 @@
 <?php
 require_once('ketnoi.php');
  class mBacSi{
-        public function dsbacsi(){
+        public function dsbacsi1(){
             $p = new clsKetNoi();
             $con = $p->moketnoi();
             $con->set_charset('utf8');
@@ -19,7 +19,7 @@ require_once('ketnoi.php');
                 return false; 
             }
         }
-        public function dsbacsi1(){
+        public function dsbacsi(){
             $p = new clsKetNoi();
             $con = $p->moketnoi();
             $con->set_charset('utf8');
@@ -29,7 +29,7 @@ require_once('ketnoi.php');
                         join nguoidung on bacsi.mabacsi = nguoidung.manguoidung
                         join taikhoan on nguoidung.email = taikhoan.tentk
                         join trangthai on bacsi.matrangthai = trangthai.matrangthai
-                        where trangthai.matrangthai = 1 order by bacsi.mabacsi asc";
+                        where taikhoan.matrangthai = 1 order by bacsi.mabacsi asc";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;

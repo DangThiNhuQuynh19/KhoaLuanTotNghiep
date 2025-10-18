@@ -1,7 +1,7 @@
 <?php
 require_once('ketnoi.php');
  class mChuyenGia{
-        public function dschuyengia(){
+        public function dschuyengia1(){
             $p = new clsKetNoi();
             $con = $p->moketnoi();
             $con->set_charset('utf8');
@@ -19,7 +19,7 @@ require_once('ketnoi.php');
                 return false; 
             }
         }
-        public function dschuyengia1(){
+        public function dschuyengia(){
             $p = new clsKetNoi();
             $con = $p->moketnoi();
             $con->set_charset('utf8');
@@ -29,7 +29,7 @@ require_once('ketnoi.php');
                         join nguoidung on chuyengia.machuyengia = nguoidung.manguoidung
                         join taikhoan on nguoidung.email = taikhoan.tentk
                         join trangthai on chuyengia.matrangthai = trangthai.matrangthai
-                        where trangthai.matrangthai=1 order by chuyengia.machuyengia desc";
+                        where taikhoan.matrangthai=1 order by chuyengia.machuyengia desc";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;
