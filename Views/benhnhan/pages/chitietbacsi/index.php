@@ -1,4 +1,15 @@
 <?php
+
+// Kiểm tra đăng nhập
+if (!isset($_SESSION['dangnhap']) || $_SESSION['dangnhap'] != 1) {
+    // Lưu URL hiện tại để quay lại sau khi đăng nhập
+    $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
+    // Chuyển hướng sang trang đăng nhập
+    header("Location: index.php?action=dangnhap");
+    exit;
+}
+
+
 include_once("Controllers/cbacsi.php");
 include_once("Controllers/clichkham.php");
 

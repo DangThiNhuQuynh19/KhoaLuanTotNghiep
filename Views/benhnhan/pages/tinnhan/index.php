@@ -1,11 +1,13 @@
 <?php
+session_start();
+
+// Kiểm tra đăng nhập
 if (!isset($_SESSION['user']['tentk'])) {
-    header("Location: index.php");
+    header("Location: dangnhap.php");
     exit();
 }
 $tentk = $_SESSION['user']['tentk'];
 ?>
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -121,7 +123,7 @@ $tentk = $_SESSION['user']['tentk'];
         <?php
         include_once("Controllers/ctaikhoan.php");
         $p = new ctaiKhoan();
-        $tentk1=$_SESSION['user']['tentk'];
+        $tentk1 = $_SESSION['user']['tentk'];
         $tbl = $p->gettkbacsi($tentk1);
 
         if ($tbl && $tbl->num_rows > 0) {
@@ -135,8 +137,8 @@ $tentk = $_SESSION['user']['tentk'];
             echo "<p class='p-3'>Không có bác sĩ nào.</p>";
         }
         ?>
-
     </div>
+
     <div id="chatContainer">
         <div id="chatHeader">Chọn bác sĩ để trò chuyện</div>
         <div id="chatMessages"></div>
@@ -148,91 +150,134 @@ $tentk = $_SESSION['user']['tentk'];
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 let socket;
-let user = { tentk: "<?php echo htmlspecialchars($tentk, ENT_QUOTES, 'UTF-8'); ?>", vaitro: 1 };
-let currentDoctor = null;
-let messages = {}; // Store messages by doctor ID
+let user = { 
+    tentk: "<?php echo htmlspecialchars($tentk, ENT_QUOTES, 'UTF-8'); ?>", 
+    vaitro: 1 
+};
 
-// Kết nối WebSocket
+let currentDoctor = null;
+let messages = {}; // Lưu lịch sử theo từng bác sĩ
+
+// 📡 Kết nối WebSocket
 function connectWebSocket() {
     socket = new WebSocket('ws://localhost:8080');
+
     socket.onopen = () => {
-        console.log("WebSocket connected!");
-        socket.send(JSON.stringify({ command: 'register', username: user.tentk, role: user.vaitro }));
+        console.log("✅ WebSocket connected");
+        socket.send(JSON.stringify({ 
+            command: 'register', 
+            username: user.tentk, 
+            role: user.vaitro 
+        }));
+
+        // 🔁 Nếu có bác sĩ được lưu trước đó => tự động mở lại chat
+        const savedDoctor = localStorage.getItem('selectedDoctor');
+        const savedDoctorName = localStorage.getItem('selectedDoctorName');
+        if (savedDoctor && savedDoctorName) {
+            setTimeout(() => selectUser(savedDoctor, savedDoctorName), 300);
+        }
     };
-        socket.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            if (data.command === 'messages') {
-                const docID = data.receiver_tentk;
-                messages[docID] = data.messages;
-                if (currentDoctor && currentDoctor.tentk === docID) {
-                    renderMessages(messages[docID]);
+
+    socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+
+        switch (data.command) {
+            case 'messages': // 📥 Nhận lịch sử tin nhắn
+                const partner = data.receiver_tentk;   // 👈 lấy đúng key server gửi về
+                messages[partner] = data.messages;
+                if (currentDoctor && currentDoctor.tentk === partner) {
+                    renderMessages(messages[partner]);
+                    console.log("📥 Lịch sử tin nhắn nhận được:", data);
                 }
-            } else if (data.command === 'receive') {
+                break;
+
+            case 'receive': // 📥 Nhận tin nhắn mới từ bác sĩ
                 if (!messages[data.sender]) messages[data.sender] = [];
-                messages[data.sender].push(data);
+                messages[data.sender].push({
+                    sender: data.sender,
+                    message: data.message,
+                    thoigiangui: new Date().toISOString()
+                });
+
                 if (currentDoctor && currentDoctor.tentk === data.sender) {
-                    displayMessage(data);
+                    displayMessage({
+                        sender: data.sender,
+                        message: data.message
+                    });
                 }
-            }
-        };
+                break;
+
+            case 'sent': // 📤 Xác nhận gửi thành công
+                if (!messages[data.receiver]) messages[data.receiver] = [];
+                messages[data.receiver].push({
+                    sender: user.tentk,
+                    message: data.message,
+                    thoigiangui: new Date().toISOString()
+                });
+
+                if (currentDoctor && currentDoctor.tentk === data.receiver) {
+                    displayMessage({
+                        sender: user.tentk,
+                        message: data.message
+                    });
+                }
+                break;
+        }
+    };
+
     socket.onclose = () => {
-        console.warn("WebSocket closed. Attempting to reconnect...");
-        setTimeout(connectWebSocket, 3000); // Try to reconnect after 3 seconds
+        console.warn("⚠️ WebSocket closed. Reconnecting...");
+        setTimeout(connectWebSocket, 3000);
     };
 }
 
-// Chọn bác sĩ và tải tin nhắn
+// 👨‍⚕️ Khi chọn một bác sĩ để chat
 function selectUser(tentk, name) {
     currentDoctor = { tentk, name };
+
+    // Lưu lại người đang chat vào localStorage
+    localStorage.setItem('selectedDoctor', tentk);
+    localStorage.setItem('selectedDoctorName', name);
+
     $('#chatHeader').text('Bạn đang trò chuyện với bác sĩ ' + name);
     $('#messageInput').prop('disabled', false);
     $('#sendButton').prop('disabled', false);
-    $('#chatMessages').html(''); // Clear chat window before loading new messages
 
-    // Kiểm tra nếu đã có tin nhắn cho bác sĩ này trong mảng messages
-    if (!messages[tentk]) messages[tentk] = [];
+    // Hiển thị trạng thái tải
+    $('#chatMessages').html('<p style="text-align:center;color:#777;">Đang tải tin nhắn...</p>');
 
-    renderMessages(messages[tentk]);
-
-    // Yêu cầu lịch sử tin nhắn từ server
+    // Gửi yêu cầu load lịch sử
     if (socket && socket.readyState === WebSocket.OPEN) {
         socket.send(JSON.stringify({
             command: "load_messages",
             tentk: user.tentk,
             receiver_tentk: tentk
         }));
-    } else {
-        console.warn("WebSocket is not ready. Retrying...");
-        setTimeout(() => selectUser(tentk, name), 2000); // Retry if WebSocket is not ready
     }
 }
 
-
-// Render tin nhắn lên giao diện
+// 📝 Hiển thị toàn bộ tin nhắn
 function renderMessages(msgArray) {
-    $('#chatMessages').html(''); // Clear the chat window before rendering new messages
+    $('#chatMessages').html('');
     msgArray.forEach(m => displayMessage(m));
 }
 
-// Hiển thị từng tin nhắn
+// 🧾 Hiển thị 1 tin nhắn
 function displayMessage(msg) {
     const msgDiv = $('<div class="message"></div>');
     msgDiv.text(msg.message);
-    msgDiv.addClass(msg.sender === user.tentk ? 'patient' : 'doctor'); // Apply different classes based on sender
+    msgDiv.addClass(msg.sender === user.tentk ? 'patient' : 'doctor');
     $('#chatMessages').append(msgDiv);
-    $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight); // Auto-scroll to the bottom
+    $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
 }
 
-// Gửi tin nhắn
+// ✉️ Gửi tin nhắn
 $('#sendButton').click(() => {
     const text = $('#messageInput').val().trim();
     if (!text || !currentDoctor) return;
-    console.log("Dữ liệu gửi đi:", {
-        bs: currentDoctor.tentk,
-        bn: user.tentk
-    });
-    // Gửi AJAX kiểm tra giờ hẹn
-        $.ajax({
+
+    // ✅ Kiểm tra lịch hẹn trước khi gửi
+    $.ajax({
         url: '/KLTN/Ajax/getlichhen.php',
         type: 'POST',
         dataType: 'json', 
@@ -241,9 +286,7 @@ $('#sendButton').click(() => {
             bn: user.tentk
         },
         success: function(response) {
-            console.log(response); // In ra để kiểm tra phản hồi từ server
             if (response.status === 'ok') {
-                // Được phép gửi tin nhắn
                 const msg = {
                     command: 'send',
                     sender: user.tentk,
@@ -253,30 +296,25 @@ $('#sendButton').click(() => {
 
                 if (socket && socket.readyState === WebSocket.OPEN) {
                     socket.send(JSON.stringify(msg));
-                    if (!messages[currentDoctor.tentk]) messages[currentDoctor.tentk] = [];
-                    messages[currentDoctor.tentk].push(msg);
-                    displayMessage(msg);
-                    $('#messageInput').val('');
-                } else {
-                    alert("WebSocket chưa sẵn sàng.");
                 }
+
+                // ✅ Không hiển thị ở đây nữa, chờ server gửi lại 'sent'
+                $('#messageInput').val('');
             } else {
-                alert(response.message); // Thông báo lỗi nếu chưa đến giờ hẹn
+                alert(response.message);
             }
         },
-        error: function(xhr, status, error) {
-            console.log(xhr.responseText); // In lỗi từ server để debug
-            alert("Không thể kiểm tra lịch hẹn. Vui lòng thử lại.");
+        error: function() {
+            alert("Không thể kiểm tra lịch hẹn.");
         }
     });
-
 });
 
-
-// Kết nối WebSocket
-connectWebSocket();
-
-
+// 🚀 Khởi động WebSocket khi tải trang
+$(document).ready(function() {
+    connectWebSocket();
+});
 </script>
+
 </body>
 </html>
