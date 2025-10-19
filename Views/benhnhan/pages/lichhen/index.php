@@ -1,7 +1,6 @@
 <?php
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 include_once('Controllers/cphieukhambenh.php');
-session_start();
 
 if (!isset($_SESSION['user']) || !isset($_SESSION['user']['tentk'])) {
     echo "<p>Bạn chưa đăng nhập hoặc thiếu thông tin tài khoản.</p>";
@@ -107,48 +106,85 @@ if (isset($_GET['cancel_id'])) {
     }
 
     /* Bộ lọc ngày */
+
     .filter-box {
-        background: #fff;
-        padding: 15px 20px;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(108, 52, 131, 0.2);
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
-        gap: 12px;
-        margin-bottom: 25px;
-        border: 1px solid #eee;
-    }
-    .filter-box label {
-        font-weight: 600;
-        color: var(--custom-purple);
-        margin: 0;
+        gap: 10px;
+        padding: 12px 20px;
+        background-color: #f8f0fc;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(108, 52, 131, 0.2);
         font-size: 14px;
+        max-width: 700px;
+        width: 90%;
+        padding-left: 170px;
     }
+
+    .filter-box label {
+        font-weight: 500;
+        color: #4b2a7b;
+        margin-bottom: 0;
+    }
+
     .filter-box input[type="date"] {
-        border: 1px solid var(--input-border);
+        border: 1px solid #ced4da;
         border-radius: 8px;
         padding: 6px 10px;
         font-size: 14px;
-        transition: border-color 0.3s, box-shadow 0.3s;
-    }
-    .filter-box input[type="date"]:focus {
-        border-color: var(--custom-purple);
-        box-shadow: 0 0 0 3px rgba(108, 52, 131, 0.2);
         outline: none;
+        transition: all 0.3s ease;
     }
-    .filter-box button,
-    .filter-box a {
-        border-radius: 8px;
-        font-size: 13px;
+
+    .filter-box input[type="date"]:focus {
+        border-color: #552d7d;
+        box-shadow: 0 0 6px rgba(85, 45, 125, 0.4);
+    }
+
+    .filter-box .btn {
         padding: 6px 14px;
+        font-size: 13px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 5px;
     }
+
     .filter-box .btn-primary {
-        background-color: var(--custom-purple);
-        border: none;
+        background-color: #552d7d;
+        border-color: #552d7d;
+        color: #fff;
     }
+
     .filter-box .btn-primary:hover {
-        background-color: var(--custom-purple-dark);
+        background-color: #6c3483;
+        border-color: #6c3483;
     }
+
+    .filter-box .btn-outline-secondary {
+        border-color: #aaa0b8;
+        color: #552d7d;
+        background-color: #fff;
+    }
+
+    .filter-box .btn-outline-secondary:hover {
+        background-color: #eee5f5;
+        color: #552d7d;
+    }
+
+    /* Responsive: xếp dọc khi màn hình nhỏ */
+    @media (max-width: 480px) {
+        .filter-box {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .filter-box label {
+            margin-left: 5px;
+        }
+    }
+
 
     table {
         width: 95%;

@@ -7,8 +7,12 @@ if (!isset($_SESSION['user']) || !isset($_SESSION['user']['tentk'])) {
 }
 
 $tentk = $_SESSION['user']['tentk'];
+
+// Lấy ngày filter từ GET
+$ngay = isset($_GET['ngay']) ? $_GET['ngay'] : null;
+
 $lich = new cLichXetNghiem();
-$result = $lich->getlichxetnghiemtheotentk($tentk);
+$result = $lich->getlichxetnghiemtheotentk($tentk, $ngay);
 
 $data = [];
 if ($result && $result !== -1 && $result !== 0) {
@@ -31,15 +35,23 @@ if ($currentTab === 'wait') {
     });
 } elseif ($currentTab === 'complete') {
     $filerlich = array_filter($data, function($lichxetnghiem) {
-        return isset($lichxetnghiem['tentrangthai']) && $lichxetnghiem['tentrangthai'] === 'Hoàn thành';
+        return isset($lichxetnghiem['tentrangthai']) && $lichxetnghiem['tentrangthai'] === 'Đã có kết quả';
     });
 } else {
     $filerlich = $data;
 }
 
+// Bộ lọc theo trạng thái thêm
 if (!empty($filter)) {
     $filerlich = array_filter($filerlich, function($lichxetnghiem) use ($filter) {
         return isset($lichxetnghiem['tentrangthai']) && $lichxetnghiem['tentrangthai'] === $filter;
+    });
+}
+
+// Bộ lọc theo ngày
+if (!empty($ngay)) {
+    $filerlich = array_filter($filerlich, function($lichxetnghiem) use ($ngay) {
+        return isset($lichxetnghiem['ngayhen']) && $lichxetnghiem['ngayhen'] === $ngay;
     });
 }
 ?>
@@ -147,10 +159,96 @@ if (!empty($filter)) {
         tr:hover {
             background-color: #f3e5f5;
         }
+        /* CSS bộ lọc ngày */
+        .date-filter-form {
+            width: 90%;
+            max-width: 700px;
+            margin: 0 auto 20px auto;
+            background-color: #f8f0fc;
+            padding: 12px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(108, 52, 131, 0.2);
+            font-size: 14px;
+        }
+
+        .date-filter-form label {
+            font-weight: 500;
+            color: #4b2a7b;
+        }
+
+        .date-filter-form .date-input {
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .date-filter-form .date-input:focus {
+            border-color: #552d7d;
+            box-shadow: 0 0 6px rgba(85, 45, 125, 0.4);
+        }
+
+        .date-filter-form .btn {
+            padding: 6px 14px;
+            font-size: 13px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .date-filter-form .btn-primary {
+            background-color: #552d7d;
+            border-color: #552d7d;
+        }
+
+        .date-filter-form .btn-primary:hover {
+            background-color: #6c3483;
+            border-color: #6c3483;
+        }
+
+        .date-filter-form .btn-secondary {
+            background-color: #aaa0b8;
+            border-color: #aaa0b8;
+        }
+
+        .date-filter-form .btn-secondary:hover {
+            background-color: #9187a5;
+            border-color: #9187a5;
+        }
+
+        /* Responsive: xếp dọc khi màn hình nhỏ */
+        @media (max-width: 480px) {
+            .date-filter-form {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+            .date-filter-form label {
+                margin-left: 5px;
+            }
+        }
+
     </style>
 </head>
 <body>
     <h2>Lịch Xét Nghiệm</h2>
+
+  <!-- Form chọn ngày -->
+    <form method="get" class="date-filter-form d-flex justify-content-center align-items-center gap-2 mb-4 flex-wrap">
+        <input type="hidden" name="action" value="lichxetnghiem">
+        <input type="hidden" name="tab" value="<?= htmlspecialchars($currentTab) ?>">
+        
+        <label for="ngay" class="me-2 mb-0">Chọn ngày:</label>
+        <input type="date" id="ngay" name="ngay" value="<?= htmlspecialchars($ngay) ?>" class="date-input">
+        
+        <button type="submit" class="btn btn-primary btn-sm">Lọc</button>
+        
+        <?php if($ngay): ?>
+            <a href="?action=lichxetnghiem&tab=<?= $currentTab ?>" class="btn btn-secondary btn-sm">Bỏ lọc</a>
+        <?php endif; ?>
+    </form>
+
 
     <?php if ($result === -1): ?>
         <p class="message text-danger">Lỗi kết nối cơ sở dữ liệu.</p>
@@ -169,7 +267,7 @@ if (!empty($filter)) {
             Đang thực hiện <span class="tab-count"><?= count(array_filter($data, function($lichxetnghiem) { return isset($lichxetnghiem['tentrangthai']) && $lichxetnghiem['tentrangthai'] === 'Đang thực hiện'; })) ?></span>
         </a>
         <a href="?action=lichxetnghiem&tab=complete" class="tab-button <?= $currentTab === 'complete' ? 'active' : '' ?>">
-           Hoàn thành <span class="tab-count"><?= count(array_filter($data, function($lichxetnghiem) { return isset($lichxetnghiem['tentrangthai']) && $lichxetnghiem['tentrangthai'] === 'Hoàn thành'; })) ?></span>
+           Hoàn thành <span class="tab-count"><?= count(array_filter($data, function($lichxetnghiem) { return isset($lichxetnghiem['tentrangthai']) && $lichxetnghiem['tentrangthai'] === 'Đã có kết quả'; })) ?></span>
         </a>
     </div>
     <table class="custom-table">

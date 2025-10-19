@@ -62,19 +62,20 @@ class cLichXetNghiem{
         }
     }
 
-    public function getlichxetnghiemtheotentk($tentk){
+    public function getlichxetnghiemtheotentk($tentk, $ngay = null){
         $p = new mLichXetNghiem();
-        $tbl = $p->lichxetnghiemtheotentk($tentk);
+        $tbl = $p->lichxetnghiemtheotentk($tentk, $ngay); 
         if(!$tbl){
-            return -1;
+            return -1; 
         }else{
             if($tbl->num_rows > 0){
-                return $tbl;
+                return $tbl; 
             }else{
-                return 0;
+                return 0;  
             }
         }
     }
+    
 
     public function get_lichxetnghiem(){
         $p = new mLichXetNghiem();

@@ -13,7 +13,7 @@ $machuyengia = $_GET['id'];
 $cChuyenGia = new cChuyenGia();
 $chuyengia = $cChuyenGia->getChuyenGiaById($machuyengia);
 
-if (!$chuyengia || $bacsi->num_rows === 0) {
+if (!$chuyengia || $chuyengia->num_rows === 0) {
     echo "Không tìm thấy thông tin chuyên gia.";
     exit;
 }

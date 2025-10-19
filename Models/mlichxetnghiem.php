@@ -101,22 +101,28 @@
             }
         }
 
-        public function lichxetnghiemtheotentk($tentk){
+        public function lichxetnghiemtheotentk($tentk, $ngay = null){
             $p = new clsKetNoi();
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if($con){
                 $str = "SELECT * 
-                FROM lichxetnghiem AS l
-                JOIN trangthai AS tt ON tt.matrangthai = l.matrangthai
-                JOIN hosobenhan AS hs ON l.mahoso = hs.mahoso
-                JOIN chitiethoso AS ct ON ct.mahoso=hs.mahoso
-                JOIN benhnhan AS b ON l.mabenhnhan = b.mabenhnhan
-                JOIN nguoidung nd ON nd.manguoidung = b.mabenhnhan
-                JOIN loaixetnghiem AS loai ON l.maloaixetnghiem = loai.maloaixetnghiem
-                JOIN chuyenkhoa AS c ON loai.machuyenkhoa = c.machuyenkhoa
-                JOIN khunggioxetnghiem AS k ON k.makhunggioxetnghiem = l.makhunggio
-                WHERE nd.email = '$tentk' ";
+                    FROM lichxetnghiem AS l
+                    JOIN trangthai AS tt ON tt.matrangthai = l.matrangthai
+                    JOIN hosobenhan AS hs ON l.mahoso = hs.mahoso
+                    JOIN chitiethoso AS ct ON ct.mahoso = hs.mahoso
+                    JOIN benhnhan AS b ON l.mabenhnhan = b.mabenhnhan
+                    JOIN nguoidung nd ON nd.manguoidung = b.mabenhnhan
+                    JOIN loaixetnghiem AS loai ON l.maloaixetnghiem = loai.maloaixetnghiem
+                    JOIN chuyenkhoa AS c ON loai.machuyenkhoa = c.machuyenkhoa
+                    JOIN khunggioxetnghiem AS k ON k.makhunggioxetnghiem = l.makhunggio
+                    WHERE nd.email = '$tentk'";
+        
+                // Nếu có ngày truyền vào, lọc thêm theo ngày
+                if($ngay){
+                    $str .= " AND DATE(l.ngayhen) = '$ngay'";
+                }
+        
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;
@@ -124,6 +130,7 @@
                 return false; 
             }
         }
+        
 
         public function select_lichxetnghiemchitiet_mabenhnhan($mabenhnhan){
             $p = new clsKetNoi();

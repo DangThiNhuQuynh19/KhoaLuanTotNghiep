@@ -1,5 +1,4 @@
 <?php
-session_start();
 include_once('Controllers/cBenhNhan.php');
 include_once("Assets/config.php");
 

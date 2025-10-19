@@ -43,7 +43,7 @@
             margin: 6px 12px;
             border-radius: 10px;
             text-decoration: none;
-            font-size: 15px;
+            font-size: 12.6px;
             transition: 0.3s;
         }
         .sidebar a i {

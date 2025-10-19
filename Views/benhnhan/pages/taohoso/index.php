@@ -275,8 +275,8 @@ function getAge($dob) {
                     <!-- CCCD cho người >= 16 tuổi -->
                     <div id="cccd-section">
                         <div class="form-group">
-                            <label>Số CCCD/CMND <span class="required">*</span></label>
-                            <input type="text" name="cccd" id="cccd" placeholder="Nhập 9-12 số" value="<?php echo $_POST['cccd'] ?? ''; ?>">
+                            <label>Mã định danh <span class="required">*</span></label>
+                            <input type="text" name="cccd" id="cccd" placeholder="Nhập 9-12 số" value="<?php echo $_POST['cccd'] ?? ''; ?>"required>
                         </div>
 
                         <div class="form-row">

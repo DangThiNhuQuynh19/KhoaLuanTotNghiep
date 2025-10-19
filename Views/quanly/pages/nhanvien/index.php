@@ -188,6 +188,21 @@ h2 {
 <body class="bg-light">
 <div class="container mt-4">
     <h2 class="text-center mb-4"><i class="bi bi-people"></i> Quản lý nhân sự</h2>
+    <?php if (isset($_GET['status'])): ?>
+    <div class="container mt-3">
+        <?php if ($_GET['status'] === 'success'): ?>
+            <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+                <i class="bi bi-check-circle-fill"></i> Cập nhật thành công!
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+            </div>
+        <?php elseif ($_GET['status'] === 'error'): ?>
+            <div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+                <i class="bi bi-exclamation-triangle-fill"></i> Đã xảy ra lỗi. Vui lòng thử lại!
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+            </div>
+        <?php endif; ?>
+    </div>
+<?php endif; ?>
 
     <!-- TAB NAV -->
     <ul class="nav nav-tabs" id="nhansuTab" role="tablist">

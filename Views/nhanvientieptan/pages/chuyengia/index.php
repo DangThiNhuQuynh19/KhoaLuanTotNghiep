@@ -110,7 +110,7 @@ if (is_int($ds) && $ds == -1) {
 ?>
 
 <div class="text-center mt-4">
-    <a href="?action=chuyengia" class="btn btn-purple"><i class="bi bi-arrow-left"></i> Quay lại</a>
+    <a href="?action=trangchu" class="btn btn-purple"><i class="bi bi-arrow-left"></i> Quay lại</a>
 </div>
 
 </body>

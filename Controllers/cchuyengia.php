@@ -93,6 +93,11 @@ class cChuyenGia{
             }
         }
     }
+
+    public function updateChuyenGia($machuyengia, $data) {
+        $p = new mChuyenGia();
+        return $p->updateChuyenGia($machuyengia, $data);
+    }
     
 
 }

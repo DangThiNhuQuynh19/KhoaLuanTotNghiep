@@ -105,7 +105,7 @@
               <div class="card">
             <div class="card-header">📝 Đặt lịch</div>
             <div class="card-body">
-                <p>Nhấn nút bên dưới để đặt lịch khám cho bệnh nhân:</p>
+                <p style="font-size: 14px;">Nhấn nút bên dưới để đặt lịch khám cho bệnh nhân:</p>
                 <a href="index.php?action=datlichkham" class="btn btn-primary">
                     <i class="bi bi-plus-circle"></i> Đặt lịch khám
                 </a>

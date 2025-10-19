@@ -1,5 +1,4 @@
 <?php
-session_start();
 include_once('Controllers/cnhanvien.php');
 
 $cnhanvien = new cnhanvien();
