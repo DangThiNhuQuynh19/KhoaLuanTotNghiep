@@ -27,111 +27,155 @@
     $thong_bao = '';
     $loai_thong_bao = 'thanh_cong';
 
+    if(isset($_POST['btn_xac_nhan'])){
+        $_SESSION['mabenhnhan']   = $_POST['mabenhnhan'];
+        $_SESSION['makhunggiokb'] = $_POST['makhunggiokb'];
+        if ($idbs) $_SESSION['mabacsi'] = $_POST['mabacsi'];
+        elseif ($idcg) $_SESSION['machuyengia'] = $_POST['machuyengia'];
+        $_SESSION['ngaykham']     = $_POST['ngaykham'];
+        $_SESSION['tongtien']     = $_POST['giakham'];
+        $_SESSION['matrangthai']  = '6';
+      
+        if(!empty($_POST['ma_benh_nhan']) && !empty($_POST['gio_hen']) && !empty($_POST['ngay_hen'])){
+            $maphieukb = 'PKB' . time() . rand(100, 999);
+            $result = $cphieukhambenh->insertphieukham(
+                $maphieukb,
+                $_POST['ngay_hen'],
+                $_POST['gio_hen'],
+                $bacsi['mabacsi'],
+                $_POST['ma_benh_nhan'],
+                6
+            );
+
+            if($result){
+                $xu_ly_email = new XuLyEmail();
+                $ket_qua_gui_email = $xu_ly_email->gui_email_yeu_cau_thanh_toan(
+                    'nguyentrang2642003@gmail.com',
+                    $_POST['ten_benh_nhan'],
+                    'Đặt lịch khám bệnh '.$_POST['hinh_thuc'],
+                    $_POST['ngay_hen'],
+                    $khung_gio[0]['giobatdau'],
+                    $maphieukb
+                );
+
+                if ($ket_qua_gui_email) {
+                    $_SESSION['popup_success'] = true;
+                    $_SESSION['popup_title'] = 'Thành công!';
+                    $_SESSION['popup_message'] = 'Đã đặt lịch xét nghiệm và gửi email yêu cầu thanh toán đến bệnh nhân.';
+                    
+                    // Redirect để tránh insert lần nữa khi F5
+                    header("Location: " . $_SERVER['REQUEST_URI']);
+                    exit();
+                    
+                } else {
+                    $_SESSION['thong_bao'] = '<strong>Cảnh báo!</strong> Đã đặt lịch thành công nhưng không thể gửi email. Vui lòng liên hệ bệnh nhân trực tiếp.';
+                    $_SESSION['loai_thong_bao'] = 'canh_bao';
+                    header("Location: " . $_SERVER['REQUEST_URI']);
+                    exit();
+                    
+                }
+            }else {
+                $_SESSION['thong_bao'] = '<strong>Thất bại!</strong> Đặt lịch không thành công. Vui lòng thử lại.';
+                $_SESSION['loai_thong_bao'] = 'loi';
+                header("Location: " . $_SERVER['REQUEST_URI']);
+                exit();
+                
+            }
+        }else {
+            $_SESSION['thong_bao'] = '<strong>Lỗi!</strong> Vui lòng điền đầy đủ thông tin.';
+            $_SESSION['loai_thong_bao'] = 'loi';
+            header("Location: " . $_SERVER['PHP_SELF']);
+            exit();
+        }
+        
+    }
+
 ?>
-    <style>
-        .alert {
-            padding: 15px 20px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 14px;
-            transition: opacity 0.5s ease-out;
-        }
-        
-        .alert-thanh_cong {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .alert-canh_bao {
-            background-color: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeaa7;
-        }
-        
-        .alert-loi {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
+<style>
+    .alert {
+        padding: 15px 20px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+        transition: opacity 0.5s ease-out;
+    }
+    
+    .alert-thanh_cong {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+    
+    .alert-canh_bao {
+        background-color: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeaa7;
+    }
+    
+    .alert-loi {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
 
-        .hinh-thuc-kham {
-            margin-bottom: 30px;
-            padding: 20px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            background: #f9f9f9;
-        }
+    .ca-kham {
+        margin-bottom: 20px;
+    }
 
-        .hinh-thuc-kham h3 {
-            margin-bottom: 20px;
-            color: #2c3e50;
-            font-size: 18px;
-        }
+    .khung-gio-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 10px;
+    }
 
-        .ca-kham {
-            margin-bottom: 20px;
-        }
+    .khung-gio-btn {
+        padding: 12px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        background: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+    }
 
-        .ca-kham h4 {
-            margin-bottom: 10px;
-            color: #555;
-            font-size: 16px;
-        }
+    .khung-gio-btn:hover {
+        border-color: #5e4b93;
+        background: #8a7fc7;
+        transform: translateY(-2px);
+    }
 
-        .khung-gio-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 10px;
-        }
+    .khung-gio-btn.selected {
+        border-color: #8a7fc7;
+        background:#8a7fc7;
+        color: white;
+    }
 
-        .khung-gio-btn {
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            background: white;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-        }
+    .khung-gio-btn.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background: #f5f5f5;
+    }
 
-        .khung-gio-btn:hover {
-            border-color: #4CAF50;
-            background: #f0f8f0;
-            transform: translateY(-2px);
-        }
+    .khung-gio-btn .time {
+        font-weight: bold;
+        font-size: 14px;
+    }
 
-        .khung-gio-btn.selected {
-            border-color: #4CAF50;
-            background: #4CAF50;
-            color: white;
-        }
+    .khung-gio-btn .status {
+        font-size: 12px;
+        margin-top: 5px;
+        color: #666;
+    }
 
-        .khung-gio-btn.disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            background: #f5f5f5;
-        }
-
-        .khung-gio-btn .time {
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        .khung-gio-btn .status {
-            font-size: 12px;
-            margin-top: 5px;
-            color: #666;
-        }
-
-        .khung-gio-btn.selected .status {
-            color: white;
-        }
-    </style>
+    .khung-gio-btn.selected .status {
+        color: white;
+    }
+</style>
 </head>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <body>
     <main class="container">
         <div class="content-header">
@@ -270,43 +314,46 @@
                         </div>
                     </div>
 
-                    <div class="form-group" id="khung_gio_kham" style="display: none;">
-                        <label>Chọn khung giờ khám <span style="color: red;">*</span></label>
-                        <div class="hinh-thuc-kham">
-                            <h3><i class="fas fa-video"></i> Khám Online</h3>
-                            
-                            <div class="ca-kham">
-                                <h4>Ca Sáng</h4>
-                                <div class="khung-gio-grid" id="online_ca_sang"></div>
-                            </div>
-                            
-                            <div class="ca-kham">
-                                <h4>Ca Chiều</h4>
-                                <div class="khung-gio-grid" id="online_ca_chieu"></div>
-                            </div>
-                            
-                            <div class="ca-kham">
-                                <h4>Ca Tối</h4>
-                                <div class="khung-gio-grid" id="online_ca_toi"></div>
+                    <div class="form-row" id="khung_gio_kham" style="display: none;">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label>Khám Online</label>
+                                
+                                <div class="ca-kham">
+                                    <p>Ca Sáng</p>
+                                    <div class="khung-gio-grid" id="online_ca_sang"></div>
+                                </div>
+                                
+                                <div class="ca-kham">
+                                    <p>Ca Chiều</p>
+                                    <div class="khung-gio-grid" id="online_ca_chieu"></div>
+                                </div>
+                                
+                                <div class="ca-kham">
+                                    <p>Ca Tối</p>
+                                    <div class="khung-gio-grid" id="online_ca_toi"></div>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="hinh-thuc-kham">
-                            <h3><i class="fas fa-hospital"></i> Khám Tại Bệnh Viện</h3>
-                            
-                            <div class="ca-kham">
-                                <h4>Ca Sáng</h4>
-                                <div class="khung-gio-grid" id="offline_ca_sang"></div>
-                            </div>
-                            
-                            <div class="ca-kham">
-                                <h4>Ca Chiều</h4>
-                                <div class="khung-gio-grid" id="offline_ca_chieu"></div>
-                            </div>
-                            
-                            <div class="ca-kham">
-                                <h4>Ca Tối</h4>
-                                <div class="khung-gio-grid" id="offline_ca_toi"></div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label>Khám Tại Bệnh Viện</label>
+                                
+                                <div class="ca-kham">
+                                    <p>Ca Sáng</p>
+                                    <div class="khung-gio-grid" id="offline_ca_sang"></div>
+                                </div>
+                                
+                                <div class="ca-kham">
+                                    <p>Ca Chiều</p>
+                                    <div class="khung-gio-grid" id="offline_ca_chieu"></div>
+                                </div>
+                                
+                                <div class="ca-kham">
+                                    <p>Ca Tối</p>
+                                    <div class="khung-gio-grid" id="offline_ca_toi"></div>
+                                </div>
                             </div>
                         </div>
                         
@@ -444,12 +491,12 @@
             }
         }
 
-        function kiem_tra_form() {
+        async function kiem_tra_form() {
             const ma_benh_nhan = document.getElementById('ma_benh_nhan').value;
             const ma_ho_so = document.getElementById('ma_ho_so').value;
             const ngay_hen = document.getElementById('ngay_hen').value;
             const gio_hen = document.getElementById('gio_hen_selected').value;
-            
+
             const showError = (msg) => {
                 Swal.fire({
                     icon: 'error',
@@ -460,24 +507,12 @@
                 });
             };
 
-            if (!ma_benh_nhan) {
-                showError('Vui lòng chọn bệnh nhân.');
-                return false;
-            }
-            if (!ma_ho_so) {
-                showError('Vui lòng chọn hồ sơ bệnh nhân.');
-                return false;
-            }
-            if (!ngay_hen) {
-                showError('Vui lòng chọn ngày khám.');
-                return false;
-            }
-            if (!gio_hen) {
-                showError('Vui lòng chọn khung giờ khám.');
-                return false;
-            }
-            
-            Swal.fire({
+            if (!ma_benh_nhan) { showError('Vui lòng chọn bệnh nhân.'); return false; }
+            if (!ma_ho_so) { showError('Vui lòng chọn hồ sơ bệnh nhân.'); return false; }
+            if (!ngay_hen) { showError('Vui lòng chọn ngày khám.'); return false; }
+            if (!gio_hen) { showError('Vui lòng chọn khung giờ khám.'); return false; }
+
+            const result = await Swal.fire({
                 title: 'Xác nhận đặt lịch',
                 html: `
                     <p>Bạn có chắc chắn muốn đặt lịch khám?</p>
@@ -489,15 +524,13 @@
                 cancelButtonText: 'Hủy',
                 confirmButtonColor: '#16a34a',
                 cancelButtonColor: '#d33'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('form_dat_lich').submit();
-                }
             });
 
-            return false;
+            if (result.isConfirmed) {
+                document.getElementById('form_dat_lich').submit();
+            }
         }
-        
+
         function lam_moi_form() {
             document.getElementById('ten_benh_nhan').value = '';
             document.getElementById('ngay_sinh_benh_nhan').value = '';
@@ -562,23 +595,24 @@
 
             const phieuKham = <?php echo json_encode($phieukham); ?>;
             const lichBacSi = <?php echo json_encode($lichbacsi); ?>;
-
-            console.log(lichBacSi);
-        
-            // --- Lọc khung giờ bệnh nhân đã có trong ngày được chọn ---
             const phieuKhamBenhNhan = phieuKham.filter(pk => 
                 pk.mabenhnhan === ma_benh_nhan && pk.ngaykham === ngay_chon
             );
 
-            // Lấy ra danh sách mã khung giờ đã đặt của bệnh nhân đó trong ngày này
-            const khungDaDat = phieuKhamBenhNhan.map(pk => pk.makhunggiokb);
+            // Nếu bệnh nhân chưa có phiếu khám trong ngày này
+            let khungTrong = [];
 
-            // --- Lọc các khung giờ trống trong lịch làm việc của bác sĩ ---
-            const khungTrong = lichBacSi.filter(lh => 
-                lh.ngaykham === ngay_chon && !khungDaDat.includes(lh.makhunggiokb)
-            );
-
-
+            if (phieuKhamBenhNhan.length === 0) {
+                // Chưa có phiếu nào => tất cả khung giờ của bác sĩ trong ngày là trống
+                khungTrong = lichBacSi.filter(lh => lh.ngaylam === ngay_chon);
+            } else {
+                // Lấy ra danh sách mã khung giờ đã đặt của bệnh nhân đó trong ngày này
+                const khungDaDat = phieuKhamBenhNhan.map(pk => pk.makhunggiokb);
+                // Lọc các khung giờ trống trong lịch làm việc của bác sĩ
+                khungTrong = lichBacSi.filter(lh => 
+                    lh.ngaylam === ngay_chon && !khungDaDat.includes(lh.makhunggiokb)
+                );
+            }
             if (khungTrong.length === 0) {
                 Swal.fire({
                     icon: 'warning',
@@ -600,7 +634,7 @@
                     btn.dataset.makhunggio = kg.makhunggiokb;
                     btn.dataset.hinhthuc = kg.hinhthuclamviec;
                     btn.innerHTML = `
-                        <div class="time">${kg.giobatdau} - ${kg.gioketthuc}</div>
+                        <div class="time">${kg.giobatdau.split(':').slice(0, 2).join(':')} - ${kg.gioketthuc.split(':').slice(0, 2).join(':')}</div>
                         <div class="status">${kg.hinhthuclamviec === 'online' ? 'Khám Online' : 'Tại Bệnh Viện'}</div>
                     `;
 

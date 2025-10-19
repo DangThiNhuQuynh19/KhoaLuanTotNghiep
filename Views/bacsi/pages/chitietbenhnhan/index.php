@@ -55,10 +55,6 @@ $active_tab = $_GET['tab'] ?? 'medical-records';
                             <span class="info-value"><?php echo decryptData($bn['tiensubenhtatcuabenhnhan']); ?></span>
                         </div>
                     </div>
-                    
-                    <div class="patient-actions">
-                        <a href="?action=datlichxetnghiem&id=<?php echo $mabenhnhan;?>" class="btn-outline btn-full"><i class="fas fa-flask"></i> Thêm xét nghiệm</a>
-                    </div>
                 </div>
             </div>
         </div>
@@ -115,6 +111,9 @@ $active_tab = $_GET['tab'] ?? 'medical-records';
                             <div class="card-header">
                                 <h2>Xét nghiệm</h2>
                                 <p>Kết quả xét nghiệm của bệnh nhân</p>
+                                <div class="patient-actions">
+                                    <a href="?action=datlichxetnghiem&id=<?php echo $mabenhnhan;?>" class="btn-outline btn-full"><i class="fas fa-flask"></i> Thêm xét nghiệm</a>
+                                </div>
                             </div>
                             <div class="card-body">
                                 <div class="test-records">

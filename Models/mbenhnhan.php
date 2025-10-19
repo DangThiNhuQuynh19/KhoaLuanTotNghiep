@@ -345,6 +345,20 @@
                 return false;
             }
         }
+
+        public function select_benhnhan_mabenhnhan($mabenhnhan){
+            $p = new clsKetNoi();
+            $con = $p->moketnoi();
+            $con->set_charset('utf8');
+            if($con){
+                $str = "SELECT * FROM benhnhan b JOIN nguoidung d on b.mabenhnhan = d.manguoidung where b.mabenhnhan='$mabenhnhan'";
+                $tbl = $con->query($str);
+                $p->dongketnoi($con);
+                return $tbl;
+            }else{
+                return false; 
+            }
+        }
     }
     
 ?>

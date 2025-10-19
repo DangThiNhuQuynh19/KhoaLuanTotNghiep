@@ -197,5 +197,23 @@ class cBenhNhan{
         }
     }
 
+    public function get_benhnhan_mabenhnhan($mabenhnhan){
+        $p = new mBenhNhan();
+        $tbl = $p ->select_benhnhan_mabenhnhan($mabenhnhan);
+        if($tbl){
+            if ($tbl->num_rows > 0) {
+                $ds = array();
+                while ($r = $tbl->fetch_assoc()) {
+                    $ds[] = $r;
+                }
+                return $ds;
+            } else {
+                return 0; 
+            }
+        }else{
+            return false;
+        }
+    }
+
 }
 ?>

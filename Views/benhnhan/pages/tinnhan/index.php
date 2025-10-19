@@ -1,7 +1,4 @@
 <?php
-session_start();
-
-// Kiểm tra đăng nhập
 if (!isset($_SESSION['user']['tentk'])) {
     header("Location: dangnhap.php");
     exit();

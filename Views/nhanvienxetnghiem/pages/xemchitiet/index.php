@@ -111,7 +111,7 @@ h2 { text-align:center; color:#6c3483; margin-bottom:30px;}
 </div>
 <!-- Thông Tin Khám Bệnh -->
 <div class="info-section">
-    <h3>Thông Tin Xét Nghiệm</h3>
+    <h3>Thông Tin khám bệnh</h3>
     <table>
         <tr><td><strong>Triệu chứng ban đầu:</strong></td><td><?= htmlspecialchars($lich['trieuchungbandau']) ?></td></tr>
         <tr><td><strong>Chẩn đoán ban đầu của bác sĩ:</strong></td><td><?= htmlspecialchars($lich['chandoan']) ?></td></tr>

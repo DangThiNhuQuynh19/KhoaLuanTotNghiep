@@ -8,7 +8,7 @@
             if($con){
                 $sql = "INSERT INTO email_thanh_toan 
                 (ma_lich_hen, email_benh_nhan, thoi_gian_gui, thoi_gian_het_han, trang_thai) 
-                VALUES ($ma_lich_hen, '$email_benh_nhan', '$thoi_gian_gui', '$thoi_gian_het_han', 'Đã gửi')";
+                VALUES ('$ma_lich_hen', '$email_benh_nhan', '$thoi_gian_gui', '$thoi_gian_het_han', 'Đã gửi')";
                 $tbl = $con->query($sql);
                 $p->dongketnoi($con);
                 return $tbl;

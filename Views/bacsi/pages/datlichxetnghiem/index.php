@@ -27,9 +27,14 @@
     $thong_bao = '';
     $loai_thong_bao = 'thanh_cong';
 
+    if(isset($_GET['id'])){
+        $benhnhan = $cbenhnhan->get_benhnhan_mabenhnhan($_GET['id']);
+    }
+    
     if (isset($_POST['btn_xac_nhan'])) {
-        if (!empty($_POST['ma_benh_nhan']) && !empty($_POST['loai_xet_nghiem']) && !empty($_POST['ngay_hen']) && !empty($_POST['gio_hen']) && !empty($_POST['ma_ho_so'])) {
+        if (!empty($_POST['ma_benh_nhan']) && !empty($_POST['loai_xet_nghiem']) && !empty($_POST['ngay_hen']) && !empty($_POST['gio_hen'])) {
             // Tạo tên file duy nhất cho QR code
+            $hosobenhnhan = $chosobenhandientu ->get_hoso_machuyenkhoa($_POST['ma_benh_nhan'],$bacsi['machuyenkhoa']);
             $ten_file_qr = 'qr_' . time() . '.png';
             $duong_dan_luu = 'Assets/img/' . $ten_file_qr;
 
@@ -50,42 +55,46 @@
             $ket_qua_qr = $builder->build();
             file_put_contents($duong_dan_luu, $ket_qua_qr->getString());
             
-            if ($clichxetnghiem->create_lichxetnghiem($_POST['ma_benh_nhan'],$_POST['loai_xet_nghiem'],$_POST['ngay_hen'],$_POST['gio_hen'],'10',$_POST['ma_ho_so'], $ten_file_qr)) {
-                
-              //  $ma_lich_hen = $clichxetnghiem->lay_ma_lich_hen_moi_nhat();
-                
-                $xu_ly_email = new XuLyEmail();
-                $ket_qua_gui_email = $xu_ly_email->gui_email_yeu_cau_thanh_toan(
-                    'nguyentrang2642003@gmail.com',
-                    $_POST['ten_benh_nhan'],
-                    $loai_xn[0]['tenloaixetnghiem'],
-                    $_POST['ngay_hen'],
-                    $khung_gio[0]['giobatdau'],
-                    11
-                );
-                
-                if ($ket_qua_gui_email) {
-                    $_SESSION['popup_success'] = true;
-                    $_SESSION['popup_title'] = 'Thành công!';
-                    $_SESSION['popup_message'] = 'Đã đặt lịch xét nghiệm và gửi email yêu cầu thanh toán đến bệnh nhân.';
-                    
-                    // Redirect để tránh insert lần nữa khi F5
-                    header("Location: " . $_SERVER['REQUEST_URI']);
-                    exit();
-                    
+            if(isset($hosobenhnhan)){
+                if ($clichxetnghiem->create_lichxetnghiem($_POST['ma_benh_nhan'],$_POST['loai_xet_nghiem'],$_POST['ngay_hen'],$_POST['gio_hen'],'10',$hosobenhnhan[0]['mahoso'], $ten_file_qr)) {  
+                      $xu_ly_email = new XuLyEmail();
+                      $ket_qua_gui_email = $xu_ly_email->gui_email_yeu_cau_thanh_toan(
+                          'nguyentrang2642003@gmail.com',
+                          $_POST['ten_benh_nhan'],
+                          $loai_xn[0]['tenloaixetnghiem'],
+                          $_POST['ngay_hen'],
+                          $khung_gio[0]['giobatdau'],
+                          11
+                      );
+                      
+                      if ($ket_qua_gui_email) {
+                          $_SESSION['popup_success'] = true;
+                          $_SESSION['popup_title'] = 'Thành công!';
+                          $_SESSION['popup_message'] = 'Đã đặt lịch xét nghiệm và gửi email yêu cầu thanh toán đến bệnh nhân.';
+                          
+                          // Redirect để tránh insert lần nữa khi F5
+                          header("Location: " . $_SERVER['REQUEST_URI']);
+                          exit();
+                          
+                      } else {
+                          $_SESSION['thong_bao'] = '<strong>Cảnh báo!</strong> Đã đặt lịch thành công nhưng không thể gửi email. Vui lòng liên hệ bệnh nhân trực tiếp.';
+                          $_SESSION['loai_thong_bao'] = 'canh_bao';
+                          header("Location: " . $_SERVER['REQUEST_URI']);
+                          exit();
+                          
+                      }
                 } else {
-                    $_SESSION['thong_bao'] = '<strong>Cảnh báo!</strong> Đã đặt lịch thành công nhưng không thể gửi email. Vui lòng liên hệ bệnh nhân trực tiếp.';
-                    $_SESSION['loai_thong_bao'] = 'canh_bao';
-                    header("Location: " . $_SERVER['REQUEST_URI']);
-                    exit();
-                    
+                      $_SESSION['thong_bao'] = '<strong>Thất bại!</strong> Đặt lịch xét nghiệm không thành công. Vui lòng thử lại.';
+                      $_SESSION['loai_thong_bao'] = 'loi';
+                      header("Location: " . $_SERVER['REQUEST_URI']);
+                      exit();
+                      
                 }
-            } else {
-                $_SESSION['thong_bao'] = '<strong>Thất bại!</strong> Đặt lịch xét nghiệm không thành công. Vui lòng thử lại.';
+            }else{
+                $_SESSION['thong_bao'] = '<strong>Thất bại!</strong> Bệnh nhân chưa có hồ sơ. Vui lòng tạo hồ sơ.';
                 $_SESSION['loai_thong_bao'] = 'loi';
-                header("Location: " . $_SERVER['REQUEST_URI']);
+                header("Location: ?action=taohoso&id=" . $_POST['ma_benh_nhan'] . "&redirect=" . urlencode($_SERVER['REQUEST_URI']));
                 exit();
-                
             }
         } else {
             $_SESSION['thong_bao'] = '<strong>Lỗi!</strong> Vui lòng điền đầy đủ thông tin.';
@@ -204,53 +213,59 @@
                         <div class="form-col">
                             <div class="form-group">
                                 <label for="ma_benh_nhan">Mã bệnh nhân</label>
-                                <select name="ma_benh_nhan" id="ma_benh_nhan" required>
-                                    <option value="">-- Chọn bệnh nhân --</option>
-                                    <?php foreach ($danh_sach_benh_nhan as $benh_nhan): ?>
-                                    <option value="<?php echo $benh_nhan['mabenhnhan']; ?>"><?php echo $benh_nhan['mabenhnhan'] . ' - ' . $benh_nhan['hoten']; ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label for="ma_ho_so">Hồ sơ bệnh nhân</label>
-                                <select name="ma_ho_so" id="ma_ho_so" required>
-                                    <option value="">-- Chọn hồ sơ --</option>
-                                </select>
+                                <?php if (isset($_GET['id'])): ?>
+                                    <input type="hidden" name="ma_benh_nhan" id="ma_benh_nhan" value="<?php echo $benhnhan[0]['mabenhnhan']; ?>">
+                                    <input type="text" value="<?php echo $benhnhan[0]['mabenhnhan']; ?>" readonly>
+                                <?php else: ?>
+                                    <select name="ma_benh_nhan" id="ma_benh_nhan" required>
+                                        <option value="">-- Chọn bệnh nhân --</option>
+                                        <?php foreach ($danh_sach_benh_nhan as $benh_nhan): ?>
+                                            <option value="<?php echo $benh_nhan['mabenhnhan']; ?>">
+                                                <?php echo $benh_nhan['mabenhnhan'] . ' - ' . $benh_nhan['hoten']; ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                <?php endif; ?>
                             </div>
                         </div>
 
                         <div class="form-col">
                             <div class="form-group">
                                 <label for="ten_benh_nhan">Họ và tên</label>
-                                <input type="text" id="ten_benh_nhan" name="ten_benh_nhan" readonly>
+                                <input type="text" id="ten_benh_nhan" name="ten_benh_nhan"
+                                    value="<?php echo isset($benhnhan) ? $benhnhan[0]['hoten'] : ''; ?>" readonly>
                             </div>
                         </div>
                     </div>
+
                     <div class="form-row">
                         <div class="form-col">
                             <div class="form-group">
                                 <label for="ngay_sinh_benh_nhan">Ngày sinh</label>
-                                <input type="text" id="ngay_sinh_benh_nhan" name="ngay_sinh_benh_nhan" readonly>
+                                <input type="text" id="ngay_sinh_benh_nhan" name="ngay_sinh_benh_nhan"
+                                    value="<?php echo isset($benhnhan) ? $benhnhan[0]['ngaysinh'] : ''; ?>" readonly>
                             </div>
                         </div>
+
                         <div class="form-col">
                             <div class="form-group">
                                 <label for="gioi_tinh_benh_nhan">Giới tính</label>
-                                <input type="text" id="gioi_tinh_benh_nhan" name="gioi_tinh_benh_nhan" readonly>
+                                <input type="text" id="gioi_tinh_benh_nhan" name="gioi_tinh_benh_nhan"
+                                    value="<?php echo isset($benhnhan) ? $benhnhan[0]['gioitinh'] : ''; ?>" readonly>
                             </div>
                         </div>
+
                         <div class="form-col">
                             <div class="form-group">
                                 <label for="sdt_benh_nhan">Số điện thoại</label>
-                                <input type="text" id="sdt_benh_nhan" name="sdt_benh_nhan" readonly>
+                                <input type="text" id="sdt_benh_nhan" name="sdt_benh_nhan"
+                                    value="<?php echo isset($benhnhan) ? decryptData($benhnhan[0]['sdt']) : ''; ?>" readonly>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
 
             <div class="card">
                 <div class="card-header">
@@ -439,7 +454,6 @@
 
         function kiem_tra_form() {
             const ma_benh_nhan = document.getElementById('ma_benh_nhan').value;
-            const ma_ho_so = document.getElementById('ma_ho_so').value;
             const loai_xet_nghiem = document.querySelector('input[name="loai_xet_nghiem"]:checked')?.value;
             const ngay_hen = document.getElementById('ngay_hen').value;
             const gio_hen = document.getElementById('gio_hen').value;
@@ -458,10 +472,6 @@
 
             if (!ma_benh_nhan) {
                 showError('Vui lòng chọn bệnh nhân.');
-                return false;
-            }
-            if (!ma_ho_so) {
-                showError('Vui lòng chọn hồ sơ bệnh nhân.');
                 return false;
             }
             if (!loai_xet_nghiem) {
@@ -505,9 +515,6 @@
             document.getElementById('gioi_tinh_benh_nhan').value = '';
             document.getElementById('sdt_benh_nhan').value = '';
             
-            const chon_ho_so = document.getElementById('ma_ho_so');
-            chon_ho_so.innerHTML = '<option value="">-- Chọn hồ sơ --</option>';
-            
             const chon_gio = document.getElementById('gio_hen');
             chon_gio.innerHTML = '<option value="">-- Chọn giờ --</option>';
             
@@ -526,47 +533,36 @@
             }
         }
 
-        document.getElementById('ma_benh_nhan').addEventListener('change', function() {
-            const ma_benh_nhan = this.value;
+        const selectMaBN = document.getElementById('ma_benh_nhan');
+        if (selectMaBN) {
+            selectMaBN.addEventListener('change', function() {
+                const ma_benh_nhan = this.value;
 
-            document.getElementById('ten_benh_nhan').value = '';
-            document.getElementById('ngay_sinh_benh_nhan').value = '';
-            document.getElementById('gioi_tinh_benh_nhan').value = '';
-            document.getElementById('sdt_benh_nhan').value = '';
-            
-            const chon_ho_so = document.getElementById('ma_ho_so');
-            chon_ho_so.innerHTML = '<option value="">-- Chọn hồ sơ --</option>';
+                document.getElementById('ten_benh_nhan').value = '';
+                document.getElementById('ngay_sinh_benh_nhan').value = '';
+                document.getElementById('gioi_tinh_benh_nhan').value = '';
+                document.getElementById('sdt_benh_nhan').value = '';
+                
+                const chon_gio = document.getElementById('gio_hen');
+                chon_gio.innerHTML = '<option value="">-- Chọn giờ --</option>';
+                
+                document.querySelectorAll('input[name="loai_xet_nghiem"]').forEach(radio => {
+                    radio.checked = false;
+                });
+                
+                if (!ma_benh_nhan) return;
 
-            const chon_gio = document.getElementById('gio_hen');
-            chon_gio.innerHTML = '<option value="">-- Chọn giờ --</option>';
-            
-            document.querySelectorAll('input[name="loai_xet_nghiem"]').forEach(radio => {
-                radio.checked = false;
+                const danh_sach_benh_nhan = <?php echo json_encode($danh_sach_benh_nhan); ?>;
+                const benh_nhan = danh_sach_benh_nhan.find(bn => bn.mabenhnhan === ma_benh_nhan);
+
+                if (benh_nhan) {
+                    document.getElementById('ten_benh_nhan').value = benh_nhan.hoten;
+                    document.getElementById('ngay_sinh_benh_nhan').value = benh_nhan.ngaysinh;
+                    document.getElementById('gioi_tinh_benh_nhan').value = benh_nhan.gioitinh;
+                    document.getElementById('sdt_benh_nhan').value = benh_nhan.sdt;
+                }
             });
-            
-            if (!ma_benh_nhan) return;
-
-            const danh_sach_benh_nhan = <?php echo json_encode($danh_sach_benh_nhan); ?>;
-            const benh_nhan = danh_sach_benh_nhan.find(bn => bn.mabenhnhan === ma_benh_nhan);
-
-            const danh_sach_ho_so = <?php echo json_encode($chosobenhandientu->get_hsba()); ?>;
-            const ho_so_benh_nhan = danh_sach_ho_so.filter(hs => hs.mabenhnhan === ma_benh_nhan);
-
-            if (benh_nhan) {
-                document.getElementById('ten_benh_nhan').value = benh_nhan.hoten;
-                document.getElementById('ngay_sinh_benh_nhan').value = benh_nhan.ngaysinh;
-                document.getElementById('gioi_tinh_benh_nhan').value = benh_nhan.gioitinh;
-                document.getElementById('sdt_benh_nhan').value = benh_nhan.sdt;
-            }
-
-            ho_so_benh_nhan.forEach(hs => {
-                const tuy_chon = document.createElement('option');
-                tuy_chon.value = hs.mahoso;
-                tuy_chon.textContent = `${hs.mahoso} - ${hs.ngaytao}`;
-                chon_ho_so.appendChild(tuy_chon);
-            });
-        });
-
+        }
         document.querySelectorAll('input[name="loai_xet_nghiem"]').forEach(radio => {
             radio.addEventListener('change', cap_nhat_khung_gio);
         });
