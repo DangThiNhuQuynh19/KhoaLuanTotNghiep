@@ -132,50 +132,123 @@ class mLichKham {
         }
     }
     
-   
-    public function kiemtragiohen($bs, $bn) {
+    public function kiemtragiohen($nguoiPhuTrach, $bn) {
         $p = new clsKetNoi();
         $con = $p->moketnoi();
+        if (!$con) return false;
+
         $con->set_charset('utf8');
 
-        if ($con) {
-            $sql = "SELECT 
-                pkb.ngaykham, 
-                clv.giobatdau, 
-                clv.gioketthuc, 
-                tk_bs.tentk AS tentk_bacsi,
-                tk_bn.tentk AS tentk_benhnhan
-            FROM phieukhambenh pkb
-            -- JOIN khunggiokhambenh trước
-            JOIN khunggiokhambenh kgb 
-                ON pkb.makhunggiokb = kgb.makhunggiokb
-            -- JOIN calamviec sau
-            JOIN calamviec clv 
-                ON kgb.macalamviec = clv.macalamviec
-            -- Thông tin Bác sĩ
-            JOIN bacsi bs 
-                ON pkb.mabacsi = bs.mabacsi
-            JOIN nguoidung nd_bs 
-                ON nd_bs.manguoidung = bs.mabacsi
-            JOIN taikhoan tk_bs 
-                ON tk_bs.tentk = nd_bs.email
-            -- Thông tin Bệnh nhân
-            JOIN benhnhan bn 
-                ON pkb.mabenhnhan = bn.mabenhnhan
-            JOIN nguoidung nd_bn 
-                ON nd_bn.manguoidung = bn.mabenhnhan
-            JOIN taikhoan tk_bn 
-                ON tk_bn.tentk = nd_bn.email
-            WHERE tk_bs.tentk = '$bs' 
-            AND tk_bn.tentk = '$bn';
-            ";
-            $result = $con->query($sql);
-            $p->dongketnoi($con);
-            return $result;
-        } else {
-            return false;
-        }
+        $sql = "
+            (
+                SELECT DATE(pkb.ngaykham) AS ngaykham,
+                       kgb.giobatdau,
+                       kgb.gioketthuc,
+                       tk_bs.tentk AS tentk_doctor_or_expert,
+                       tk_bn.tentk AS tentk_benhnhan,
+                       'bacsi' AS vaitro
+                FROM phieukhambenh pkb
+                LEFT JOIN khunggiokhambenh kgb ON pkb.makhunggiokb = kgb.makhunggiokb
+                LEFT JOIN calamviec clv ON kgb.macalamviec = clv.macalamviec
+                LEFT JOIN bacsi bs ON pkb.mabacsi = bs.mabacsi
+                LEFT JOIN nguoidung nd_bs ON nd_bs.manguoidung = bs.mabacsi
+                LEFT JOIN taikhoan tk_bs ON tk_bs.tentk = nd_bs.email
+                LEFT JOIN benhnhan bn ON pkb.mabenhnhan = bn.mabenhnhan
+                LEFT JOIN nguoidung nd_bn ON nd_bn.manguoidung = bn.mabenhnhan
+                LEFT JOIN taikhoan tk_bn ON tk_bn.tentk = nd_bn.email
+                LEFT JOIN lichlamviec llv ON pkb.mabacsi = llv.manguoidung 
+                    AND pkb.ngaykham = llv.ngaylam 
+                    AND llv.macalamviec = clv.macalamviec
+                WHERE tk_bs.tentk = ? AND tk_bn.tentk = ? AND llv.hinhthuclamviec = 'online'
+            )
+            UNION ALL
+            (
+                SELECT DATE(pkb.ngaykham) AS ngaykham,
+                       kgb.giobatdau,
+                       kgb.gioketthuc,
+                       tk_cg.tentk AS tentk_doctor_or_expert,
+                       tk_bn.tentk AS tentk_benhnhan,
+                       'chuyengia' AS vaitro
+                FROM phieukhambenh pkb
+                LEFT JOIN khunggiokhambenh kgb ON pkb.makhunggiokb = kgb.makhunggiokb
+                LEFT JOIN calamviec clv ON kgb.macalamviec = clv.macalamviec
+                LEFT JOIN chuyengia cg ON pkb.mabacsi = cg.machuyengia
+                LEFT JOIN nguoidung nd_cg ON nd_cg.manguoidung = cg.machuyengia
+                LEFT JOIN taikhoan tk_cg ON tk_cg.tentk = nd_cg.email
+                LEFT JOIN benhnhan bn ON pkb.mabenhnhan = bn.mabenhnhan
+                LEFT JOIN nguoidung nd_bn ON nd_bn.manguoidung = bn.mabenhnhan
+                LEFT JOIN taikhoan tk_bn ON tk_bn.tentk = nd_bn.email
+                LEFT JOIN lichlamviec llv ON pkb.mabacsi = llv.manguoidung 
+                    AND pkb.ngaykham = llv.ngaylam 
+                    AND llv.macalamviec = clv.macalamviec
+                WHERE tk_cg.tentk = ? AND tk_bn.tentk = ? AND llv.hinhthuclamviec = 'online'
+            )
+            UNION ALL
+            (
+                SELECT DATE(pkb.ngaykham) AS ngaykham,
+                       kgb.giobatdau,
+                       kgb.gioketthuc,
+                       tk_bs.tentk AS tentk_doctor_or_expert,
+                       tk_giamho.tentk AS tentk_benhnhan,
+                       'bacsi' AS vaitro
+                FROM phieukhambenh pkb
+                LEFT JOIN khunggiokhambenh kgb ON pkb.makhunggiokb = kgb.makhunggiokb
+                LEFT JOIN calamviec clv ON kgb.macalamviec = clv.macalamviec
+                LEFT JOIN bacsi bs ON pkb.mabacsi = bs.mabacsi
+                LEFT JOIN nguoidung nd_bs ON nd_bs.manguoidung = bs.mabacsi
+                LEFT JOIN taikhoan tk_bs ON tk_bs.tentk = nd_bs.email
+                LEFT JOIN benhnhan bn_con ON pkb.mabenhnhan = bn_con.mabenhnhan
+                LEFT JOIN nguoidung nd_giamho ON nd_giamho.manguoidung = bn_con.manguoigiamho
+                LEFT JOIN taikhoan tk_giamho ON tk_giamho.tentk = nd_giamho.email
+                LEFT JOIN lichlamviec llv ON pkb.mabacsi = llv.manguoidung 
+                    AND pkb.ngaykham = llv.ngaylam 
+                    AND llv.macalamviec = clv.macalamviec
+                WHERE tk_bs.tentk = ? AND tk_giamho.tentk = ? AND llv.hinhthuclamviec = 'online'
+            )
+            UNION ALL
+            (
+                SELECT DATE(pkb.ngaykham) AS ngaykham,
+                       kgb.giobatdau,
+                       kgb.gioketthuc,
+                       tk_cg.tentk AS tentk_doctor_or_expert,
+                       tk_giamho.tentk AS tentk_benhnhan,
+                       'chuyengia' AS vaitro
+                FROM phieukhambenh pkb
+                LEFT JOIN khunggiokhambenh kgb ON pkb.makhunggiokb = kgb.makhunggiokb
+                LEFT JOIN calamviec clv ON kgb.macalamviec = clv.macalamviec
+                LEFT JOIN chuyengia cg ON pkb.mabacsi = cg.machuyengia
+                LEFT JOIN nguoidung nd_cg ON nd_cg.manguoidung = cg.machuyengia
+                LEFT JOIN taikhoan tk_cg ON tk_cg.tentk = nd_cg.email
+                LEFT JOIN benhnhan bn_con ON pkb.mabenhnhan = bn_con.mabenhnhan
+                LEFT JOIN nguoidung nd_giamho ON nd_giamho.manguoidung = bn_con.manguoigiamho
+                LEFT JOIN taikhoan tk_giamho ON tk_giamho.tentk = nd_giamho.email
+                LEFT JOIN lichlamviec llv ON pkb.mabacsi = llv.manguoidung 
+                    AND pkb.ngaykham = llv.ngaylam 
+                    AND llv.macalamviec = clv.macalamviec
+                WHERE tk_cg.tentk = ? AND tk_giamho.tentk = ? AND llv.hinhthuclamviec = 'online'
+            )
+            ORDER BY ngaykham, giobatdau
+        ";
+
+        $stmt = $con->prepare($sql);
+        if (!$stmt) return false;
+
+        $stmt->bind_param(
+            "ssssssss", 
+            $nguoiPhuTrach, $bn, // 1️⃣
+            $nguoiPhuTrach, $bn, // 2️⃣
+            $nguoiPhuTrach, $bn, // 3️⃣
+            $nguoiPhuTrach, $bn  // 4️⃣
+        );
+
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $stmt->close();
+        $p->dongketnoi($con);
+        return $result;
     }
+    
     public function lichhen() {
         $p = new clsKetNoi();
         $con = $p->moketnoi();

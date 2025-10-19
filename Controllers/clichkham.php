@@ -111,31 +111,33 @@ class cLichKham {
     public function getlichhen($bs, $bn) {
         $p = new mLichKham();
         $tbl = $p->kiemtragiohen($bs, $bn);
-
-        if (!$tbl) {
-            return -1; // Không kết nối được CSDL
-        } else {
-            if ($tbl->num_rows > 0) {
-                while ($row = $tbl->fetch_assoc()) {
-                    $ngayKham = $row['ngaykham'];
-                    $today = date('Y-m-d');
-
-                    if ($ngayKham === $today) {
-                        $batdau = strtotime($ngayKham . ' ' . $row['giobatdau']);
-                        $ketthuc = strtotime($ngayKham . ' ' . $row['gioketthuc']);
-                        $now = time();
-
-                        if ($now >= $batdau && $now <= $ketthuc) {
-                            return true; // Đúng thời điểm
-                        }
+    
+        if (!$tbl) return -1; // Không kết nối được CSDL
+    
+        $today = date('Y-m-d');
+        $now = time();
+    
+        while ($row = $tbl->fetch_assoc()) {
+            // Lấy đúng phần ngày
+            $ngayKham = substr($row['ngaykham'], 0, 10);
+    
+            if ($ngayKham === $today) {
+                // Kiểm tra giờ bắt đầu và kết thúc không rỗng
+                if (!empty($row['giobatdau']) && !empty($row['gioketthuc'])) {
+                    $batdau = strtotime($ngayKham . ' ' . $row['giobatdau']);
+                    $ketthuc = strtotime($ngayKham . ' ' . $row['gioketthuc']);
+    
+                    if ($now >= $batdau && $now <= $ketthuc) {
+                        return true; // Đúng thời điểm
                     }
                 }
-                return 0; // Có lịch nhưng không phải hôm nay hoặc chưa đến giờ
-            } else {
-                return 0; // Không có lịch
             }
         }
+    
+        return 0; // Có lịch nhưng không phải hôm nay hoặc chưa đến giờ
     }
+    
+
     public function getlichhennhanvien(){
         $p = new mLichKham();
         $tbl = $p->lichhen();

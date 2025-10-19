@@ -1,6 +1,7 @@
 <?php
 include_once("ketnoi.php");
 
+
 class mtaikhoan{
     private $conn;
 
@@ -67,17 +68,80 @@ class mtaikhoan{
         $con = $p->moketnoi();
         $con->set_charset('utf8');
         if($con){
-            $str = "SELECT tk_bs.tentk, nd_bs.hoten, bs.imgbs
-                    From phieukhambenh pkb
-                    join bacsi bs on pkb.mabacsi = bs.mabacsi
-                    join nguoidung nd_bs on nd_bs.manguoidung = bs.mabacsi
-                    join taikhoan tk_bs on tk_bs.tentk = nd_bs.email
-                    join benhnhan b on pkb.mabenhnhan = b.mabenhnhan
-                    join nguoidung nd_bn on nd_bn.manguoidung = b.mabenhnhan
-                    join taikhoan tk_bn on tk_bn.tentk = nd_bn.email
-                    where tk_bn.tentk = '$tentk' group by tk_bs.tentk";
-    
+            $str = "
+            (
+                -- 🧍 BÁC SĨ đã khám cho chính người giám hộ
+                SELECT DISTINCT 
+                    bs_nd.email AS tentk,
+                    bs_nd.hoten AS hoten,
+                    bs.imgbs AS img,
+                    'bacsi' AS vaitro
+                FROM phieukhambenh pkb
+                JOIN bacsi bs ON pkb.mabacsi = bs.mabacsi
+                JOIN nguoidung bs_nd ON bs_nd.manguoidung = bs.mabacsi
+                JOIN benhnhan b ON pkb.mabenhnhan = b.mabenhnhan
+                JOIN nguoidung nd_bn ON nd_bn.manguoidung = b.mabenhnhan
+                JOIN taikhoan tk_bn ON tk_bn.tentk = nd_bn.email
+                WHERE tk_bn.tentk = '$tentk'
+               
+            )
+            UNION
+            (
+                -- 👶 BÁC SĨ đã khám cho bệnh nhân được người giám hộ này giám hộ
+                SELECT DISTINCT 
+                    bs_nd.email AS tentk,
+                    bs_nd.hoten AS hoten,
+                    bs.imgbs AS img,
+                    'bacsi' AS vaitro
+                FROM phieukhambenh pkb
+                JOIN bacsi bs ON pkb.mabacsi = bs.mabacsi
+                JOIN nguoidung bs_nd ON bs_nd.manguoidung = bs.mabacsi
+                JOIN benhnhan bn_con ON pkb.mabenhnhan = bn_con.mabenhnhan
+                JOIN nguoidung nd_giamho ON nd_giamho.manguoidung = bn_con.manguoigiamho
+                JOIN taikhoan tk_giamho ON tk_giamho.tentk = nd_giamho.email
+                WHERE tk_giamho.tentk = '$tentk'
+                AND bn_con.manguoigiamho = nd_giamho.manguoidung
+               
+            )
+            UNION
+            (
+                -- 🧍 CHUYÊN GIA đã khám cho chính người giám hộ
+                SELECT DISTINCT 
+                    cg_nd.email AS tentk,
+                    cg_nd.hoten AS hoten,
+                    cg.imgcg AS img,
+                    'chuyengia' AS vaitro
+                FROM phieukhambenh pkb
+                JOIN chuyengia cg ON pkb.mabacsi = cg.machuyengia
+                JOIN nguoidung cg_nd ON cg_nd.manguoidung = cg.machuyengia
+                JOIN benhnhan b ON pkb.mabenhnhan = b.mabenhnhan
+                JOIN nguoidung nd_bn ON nd_bn.manguoidung = b.mabenhnhan
+                JOIN taikhoan tk_bn ON tk_bn.tentk = nd_bn.email
+                WHERE tk_bn.tentk = '$tentk'
+              
+            )
+            UNION
+            (
+                -- 👶 CHUYÊN GIA đã khám cho bệnh nhân được người giám hộ này giám hộ
+                SELECT DISTINCT 
+                    cg_nd.email AS tentk,
+                    cg_nd.hoten AS hoten,
+                    cg.imgcg AS img,
+                    'chuyengia' AS vaitro
+                FROM phieukhambenh pkb
+                JOIN chuyengia cg ON pkb.mabacsi = cg.machuyengia
+                JOIN nguoidung cg_nd ON cg_nd.manguoidung = cg.machuyengia
+                JOIN benhnhan bn_con ON pkb.mabenhnhan = bn_con.mabenhnhan
+                JOIN nguoidung nd_giamho ON nd_giamho.manguoidung = bn_con.manguoigiamho
+                JOIN taikhoan tk_giamho ON tk_giamho.tentk = nd_giamho.email
+                WHERE tk_giamho.tentk = '$tentk'
+                AND bn_con.manguoigiamho = nd_giamho.manguoidung
+             
+            )
+            ";
+
             $tbl = $con->query($str);
+        
             $p->dongketnoi($con);
             return $tbl;
         }else{
@@ -89,9 +153,23 @@ class mtaikhoan{
         $con = $p->moketnoi();
         $con->set_charset('utf8');
         if($con){
-            $str = "SELECT * from taikhoan tk join nguoidung nd on nd.email = tk.tentk join benhnhan b on b.mabenhnhan = nd.manguoidung
-                    join phieukhambenh pkb on b.mabenhnhan = pkb.mabenhnhan
-                    where mavaitro=1 and pkb.mabacsi='$id' group by nd.manguoidung";
+            $str = "SELECT DISTINCT 
+                    tk_giamho.tentk,
+                    nd_giamho.hoten
+                FROM phieukhambenh pkb
+                JOIN benhnhan b 
+                    ON pkb.mabenhnhan = b.mabenhnhan 
+                    OR pkb.mabenhnhan = b.manguoigiamho
+                LEFT JOIN nguoidung nd_giamho 
+                    ON nd_giamho.manguoidung = 
+                        CASE 
+                            WHEN pkb.mabenhnhan = b.manguoigiamho THEN b.manguoigiamho
+                            ELSE b.manguoigiamho
+                        END
+                JOIN taikhoan tk_giamho ON tk_giamho.tentk = nd_giamho.email
+                WHERE pkb.mabacsi = '$id'
+                AND tk_giamho.mavaitro = 1;
+                ";
     
             $tbl = $con->query($str);
             $p->dongketnoi($con);

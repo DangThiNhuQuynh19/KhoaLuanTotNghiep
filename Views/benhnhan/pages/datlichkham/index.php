@@ -256,7 +256,7 @@ if (isset($_POST['datlich'])) {
             <?php endif; ?>
             <div class="d-flex justify-content-center gap-2 mt-3">
               <a href="?action=suahoso&mabenhnhan=<?php echo $bn['mabenhnhan']; ?>" class="btn btn-warning">Sửa hồ sơ</a>
-              <a href="xoahoso.php?mabenhnhan=<?php echo $bn['mabenhnhan']; ?>" class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa hồ sơ này?');">Xóa hồ sơ</a>
+              <a href="?action=xoahoso&mabenhnhan=<?php echo $bn['mabenhnhan']; ?>" class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa hồ sơ này?');">Xóa hồ sơ</a>
             </div>
           </div>
         </div>

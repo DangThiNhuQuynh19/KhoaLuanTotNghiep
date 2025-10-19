@@ -312,7 +312,7 @@
         public function deletebenhnhan($id) {
             $p = new clsketnoi();
             $con = $p->moketnoi();
-            $truyvan = "update benhnhan set matrangthai= where mabenhnhan='$id'";
+            $truyvan = "update benhnhan set matrangthai= 7 where mabenhnhan='$id'";
             $tbl = mysqli_query($con, $truyvan);
             $p->dongketnoi($con);
             return $tbl;

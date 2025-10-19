@@ -118,8 +118,8 @@ $tentk = $_SESSION['user']['tentk'];
 </head>
 <body>
 <div class="chat-layout">
-    <div id="userList">
-        <h3>Bác Sĩ</h3>
+<div id="userList">
+        <h3>Bác Sĩ / Chuyên Gia</h3>
         <?php
         include_once("Controllers/ctaikhoan.php");
         $p = new ctaiKhoan();
@@ -128,19 +128,25 @@ $tentk = $_SESSION['user']['tentk'];
 
         if ($tbl && $tbl->num_rows > 0) {
             while ($row = $tbl->fetch_assoc()) {
-                echo "<div class='user' onclick='selectUser(\"{$row['tentk']}\", \"{$row['hoten']}\")'>
-                        <img src='Assets/img/{$row['imgbs']}' alt='BS'>
-                        <span>{$row['hoten']}</span>
-                      </div>";
+                $img = !empty($row['img']) ? $row['img'] : 'default.png';
+                $roleLabel = ($row['vaitro'] === 'bacsi') ? 'Bác sĩ' : 'Chuyên gia';
+                    echo "<div class='user' onclick='selectUser(\"{$row['tentk']}\", \"{$row['hoten']}\", \"{$row['vaitro']}\")'>
+                            <img src='Assets/img/{$img}' alt='Ảnh'>
+                            <div>
+                                <strong>{$row['hoten']}</strong><br>
+                                <small>{$roleLabel}</small>
+                            </div>
+                        </div>";
+
             }
         } else {
-            echo "<p class='p-3'>Không có bác sĩ nào.</p>";
+            echo "<p class='p-3'>Không có bác sĩ hoặc chuyên gia nào.</p>";
         }
         ?>
     </div>
 
     <div id="chatContainer">
-        <div id="chatHeader">Chọn bác sĩ để trò chuyện</div>
+        <div id="chatHeader">Chọn bác sĩ/chuyên gia để trò chuyện</div>
         <div id="chatMessages"></div>
         <textarea id="messageInput" placeholder="Nhập tin nhắn..." disabled></textarea>
         <button id="sendButton" disabled>Gửi</button>
@@ -185,6 +191,7 @@ function connectWebSocket() {
             case 'messages': // 📥 Nhận lịch sử tin nhắn
                 const partner = data.receiver_tentk;   // 👈 lấy đúng key server gửi về
                 messages[partner] = data.messages;
+                console.log("bác sĩ " + partner + ":", currentDoctor.tentk);
                 if (currentDoctor && currentDoctor.tentk === partner) {
                     renderMessages(messages[partner]);
                     console.log("📥 Lịch sử tin nhắn nhận được:", data);
@@ -239,7 +246,7 @@ function selectUser(tentk, name) {
     localStorage.setItem('selectedDoctor', tentk);
     localStorage.setItem('selectedDoctorName', name);
 
-    $('#chatHeader').text('Bạn đang trò chuyện với bác sĩ ' + name);
+    $('#chatHeader').text('Bạn đang trò chuyện với ' + name);
     $('#messageInput').prop('disabled', false);
     $('#sendButton').prop('disabled', false);
 

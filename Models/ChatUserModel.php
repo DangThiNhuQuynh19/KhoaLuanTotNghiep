@@ -19,6 +19,7 @@ class ChatUserModel {
     public function setMessage($noidung) { $this->noidung = $noidung; }
     public function setIdMessage($matinnhan) { $this->matinnhan = $matinnhan; }
 
+    // Lưu tin nhắn mới
     public function saveMessage() {
         $this->thoigiangui = date('Y-m-d H:i:s');
         $stmt = $this->connect->prepare("INSERT INTO tinnhan (tentk_gui, tentk_nhan, noidung, thoigiangui) VALUES (?, ?, ?, ?)");
@@ -28,6 +29,20 @@ class ChatUserModel {
         return false;
     }
 
+    // Lấy thời gian của tin nhắn theo ID
+    public function getMessageTime($matinnhan) {
+        $stmt = $this->connect->prepare("SELECT thoigiangui FROM tinnhan WHERE matinnhan = ?");
+        if (!$stmt) return false;
+        $stmt->bind_param("i", $matinnhan);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($row = $result->fetch_assoc()) {
+            return $row['thoigiangui'];
+        }
+        return false;
+    }
+
+    // Lấy lịch sử tin nhắn giữa 2 người
     public function getMessages($user1, $user2) {
         $stmt = $this->connect->prepare("
             SELECT * FROM tinnhan
@@ -38,7 +53,7 @@ class ChatUserModel {
             error_log("SQL prepare failed: " . $this->connect->error);
             return false;
         }
-        
+
         $stmt->bind_param("ssss", $user1, $user2, $user2, $user1);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -49,7 +64,7 @@ class ChatUserModel {
                 'sender' => $row['tentk_gui'],
                 'receiver' => $row['tentk_nhan'],
                 'message' => $row['noidung'],
-                'time' => $row['thoigiangui'],
+                'time' => $row['thoigiangui'],   // time từ DB
                 'messageId' => $row['matinnhan']
             ];
         }

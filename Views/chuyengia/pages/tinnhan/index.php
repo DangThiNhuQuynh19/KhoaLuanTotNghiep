@@ -97,18 +97,18 @@ $tentk = $_SESSION['user']['tentk'];
         <h3>Bệnh nhân</h3>
         <?php
         include_once("Controllers/ctaikhoan.php");
-        include_once("Controllers/cbacsi.php");
-        $p = new cBacSi();
+        include_once("Controllers/cchuyengia.php");
+        $p = new cChuyenGia();
 
         // Lấy tentk từ session
         $tentk = $_SESSION['user']['tentk'];
 
         // Gọi hàm để lấy thông tin bác sĩ
-        $bacsi = $p->getBacSiByTenTK($tentk);
+        $chuyengia = $p->getChuyenGiaByTenTK($tentk);
         $p = new ctaiKhoan();
-        if (is_array($bacsi) && isset($bacsi['mabacsi'])) {
-            $mabacsi = $bacsi['mabacsi']; 
-            $tbl = $p->gettkbenhnhan($mabacsi);
+        if (is_array($chuyengia) && isset($chuyengia['machuyengia'])) {
+            $machuyengia = $chuyengia['machuyengia']; 
+            $tbl = $p->gettkbenhnhan($machuyengia);
 
             if ($tbl && $tbl->num_rows > 0) {
                 while ($row = $tbl->fetch_assoc()) {

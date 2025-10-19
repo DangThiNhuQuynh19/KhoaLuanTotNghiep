@@ -13,3 +13,4 @@ function encryptData($data) {
 function decryptData($encrypted) {
     return openssl_decrypt(base64_decode($encrypted), ENCRYPTION_METHOD, ENCRYPTION_KEY, 0, ENCRYPTION_IV);
 }
+?>

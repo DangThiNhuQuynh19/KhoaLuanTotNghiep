@@ -117,10 +117,6 @@ class ChatServer implements MessageComponentInterface {
                 $from->send(json_encode(['status' => 'error', 'message' => 'Missing tentk or receiver_tentk.']));
                 return;
             }
-
-            // Giải mã receiver nếu được mã hóa Base64
-            $receiver = base64_decode($receiver);
-
             $chat = new ChatUserModel();
             $messages = $chat->getMessages($sender, $receiver);
 
