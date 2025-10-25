@@ -1,24 +1,21 @@
 <?php
     include_once('Controllers/cphieukhambenh.php');
-    include_once('Controllers/cbacsi.php');
-    include_once('Controllers/cchuyenkhoa.php');
-    include_once('Controllers/cketquaxetnghiem.php');
-    $cchuyenkhoa = new cChuyenKhoa();
-    $cketquaxetnghiem= new cKetQuaXetNghiem();
-    $cbacsi = new cBacSi();
+    include_once('Controllers/cchuyengia.php');
+    include_once('Controllers/clinhvuc.php');
+   
+    $clinhvuc = new cLinhVuc();
+    $cchuyengia = new cChuyenGia();
     $cphieukhambenh = new cPhieuKhamBenh();
-    $bacsi= $cbacsi->getBacSiByTenTK($_SESSION['user']['tentk']);
-    $lichhenhomnay_list=$cphieukhambenh->get_lichkhamonl_homnay($bacsi['mabacsi']);
-    $tongbenhnhanhomnay= $cphieukhambenh->count_benhnhan($bacsi['mabacsi']);
-    $tongketquaxetnghiemhomnay= $cketquaxetnghiem->count_ketquaxetnghiem($bacsi['mabacsi']);
-    $sophieukhamtrongtuan = $cphieukhambenh->get_sophieukham_trongtuan($bacsi['mabacsi']);
-    $kqxetnghiemgannhat = $cketquaxetnghiem->get_ketquaxetnghiem_gannhat($bacsi['mabacsi']);
-    $lichkhamsapden = $cphieukhambenh->get_lichkham_sapden($bacsi['mabacsi']);
+    $chuyengia= $cchuyengia->getChuyenGiaByTenTK($_SESSION['user']['tentk']);
+    $lichhenhomnay_list=$cphieukhambenh->get_lichkhamonl_homnay($chuyengia['machuyengia']);
+    $tongbenhnhanhomnay= $cphieukhambenh->count_benhnhan($chuyengia['machuyengia']);
+    $sophieukhamtrongtuan = $cphieukhambenh->get_sophieukham_trongtuan($chuyengia['machuyengia']);
+    $lichkhamsapden = $cphieukhambenh->get_lichkham_sapden($chuyengia['machuyengia']);
 ?>
 <div class="container">
         <div class="dashboard">
             <div class="notification-panel">
-                <h3>Chào mừng trở lại, <?php echo "chuyên gia ".$bacsi['hoten'] ?? 'Chuyên gia'; ?>!</h3>
+                <h3>Chào mừng trở lại, <?php echo "chuyên gia ".$chuyengia['hoten'] ?? 'Chuyên gia'; ?>!</h3>
                 <p>Bạn có lịch hẹn sắp tới với bệnh nhân <?php echo(!empty($lichkhamsapden))? $lichkhamsapden[0]['hoten']:" "; ?></p>
                 <div class="notification-details">
                     <div class="notification-detail">
@@ -50,16 +47,7 @@
                     </div>
                 </div>
                 
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <a href="?action=xetnghiem"><i class="fas fa-clipboard-list"></i></a>
-                    </div>
-                    <div class="stat-info">
-                        <h3>Kết quả hôm nay</h3>
-                        <p class="stat-number"><?php echo $tongketquaxetnghiemhomnay['homnay']; ?></p>
-                        <p class="stat-change negative"><?php echo $tongketquaxetnghiemhomnay['trangthai']." ".$tongketquaxetnghiemhomnay['chenhlech'];?> so với hôm qua</p>
-                    </div>
-                </div>
+                
                 
                 <div class="stat-card">
                     <div class="stat-icon">
@@ -95,7 +83,7 @@
                                 echo '<div class="appointment-icon"><i class="fas fa-user"></i></div>';
                                 echo '<div class="appointment-details">';
                                 echo '<h4>' . $i['hoten'] . '</h4>';
-                                echo '<p>' . $i['tenchuyenkhoa'] . ' - ' . $i['giobatdau'] . '</p>';
+                                echo '<p>' . $i['tenlinhvuc'] . ' - ' . $i['giobatdau'] . '</p>';
                                 echo '</div>';
                                 $giobatdau = new DateTime($i['giobatdau']);
                                 $hientai = new DateTime(); 
@@ -113,37 +101,7 @@
                     </div>
                 </div>
                 
-                <div class="tests-section">
-                    <h2>Xét nghiệm gần đây</h2>
-                    <div class="test-list">
-                        <?php
-                        $tests = [
-                            ['patient' => 'Trần Thị B', 'type' => 'Xét nghiệm máu', 'date' => '28/04/2025'],
-                            ['patient' => 'Nguyễn Văn A', 'type' => 'X-quang ngực', 'date' => '27/04/2025'],
-                            ['patient' => 'Phạm Văn D', 'type' => 'Siêu âm', 'date' => '26/04/2025']
-                        ];
-                        if($kqxetnghiemgannhat){
-                            foreach ($kqxetnghiemgannhat as $i) {
-                                echo '<div class="test-item">';
-                                echo '<div class="test-icon"><i class="fas fa-file-medical"></i></div>';
-                                echo '<div class="test-details">';
-                                echo '<h4>' . $i['hoten'] . '</h4>';
-                                echo '<p>' . $i['tenchuyenkhoa'] . ' - ' . $i['thoigiantao'] . '</p>';
-                                echo '</div>';
-                                echo '<a href="?action=ketquaxetnghiem&id=' . $i['malichxetnghiem'] . '" class="btn-primary btn-small">Xem kết quả</a>';
-                                echo '</div>';
-                            }
-                        }else{
-                                echo '<div class="test-item">';
-                                echo    '<div class="test-icon"><i class="fas fa-file-medical"></i></div>';
-                                echo    '<div class="">'; 
-                                echo        '<p> Chưa có lịch xét nghiệm nào</p>';
-                                echo    '</div>';
-                                echo '</div>';
-                        }
-                        ?>
-                    </div>
-                </div>
+            
             </div>
         </div>
     </div>

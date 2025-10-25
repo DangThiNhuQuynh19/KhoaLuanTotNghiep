@@ -6,8 +6,10 @@
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if($con){
-                $str = "insert into chitiethoso(mahoso,mabacsi,ngaykham,trieuchungbandau,chandoan,huongdieutri,madonthuoc,ketluan) 
-                values('$mahoso','$mabacsi',CURDATE(),'$trieuchung','$chandoan','$huongdieutri','$madonthuoc','$ketluan')";
+                $madonthuoc_sql = $madonthuoc ? "'$madonthuoc'" : "NULL";
+
+                $str = "INSERT INTO chitiethoso(mahoso,mabacsi,ngaykham,trieuchungbandau,chandoan,huongdieutri,madonthuoc,ketluan)
+                VALUES('$mahoso','$mabacsi',CURDATE(),'$trieuchung','$chandoan','$huongdieutri',$madonthuoc_sql,'$ketluan')";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;

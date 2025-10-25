@@ -37,9 +37,9 @@
             }
         }
 
-        public function create_donthuoc($ghichu){
+        public function create_donthuoc(){
             $p = new mDonThuoc();
-            $tbl = $p->insert_donthuoc($ghichu);
+            $tbl = $p->insert_donthuoc();
             if(!$tbl){
                 return -1;
             }else{

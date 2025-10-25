@@ -83,7 +83,23 @@ class cHoSoBenhAnDienTu{
             }
         }
     }
-
+    public function get_hsba_mabenhnhan1($mabenhnhan){
+        $p = new mHoSoBenhAnDienTu();
+        $tbl = $p->select_hsba_mabenhnhan1($mabenhnhan);
+        if (!$tbl) {
+            return -1; 
+        } else {
+            if ($tbl->num_rows > 0) {
+                $data = [];
+                while ($row = $tbl->fetch_assoc()) {
+                    $data[] = $row;
+                }
+                return $data;
+            } else {
+                return 0; 
+            }
+        }
+    }
     public function get_hsba(){
         $p = new mHoSoBenhAnDienTu();
         $tbl = $p->select_hsba();
@@ -102,9 +118,9 @@ class cHoSoBenhAnDienTu{
         }
     }
 
-    public function create_hosobenhan_mabenhnhan($mabenhnhan,$ghichu){
+    public function create_hosobenhan_mabenhnhan($mabenhnhan){
         $p = new mHoSoBenhAnDienTu();
-        $tbl = $p->insert_hosobenhandientu_mabenhnhan($mabenhnhan,$ghichu);
+        $tbl = $p->insert_hosobenhandientu_mabenhnhan($mabenhnhan);
         if(!$tbl){
             return -1;
         }else{
@@ -165,10 +181,44 @@ class cHoSoBenhAnDienTu{
             }
         }
     }
-
+    public function get_hoso_mahoso1($mahoso){
+        $p = new mHoSoBenhAnDienTu();
+        $tbl = $p->select_hoso_mahoso1($mahoso);
+        if (!$tbl) {
+            return -1; 
+        } else {
+            if ($tbl->num_rows > 0) {
+                $data = [];
+                while ($row = $tbl->fetch_assoc()) {
+                    $data[] = $row;
+                }
+                return $data;
+            } else {
+                return 0; 
+            }
+        }
+    }
     public function get_hoso_machuyenkhoa($mabenhnhan,$machuyenkhoa){
         $p = new mHoSoBenhAnDienTu();
         $tbl = $p->select_hoso_machuyenkhoa($mabenhnhan,$machuyenkhoa);
+        if (!$tbl) {
+            return -1; 
+        } else {
+            if ($tbl->num_rows > 0) {
+                $data = [];
+                while ($row = $tbl->fetch_assoc()) {
+                    $data[] = $row;
+                }
+                return $data;
+            } else {
+                return 0; 
+            }
+        }
+
+    }
+    public function get_hoso_malinhvuc($mabenhnhan,$machuyenkhoa){
+        $p = new mHoSoBenhAnDienTu();
+        $tbl = $p->select_hoso_malinhvuc($mabenhnhan,$machuyenkhoa);
         if (!$tbl) {
             return -1; 
         } else {

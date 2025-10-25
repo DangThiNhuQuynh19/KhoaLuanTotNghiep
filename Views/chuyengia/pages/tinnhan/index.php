@@ -1,5 +1,5 @@
 <?php
-if (!isset($_SESSION['user']['tentk']) || $_SESSION['user']['vaitro'] != 0) {
+if (!isset($_SESSION['user']['tentk']) || $_SESSION['user']['mavaitro'] != 3) {
     header("Location: index.php");
     exit();
 }

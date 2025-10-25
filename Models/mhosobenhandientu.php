@@ -116,7 +116,27 @@
                 return false; 
             }
         }
-
+        public function select_hsba_mabenhnhan1($mabenhnhan){
+            $p = new clsKetNoi();
+            $con = $p->moketnoi();
+            $con->set_charset('utf8');
+            if($con){
+                $str = "select * from hosobenhan hs 
+                join benhnhan bn on hs.mabenhnhan=bn.mabenhnhan 
+                join nguoidung nd_bn on nd_bn.manguoidung = bn.mabenhnhan
+                join chitiethoso ct on hs.mahoso = ct.mahoso 
+                join chuyengia bs on ct.mabacsi = bs.machuyengia
+                join nguoidung nd_bs on nd_bs.manguoidung = bs.machuyengia
+                join linhvuc ck on bs.malinhvuc = ck.malinhvuc
+                where hs.mabenhnhan= '$mabenhnhan'
+                group by ct.mahoso";
+                $tbl = $con->query($str);
+                $p->dongketnoi($con);
+                return $tbl;
+            }else{
+                return false; 
+            }
+        }
         public function select_hsba(){
             $p = new clsKetNoi();
             $con = $p->moketnoi();
@@ -131,13 +151,13 @@
             }
         }
 
-        public function insert_hosobenhandientu_mabenhnhan($mabenhnhan,$ghichu){
+        public function insert_hosobenhandientu_mabenhnhan($mabenhnhan){
             $p = new clsKetNoi();
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if($con){
-                $str = "insert into hosobenhan(mabenhnhan,ghichu,ngaytao,ngaycapnhat) 
-                values('$mabenhnhan','$ghichu',CURDATE(),CURDATE());";
+                $str = "insert into hosobenhan(mabenhnhan,ngaytao,ngaycapnhat) 
+                values('$mabenhnhan',CURDATE(),CURDATE());";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;
@@ -199,6 +219,23 @@
                 return false; 
             }
         }
+        public function select_hoso_mahoso1($mahoso){
+            $p = new clsKetNoi();
+            $con = $p->moketnoi();
+            $con->set_charset('utf8');
+            if($con){
+                $str = "select * from hosobenhan hs
+                join chitiethoso ct on hs.mahoso=ct.mahoso
+                join chuyengia bs on bs.machuyengia=ct.mabacsi
+                join nguoidung nd on nd.manguoidung = bs.machuyengia
+                where ct.mahoso = '$mahoso'";
+                $tbl = $con->query($str);
+                $p->dongketnoi($con);
+                return $tbl;
+            }else{
+                return false; 
+            }
+        }
 
         public function select_hoso_machuyenkhoa($mabenhnhan,$machuyenkhoa){
             $p = new clsKetNoi();
@@ -211,6 +248,24 @@
                 join chuyenkhoa ck on ck.machuyenkhoa =bs.machuyenkhoa
                 join benhnhan bn on bn.mabenhnhan = hs.mabenhnhan
                 where hs.mabenhnhan = '$mabenhnhan' and ck.machuyenkhoa = '$machuyenkhoa'";
+                $tbl = $con->query($str);
+                $p->dongketnoi($con);
+                return $tbl;
+            }else{
+                return false; 
+            }
+        }
+        public function select_hoso_malinhvuc($mabenhnhan,$machuyenkhoa){
+            $p = new clsKetNoi();
+            $con = $p->moketnoi();
+            $con->set_charset('utf8');
+            if($con){
+                $str = "select * from hosobenhan hs
+                join chitiethoso ct on hs.mahoso=ct.mahoso
+                join chuyengia bs on bs.machuyengia=ct.mabacsi
+                join linhvuc ck on ck.malinhvuc =bs.malinhvuc
+                join benhnhan bn on bn.mabenhnhan = hs.mabenhnhan
+                where hs.mabenhnhan = '$mabenhnhan' and ck.malinhvuc = '$machuyenkhoa'";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;

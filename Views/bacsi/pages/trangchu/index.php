@@ -117,18 +117,13 @@
                     <h2>Xét nghiệm gần đây</h2>
                     <div class="test-list">
                         <?php
-                        $tests = [
-                            ['patient' => 'Trần Thị B', 'type' => 'Xét nghiệm máu', 'date' => '28/04/2025'],
-                            ['patient' => 'Nguyễn Văn A', 'type' => 'X-quang ngực', 'date' => '27/04/2025'],
-                            ['patient' => 'Phạm Văn D', 'type' => 'Siêu âm', 'date' => '26/04/2025']
-                        ];
                         if($kqxetnghiemgannhat){
                             foreach ($kqxetnghiemgannhat as $i) {
                                 echo '<div class="test-item">';
                                 echo '<div class="test-icon"><i class="fas fa-file-medical"></i></div>';
                                 echo '<div class="test-details">';
                                 echo '<h4>' . $i['hoten'] . '</h4>';
-                                echo '<p>' . $i['tenchuyenkhoa'] . ' - ' . $i['thoigiantao'] . '</p>';
+                                echo '<p>' . $i['tenchuyenkhoa'] . ' - ' . $i['ngaygiotraketqua'] . '</p>';
                                 echo '</div>';
                                 echo '<a href="?action=ketquaxetnghiem&id=' . $i['malichxetnghiem'] . '" class="btn-primary btn-small">Xem kết quả</a>';
                                 echo '</div>';

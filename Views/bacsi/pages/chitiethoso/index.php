@@ -59,6 +59,8 @@ if(isset($_POST['btnupdate'])) {
                     $thuoc['songayuong']  
                 );
             }
+        }else{
+            $madonthuoc=NULL;
         }
     }
     if (!empty($benhnhan[0]['mabenhnhan']) && !empty($_POST['test']) && !empty($_POST['appointmentDate']) && !empty($_POST['appointmentTime']) && !empty($mahoso)) {
@@ -174,10 +176,6 @@ if(isset($_POST['btnupdate'])) {
                                 <div class="data-value"><?php echo $benhnhan[0]['nghenghiep']; ?></div>
                             </div>
                             <div class="patient-data-item">
-                                <div class="data-label">Nhóm máu</div>
-                                <div class="data-value"></div>
-                            </div>
-                            <div class="patient-data-item">
                                 <div class="data-label">Tiền sử bệnh tật của bản thân</div>
                                 <div class="data-value"><?php echo $benhnhan[0]['tiensubenhtatcuabenhnhan']?decryptData( $benhnhan[0]['tiensubenhtatcuabenhnhan']) :"Không có"; ?></div>
                             </div>
@@ -199,7 +197,7 @@ if(isset($_POST['btnupdate'])) {
                             </div>
                             <div class="patient-data-item">
                                 <div class="data-label">CCCD</div>
-                                <div class="data-value"><?php echo $benhnhan[0]['cccd']; ?></div>
+                                <div class="data-value"><?php echo decryptData($benhnhan[0]['cccd']); ?></div>
                             </div>
                         </div>
                     </div>
@@ -226,7 +224,7 @@ if(isset($_POST['btnupdate'])) {
                             <div class="info-value"><?php echo $benhnhan[0]['ngaytao']; ?></div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">Khoa phòng</div>
+                            <div class="info-label">Chuyên khoa</div>
                             <div class="info-value"><?php echo isset($chitiethoso_mahoso[0]['tenchuyenkhoa']) ? $chitiethoso_mahoso[0]['tenchuyenkhoa'] : $chuyenkhoa['tenchuyenkhoa']; ?></div>
                         </div>
                     </div>
@@ -241,7 +239,7 @@ if(isset($_POST['btnupdate'])) {
                         </div>
                         <div class="info-row">
                             <div class="info-label">Số điện thoại bác sĩ</div>
-                            <div class="info-value"><?php echo $hoso[0]['sdt']; ?></div>
+                            <div class="info-value"><?php echo decryptData($hoso[0]['sdt']); ?></div>
                         </div>
                     </div>
                 </div>
@@ -359,7 +357,6 @@ if(isset($_POST['btnupdate'])) {
                             <thead>
                                 <tr>
                                     <th>STT</th>
-                                    <th>Tên Đơn thuốc</th>
                                     <th>Ngày tạo đơn</th>
                                     <th>Thao tác</th>
                                 </tr>
@@ -369,7 +366,6 @@ if(isset($_POST['btnupdate'])) {
                                 <?php foreach ($donthuoc as $i): ?>
                                 <tr>
                                     <td><?php echo $dem; ?></td>
-                                    <td><?php echo $i['ghichudonthuoc']; ?></td>
                                     <td><?php echo $i['ngaytaodonthuoc']; ?></td>
                                     <td>
                                         <?php
@@ -582,10 +578,6 @@ if(isset($_POST['btnupdate'])) {
                                             <input type="text" id="thoigianuong" name="thoigianuong" placeholder="Ví dụ: Sau ăn">
                                         </div>
                                     </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="ghichu">Ghi chú đơn thuốc</label>
-                                    <input type="text" id="ghichu" name="ghichu" placeholder="Ghi chú về đơn thuốc">
                                 </div>
                                 <div style="text-align: right; margin-top: 15px;">
                                     <button type="button" class="btn-primary" onclick="addMedicationToList()">
@@ -1214,10 +1206,7 @@ if(isset($_POST['btnupdate'])) {
                     <input type="hidden" name="medications[${index}][thoigianuong]" value="${med.thoigianuong || ''}">
                 `;
                 
-                // Thêm ghi chú nếu có
-                if (med.ghichu) {
-                    container.innerHTML += `<input type="hidden" name="ghichu" value="${med.ghichu}">`;
-                }
+                
             });
         }
         

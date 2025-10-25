@@ -28,7 +28,7 @@
                 <li><a href="?action=benhnhan"><i class="fas fa-user-injured"></i> Bệnh nhân</a></li>
                 <li><a href="?action=lichhentructuyen"><i class="fas fa-laptop"></i> Lịch hẹn trực tuyến</a></li>
                 <li><a href="?action=lichhentructiep"><i class="fas fa-clipboard-list"></i> Lịch hẹn trực tiếp</a></li>
-                <li><a href="?action=datlich"><i class="fas fa-calendar-check"></i> Đặt lịch khám </a></li>
+                <li><a href="?action=datlichcg"><i class="fas fa-calendar-check"></i> Đặt lịch khám </a></li>
             </ul>
         </nav>
         <div class="user-menu">

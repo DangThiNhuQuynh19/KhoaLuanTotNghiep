@@ -10,7 +10,7 @@ $cate = isset($_GET["cate"]) ? $_GET["cate"] : null;
 if (isset($_SESSION['dangnhap']) && ($_SESSION['dangnhap'] == 2)){
     // Bác sĩ
     if (file_exists("Views/bacsi/pages/$page/index.php")) {
-        require("Views/bacsi/layout/header.php");
+       require("Views/bacsi/layout/header.php");
         include("Views/bacsi/pages/$page/index.php");
     } else {
         include("Views/bacsi/pages/404/index.php");

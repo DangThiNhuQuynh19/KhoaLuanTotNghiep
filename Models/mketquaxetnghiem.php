@@ -87,6 +87,7 @@ class mKetQuaXetNghiem{
             join chitiethoso as ct on ct.mahoso= l.mahoso
             join bacsi as bs on bs.mabacsi=ct.mabacsi
             join benhnhan as bn on bn.mabenhnhan= l.mabenhnhan
+            join nguoidung as nd on nd.manguoidung=bn.mabenhnhan    
             join chuyenkhoa as ck on bs.machuyenkhoa=ck.machuyenkhoa
             where ct.mabacsi='$mabacsi'
             group by l.malichxetnghiem

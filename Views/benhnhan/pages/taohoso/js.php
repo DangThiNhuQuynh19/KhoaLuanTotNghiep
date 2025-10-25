@@ -34,7 +34,6 @@
             // Trẻ em dưới 16 tuổi
             contactSection.style.display = "none";
             jobSection.style.display = "none";
-            cccdSection.classList.add("hidden");
             jobSection.classList.add("hidden");
             birthCertSection.classList.remove("hidden");
 
@@ -54,7 +53,6 @@
             // Thêm required cho email, sdt, cccd
             emailInput.setAttribute("required", "required");
             sdtInput.setAttribute("required", "required");
-            cccdInput.setAttribute("required", "required");
         }
 
         // Hiển thị thông tin giám hộ

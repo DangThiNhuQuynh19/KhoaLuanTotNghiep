@@ -26,13 +26,13 @@ $message = "";
 
 if(isset($_POST['submit'])){
     // Tạo hồ sơ bệnh án mới
-    if($chosobenhandientu->create_hosobenhan_mabenhnhan($mabenhnhan, $_POST['note'])){
+    if($chosobenhandientu->create_hosobenhan_mabenhnhan($mabenhnhan)){
         $hosonew = $chosobenhandientu->get_hsba_new($mabenhnhan);
         $mahoso = $hosonew[0]['mahoso']; // Lấy mã hồ sơ vừa tạo
         // Lưu đơn thuốc nếu có
         if(isset($_POST['medications']) && !empty($_POST['medications'])){
             // Tạo đơn thuốc mới
-            if($cdonthuoc->create_donthuoc($_POST['note'])){
+            if($cdonthuoc->create_donthuoc()){
                 $donthuoc = $cdonthuoc->get_donthuoc_new();
                 $madonthuoc=$donthuoc[0]['madonthuoc'];
                 foreach($_POST['medications'] as $thuoc){
@@ -45,6 +45,8 @@ if(isset($_POST['submit'])){
                     );
                 }
             }
+        }else{
+            $madonthuoc=NULL;
         }
        if( $cchitiethoso->create_chitiethoso($mahoso,$bacsi['mabacsi'],$_POST['trieuchung'],$_POST['chuandoan'],$_POST['huongdieutri'],$madonthuoc,$_POST['note']) ){
             $message = "Hồ sơ bệnh án đã được tạo thành công!";
@@ -514,7 +516,7 @@ if(isset($_POST['submit'])){
                         <i class="fas fa-user"></i>
                     </div>
                     <div class="patient-details">
-                        <h3 class="patient-name"><?php echo $benhnhan['hotenbenhnhan']; ?></h3>
+                        <h3 class="patient-name"><?php echo $benhnhan['hoten']; ?></h3>
                         <div class="patient-id"><?php echo $benhnhan['mabenhnhan']; ?></div>
                         
                         <div class="patient-data">
@@ -527,28 +529,28 @@ if(isset($_POST['submit'])){
                                 <div class="data-value"><?php echo $benhnhan['gioitinh']; ?></div>
                             </div>
                             <div class="patient-data-item">
-                                <div class="data-label">Nhóm máu</div>
-                                <div class="data-value"><?php echo $benhnhan['nhommau']; ?></div>
-                            </div>
-                            <div class="patient-data-item">
-                                <div class="data-label">Tiền sử bệnh tật</div>
+                                <div class="data-label">Tiền sử bệnh tật của bệnh nhân</div>
                                 <div class="data-value"><?php echo decryptData($benhnhan['tiensubenhtatcuabenhnhan']); ?></div>
                             </div>
                             <div class="patient-data-item">
+                                <div class="data-label">Tiền sử bệnh tật của gia đình</div>
+                                <div class="data-value"><?php echo decryptData($benhnhan['tiensubenhtatcuagiadinh']); ?></div>
+                            </div>
+                            <div class="patient-data-item">
                                 <div class="data-label">Địa chỉ</div>
-                                <div class="data-value"><?php echo $benhnhan['sonha'].'-'.$benhnhan['quan/huyen'].'-'.$benhnhan['xa/phuong'].'-'.$benhnhan['tinh/thanhpho']; ?></div>
+                                <div class="data-value"><?php echo $benhnhan['sonha'].'-'.$benhnhan['xaphuong'].'-'.$benhnhan['tinhthanhpho']; ?></div>
                             </div>
                             <div class="patient-data-item">
                                 <div class="data-label">Số điện thoại</div>
-                                <div class="data-value"><?php echo decryptData($benhnhan['sdtbenhnhan']); ?></div>
+                                <div class="data-value"><?php echo decryptData($benhnhan['sdt']); ?></div>
                             </div>
                             <div class="patient-data-item">
-                                <div class="data-label">Email</div>
-                                <div class="data-value"><?php echo decryptData($benhnhan['email']); ?></div>
+                                <div class="data-label">Email cá nhân</div>
+                                <div class="data-value"><?php echo decryptData($benhnhan['emailcanhan']); ?></div>
                             </div>
                             <div class="patient-data-item">
                                 <div class="data-label">CCCD</div>
-                                <div class="data-value"><?php echo decryptData($benhnhan['cccdbenhnhan']); ?></div>
+                                <div class="data-value"><?php echo decryptData($benhnhan['cccd']); ?></div>
                             </div>
                         </div>
                     </div>
@@ -588,18 +590,17 @@ if(isset($_POST['submit'])){
                     <!-- Lý do khám & Bệnh sử -->
                     <div id="tab-complaint" class="tab-content active">
                         <div class="form-group">
-                            <label for="note">Ghi chú</label>
-                            <textarea name="note" id="note" rows="3" placeholder="Nhập ghi chú..."></textarea>
-                        </div>
-
-                        <div class="form-group">
                             <label for="chiefComplaint">Triệu chứng ban đầu</label>
                             <textarea name="trieuchung" id="chiefComplaint" rows="3" required placeholder="Nhập lý do khám chính của bệnh nhân..."></textarea>
                         </div>
 
                         <div class="form-group">
-                            <label for="chuandoan">Chuẩn đoán</label>
-                            <textarea name="chuandoan" id="chuandoan" rows="3" placeholder="Nhập chuẩn đoán về bệnh của bệnh nhân..."></textarea>
+                            <label for="chuandoan">Chẩn đoán</label>
+                            <textarea name="chuandoan" id="chuandoan" rows="3" placeholder="Nhập chẩn đoán về bệnh của bệnh nhân..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="note">Kết luận</label>
+                            <textarea name="note" id="note" rows="3" placeholder="Nhập kết luận..."></textarea>
                         </div>
 
                         <div class="form-group">

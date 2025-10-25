@@ -7,7 +7,7 @@
     include_once('xu-ly-thanh-toan.php');
 
     include_once('Controllers/cbenhnhan.php');
-    include_once('Controllers/cbacsi.php');
+    include_once('Controllers/cchuyengia.php');
     include_once('Controllers/chosobenhandientu.php');
     include_once('Controllers/clichkham.php');
     include_once('Controllers/cPhieuKhambenh.php');
@@ -16,14 +16,14 @@
     // Khởi tạo các đối tượng controller
     $cbenhnhan = new cBenhNhan();
     $chosobenhandientu = new cHoSoBenhAnDienTu();
-    $cbacsi = new cBacSi();
+    $cchuyengia = new cChuyenGia();
     $clichkham = new cLichKham();
     $cphieukhambenh = new cPhieuKhamBenh();
     $ckhunggio = new cKhungGio();
     $phieukham = $cphieukhambenh->get_phieukhambenh();
-    $bacsi = $cbacsi->getBacSiByTenTK($_SESSION['user']['tentk']);
-    $danh_sach_benh_nhan = $cbenhnhan->get_benhnhan_mabacsi($bacsi['mabacsi']);
-    $lichbacsi = $clichkham->get_lickham_mabacsi($bacsi['mabacsi']);
+    $chuyengia = $cchuyengia->getChuyenGiaByTenTK($_SESSION['user']['tentk']);
+    $danh_sach_benh_nhan = $cbenhnhan->get_benhnhan_machuyengia($chuyengia['machuyengia']);
+    $lichchuyengia = $clichkham->get_lickham_mabacsi($chuyengia['machuyengia']);
    
     $thong_bao = '';
     $loai_thong_bao = 'thanh_cong';
@@ -31,8 +31,7 @@
     if(isset($_POST['btn_xac_nhan'])){
         $_SESSION['mabenhnhan']   = $_POST['ma_benh_nhan'];
         $_SESSION['makhunggiokb'] = $_POST['gio_hen'];
-        if ($idbs) $_SESSION['mabacsi'] = $_POST['mabacsi'];
-        elseif ($idcg) $_SESSION['machuyengia'] = $_POST['machuyengia'];
+        $_SESSION['machuyengia'] = $_POST['machuyengia'];
         $_SESSION['ngaykham']     = $_POST['ngay_hen'];
         $_SESSION['tongtien']     = $_POST['giakham'];
         $_SESSION['matrangthai']  = '6';
@@ -41,33 +40,33 @@
             $maphieukb = 'PKB' . time() . rand(100, 999);
             $khung_gio = $ckhunggio->getKhunggio($_POST['gio_hen']);
 
-        if (is_array($khung_gio)) {
-            $gio_bat_dau = $khung_gio['giobatdau'];
-            $gio_ket_thuc = $khung_gio['gioketthuc'];
-        } else {
-            $gio_bat_dau = $gio_ket_thuc = 'Không xác định';
-        }
-
-        $result = $cphieukhambenh->insertphieukham(
-            $maphieukb,
-            $_POST['ngay_hen'],
-            $_POST['gio_hen'],
-            $bacsi['mabacsi'],
-            $_POST['ma_benh_nhan'],
-            6
-        );
-
-        if ($result) {
-            $xu_ly_email = new XuLyEmail();
-            $ket_qua_gui_email = $xu_ly_email->gui_email_yeu_cau_thanh_toan(
-                'nguyentrang2642003@gmail.com',
-                $_POST['ten_benh_nhan'],
-                'Đặt lịch khám bệnh ' . $_POST['hinh_thuc'],
+            if (is_array($khung_gio)) {
+                $gio_bat_dau = $khung_gio['giobatdau'];
+                $gio_ket_thuc = $khung_gio['gioketthuc'];
+            } else {
+                $gio_bat_dau = $gio_ket_thuc = 'Không xác định';
+            }
+            $result = $cphieukhambenh->insertphieukham(
+                $maphieukb,
                 $_POST['ngay_hen'],
-                $gio_bat_dau . ' - ' . $gio_ket_thuc,
-                $maphieukb, 
+                $_POST['gio_hen'],
+                $chuyengia['machuyengia'],
+                $_POST['ma_benh_nhan'],
+                6, 
                 $_POST['giakham']
             );
+
+            if($result){
+                $xu_ly_email = new XuLyEmail();
+                $ket_qua_gui_email = $xu_ly_email->gui_email_yeu_cau_thanh_toan(
+                    'nguyentrang2642003@gmail.com',
+                    $_POST['ten_benh_nhan'],
+                    'Đặt lịch khám bệnh ' . $_POST['hinh_thuc'],
+                    $_POST['ngay_hen'],
+                    $gio_bat_dau . ' - ' . $gio_ket_thuc,
+                    $maphieukb, 
+                    $_POST['giakham']
+                );
 
                 if ($ket_qua_gui_email) {
                     $_SESSION['popup_success'] = true;
@@ -371,7 +370,7 @@
                         
                         <input type="hidden" name="gio_hen" id="gio_hen_selected" required>
                         <input type="hidden" name="hinh_thuc" id="hinh_thuc_selected" required>
-                        <input type="hidden" name="giakham" value='<?php echo $bacsi['giakham']?>' required>
+                        <input type="hidden" name="giakham" id="gia_kham_selected" value='<?php echo $chuyengia['giatuvan']?>' required>
                     </div>
                     
                     <div class="form-group">
@@ -607,7 +606,7 @@
             khungGioKham.style.display = 'block';
 
             const phieuKham = <?php echo json_encode($phieukham); ?>;
-            const lichBacSi = <?php echo json_encode($lichbacsi); ?>;
+            const lichBacSi = <?php echo json_encode($lichchuyengia); ?>;
             const phieuKhamBenhNhan = phieuKham.filter(pk => 
                 pk.mabenhnhan === ma_benh_nhan && pk.ngaykham === ngay_chon
             );

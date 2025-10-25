@@ -531,7 +531,6 @@ class mLichKham {
                 return false; 
             }
         }
-        
 }
 
 ?>

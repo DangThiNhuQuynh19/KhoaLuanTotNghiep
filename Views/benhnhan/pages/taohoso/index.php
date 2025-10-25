@@ -39,11 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $dantoc = $_POST['dantoc'] ?? '';
     $cccd = $_POST['cccd'] ?? '';
     $gioitinh = $_POST['gender'];
-    $nghenghiep = $_POST['job'];
-    $job_other = $_POST['job_other'] ?? '';
-    if ($nghenghiep === 'Khác' && !empty($job_other)) {
-        $nghenghiep = $job_other;
-    }
+    $nghenghiep = 'null';
     $tiensucuagiadinh = $_POST['history_family'];
     $tiensucuabanthan = $_POST['history_my'];
     $sonha = $_POST['sonha'];
@@ -259,7 +255,7 @@ function getAge($dob) {
                             <input type="email" name="email" id="email" value="<?php echo $_POST['email'] ?? ''; ?>">
                         </div>
                         <div class="form-group">
-                            <label>Số điện thoại <span class="required">*</span></label>
+                            <label>Số điện thoại</label>
                             <input type="text" name="sdt" id="sdt" placeholder="0123456789" value="<?php echo $_POST['sdt'] ?? ''; ?>">
                         </div>
                     </div>
@@ -304,58 +300,8 @@ function getAge($dob) {
                             </div>
                         </div>
                     </div>
-
-                    <!-- Giấy khai sinh cho trẻ em < 16 tuổi -->
-                    <div id="birth-cert-section" class="hidden">
-                        <div class="alert alert-warning">
-                            <i class="fas fa-info-circle"></i>
-                            Trẻ em dưới 16 tuổi cần cung cấp giấy khai sinh thay vì CCCD
-                        </div>
-                        <div class="form-group">
-                            <label>Giấy khai sinh <span class="required">*</span></label>
-                            <div class="file-upload">
-                                <input type="file" name="birth_cert" accept="image/*" onchange="previewImage(this, 'preview-birth')">
-                                <div class="file-upload-label">
-                                    <i class="fas fa-cloud-upload-alt"></i>
-                                    <span>Chọn ảnh giấy khai sinh</span>
-                                </div>
-                            </div>
-                            <img id="preview-birth" class="image-preview">
-                        </div>
-                    </div>
                 </div>
 
-                <!-- Thông tin nghề nghiệp -->
-                <div class="form-section" id="job-section">
-                    <div class="section-title">
-                        <i class="fas fa-briefcase"></i>
-                        Thông tin nghề nghiệp
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Nghề nghiệp <span class="required">*</span></label>
-                        <select name="job" id="job" onchange="toggleOtherJob()" required>
-                            <option value="">-- Chọn nghề nghiệp --</option>
-                            <option value="Học sinh" <?php echo ($_POST['job'] ?? '') == 'Học sinh' ? 'selected' : ''; ?>>Học sinh</option>
-                            <option value="Sinh viên" <?php echo ($_POST['job'] ?? '') == 'Sinh viên' ? 'selected' : ''; ?>>Sinh viên</option>
-                            <option value="Công nhân" <?php echo ($_POST['job'] ?? '') == 'Công nhân' ? 'selected' : ''; ?>>Công nhân</option>
-                            <option value="Nông dân" <?php echo ($_POST['job'] ?? '') == 'Nông dân' ? 'selected' : ''; ?>>Nông dân</option>
-                            <option value="Nhân viên văn phòng" <?php echo ($_POST['job'] ?? '') == 'Nhân viên văn phòng' ? 'selected' : ''; ?>>Nhân viên văn phòng</option>
-                            <option value="Kinh doanh tự do" <?php echo ($_POST['job'] ?? '') == 'Kinh doanh tự do' ? 'selected' : ''; ?>>Kinh doanh tự do</option>
-                            <option value="Bác sĩ" <?php echo ($_POST['job'] ?? '') == 'Bác sĩ' ? 'selected' : ''; ?>>Bác sĩ</option>
-                            <option value="Y tá/Điều dưỡng" <?php echo ($_POST['job'] ?? '') == 'Y tá/Điều dưỡng' ? 'selected' : ''; ?>>Y tá/Điều dưỡng</option>
-                            <option value="Kỹ sư" <?php echo ($_POST['job'] ?? '') == 'Kỹ sư' ? 'selected' : ''; ?>>Kỹ sư</option>
-                            <option value="Giáo viên" <?php echo ($_POST['job'] ?? '') == 'Giáo viên' ? 'selected' : ''; ?>>Giáo viên</option>
-                            <option value="Nghỉ hưu" <?php echo ($_POST['job'] ?? '') == 'Nghỉ hưu' ? 'selected' : ''; ?>>Nghỉ hưu</option>
-                            <option value="Khác" <?php echo ($_POST['job'] ?? '') == 'Khác' ? 'selected' : ''; ?>>Khác</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group hidden" id="job-other-group">
-                        <label>Nghề nghiệp khác <span class="required">*</span></label>
-                        <input type="text" name="job_other" id="job-other" placeholder="Nhập nghề nghiệp cụ thể" value="<?php echo $_POST['job_other'] ?? ''; ?>">
-                    </div>
-                </div>
 
                 <!-- Tiền sử bệnh -->
                 <div class="form-section">
@@ -442,7 +388,7 @@ function getAge($dob) {
                             <input type="text" name="gh_email" placeholder="bac@gmail.com" value="<?= htmlspecialchars(decryptData($taikhoan['email']))?>"disabled>
                         </div>
                         <div class="form-group">
-                            <label>Số CCCD <span class="required">*</span></label>
+                            <label>Mã định danh <span class="required">*</span></label>
                             <input type="text" name="gh_cccd" placeholder="Nhập 9-12 số" value="<?= htmlspecialchars(decryptData($taikhoan['cccd']))?>" disabled>
                         </div>
                     </div>

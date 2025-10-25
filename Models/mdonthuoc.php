@@ -36,12 +36,12 @@
             }
         }
 
-        public function insert_donthuoc($ghichu){
+        public function insert_donthuoc(){
             $p = new clsKetNoi();
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if($con){
-                $str = "insert into donthuoc(ngaytaodonthuoc,ghichudonthuoc) values(CURDATE(),'$ghichu')";
+                $str = "insert into donthuoc(ngaytaodonthuoc) values(CURDATE())";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;

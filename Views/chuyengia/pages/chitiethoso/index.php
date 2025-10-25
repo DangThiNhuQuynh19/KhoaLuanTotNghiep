@@ -5,41 +5,26 @@ use Endroid\QrCode\Writer\PngWriter;
 
 include_once("Assets/config.php");
 include_once('Controllers/cbenhnhan.php');
-include_once('Controllers/cchuyenkhoa.php');
+include_once('Controllers/clinhvuc.php');
 include_once('Controllers/chosobenhandientu.php');
-include_once('Controllers/cdonthuoc.php');
-include_once('Controllers/cthuoc.php');
-include_once('Controllers/cchitietdonthuoc.php');
 include_once('Controllers/cchitiethoso.php');
-include_once('Controllers/cbacsi.php');
-include_once('Controllers/clichxetnghiem.php');
-include_once('Controllers/cketquaxetnghiem.php');
-include_once('Controllers/cloaixetnghiem.php');
-include_once('Controllers/ckhunggioxetnghiem.php');
+include_once('Controllers/cchuyengia.php');
 
-$ckhunggioxetnghiem = new cKhungGioXetNghiem();
-$cbacsi = new cBacSi();
+
+$cchuyengia = new cChuyenGia();
 $chosobenhandientu = new cHoSoBenhAnDienTu();
-$cchitietdongthuoc = new cChiTietDonThuoc();
 $cchitiethoso = new cChiTietHoSo();
 $cbenhnhan = new cBenhnhan();
-$cchuyenkhoa = new cChuyenKhoa();
-$cdonthuoc = new cDonThuoc();
-$cthuoc = new cThuoc();
-$clichxetnghiem = new cLichXetNghiem();
-$cketquaxetnghiem = new cKetQuaXetNghiem();
-$cloaixetnghiem = new cLoaiXetNghiem();
-$mahoso = $_GET['mahoso'];
-$thuoc = $cthuoc->get_thuoc();
+$clinhvuc = new cLinhVuc();
 
-$loaixetnghiem = $cloaixetnghiem-> get_loaixetnghiem();
+$mahoso = $_GET['mahoso'];
+
+
+
 $benhnhan = $chosobenhandientu->get_benhnhan_mahoso($mahoso);
-$chitiethoso = $chosobenhandientu->getDonThuocByIDHS($mahoso);
-$bacsi = $cbacsi->getBacSiByTenTK($_SESSION['user']['tentk']);
-$chuyenkhoa = $cchuyenkhoa->get_chuyenkhoa_mabacsi($bacsi['mabacsi']);
-$hoso = $chosobenhandientu->get_hoso_mahoso($mahoso);
-$lichxetnghiem = $clichxetnghiem->get_lichxetnghiem_mahoso($mahoso);
-$donthuoc = $cdonthuoc->get_donthuoc_mahoso($mahoso);
+$chuyengia = $cchuyengia->getChuyenGiaByTenTK($_SESSION['user']['tentk']);
+$linhvuc = $clinhvuc->get_linhvuc_machuyengia($chuyengia['machuyengia']);
+$hoso = $chosobenhandientu->get_hoso_mahoso1($mahoso);
 $chitiethoso_mahoso = $cchitiethoso->get_chitiethoso_mahoso($mahoso);
 $message = "";
 
@@ -173,10 +158,7 @@ if(isset($_POST['btnupdate'])) {
                                 <div class="data-label">Nghề nghiệp</div>
                                 <div class="data-value"><?php echo $benhnhan[0]['nghenghiep']; ?></div>
                             </div>
-                            <div class="patient-data-item">
-                                <div class="data-label">Nhóm máu</div>
-                                <div class="data-value"></div>
-                            </div>
+                            
                             <div class="patient-data-item">
                                 <div class="data-label">Tiền sử bệnh tật của bản thân</div>
                                 <div class="data-value"><?php echo $benhnhan[0]['tiensubenhtatcuabenhnhan']?decryptData( $benhnhan[0]['tiensubenhtatcuabenhnhan']) :"Không có"; ?></div>
@@ -199,7 +181,7 @@ if(isset($_POST['btnupdate'])) {
                             </div>
                             <div class="patient-data-item">
                                 <div class="data-label">CCCD</div>
-                                <div class="data-value"><?php echo $benhnhan[0]['cccd']; ?></div>
+                                <div class="data-value"><?php echo decryptData($benhnhan[0]['cccd']); ?></div>
                             </div>
                         </div>
                     </div>
@@ -226,86 +208,36 @@ if(isset($_POST['btnupdate'])) {
                             <div class="info-value"><?php echo $benhnhan[0]['ngaytao']; ?></div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">Khoa phòng</div>
-                            <div class="info-value"><?php echo isset($chitiethoso_mahoso[0]['tenchuyenkhoa']) ? $chitiethoso_mahoso[0]['tenchuyenkhoa'] : $chuyenkhoa['tenchuyenkhoa']; ?></div>
+                            <div class="info-label">Lĩnh vực</div>
+                            <div class="info-value"><?php echo isset($chitiethoso_mahoso[0]['tenlinhvuc']) ? $chitiethoso_mahoso[0]['tenlinhvuc'] : $linhvuc['tenlinhvuc']; ?></div>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="info-row">
-                            <div class="info-label">Bác sĩ tạo hồ sơ </div>
+                            <div class="info-label">Chuyên gia tạo hồ sơ </div>
                             <div class="info-value"> <?php echo $hoso[0]['hoten']; ?></div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">Email bác sĩ</div>
+                            <div class="info-label">Emailchuyên gia</div>
                             <div class="info-value"><?php echo decryptData($hoso[0]['email']); ?></div>
                         </div>
                         <div class="info-row">
-                            <div class="info-label">Số điện thoại bác sĩ</div>
-                            <div class="info-value"><?php echo $hoso[0]['sdt']; ?></div>
+                            <div class="info-label">Số điện thoại chuyên gia</div>
+                            <div class="info-value"><?php echo decryptData($hoso[0]['sdt']); ?></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <?php if(isset($chitiethoso_mahoso[0]['tenchuyenkhoa']) && $chitiethoso_mahoso[0]['tenchuyenkhoa'] == $chuyenkhoa['tenchuyenkhoa']): ?>
+        <?php if(isset($chitiethoso_mahoso[0]['tenlinhvuc']) && $chitiethoso_mahoso[0]['tenlinhvuc'] == $chuyenkhoa['tenlinhvuc']): ?>
                 <button type="button" class="btn-small btn-primary" onclick="openUpdateRecordModal()">
                     <i class="fas fa-edit"></i> Cập nhật hồ sơ
                 </button>
         <?php endif; ?>    
 
         <div class="tabs">
-            <div class="tab-header">
-                <a href="#lab-tests" class="tab-link" onclick="openTab(event, 'lab-tests')">Xét nghiệm</a>
-                <a href="#diagnosis" class="tab-link active" onclick="openTab(event, 'diagnosis')">Chẩn đoán & Hướng điều trị</a>
-                <a href="#medications" class="tab-link" onclick="openTab(event, 'medications')">Thuốc điều trị</a>
-            </div>
-            <div id="lab-tests" class="tab-content">
-                <div class="card">
-                    <div class="card-body no-padding">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Ngày hẹn</th>
-                                    <th>Giờ khám</th>
-                                    <th>Xét nghiệm</th>
-                                    <th>Trạng thái</th>
-                                    <th>Thao tác</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if($lichxetnghiem):?>
-                                    <?php foreach ($lichxetnghiem as $i): ?>
-                                    <tr>
-                                        <td><?php echo $i['ngayhen']; ?></td>
-                                        <td><?php echo $i['giobatdau']; ?></td>
-                                        <td><?php echo $i['tenloaixetnghiem']; ?></td>
-                                        <td><?php echo $i['tentrangthai']; ?></td>
-                                        <td>
-                                            <?php if ($i['tentrangthai'] == "Hoàn thành"): 
-                                                $ketqua = $cketquaxetnghiem->get_ketquaxetnghiem($i['malichxetnghiem']);
-                                                $ketquaJson = json_encode($ketqua);
-                                            ?>
-                                                <button class="btn-small btn-primary" onclick='openXetNghiemPopup(<?php echo $ketquaJson; ?>)'>
-                                                    Xem kết quả
-                                                </button>
-                                            <?php elseif ($i['tentrangthai'] == "Đã hủy"): ?>
-                                                <button class="btn-small btn-secondary" disabled>Đã hủy</button>
-                                            <?php else: ?>
-                                                <button class="btn-small btn-secondary" disabled>Chờ kết quả</button>
-                                            <?php endif; ?>
-
-                                        </td>
-                                    </tr>
-                                    <?php endforeach; ?>
-                                <?php else: ?>
-                                    <tr><td colspan="5" style="text-align:center; color:gray;">Chưa có xét nghiệm</td></tr>
-                                <?php endif; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+            
 
             <div id="diagnosis" class="tab-content active">
                 <div class="card">
@@ -314,7 +246,7 @@ if(isset($_POST['btnupdate'])) {
                             <thead>
                                 <tr>
                                     <th>Ngày khám</th>
-                                    <th>Bác sĩ</th>
+                                    <th>Chuyên gia</th>
                                     <th>Triệu chứng ban đầu</th>
                                     <th>Kết luận</th>
                                     <th>Thao tác</th>
@@ -347,47 +279,6 @@ if(isset($_POST['btnupdate'])) {
                     </div>
                 </div>
             </div>
-
-            <!-- Medications Tab -->
-            <div id="medications" class="tab-content">
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">Thuốc điều trị</h2>
-                    </div>
-                    <div class="card-body no-padding">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>STT</th>
-                                    <th>Tên Đơn thuốc</th>
-                                    <th>Ngày tạo đơn</th>
-                                    <th>Thao tác</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php $dem = 1; ?>
-                                <?php foreach ($donthuoc as $i): ?>
-                                <tr>
-                                    <td><?php echo $dem; ?></td>
-                                    <td><?php echo $i['ghichudonthuoc']; ?></td>
-                                    <td><?php echo $i['ngaytaodonthuoc']; ?></td>
-                                    <td>
-                                        <?php
-                                            $chitietdonthuoc = $cchitietdongthuoc->get_chitietdonthuoc_madonthuoc($i['madonthuoc']);
-                                            $chitietdonthuocJson = json_encode($chitietdonthuoc);
-                                        ?>
-                                        <button class="btn-small btn-primary" onclick='openchitietdonthuoc(<?php echo $chitietdonthuocJson; ?>)'>
-                                            Chi tiết
-                                        </button>    
-                                    </td>
-                                    <?php $dem++; ?>
-                                </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
         </div>
     </main>
 
@@ -405,77 +296,6 @@ if(isset($_POST['btnupdate'])) {
             </div>
         </div>
     </footer>
-
-    <!-- Modal Xét nghiệm -->
-    <div id="modalxetnghiem" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeXetNghiemPopup()">&times;</span>
-            <h2>Kết quả xét nghiệm</h2>
-            <!-- Bảng kết quả xét nghiệm -->
-            <div id="bangketqua">
-                <table class="data-table" id="resultTable">
-                    <thead>
-                        <tr>
-                            <th>STT</th>
-                            <th>Tên chỉ số</th>
-                            <th>Kết quả</th>
-                            <th>Đơn vị</th>
-                            <th>Khoảng tham chiếu</th>
-                            <th>Nhận xét</th>
-                        </tr>
-                    </thead>
-                    <tbody id="resultTableBody">
-                        <!-- Dữ liệu sẽ được thêm vào đây bằng JavaScript -->
-                    </tbody>
-                </table>
-            </div>
-            
-            <div style="display: flex; justify-content: flex-end; margin-top: 20px; gap: 10px;">
-                <button type="button" class="btn-outline" onclick="closeXetNghiemPopup()">
-                    <i class="fas fa-times"></i> Đóng
-                </button>
-                <button type="button" class="btn-primary" onclick="printResults()">
-                    <i class="fas fa-print"></i> In kết quả
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Chi tiết đơn thuốc -->
-    <div id="modalchitietdonthuoc" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closechitietdonthuoc()">&times;</span>
-            <h2>Đơn thuốc</h2>
-            <!-- Bảng chi tiết đơn thuốc -->
-            <div id="bangdonthuoc">
-                <table class="data-table" id="resultTable">
-                    <thead>
-                        <tr>
-                            <th>STT</th>
-                            <th>Tên thuốc</th>
-                            <th>Dạng bào chế</th>
-                            <th>Liều dùng</th>
-                            <th>Thời gian uống</th>
-                            <th>Số ngày uống</th>
-                        </tr>
-                    </thead>
-                    <tbody id="chitietid">
-                        <!-- Dữ liệu sẽ được thêm vào đây bằng JavaScript -->
-                    </tbody>
-                </table>
-            </div>
-            
-            <div style="display: flex; justify-content: flex-end; margin-top: 20px; gap: 10px;">
-                <button type="button" class="btn-outline" onclick="closechitietdonthuoc()">
-                    <i class="fas fa-times"></i> Đóng
-                </button>
-                <button type="button" class="btn-primary" onclick="printDonThuoc()">
-                    <i class="fas fa-print"></i> In đơn thuốc
-                </button>
-            </div>
-        </div>
-    </div>
-
     <!-- Modal Chẩn đoán và Hướng điều trị -->
     <div id="modalchuandoan" class="modal">
         <div class="modal-content">
