@@ -160,10 +160,29 @@
     background: #fff;
     border-radius: var(--radius);
     padding: 24px 26px;
-    width: 400px;
+    width: 700px;
+    max-height: 85vh; /* Giới hạn chiều cao tối đa */
+    overflow-y: auto; /* Tự động thêm thanh cuộn dọc nếu nội dung dài */
     box-shadow: 0 4px 20px rgba(72, 58, 115, 0.2);
     animation: popupFade 0.25s ease;
-    }
+  }
+
+  /* Thu nhỏ bảng nhân viên trong popup */
+  #tableNhanVienContainer {
+    max-height: 300px; /* Giới hạn vùng bảng có thể cuộn */
+    overflow-y: auto;
+    margin-top: 10px;
+    border: 1px solid #e5e5ef;
+    border-radius: 8px;
+  }
+
+  /* Header bảng cố định */
+  #tableNhanVien thead th {
+    position: sticky;
+    top: 0;
+    background-color: #f0eef8;
+    z-index: 2;
+  }
 
     .popup h3 {
     text-align: center;
@@ -321,16 +340,15 @@
   <div class="popup">
     <h3>Phân ca nhân viên</h3>
 
-    <!-- HÀNG CHỨC VỤ + TRẠNG THÁI -->
     <div class="row mb-3">
       <div class="col-6">
         <label for="chucVu" class="form-label fw-semibold text-secondary small">Chức vụ</label>
         <select id="chucVu" class="form-select form-select-sm">
-            <option value="">-- Chọn chức vụ --</option>
-            <option value="2">Bác sĩ</option>
-            <option value="3">Chuyên gia</option>
-            <option value="4">Nhân viên tiếp tân</option>
-            <option value="5">Nhân viên xét nghiệm</option>
+          <option value="">-- Chọn chức vụ --</option>
+          <option value="2">Bác sĩ</option>
+          <option value="3">Chuyên gia</option>
+          <option value="4">Nhân viên tiếp tân</option>
+          <option value="5">Nhân viên xét nghiệm</option>
         </select>
       </div>
 
@@ -344,7 +362,6 @@
       </div>
     </div>
 
-    <!-- CHECKBOX CHỌN TẤT CẢ -->
     <div class="d-flex align-items-center justify-content-between mb-2">
       <div class="form-check">
         <input class="form-check-input" type="checkbox" id="chonTatCa">
@@ -353,15 +370,11 @@
       <button id="btnXacNhan" class="btn btn-sm btn-primary" style="background-color: var(--main-color); border:none;">Xác nhận</button>
     </div>
 
-    <!-- BẢNG NHÂN VIÊN SAU KHI CHỌN -->
-    <div id="tableNhanVienContainer" class="table-container" style="display:none;">
-      <div class="table-header">
-        <label><input type="checkbox" id="chonTatCa"> Chọn tất cả</label>
-      </div>
-      <table id="tableNhanVien">
+    <div id="tableNhanVienContainer" style="display:none;">
+      <table id="tableNhanVien" class="table table-hover table-sm align-middle">
         <thead>
           <tr>
-            <th>Chọn</th>
+            <th style="width: 60px;">Chọn</th>
             <th>Mã Nhân Viên</th>
             <th>Tên Nhân Viên</th>
           </tr>
@@ -385,41 +398,100 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  const popupPhanCa = document.getElementById("popupPhanCa");
-  const popupHinhThuc = document.getElementById("popupHinhThuc");
-  const chonTatCa = document.getElementById("chonTatCa");
-  const checkboxes = document.querySelectorAll(".nv-checkbox");
+    const popupPhanCa = document.getElementById("popupPhanCa");
+    const popupHinhThuc = document.getElementById("popupHinhThuc");
+    const chucVuSelect = document.getElementById("chucVu");
+    const trangThaiSelect = document.getElementById("trangThai");
+    const tableNhanVienContainer = document.getElementById("tableNhanVienContainer");
+    const tbody = document.querySelector("#tableNhanVien tbody");
+    const chonTatCa = document.getElementById("chonTatCa");
+    const btnXacNhan = document.getElementById("btnXacNhan");
+    
+    // Mở popup khi bấm "Phân ca nhân viên"
+    document.querySelectorAll(".btn-phan-ca").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const macalam = btn.dataset.macalamviec;
+            popupPhanCa.dataset.macalam = macalam;
 
-  // Mở popup phân ca
-  document.querySelectorAll(".btn-phan-ca").forEach(btn => {
-    btn.addEventListener("click", () => {
-      popupPhanCa.style.display = "flex";
+            // Reset popup
+            chucVuSelect.value = "";
+            trangThaiSelect.value = "";
+            tbody.innerHTML = "";
+            tableNhanVienContainer.style.display = "none";
+            chonTatCa.checked = false;
+
+            popupPhanCa.style.display = "flex";
+        });
     });
-  });
 
-  // Chọn tất cả nhân viên trong popup
-  chonTatCa.addEventListener("change", () => {
-    checkboxes.forEach(cb => cb.checked = chonTatCa.checked);
-  });
+    // Lắng nghe thay đổi chức vụ -> fetch nhân viên
+    chucVuSelect.addEventListener("change", function() {
+        const machucvu = this.value;
+        const macalam = popupPhanCa.dataset.macalam;
+        tbody.innerHTML = "";
+        tableNhanVienContainer.style.display = "none";
+        chonTatCa.checked = false;
 
-  // Xác nhận -> mở popup hình thức
-  document.getElementById("btnXacNhan").addEventListener("click", () => {
-    popupPhanCa.style.display = "none";
-    popupHinhThuc.style.display = "flex";
-  });
+        if (!machucvu) return;
 
-  // Cancel đóng popup
-  document.querySelector(".cancel").addEventListener("click", () => {
-    popupHinhThuc.style.display = "none";
-  });
+        fetch("/KLTN/Ajax/getnhanvien.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: `machucvu=${machucvu}&macalam=${macalam}`
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" class="text-center">Không có nhân viên phù hợp</td></tr>`;
+                tableNhanVienContainer.style.display = "block";
+                return;
+            }
 
-  // Đóng popup khi click ra ngoài
-  [popupPhanCa, popupHinhThuc].forEach(popup => {
-    popup.addEventListener("click", e => {
-      if (e.target === popup) popup.style.display = "none";
+            tableNhanVienContainer.style.display = "block";
+            data.forEach(nv => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td><input type="checkbox" class="nv-checkbox" name="chonNV[]" value="${nv.manv}"></td>
+                    <td>${nv.manv}</td>
+                    <td>${nv.hoten}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        })
+        .catch(err => {
+            console.error("Lỗi fetch nhân viên:", err);
+            tbody.innerHTML = `<tr><td colspan="3" class="text-center">Lỗi tải dữ liệu</td></tr>`;
+            tableNhanVienContainer.style.display = "block";
+        });
     });
-  });
+
+    // Chọn tất cả nhân viên
+    chonTatCa.addEventListener("change", function() {
+        const checked = this.checked;
+        document.querySelectorAll(".nv-checkbox").forEach(cb => cb.checked = checked);
+    });
+
+    // Xác nhận -> mở popup hình thức
+    btnXacNhan.addEventListener("click", () => {
+        popupPhanCa.style.display = "none";
+        popupHinhThuc.style.display = "flex";
+    });
+
+    // Cancel popup hình thức
+    popupHinhThuc.querySelector(".cancel").addEventListener("click", () => {
+        popupHinhThuc.style.display = "none";
+    });
+
+    // Đóng popup khi click ngoài
+    [popupPhanCa, popupHinhThuc].forEach(popup => {
+        popup.addEventListener("click", e => {
+            if (e.target === popup) popup.style.display = "none";
+        });
+    });
 });
+
+
+
 </script>
 </body>
 </html>

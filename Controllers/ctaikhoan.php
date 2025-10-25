@@ -1,6 +1,6 @@
 <?php
 include_once(__DIR__ . "/../Models/mtaikhoan.php");
-
+include_once("Assets/config.php");
 class ctaiKhoan {
     // Đăng ký tài khoản
     public function dangkytk ($mabenhnhan, $email, $hoten, $ngaysinh, $sdt, $cccd, $cccd_truoc_name, $cccd_sau_name, $gioitinh, $nghenghiep, $tiensucuagiadinh, $tiensucuabanthan, $sonha, $xa, $tinh, $matkhau){
@@ -57,7 +57,15 @@ class ctaiKhoan {
             return -1;
         }else{
             if($tbl->num_rows > 0){
-                return $tbl;
+                $list = array();
+                While($r = $tbl->fetch_assoc()){
+                    $r['sdt'] = decryptData($r['sdt']);
+                    $r['cccd'] = decryptData($r['cccd']);
+                    $r['email'] = decryptData($r['email']);
+                    $r['tentk'] = decryptData($r['tentk']);
+                    $list[] = $r;
+                }
+                return $list;
             }else{
                 return 0;
             }

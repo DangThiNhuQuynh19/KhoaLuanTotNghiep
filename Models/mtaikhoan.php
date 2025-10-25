@@ -184,7 +184,7 @@ class mtaikhoan{
         $con = $p->moketnoi();
         $con->set_charset('utf8');
         if($con){
-            $str = "select * from taikhoan";
+            $str = "select * from taikhoan join nguoidung on taikhoan.tentk=nguoidung.email";
             $tbl = $con->query($str);
             $p->dongketnoi($con);
             return $tbl;
