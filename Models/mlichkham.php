@@ -521,7 +521,7 @@ class mLichKham {
                         FROM lichlamviec l
                         JOIN calamviec ca ON ca.macalamviec = l.macalamviec
                         JOIN khunggiokhambenh kg ON kg.macalamviec = l.macalamviec
-                        JOIN phong p ON p.maphong = l.maphong
+                        LEFT JOIN phong p ON p.maphong = l.maphong
                         JOIN nguoidung nd ON nd.manguoidung = l.manguoidung
                         WHERE l.manguoidung = '$mabacsi'";
                 $tbl = $con->query($str);

@@ -601,7 +601,7 @@
 
             // Nếu bệnh nhân chưa có phiếu khám trong ngày này
             let khungTrong = [];
-
+            console.log(lichBacSi);
             if (phieuKhamBenhNhan.length === 0) {
                 // Chưa có phiếu nào => tất cả khung giờ của bác sĩ trong ngày là trống
                 khungTrong = lichBacSi.filter(lh => lh.ngaylam === ngay_chon);
