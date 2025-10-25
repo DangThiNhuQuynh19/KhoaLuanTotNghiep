@@ -1,119 +1,95 @@
 <?php
-require 'vendor/autoload.php';
-use Endroid\QrCode\Builder\Builder;
-use Endroid\QrCode\Writer\PngWriter;
-include_once("Assets/config.php");
-include_once('xu-ly-email.php');
-include_once('xu-ly-thanh-toan.php');
+    require 'vendor/autoload.php';
+    use Endroid\QrCode\Builder\Builder;
+    use Endroid\QrCode\Writer\PngWriter;
+    include_once("Assets/config.php");
+    include_once('xu-ly-email.php');
+    include_once('xu-ly-thanh-toan.php');
 
-include_once('Controllers/cbenhnhan.php');
-include_once('Controllers/cbacsi.php');
-include_once('Controllers/chosobenhandientu.php');
-include_once('Controllers/clichkham.php');
-include_once('Controllers/cPhieuKhambenh.php');
-include_once('Controllers/ckhunggio.php');
+    include_once('Controllers/cbenhnhan.php');
+    include_once('Controllers/cbacsi.php');
+    include_once('Controllers/chosobenhandientu.php');
+    include_once('Controllers/clichkham.php');
+    include_once('Controllers/cPhieuKhambenh.php');
 
-// Khởi tạo các đối tượng controller
-$cbenhnhan = new cBenhNhan();
-$chosobenhandientu = new cHoSoBenhAnDienTu();
-$cbacsi = new cBacSi();
-$clichkham = new cLichKham();
-$cphieukhambenh = new cPhieuKhamBenh();
-$ckhunggio = new cKhungGio();
+    // Khởi tạo các đối tượng controller
+    $cbenhnhan = new cBenhNhan();
+    $chosobenhandientu = new cHoSoBenhAnDienTu();
+    $cbacsi = new cBacSi();
+    $clichkham = new cLichKham();
+    $cphieukhambenh = new cPhieuKhamBenh();
 
-$phieukham = $cphieukhambenh->get_phieukhambenh();
-$bacsi = $cbacsi->getBacSiByTenTK($_SESSION['user']['tentk']);
-$danh_sach_benh_nhan = $cbenhnhan->get_benhnhan_mabacsi($bacsi['mabacsi']);
-$lichbacsi = $clichkham->get_lickham_mabacsi($bacsi['mabacsi']);
-
-if (isset($_POST['btn_xac_nhan'])) {
-    $_SESSION['mabenhnhan']   = $_POST['ma_benh_nhan'];
-    $_SESSION['makhunggiokb'] = $_POST['makhunggiokb'] ?? '';
-    if (isset($idbs)) $_SESSION['mabacsi'] = $_POST['mabacsi'];
-    elseif (isset($idcg)) $_SESSION['machuyengia'] = $_POST['machuyengia'];
-    $_SESSION['ngaykham']     = $_POST['ngaykham'];
-    $_SESSION['tongtien']     = $_POST['giakham'];
-    $_SESSION['matrangthai']  = '6';
+    $phieukham = $cphieukhambenh->get_phieukhambenh();
+    $bacsi = $cbacsi->getBacSiByTenTK($_SESSION['user']['tentk']);
+    $danh_sach_benh_nhan = $cbenhnhan->get_benhnhan_mabacsi($bacsi['mabacsi']);
+    $lichbacsi = $clichkham->get_lickham_mabacsi($bacsi['mabacsi']);
    
-    if (!empty($_POST['ma_benh_nhan']) && !empty($_POST['gio_hen']) && !empty($_POST['ngay_hen'])) {
-        $maphieukb = 'PKB' . time() . rand(100, 999);
+    $thong_bao = '';
+    $loai_thong_bao = 'thanh_cong';
 
-        $khung_gio = $ckhunggio->getKhunggio($_POST['gio_hen']);
-
-        if (is_array($khung_gio)) {
-            $gio_bat_dau = $khung_gio['giobatdau'];
-            $gio_ket_thuc = $khung_gio['gioketthuc'];
-        } else {
-            $gio_bat_dau = $gio_ket_thuc = 'Không xác định';
-        }
-
-        $result = $cphieukhambenh->insertphieukham(
-            $maphieukb,
-            $_POST['ngay_hen'],
-            $_POST['gio_hen'],
-            $bacsi['mabacsi'],
-            $_POST['ma_benh_nhan'],
-            6
-        );
-
-        if ($result) {
-            $xu_ly_email = new XuLyEmail();
-            $ket_qua_gui_email = $xu_ly_email->gui_email_yeu_cau_thanh_toan(
-                'nguyentrang2642003@gmail.com',
-                $_POST['ten_benh_nhan'],
-                'Đặt lịch khám bệnh ' . $_POST['hinh_thuc'],
+    if(isset($_POST['btn_xac_nhan'])){
+        $_SESSION['mabenhnhan']   = $_POST['ma_benh_nhan'];
+        $_SESSION['makhunggiokb'] = $_POST['makhunggiokb'];
+        if ($idbs) $_SESSION['mabacsi'] = $_POST['mabacsi'];
+        elseif ($idcg) $_SESSION['machuyengia'] = $_POST['machuyengia'];
+        $_SESSION['ngaykham']     = $_POST['ngaykham'];
+        $_SESSION['tongtien']     = $_POST['giakham'];
+        $_SESSION['matrangthai']  = '6';
+      
+        if(!empty($_POST['ma_benh_nhan']) && !empty($_POST['gio_hen']) && !empty($_POST['ngay_hen'])){
+            $maphieukb = 'PKB' . time() . rand(100, 999);
+            $result = $cphieukhambenh->insertphieukham(
+                $maphieukb,
                 $_POST['ngay_hen'],
-                $gio_bat_dau . ' - ' . $gio_ket_thuc,
-                $maphieukb
+                $_POST['gio_hen'],
+                $bacsi['mabacsi'],
+                $_POST['ma_benh_nhan'],
+                6
             );
 
-            if ($ket_qua_gui_email) {
-                $_SESSION['popup_type'] = 'success';
-                $_SESSION['popup_title'] = 'Thành công!';
-                $_SESSION['popup_message'] = 'Đã đặt lịch khám bệnh và gửi email yêu cầu thanh toán đến bệnh nhân.';
-            } else {
-                $_SESSION['popup_type'] = 'warning';
-                $_SESSION['popup_title'] = 'Cảnh báo!';
-                $_SESSION['popup_message'] = 'Đã đặt lịch thành công nhưng không thể gửi email. Vui lòng liên hệ bệnh nhân trực tiếp.';
+            if($result){
+                $xu_ly_email = new XuLyEmail();
+                $ket_qua_gui_email = $xu_ly_email->gui_email_yeu_cau_thanh_toan(
+                    'nguyentrang2642003@gmail.com',
+                    $_POST['ten_benh_nhan'],
+                    'Đặt lịch khám bệnh '.$_POST['hinh_thuc'],
+                    $_POST['ngay_hen'],
+                    $khung_gio[0]['giobatdau'],
+                    $maphieukb
+                );
+
+                if ($ket_qua_gui_email) {
+                    $_SESSION['popup_success'] = true;
+                    $_SESSION['popup_title'] = 'Thành công!';
+                    $_SESSION['popup_message'] = 'Đã đặt lịch xét nghiệm và gửi email yêu cầu thanh toán đến bệnh nhân.';
+                    
+                    // Redirect để tránh insert lần nữa khi F5
+                    header("Location: " . $_SERVER['REQUEST_URI']);
+                    exit();
+                    
+                } else {
+                    $_SESSION['thong_bao'] = '<strong>Cảnh báo!</strong> Đã đặt lịch thành công nhưng không thể gửi email. Vui lòng liên hệ bệnh nhân trực tiếp.';
+                    $_SESSION['loai_thong_bao'] = 'canh_bao';
+                    header("Location: " . $_SERVER['REQUEST_URI']);
+                    exit();
+                    
+                }
+            }else {
+                $_SESSION['thong_bao'] = '<strong>Thất bại!</strong> Đặt lịch không thành công. Vui lòng thử lại.';
+                $_SESSION['loai_thong_bao'] = 'loi';
+                header("Location: " . $_SERVER['REQUEST_URI']);
+                exit();
+                
             }
-        } else {
-            $_SESSION['popup_type'] = 'error';
-            $_SESSION['popup_title'] = 'Thất bại!';
-            $_SESSION['popup_message'] = 'Đặt lịch không thành công. Vui lòng thử lại.';
+        }else {
+            $_SESSION['thong_bao'] = '<strong>Lỗi!</strong> Vui lòng điền đầy đủ thông tin.';
+            $_SESSION['loai_thong_bao'] = 'loi';
+            header("Location: " . $_SERVER['PHP_SELF']);
+            exit();
         }
-
-        // Sau khi xử lý xong, redirect để tránh F5 bị insert lại
-        header("Location: " . $_SERVER['REQUEST_URI']);
-        exit();
-    } else {
-        $_SESSION['popup_type'] = 'error';
-        $_SESSION['popup_title'] = 'Lỗi!';
-        $_SESSION['popup_message'] = 'Vui lòng điền đầy đủ thông tin.';
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit();
+        
     }
-}
 
-// Hiển thị thông báo sau khi redirect
-if (isset($_SESSION['popup_type'])) {
-    $type = $_SESSION['popup_type'];
-    $title = $_SESSION['popup_title'];
-    $message = $_SESSION['popup_message'];
-
-    $alertClass = match ($type) {
-        'success' => 'alert-success',
-        'warning' => 'alert-warning',
-        'error' => 'alert-danger',
-        default => 'alert-info'
-    };
-
-    echo "<div class='alert $alertClass mt-3' role='alert'>
-            <strong>$title</strong> $message
-          </div>";
-
-    // Xóa session để tránh hiển thị lại
-    unset($_SESSION['popup_type'], $_SESSION['popup_title'], $_SESSION['popup_message']);
-}
 ?>
 
 <style>
