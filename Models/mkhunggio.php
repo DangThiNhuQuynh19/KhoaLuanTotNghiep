@@ -15,4 +15,17 @@ class mKhungGio{
             return false; 
         }
     }
+    public function selectgio($id){
+        $p = new clsKetNoi();
+        $con = $p->moketnoi();
+        $con->set_charset('utf8');
+        if($con){
+            $str = "SELECT giobatdau, gioketthuc from khunggiokhambenh where makhunggiokb='$id'";
+            $tbl = $con->query($str);
+            $p->dongketnoi($con);
+            return $tbl;
+        }else{
+            return false; 
+        }
+    }
 }

@@ -42,7 +42,7 @@ class XuLyEmail {
             
             // Nội dung email
             $mail->isHTML(true);
-            $mail->Subject = 'Yêu Cầu Thanh Toán - Lịch Xét Nghiệm #' . $ma_lich_hen;
+            $mail->Subject = 'Yêu Cầu Thanh Toán - Lịch hẹn khám #' . $ma_lich_hen;
             $mail->Body = $this->tao_noi_dung_email_html($ten_benh_nhan, $ten_xet_nghiem, $ngay_hen, $gio_hen, $ma_lich_hen, $link_thanh_toan);
             
             $mail->send();
@@ -86,7 +86,7 @@ class XuLyEmail {
             <div class='container'>
                 <div class='header'>
                     <h1>🏥 Bệnh Viện Hạnh Phúc</h1>
-                    <p>Yêu Cầu Thanh Toán Lịch Xét Nghiệm</p>
+                    <p>Yêu Cầu Thanh Toán Lịch Hẹn Khám Bệnh</p>
                 </div>
                 
                 <div class='content'>

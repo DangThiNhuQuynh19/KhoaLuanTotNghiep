@@ -28,7 +28,7 @@ require_once('ketnoi.php');
                         join chuyenkhoa on bacsi.machuyenkhoa = chuyenkhoa.machuyenkhoa 
                         join nguoidung on bacsi.mabacsi = nguoidung.manguoidung
                         join taikhoan on nguoidung.email = taikhoan.tentk
-                        join trangthai on bacsi.matrangthai = trangthai.matrangthai
+                        join trangthai on taikhoan.matrangthai = trangthai.matrangthai
                         where taikhoan.matrangthai = 1 order by bacsi.mabacsi asc";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);

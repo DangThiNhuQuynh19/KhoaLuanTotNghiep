@@ -282,7 +282,7 @@ $('#sendButton').click(() => {
 
     // ✅ Kiểm tra lịch hẹn trước khi gửi
     $.ajax({
-        url: '/HanhPhuc/Ajax/getlichhen.php',
+        url: '/KLTN/Ajax/getlichhen.php',
         type: 'POST',
         dataType: 'json', 
         data: {

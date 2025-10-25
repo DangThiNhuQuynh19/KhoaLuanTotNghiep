@@ -18,5 +18,17 @@
                 }
             }
         }
+        public function getKhunggio($id) {
+            $p = new mKhungGio();
+            $tbl = $p->selectgio($id);
+            if (!$tbl) {
+                return -1;
+            }
+            if ($tbl->num_rows > 0) {
+                return $tbl->fetch_assoc(); 
+            }
+            return 0;
+        }
+        
     }
 ?>
