@@ -625,7 +625,7 @@
 
             // Nhóm khung giờ theo hình thức và ca
             khungTrong.forEach(kg => {
-                const id_target = `${kg.hinhthuclamviec}_${kg.macalam === '4' ? 'ca_sang' : kg.macalam === '5' ? 'ca_chieu' : 'ca_toi'}`;
+                const id_target = `${kg.hinhthuclamviec}_${kg.macalamviec === '4' ? 'ca_sang' : kg.macalamviec === '5' ? 'ca_chieu' : 'ca_toi'}`;
                 const container = document.getElementById(id_target);
 
                 if (container) {
