@@ -178,5 +178,21 @@ class mtaikhoan{
             return false; 
         }
     }
+
+    public function select_taikhoan(){
+        $p = new clsKetNoi();
+        $con = $p->moketnoi();
+        $con->set_charset('utf8');
+        if($con){
+            $str = "select * from taikhoan";
+            $tbl = $con->query($str);
+            $p->dongketnoi($con);
+            return $tbl;
+        }else{
+            return false; 
+        }
+    }
+
+
 }
 ?>

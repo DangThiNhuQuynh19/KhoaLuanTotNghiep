@@ -4,173 +4,206 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Phân ca nhân viên</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 <style>
-:root {
-  --main-color: #483a73;
-  --hover-color: #5a4b9b;
-  --bg-light: #f7f7fc;
-  --text-dark: #333;
-  --radius: 10px;
-  --transition: 0.25s ease;
-}
+    :root {
+    --main-color: #483a73;
+    --hover-color: #5a4b9b;
+    --bg-light: #f7f7fc;
+    --text-dark: #333;
+    --radius: 10px;
+    --transition: 0.25s ease;
+    }
 
-body {
-  font-family: "Inter", "Roboto", sans-serif;
-  background-color: var(--bg-light);
-  margin: 0;
-  padding: 20px;
-  color: var(--text-dark);
-}
+    /* ===== RESET & BODY ===== */
+    body {
+    font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+    margin: 0;
+    background-color: var(--bg-light);
+    }
 
-/* Bảng danh sách */
-.table-container {
-  background: white;
-  border-radius: var(--radius);
-  box-shadow: 0 2px 10px rgba(72, 58, 115, 0.1);
-  overflow: hidden;
-}
+    /* ===== SIDEBAR ===== */
+    .sidebar {
+    width: 230px;
+    height: 100vh;
+    position: fixed;
+    top: 56px;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+    background: #fff;
+    border-right: 1px solid #e5e5ef;
+    box-shadow: 2px 0 6px rgba(0, 0, 0, 0.04);
+    }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-}
+    .sidebar h2 {
+    color: var(--main-color);
+    text-align: center;
+    font-size: 16px;
+    margin-bottom: 18px;
+    font-weight: 600;
+    }
 
-thead {
-  background-color: #f0eef8;
-}
+    .sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    }
 
-thead th {
-  text-align: left;
-  padding: 10px 12px;
-  color: var(--main-color);
-  font-weight: 600;
-  border-bottom: 2px solid #eaeaea;
-}
+    .sidebar ul li {
+    margin: 6px 0;
+    }
 
-tbody td {
-  padding: 10px 12px;
-  border-bottom: 1px solid #f0f0f5;
-}
+    .sidebar ul li a {
+    display: flex;
+    align-items: center;
+    padding: 10px 18px;
+    text-decoration: none;
+    color: var(--main-color);
+    font-size: 13px;
+    transition: var(--transition);
+    border-radius: 8px;
+    }
 
-tbody tr:hover {
-  background-color: rgba(72, 58, 115, 0.05);
-  transition: var(--transition);
-}
+    .sidebar ul li a i {
+    margin-right: 8px;
+    font-size: 14px;
+    }
 
-.btn-phan-ca {
-  background-color: var(--main-color);
-  color: white;
-  border: none;
-  padding: 7px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: var(--transition);
-  font-size: 13.5px;
-}
+    .sidebar ul li a:hover,
+    .sidebar ul li a.active {
+    background-color: var(--hover-color);
+    color: #fff;
+    }
 
-.btn-phan-ca:hover {
-  background-color: var(--hover-color);
-  transform: scale(1.03);
-}
+    /* ===== MAIN CONTENT ===== */
+    .main-content {
+    margin-left: 240px;
+    margin-top: 70px;
+    padding: 30px 20px;
+    width: calc(100% - 240px);
+    }
 
-/* Popup overlay */
-.popup-overlay {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-}
+    h3 {
+    color: var(--main-color);
+    text-align: center;
+    }
 
-/* Popup nội dung */
-.popup {
-  background: #fff;
-  border-radius: var(--radius);
-  padding: 24px;
-  width: 380px;
-  box-shadow: 0 4px 20px rgba(72, 58, 115, 0.2);
-  animation: popupFade 0.25s ease;
-}
+    /* ===== BẢNG ===== */
+    .table-container {
+    width: 95%;
+    margin: auto;
+    background: #fff;
+    border-radius: var(--radius);
+    box-shadow: 0 2px 10px rgba(72, 58, 115, 0.1);
+    overflow: hidden;
+    }
 
-@keyframes popupFade {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+    table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    }
 
-.popup h3 {
-  color: var(--main-color);
-  font-weight: 600;
-  text-align: center;
-  margin-bottom: 18px;
-}
+    thead {
+    background-color: #f0eef8;
+    }
 
-.popup select {
-  width: 100%;
-  padding: 8px 10px;
-  margin-bottom: 12px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 13.5px;
-}
+    thead th {
+    text-align: left;
+    padding: 10px 12px;
+    color: var(--main-color);
+    font-weight: 600;
+    border-bottom: 2px solid #eaeaea;
+    }
 
-/* Danh sách nhân viên */
-.nhanvien-list {
-  max-height: 120px;
-  overflow-y: auto;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 8px;
-  background-color: #fafafa;
-}
+    tbody td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #f0f0f5;
+    }
 
-.nhanvien-list label {
-  display: block;
-  padding: 4px 6px;
-  cursor: pointer;
-}
+    tbody tr:hover {
+    background-color: rgba(72, 58, 115, 0.05);
+    transition: var(--transition);
+    }
 
-.nhanvien-list label:hover {
-  background-color: #f0eef8;
-}
+    .btn-phan-ca {
+    background-color: var(--main-color);
+    color: white;
+    border: none;
+    padding: 7px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: var(--transition);
+    }
 
-.popup .btn-confirm {
-  background-color: var(--main-color);
-  color: #fff;
-  border: none;
-  width: 100%;
-  padding: 8px 0;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: var(--transition);
-  margin-top: 10px;
-}
+    .btn-phan-ca:hover {
+    background-color: var(--hover-color);
+    transform: scale(1.03);
+    }
 
-.popup .btn-confirm:hover {
-  background-color: var(--hover-color);
-}
+    /* ===== POPUP ===== */
+    .popup-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    }
 
-/* Popup hình thức */
-.popup-buttons {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
-}
+    .popup {
+    background: #fff;
+    border-radius: var(--radius);
+    padding: 24px 26px;
+    width: 400px;
+    box-shadow: 0 4px 20px rgba(72, 58, 115, 0.2);
+    animation: popupFade 0.25s ease;
+    }
 
-.popup-buttons button {
-  flex: 1;
-  margin: 0 5px;
-  padding: 8px 0;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 13.5px;
-  transition: var(--transition);
-}
+    .popup h3 {
+    text-align: center;
+    color: var(--main-color);
+    margin-bottom: 18px;
+    }
 
+    .popup select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    margin-bottom: 12px;
+    outline: none;
+    transition: border-color 0.25s;
+    }
+
+    .popup select:focus {
+    border-color: var(--main-color);
+    }
+
+    #btnXacNhan {
+    background-color: var(--main-color);
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+    color: white;
+    transition: var(--transition);
+    }
+
+    #btnXacNhan:hover {
+    background-color: var(--hover-color);
+    transform: scale(1.03);
+    }
+
+    @keyframes popupFade {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+    }
 .online {
   background-color: var(--main-color);
   color: white;
@@ -197,78 +230,148 @@ tbody tr:hover {
 .cancel:hover {
   background-color: #b5b5b5;
 }
+/* Popup hình thức */
+.popup-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.popup-buttons button {
+  flex: 1;
+  margin: 0 5px;
+  padding: 8px 0;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13.5px;
+  transition: var(--transition);
+}
+
 </style>
 </head>
-
+<?php
+    include_once('Controllers/cbacsi.php');
+    include_once('Controllers/ccalam.php');
+    include_once('Controllers/cvaitro.php');
+    include_once('Controllers/ctaikhoan.php');
+    $cCaLam = new cCaLam();
+    $cVaiTro = new cVaiTro();
+    $tblCaLam = $cCaLam->get_calam(); 
+    $tblVaiTro = $cVaiTro->get_vaitro();
+    $bacsi = new cBacSi();
+    $tblBacSi = $bacsi->getAllBacSi();
+    $cTaiKhoan = new cTaiKhoan();
+    $taikhoan = $cTaiKhoan->get_taikhoan();
+?>
 <body>
 
-<div class="table-container">
-  <table>
-    <thead>
-      <tr>
-        <th>STT</th>
-        <th>MÃ CA</th>
-        <th>TÊN CA</th>
-        <th>GIỜ VÀO</th>
-        <th>GIỜ RA</th>
-        <th>PHÂN CA</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>1</td>
-        <td>CA01</td>
-        <td>Ca Sáng</td>
-        <td>06:00</td>
-        <td>14:00</td>
-        <td><button class="btn-phan-ca">Phân ca nhân viên</button></td>
-      </tr>
-      <tr>
-        <td>2</td>
-        <td>CA02</td>
-        <td>Ca Chiều</td>
-        <td>14:00</td>
-        <td>22:00</td>
-        <td><button class="btn-phan-ca">Phân ca nhân viên</button></td>
-      </tr>
-    </tbody>
-  </table>
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <h2>Quản lý ca</h2>
+  <ul>
+    <li><a href="?action=lichlamviec" class="active"><i class="fas fa-user-clock"></i> Phân ca</a></li>
+    <li><a href="?action=xeplich"><i class="fas fa-calendar-check"></i> Xếp lịch</a></li>
+  </ul>
+</aside>
+
+<!-- MAIN CONTENT -->
+<div class="main-content">
+  <h3>Phân ca nhân viên</h3>
+  <div class="table-container">  
+    <table>
+      <thead>
+        <tr>
+          <th>STT</th>
+          <th>MÃ CA</th>
+          <th>TÊN CA</th>
+          <th>GIỜ VÀO</th>
+          <th>GIỜ RA</th>
+          <th>PHÂN CA</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php
+        if ($tblCaLam == -1) {
+            echo "<tr><td colspan='6'>Lỗi truy xuất dữ liệu.</td></tr>";
+        } elseif ($tblCaLam == 0) {
+            echo "<tr><td colspan='6'>Chưa có ca làm việc nào.</td></tr>";
+        } 
+        else {
+            $stt = 1;
+                foreach ($tblCaLam as $ca) {
+                    echo "<tr>
+                            <td>" . $stt++ . "</td>
+                            <td>" . htmlspecialchars($ca['macalamviec']) . "</td>
+                            <td>" . htmlspecialchars($ca['tenca']) . "</td>
+                            <td>" . htmlspecialchars($ca['giobatdau']) . "</td>
+                            <td>" . htmlspecialchars($ca['gioketthuc']) . "</td>
+                            <td><button class='btn-phan-ca' data-macalamviec='" . htmlspecialchars($ca['macalamviec']) . "'>Phân ca nhân viên</button></td>
+                          </tr>";
+                }
+         }
+        ?> 
+      </tbody>
+    </table>
+  </div>
 </div>
 
-<!-- Popup 1 -->
+<!-- POPUP -->
 <div class="popup-overlay" id="popupPhanCa">
   <div class="popup">
     <h3>Phân ca nhân viên</h3>
 
-    <select id="chucVu">
-      <option value="">-- Chọn chức vụ --</option>
-      <option>Nhân viên bán hàng</option>
-      <option>Thu ngân</option>
-      <option>Phụ bếp</option>
-    </select>
+    <!-- HÀNG CHỨC VỤ + TRẠNG THÁI -->
+    <div class="row mb-3">
+      <div class="col-6">
+        <label for="chucVu" class="form-label fw-semibold text-secondary small">Chức vụ</label>
+        <select id="chucVu" class="form-select form-select-sm">
+            <option value="">-- Chọn chức vụ --</option>
+            <option value="2">Bác sĩ</option>
+            <option value="3">Chuyên gia</option>
+            <option value="4">Nhân viên tiếp tân</option>
+            <option value="5">Nhân viên xét nghiệm</option>
+        </select>
+      </div>
 
-    <select id="trangThai">
-      <option value="">-- Trạng thái phân ca --</option>
-      <option>Đã phân ca</option>
-      <option>Chưa phân ca</option>
-    </select>
-
-    <div style="margin: 8px 0;">
-      <label><input type="checkbox" id="chonTatCa"> Chọn tất cả nhân viên</label>
+      <div class="col-6">
+        <label for="trangThai" class="form-label fw-semibold text-secondary small">Trạng thái phân ca</label>
+        <select id="trangThai" class="form-select form-select-sm">
+          <option value="">-- Chọn trạng thái --</option>
+          <option value="daphanca">Đã phân ca</option>
+          <option value="chuaphanca">Chưa phân ca</option>
+        </select>
+      </div>
     </div>
 
-    <div class="nhanvien-list" id="nhanVienList">
-      <label><input type="checkbox" class="nv-checkbox"> Nguyễn Văn A</label>
-      <label><input type="checkbox" class="nv-checkbox"> Trần Thị B</label>
-      <label><input type="checkbox" class="nv-checkbox"> Phạm Văn C</label>
-      <label><input type="checkbox" class="nv-checkbox"> Lê Thị D</label>
+    <!-- CHECKBOX CHỌN TẤT CẢ -->
+    <div class="d-flex align-items-center justify-content-between mb-2">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="chonTatCa">
+        <label class="form-check-label small text-secondary" for="chonTatCa">Chọn tất cả</label>
+      </div>
+      <button id="btnXacNhan" class="btn btn-sm btn-primary" style="background-color: var(--main-color); border:none;">Xác nhận</button>
     </div>
 
-    <button class="btn-confirm" id="btnXacNhan">Xác nhận</button>
+    <!-- BẢNG NHÂN VIÊN SAU KHI CHỌN -->
+    <div id="tableNhanVienContainer" class="table-container" style="display:none;">
+      <div class="table-header">
+        <label><input type="checkbox" id="chonTatCa"> Chọn tất cả</label>
+      </div>
+      <table id="tableNhanVien">
+        <thead>
+          <tr>
+            <th>Chọn</th>
+            <th>Mã Nhân Viên</th>
+            <th>Tên Nhân Viên</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
   </div>
 </div>
 
-<!-- Popup 2 -->
 <div class="popup-overlay" id="popupHinhThuc">
   <div class="popup">
     <h3>Chọn hình thức làm việc</h3>
@@ -279,7 +382,7 @@ tbody tr:hover {
     </div>
   </div>
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const popupPhanCa = document.getElementById("popupPhanCa");
