@@ -50,7 +50,7 @@ $kq_list=$cketquaxetnghiem->get_ketquaxetnghiem($_GET['id']);
                     <div>
                         <div class="info-group">
                             <div class="info-label">Họ tên</div>
-                            <div class="info-value"><?php echo $kq[0]['hotenbenhnhan'] ?></div>
+                            <div class="info-value"><?php echo $kq[0]['hoten'] ?></div>
                         </div>
                         <div class="info-group">
                             <div class="info-label">Mã bệnh nhân</div>
@@ -58,7 +58,7 @@ $kq_list=$cketquaxetnghiem->get_ketquaxetnghiem($_GET['id']);
                         </div>
                         <div class="info-group">
                             <div class="info-label">CCCD</div>
-                            <div class="info-value"><?php echo decryptData($kq[0]['cccdbenhnhan']); ?></div>
+                            <div class="info-value"><?php echo decryptData($kq[0]['cccd']); ?></div>
                         </div>
                         <div class="info-group">
                             <div class="info-label">Giới tính</div>
@@ -72,12 +72,12 @@ $kq_list=$cketquaxetnghiem->get_ketquaxetnghiem($_GET['id']);
                         </div>
                         <div class="info-group">
                             <div class="info-label">SĐT</div>
-                            <div class="info-value"><?php echo decryptData($kq[0]['sdtbenhnhan']); ?></div>
+                            <div class="info-value"><?php echo decryptData($kq[0]['sdt']); ?></div>
                         </div>
                         
                         <div class="info-group">
                             <div class="info-label">Địa chỉ</div>
-                            <div class="info-value"><?php echo $kq[0]['sonha'].','.$kq[0]['xa/phuong'].','.$kq[0]['quan/huyen'].','.$kq[0]['tinh/thanhpho'] ; ?></div>
+                            <div class="info-value"><?php echo $kq[0]['sonha'].','.$kq[0]['tenxaphuong'].','.$kq[0]['tentinhthanhpho'] ; ?></div>
                         </div>
                         <div class="info-group">
                             <div class="info-label">Email</div>
@@ -96,16 +96,12 @@ $kq_list=$cketquaxetnghiem->get_ketquaxetnghiem($_GET['id']);
                             <div class="info-value"><?php echo $kq[0]['dantoc']; ?></div>
                         </div>
                         <div class="info-group">
-                            <div class="info-label">Nhóm máu</div>
-                            <div class="info-value"><?php echo $kq[0]['nhommau']; ?></div>
-                        </div>
-                        <div class="info-group">
                             <div class="info-label">Tiền sử bệnh tật</div>
-                            <div class="info-value"><?php echo decryptData($kq[0]['tiensubenhtatcuabenhnhan']); ?></div>
+                            <div class="info-value"><?php echo $kq[0]['tiensubenhtatcuabenhnhan']; ?></div>
                         </div>
                         <div class="info-group">
                             <div class="info-label">Tiền sử bệnh tật người thân: </div>
-                            <div class="info-value"><?php echo decryptData($kq[0]['tiensubenhtatcuagiadinh']); ?></div>
+                            <div class="info-value"><?php echo $kq[0]['tiensubenhtatcuagiadinh']; ?></div>
                         </div>
                         
                     </div>
@@ -194,7 +190,7 @@ $kq_list=$cketquaxetnghiem->get_ketquaxetnghiem($_GET['id']);
                                     <tr>
                                         <td><?php echo $i['tenchisoxetnghiem']; ?></td>
                                         <td><strong><?php echo $i['giatriketqua']; ?></strong></td>
-                                        <td><?php echo $i['donvikq']; ?></td>
+                                        <td><?php echo $i['donviketqua']; ?></td>
                                         <td><?php echo $i['khoangthamchieu']; ?></td>
                                         <td>
                                             <?php if ($i['nhanxet'] === 'Bình thường'): ?>

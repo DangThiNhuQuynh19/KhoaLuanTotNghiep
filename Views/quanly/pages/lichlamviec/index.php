@@ -407,7 +407,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const chonTatCa = document.getElementById("chonTatCa");
     const btnXacNhan = document.getElementById("btnXacNhan");
     
-    // Mở popup khi bấm "Phân ca nhân viên"
+    // --- Mở popup Phân ca ---
     document.querySelectorAll(".btn-phan-ca").forEach(btn => {
         btn.addEventListener("click", () => {
             const macalam = btn.dataset.macalamviec;
@@ -424,7 +424,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Lắng nghe thay đổi chức vụ -> fetch nhân viên
+    // --- Lắng nghe thay đổi chức vụ -> fetch nhân viên ---
     chucVuSelect.addEventListener("change", function() {
         const machucvu = this.value;
         const macalam = popupPhanCa.dataset.macalam;
@@ -434,15 +434,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!machucvu) return;
 
-        fetch("/KLTN/Ajax/getnhanvien.php", {
+        // AJAX request để lấy danh sách nhân viên theo chức vụ và ca làm
+        fetch("/HanhPhuc/Ajax/getnhanvien.php", {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: `machucvu=${machucvu}&macalam=${macalam}`
+            // Truyền machucvu và macalam để server biết cần lọc những nhân viên nào
+            body: `machucvu=${machucvu}&macalam=${macalam}` 
         })
         .then(res => res.json())
         .then(data => {
             if (data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="3" class="text-center">Không có nhân viên phù hợp</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="3" class="text-center text-muted py-3">Không có nhân viên phù hợp</td></tr>`;
                 tableNhanVienContainer.style.display = "block";
                 return;
             }
@@ -451,8 +453,8 @@ document.addEventListener("DOMContentLoaded", () => {
             data.forEach(nv => {
                 const tr = document.createElement("tr");
                 tr.innerHTML = `
-                    <td><input type="checkbox" class="nv-checkbox" name="chonNV[]" value="${nv.manv}"></td>
-                    <td>${nv.manv}</td>
+                    <td><input type="checkbox" class="form-check-input nv-checkbox" name="chonNV[]" value="${nv.manv}"></td>
+                    <td class="text-muted">${nv.manv}</td>
                     <td>${nv.hoten}</td>
                 `;
                 tbody.appendChild(tr);
@@ -460,38 +462,99 @@ document.addEventListener("DOMContentLoaded", () => {
         })
         .catch(err => {
             console.error("Lỗi fetch nhân viên:", err);
-            tbody.innerHTML = `<tr><td colspan="3" class="text-center">Lỗi tải dữ liệu</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="3" class="text-center text-danger py-3">Lỗi tải dữ liệu</td></tr>`;
             tableNhanVienContainer.style.display = "block";
         });
     });
 
-    // Chọn tất cả nhân viên
+    // --- Chọn tất cả nhân viên ---
     chonTatCa.addEventListener("change", function() {
         const checked = this.checked;
         document.querySelectorAll(".nv-checkbox").forEach(cb => cb.checked = checked);
     });
 
-    // Xác nhận -> mở popup hình thức
+    // --- Xác nhận -> mở popup hình thức ---
     btnXacNhan.addEventListener("click", () => {
+        const selectedNV = document.querySelectorAll('.nv-checkbox:checked');
+        if (selectedNV.length === 0) {
+            alert("Vui lòng chọn ít nhất một nhân viên để phân ca.");
+            return;
+        }
+
         popupPhanCa.style.display = "none";
         popupHinhThuc.style.display = "flex";
     });
 
-    // Cancel popup hình thức
+    // --- Xử lý click Offline/Online/Cancel trong popup Hình thức ---
+    
+    // 1. Cancel
     popupHinhThuc.querySelector(".cancel").addEventListener("click", () => {
         popupHinhThuc.style.display = "none";
     });
+    
+    // 2. Offline (Phân ca trực tiếp)
+    popupHinhThuc.querySelector(".offline").addEventListener("click", () => {
+        handlePhanCa('Offline');
+    });
 
-    // Đóng popup khi click ngoài
+    // 3. Online
+    popupHinhThuc.querySelector(".online").addEventListener("click", () => {
+        handlePhanCa('Online');
+    });
+
+
+    // --- Hàm xử lý phân ca chung ---
+    function handlePhanCa(hinhThuc) {
+        const macalam = popupPhanCa.dataset.macalam;
+        const selectedCheckboxes = document.querySelectorAll('.nv-checkbox:checked');
+        const manvList = Array.from(selectedCheckboxes).map(cb => cb.value);
+        if (manvList.length === 0) {
+            alert("Không có nhân viên nào được chọn.");
+            return;
+        }
+        console.log(hinhThuc)
+        // Tạo đối tượng FormData để gửi dữ liệu AJAX
+        const formData = new FormData();
+        formData.append('macalam', macalam);
+        formData.append('hinhthuc', hinhThuc);
+        formData.append('manv_list', JSON.stringify(manvList)); // Gửi mảng mã NV
+
+        // 🚨 THAY THẾ BẰNG ĐƯỜNG DẪN THỰC TẾ CỦA BẠN 🚨
+        const ajaxUrl = "/HanhPhuc/Ajax/phancanhanvien.php"; 
+
+        fetch(ajaxUrl, {
+            method: "POST",
+            body: formData 
+        })
+        .then(res => res.json())
+        .then(response => {
+            if (response.success) {
+                alert(`Phân ca ${hinhThuc} thành công cho ${manvList.length} nhân viên ca ${macalam}.`);
+                // Reset và đóng popup
+                popupHinhThuc.style.display = "none";
+                popupPhanCa.style.display = "none";
+                location.reload(); // Hoặc cập nhật lại bảng mà không cần reload
+            } else {
+                alert("Lỗi phân ca: " + response.message);
+                popupHinhThuc.style.display = "none";
+                popupPhanCa.style.display = "none";
+            }
+        })
+        .catch(err => {
+            console.error("Lỗi AJAX phân ca:", err);
+            alert("Đã xảy ra lỗi khi kết nối đến server.");
+            popupHinhThuc.style.display = "none";
+            popupPhanCa.style.display = "none";
+        });
+    }
+
+    // --- Đóng popup khi click ngoài ---
     [popupPhanCa, popupHinhThuc].forEach(popup => {
         popup.addEventListener("click", e => {
             if (e.target === popup) popup.style.display = "none";
         });
     });
 });
-
-
-
 </script>
 </body>
 </html>

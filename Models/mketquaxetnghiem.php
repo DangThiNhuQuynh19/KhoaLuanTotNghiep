@@ -8,6 +8,9 @@ class mKetQuaXetNghiem{
         if($con){
             $str = "select * from lichxetnghiem l
             join  benhnhan bn on bn.mabenhnhan = l.mabenhnhan
+            join  nguoidung nd on nd.manguoidung=bn.mabenhnhan
+            join  xaphuong xp on xp.maxaphuong=nd.maxaphuong
+            join  tinhthanhpho ttp on ttp.matinhthanhpho=xp.matinhthanhpho
             join  loaixetnghiem loai on loai.maloaixetnghiem=l.maloaixetnghiem
             join  hosobenhan hs on hs.mahoso=l.mahoso
             join  chitiethoso ct on ct.mahoso=hs.mahoso

@@ -362,23 +362,25 @@ if(isset($_POST['btnupdate'])) {
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php $dem = 1; ?>
-                                <?php foreach ($donthuoc as $i): ?>
-                                <tr>
-                                    <td><?php echo $dem; ?></td>
-                                    <td><?php echo $i['ngaytaodonthuoc']; ?></td>
-                                    <td>
-                                        <?php
-                                            $chitietdonthuoc = $cchitietdongthuoc->get_chitietdonthuoc_madonthuoc($i['madonthuoc']);
-                                            $chitietdonthuocJson = json_encode($chitietdonthuoc);
-                                        ?>
-                                        <button class="btn-small btn-primary" onclick='openchitietdonthuoc(<?php echo $chitietdonthuocJson; ?>)'>
-                                            Chi tiết
-                                        </button>    
-                                    </td>
-                                    <?php $dem++; ?>
-                                </tr>
-                                <?php endforeach; ?>
+                                <?php if(isset($donthuoc)):?>
+                                    <?php $dem = 1; ?>
+                                    <?php foreach ($donthuoc as $i): ?>
+                                    <tr>
+                                        <td><?php echo $dem; ?></td>
+                                        <td><?php echo $i['ngaytaodonthuoc']; ?></td>
+                                        <td>
+                                            <?php
+                                                $chitietdonthuoc = $cchitietdongthuoc->get_chitietdonthuoc_madonthuoc($i['madonthuoc']);
+                                                $chitietdonthuocJson = json_encode($chitietdonthuoc);
+                                            ?>
+                                            <button class="btn-small btn-primary" onclick='openchitietdonthuoc(<?php echo $chitietdonthuocJson; ?>)'>
+                                                Chi tiết
+                                            </button>    
+                                        </td>
+                                        <?php $dem++; ?>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                <?php endif;?>
                             </tbody>
                         </table>
                     </div>
