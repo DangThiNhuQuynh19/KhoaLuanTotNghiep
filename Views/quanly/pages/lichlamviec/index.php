@@ -352,14 +352,7 @@
         </select>
       </div>
 
-      <div class="col-6">
-        <label for="trangThai" class="form-label fw-semibold text-secondary small">Trạng thái phân ca</label>
-        <select id="trangThai" class="form-select form-select-sm">
-          <option value="">-- Chọn trạng thái --</option>
-          <option value="daphanca">Đã phân ca</option>
-          <option value="chuaphanca">Chưa phân ca</option>
-        </select>
-      </div>
+     
     </div>
 
     <div class="d-flex align-items-center justify-content-between mb-2">
@@ -401,7 +394,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const popupPhanCa = document.getElementById("popupPhanCa");
     const popupHinhThuc = document.getElementById("popupHinhThuc");
     const chucVuSelect = document.getElementById("chucVu");
-    const trangThaiSelect = document.getElementById("trangThai");
+
     const tableNhanVienContainer = document.getElementById("tableNhanVienContainer");
     const tbody = document.querySelector("#tableNhanVien tbody");
     const chonTatCa = document.getElementById("chonTatCa");
@@ -415,7 +408,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Reset popup
             chucVuSelect.value = "";
-            trangThaiSelect.value = "";
+           
             tbody.innerHTML = "";
             tableNhanVienContainer.style.display = "none";
             chonTatCa.checked = false;

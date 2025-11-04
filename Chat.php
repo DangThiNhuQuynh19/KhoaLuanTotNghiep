@@ -106,6 +106,56 @@ class ChatServer implements MessageComponentInterface {
             }
             return;
         }
+        if ($command === 'send_file') {
+            $sender = $data['sender'] ?? null;
+            $receiver = $data['receiver'] ?? null;
+            $filename = $data['filename'] ?? null;
+            $fileData = $data['data'] ?? null;
+        
+            if (!$sender || !$receiver || !$fileData || !$filename) {
+                $from->send(json_encode(['status' => 'error', 'message' => 'Thiếu dữ liệu file.']));
+                return;
+            }
+        
+            // Tạo thư mục uploads nếu chưa có
+            $uploadDir = __DIR__ . '/uploads/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+        
+            // Lưu file PDF
+            $safeName = time() . "_" . preg_replace('/[^a-zA-Z0-9_\.-]/', '_', $filename);
+            $filePath = $uploadDir . $safeName;
+            $fileUrl = "http://localhost/KLTN/uploads/" . $filename;
+        
+            file_put_contents($filePath, base64_decode($fileData));
+        
+            // Lưu vào DB (tùy bạn, có thể lưu như 1 tin nhắn kiểu file)
+            $chat = new ChatUserModel();
+            $chat->setSender($sender);
+            $chat->setReceiver($receiver);
+            $chat->setMessage("[FILE] $fileUrl");
+            $chat->saveMessage();
+        
+            // Gửi thông báo file cho người nhận
+            if (isset($this->userConnections[$receiver])) {
+                $this->userConnections[$receiver]->send(json_encode([
+                    'command' => 'receive_file',
+                    'sender' => $sender,
+                    'filename' => $filename,
+                    'url' => $fileUrl
+                ]));
+            }
+        
+            // Phản hồi cho người gửi
+            $from->send(json_encode([
+                'command' => 'file_sent',
+                'filename' => $filename,
+                'url' => $fileUrl
+            ]));
+            return;
+        }
+        
 
         // Lệnh "load_messages" - Lấy tin nhắn cũ
         // Lệnh "load_messages" - Lấy tin nhắn cũ
