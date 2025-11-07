@@ -118,9 +118,9 @@ if (!$bs || $bs === 0) {
         </p>
         <div class="text-center mt-3">
             <a href="index.php" class="btn btn-primary me-2">Quay lại trang chủ</a>
-            <a href="?action=suathongtin&id=<?= htmlspecialchars($bs['mabacsi']) ?>" class="btn btn-warning">
-                ✏ Sửa thông tin
-            </a>
+           <!-- <a href="?action=suathongtin&id=<?= htmlspecialchars($bs['mabacsi']) ?>" class="btn btn-warning"> -->
+              <!-- ✏ Sửa thông tin -->
+            <!-- </a> -->
         </div>
     </div>
 </div>

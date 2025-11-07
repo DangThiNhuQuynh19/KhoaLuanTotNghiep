@@ -98,7 +98,7 @@ if(isset($_POST["btnbo"])){
 
                         <div class="form-actions" style="margin-top: 10px;">
                             <button type="submit" class="btn-primary" name="btntimkiem">Tìm kiếm</button>
-                            <button type="submit" class="btn-secondary" name="btnbo"><i class="fas fa-times"></i>Bỏ tìm kiếm</button>
+                            <button type="submit" class="btn-danger" name="btnbo"><i class="fas fa-times"></i></button>
                         </div>
                     </form>
                 </div>

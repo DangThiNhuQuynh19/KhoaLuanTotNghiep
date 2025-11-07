@@ -216,5 +216,35 @@ require_once('ketnoi.php');
             $p->dongketnoi($con);
             return $ok1 && $ok2;
         }
+        public function xemlichlamchuyengia($tentk){
+            $p = new clsKetNoi();
+            $con = $p->moketnoi();
+            $con->set_charset('utf8');
+        
+            if(!$con) return false;
+        
+            $str = "
+                SELECT 
+                    llv.*, 
+                    c.tenca,
+                    c.giobatdau,
+                    c.gioketthuc,
+                    p.tentoa,
+                    p.tang,
+                    p.sophong
+                FROM nguoidung d
+                JOIN chuyengia b ON b.machuyengia = d.manguoidung
+                JOIN lichlamviec llv ON llv.manguoidung = b.machuyengia  
+                JOIN calamviec c ON c.macalamviec = llv.macalamviec
+                LEFT JOIN phong p ON p.maphong = llv.maphong
+                WHERE d.email = '$tentk'
+                ORDER BY llv.ngaylam ASC
+            ";
+        
+            $tbl = $con->query($str);
+            $p->dongketnoi($con);
+            return $tbl;
+        }
+        
     }
 ?>

@@ -266,7 +266,7 @@ $lichkham = $cLichKham->getLichKhamOfBacSiByNgay($ngay, $mabacsi, $gioHienTai);
             }
             
             // Phân loại
-            if ($hinhthuc == "online") {
+            if ($hinhthuc == "Online") {
                 $caOnline[] = $link;
             } else {
                 $caOffline[] = $link;

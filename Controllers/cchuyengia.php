@@ -99,6 +99,13 @@ class cChuyenGia{
         return $p->updateChuyenGia($machuyengia, $data);
     }
     
-
+    public function getLichLamViecChuyengia($tentk){
+        $p = new mChuyenGia();
+        $tbl = $p->xemlichlamchuyengia($tentk);
+    
+        if(!$tbl) return -1;
+        if($tbl->num_rows > 0) return $tbl->fetch_all(MYSQLI_ASSOC);
+        return 0;
+    }
 }
 ?>
