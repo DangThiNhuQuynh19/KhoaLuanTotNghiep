@@ -160,7 +160,7 @@
     background: #fff;
     border-radius: var(--radius);
     padding: 24px 26px;
-    width: 700px;
+    width: 730px;
     max-height: 85vh; /* Giới hạn chiều cao tối đa */
     overflow-y: auto; /* Tự động thêm thanh cuộn dọc nếu nội dung dài */
     box-shadow: 0 4px 20px rgba(72, 58, 115, 0.2);
@@ -351,8 +351,6 @@
           <option value="5">Nhân viên xét nghiệm</option>
         </select>
       </div>
-
-     
     </div>
 
     <div class="d-flex align-items-center justify-content-between mb-2">
@@ -370,6 +368,7 @@
             <th style="width: 60px;">Chọn</th>
             <th>Mã Nhân Viên</th>
             <th>Tên Nhân Viên</th>
+            <th>Phòng</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -388,8 +387,10 @@
     </div>
   </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
+let danhSachPhong = [];  // Lưu phòng toàn hệ thống
+
 document.addEventListener("DOMContentLoaded", () => {
     const popupPhanCa = document.getElementById("popupPhanCa");
     const popupHinhThuc = document.getElementById("popupHinhThuc");
@@ -399,16 +400,24 @@ document.addEventListener("DOMContentLoaded", () => {
     const tbody = document.querySelector("#tableNhanVien tbody");
     const chonTatCa = document.getElementById("chonTatCa");
     const btnXacNhan = document.getElementById("btnXacNhan");
-    
-    // Mở popup khi bấm "Phân ca nhân viên"
+
+    // ========== LOAD PHÒNG KHI BẤM "PHÂN CA" ==========
     document.querySelectorAll(".btn-phan-ca").forEach(btn => {
+        
+        if (danhSachPhong.length === 0) {
+            fetch("/KLTN/Ajax/getphong.php")
+                .then(res => res.json())
+                .then(data => {
+                    danhSachPhong = data;
+                })
+                .catch(err => console.error("Lỗi tải phòng:", err));
+        }
+
         btn.addEventListener("click", () => {
             const macalam = btn.dataset.macalamviec;
             popupPhanCa.dataset.macalam = macalam;
 
-            // Reset popup
             chucVuSelect.value = "";
-           
             tbody.innerHTML = "";
             tableNhanVienContainer.style.display = "none";
             chonTatCa.checked = false;
@@ -417,10 +426,11 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Lắng nghe thay đổi chức vụ -> fetch nhân viên
+    // ========== LOAD NHÂN VIÊN THEO CHỨC VỤ ==========
     chucVuSelect.addEventListener("change", function() {
         const machucvu = this.value;
         const macalam = popupPhanCa.dataset.macalam;
+
         tbody.innerHTML = "";
         tableNhanVienContainer.style.display = "none";
         chonTatCa.checked = false;
@@ -430,61 +440,140 @@ document.addEventListener("DOMContentLoaded", () => {
         fetch("/KLTN/Ajax/getnhanvien.php", {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: `machucvu=${machucvu}&macalam=${macalam}`
+            body: `machucvu=${machucvu}&macalam=${macalam}` 
         })
         .then(res => res.json())
         .then(data => {
             if (data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="3" class="text-center">Không có nhân viên phù hợp</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-3">Không có nhân viên phù hợp</td></tr>`;
                 tableNhanVienContainer.style.display = "block";
                 return;
             }
 
             tableNhanVienContainer.style.display = "block";
+
             data.forEach(nv => {
+                let optionPhong = "";
+
+                danhSachPhong.forEach(p => {
+                    optionPhong += `
+                        <option value="${p.maphong}">
+                            Tòa ${p.tentoa} - Tầng ${p.tang} - Phòng ${p.sophong} (${p.loaiphong})
+                        </option>`;
+                });
+
                 const tr = document.createElement("tr");
+
                 tr.innerHTML = `
-                    <td><input type="checkbox" class="nv-checkbox" name="chonNV[]" value="${nv.manv}"></td>
+                    <td><input type="checkbox" class="form-check-input nv-checkbox" value="${nv.manv}"></td>
                     <td>${nv.manv}</td>
                     <td>${nv.hoten}</td>
+                    <td>
+                        <select class="form-select form-select-sm phong-select" data-manv="${nv.manv}">
+                            ${optionPhong}
+                        </select>
+                    </td>
                 `;
+
                 tbody.appendChild(tr);
             });
         })
         .catch(err => {
             console.error("Lỗi fetch nhân viên:", err);
-            tbody.innerHTML = `<tr><td colspan="3" class="text-center">Lỗi tải dữ liệu</td></tr>`;
-            tableNhanVienContainer.style.display = "block";
         });
     });
 
-    // Chọn tất cả nhân viên
+    // CHỌN TẤT CẢ
     chonTatCa.addEventListener("change", function() {
-        const checked = this.checked;
-        document.querySelectorAll(".nv-checkbox").forEach(cb => cb.checked = checked);
+        document.querySelectorAll(".nv-checkbox").forEach(cb => cb.checked = this.checked);
     });
 
-    // Xác nhận -> mở popup hình thức
+    // BẤM XÁC NHẬN → QUA POPUP HÌNH THỨC
     btnXacNhan.addEventListener("click", () => {
+        const selectedNV = document.querySelectorAll('.nv-checkbox:checked');
+        if (selectedNV.length === 0) {
+            alert("Vui lòng chọn ít nhất một nhân viên để phân ca.");
+            return;
+        }
         popupPhanCa.style.display = "none";
         popupHinhThuc.style.display = "flex";
     });
+    popupHinhThuc.querySelector(".online").addEventListener("click", () => {
 
-    // Cancel popup hình thức
+// ✅ Hiện thông báo ngay lập tức
+alert("Bạn chọn hình thức ONLINE — các lựa chọn phòng sẽ bị xóa.");
+
+// ✅ Xóa phòng trong UI để người dùng thấy rõ
+document.querySelectorAll(".phong-select").forEach(select => {
+    select.value = ""; // hoặc select.innerHTML = ""; nếu muốn xóa hết option
+});
+
+handlePhanCa('Online');
+});
+
+    // HÌNH THỨC LÀM VIỆC
     popupHinhThuc.querySelector(".cancel").addEventListener("click", () => {
         popupHinhThuc.style.display = "none";
     });
 
-    // Đóng popup khi click ngoài
+    popupHinhThuc.querySelector(".offline").addEventListener("click", () => {
+        handlePhanCa("Offline");
+    });
+
+    popupHinhThuc.querySelector(".online").addEventListener("click", () => {
+        handlePhanCa("Online");
+    });
+
+    // ========== XỬ LÝ PHÂN CA ==========
+    function handlePhanCa(hinhThuc) {
+        const macalam = popupPhanCa.dataset.macalam;
+
+        const selected = document.querySelectorAll(".nv-checkbox:checked");
+
+        const ds = [];
+
+        selected.forEach(cb => {
+            const manv = cb.value;
+            const phong = document.querySelector(`select.phong-select[data-manv="${manv}"]`).value;
+
+            ds.push({
+                manv: manv,
+                maphong: phong
+            });
+        });
+
+        const formData = new FormData();
+        formData.append("macalam", macalam);
+        formData.append("hinhthuc", hinhThuc);
+        formData.append("manv_list", JSON.stringify(ds));
+
+        fetch("/KLTN/Ajax/phancanhanvien.php", {
+            method: "POST",
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                alert("Phân ca thành công!");
+                location.reload();
+            } else {
+                alert("Lỗi phân ca: " + data.message);
+            }
+        })
+        .catch(err => {
+            alert("Lỗi kết nối server.");
+            console.error(err);
+        });
+    }
+
+    // ĐÓNG POPUP KHI BẤM RA NGOÀI
     [popupPhanCa, popupHinhThuc].forEach(popup => {
         popup.addEventListener("click", e => {
             if (e.target === popup) popup.style.display = "none";
         });
     });
 });
-
-
-
 </script>
+
 </body>
 </html>

@@ -333,10 +333,11 @@
             $con->set_charset('utf8');
             if($con){
                 $str = "SELECT nd_bs.hoten AS tenbacsi, tt.tentrangthai, pk.*, kg.*, bn.*, nd_bn.*, bs.*, 
-                llv.ngaylam, llv.hinhthuclamviec FROM phieukhambenh AS pk 
+                llv.ngaylam, llv.hinhthuclamviec, ck.* FROM phieukhambenh AS pk 
                 JOIN khunggiokhambenh kg ON pk.makhunggiokb = kg.makhunggiokb 
                 JOIN trangthai tt ON tt.matrangthai = pk.matrangthai 
                 JOIN bacsi AS bs ON pk.mabacsi = bs.mabacsi 
+                JOIN chuyenkhoa AS ck ON bs.machuyenkhoa = ck.machuyenkhoa
                 JOIN nguoidung nd_bs ON nd_bs.manguoidung = bs.mabacsi 
                 JOIN benhnhan AS bn ON bn.mabenhnhan = pk.mabenhnhan 
                 JOIN nguoidung nd_bn ON nd_bn.manguoidung = bn.mabenhnhan 

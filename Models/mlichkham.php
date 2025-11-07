@@ -107,23 +107,37 @@ class mLichKham {
         $con->set_charset('utf8');
         if($con){
             $str = "SELECT 
-                        CONCAT(k.giobatdau, ' - ', k.gioketthuc) AS giokham,
-                        CASE 
-                            WHEN llv.hinhthuclamviec = 'Offline' 
-                                THEN CONCAT('Tòa: ', p.tentoa, ', Tầng: ', p.tang, ', Phòng: ', p.sophong)
-                            ELSE 'Khám trực tuyến (Online)'
-                        END AS thongtin, k.makhunggiokb
-                    FROM lichlamviec llv
-                    JOIN calamviec cv 
-                        ON llv.macalamviec = cv.macalamviec
-                    JOIN khunggiokhambenh k 
-                        ON k.macalamviec = cv.macalamviec
-                    LEFT JOIN phong p 
-                        ON p.maphong = llv.maphong
-                    WHERE k.makhunggiokb = '$idca'
-                    AND llv.ngaylam = '$ngay'
-                    AND llv.manguoidung = '$idbs'
-                    LIMIT 1;";
+                CONCAT(k.giobatdau, ' - ', k.gioketthuc) AS giokham,
+                CASE 
+                    WHEN llv.hinhthuclamviec = 'Offline' THEN 
+                        CONCAT('Tòa: ', p.tentoa, ', Tầng: ', p.tang, ', Phòng: ',
+                            COALESCE(p.sophong, 'Chưa có'))
+                    ELSE 'Khám trực tuyến (Online)'
+                END AS thongtin,
+                k.makhunggiokb
+            FROM lichlamviec llv
+            JOIN calamviec cv 
+                ON llv.macalamviec = cv.macalamviec
+            JOIN khunggiokhambenh k 
+                ON k.macalamviec = cv.macalamviec
+
+            -- ✅ Lấy maphong từ bác sĩ
+            LEFT JOIN bacsi b 
+                ON b.manguoidung = llv.manguoidung
+
+            -- ✅ Lấy maphong từ chuyên gia
+            LEFT JOIN chuyengia cg 
+                ON cg.manguoidung = llv.manguoidung
+
+            -- ✅ Ưu tiên maphong từ lịch làm việc, nếu NULL thì lấy từ bác sĩ / chuyên gia
+            LEFT JOIN phong p 
+                ON p.maphong = COALESCE(llv.maphong, b.maphong, cg.maphong)
+
+            WHERE k.makhunggiokb = '$idca'
+            AND llv.ngaylam = '$ngay'
+            AND llv.manguoidung = '$idbs'
+            LIMIT 1;
+            ";
             $tbl = $con->query($str);
             $p->dongketnoi($con);
             return $tbl;

@@ -15,6 +15,123 @@
     $kqxetnghiemgannhat = $cketquaxetnghiem->get_ketquaxetnghiem_gannhat($bacsi['mabacsi']);
     $lichkhamsapden = $cphieukhambenh->get_lichkham_sapden($bacsi['mabacsi']);
 ?>
+<style>
+        /* --- Global Styles --- */
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f4f7f6; /* Màu nền nhẹ nhàng */
+        margin: 0;
+        padding: 0;
+        color: #333;
+    }
+
+    .container {
+        padding: 20px;
+        max-width: 1300px;
+        margin: 0 auto;
+    }
+    /* Tối ưu hóa layout cho màn hình lớn */
+    @media (min-width: 1024px) {
+        .dashboard {
+            grid-template-columns: 1fr 2fr; /* Notification ở cột 1, Stats ở cột 2 */
+            grid-template-areas: 
+                "notification stats"
+                "content content";
+        }
+        .notification-panel {
+            grid-area: notification;
+        }
+        .stats-container {
+            grid-area: stats;
+        }
+        .dashboard-content {
+            grid-area: content;
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .appointments-section, .tests-section {
+            flex: 1; /* Chia đều không gian cho 2 section */
+            min-width: 0;
+        }
+    }
+
+    /* --- Content Sections (Lịch hẹn và Xét nghiệm) --- */
+    .appointments-section, .tests-section {
+        background-color: #ffffff;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .appointments-section h2, .tests-section h2 {
+        color: #1e3c72;
+        margin-top: 0;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #f4f7f6;
+        font-size: 1.5em;
+    }
+
+    /* --- List Items (Lịch hẹn & Xét nghiệm) --- */
+    .appointment-list, .test-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-top: 15px;
+    }
+
+    .appointment-item, .test-item {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        border-radius: 8px;
+        background-color: #fcfcfc;
+        border: 1px solid #eee;
+        transition: background-color 0.3s;
+    }
+
+    .appointment-item:hover, .test-item:hover {
+        background-color: #f0f8ff; /* Hiệu ứng hover nhẹ */
+    }
+
+    .appointment-icon, .test-icon {
+        margin-right: 15px;
+    }
+
+    .appointment-icon i, .test-icon i {
+        font-size: 1.5em;
+        color: #2a5298;
+    }
+
+    .appointment-details, .test-details {
+        flex-grow: 1;
+        min-width: 0;
+    }
+
+    .appointment-details h4, .test-details h4 {
+        margin: 0 0 4px 0;
+        font-size: 1.1em;
+        font-weight: 600;
+        color: #333;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .appointment-details p, .test-details p {
+        margin: 0;
+        font-size: 0.9em;
+        color: #666;
+    }
+
+    /* --- Primary Button Small (Dùng trong list items) --- */
+    .btn-small {
+        padding: 6px 12px;
+        font-size: 0.8em;
+        border-radius: 4px;
+        margin-left: 10px;
+    }
+</style>
 <div class="container">
         <div class="dashboard">
             <div class="notification-panel">
@@ -95,7 +212,7 @@
                                 echo '<div class="appointment-icon"><i class="fas fa-user"></i></div>';
                                 echo '<div class="appointment-details">';
                                 echo '<h4>' . $i['hoten'] . '</h4>';
-                                echo '<p>' . $i['tenchuyenkhoa'] . ' - ' . $i['giobatdau'] . '</p>';
+                                echo '<p>' . $i['giobatdau'] . ' - ' . $i['gioketthuc'] . '</p>';
                                 echo '</div>';
                                 $giobatdau = new DateTime($i['giobatdau']);
                                 $hientai = new DateTime(); 

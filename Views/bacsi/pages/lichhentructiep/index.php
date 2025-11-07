@@ -35,6 +35,11 @@ if(isset($_POST["btnbo"])){
 }
 ?>
 <style>
+/* --- General & Layout --- */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+}
 .btn-secondary {
     background-color: #f0f0f0;
     color: #333;

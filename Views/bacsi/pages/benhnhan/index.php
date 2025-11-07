@@ -25,30 +25,86 @@
     
 ?>
 <style>
-.btn-secondary {
-    background-color: #f0f0f0;
-    color: #333;
-    border: 1px solid #ccc;
-    padding: 8px 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 14px;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
+    /* --- General & Layout --- */
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-.btn-secondary:hover {
-    background-color: #e6e6e6;
-    border-color: #999;
-    color: #000;
-    box-shadow: 0px 2px 6px rgba(0,0,0,0.1);
-}
+    .search-form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+    }
 
-.btn-secondary i {
-    font-size: 14px;
-}
+    .search-form br {
+        display: none;
+    }
+
+    .search-input {
+        position: relative;
+        flex: 1; 
+        min-width: 250px; 
+    }
+
+    .search-input i {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #999;
+        font-size: 0.9em;
+    }
+
+    .search-input input[type="text"] {
+        width: 100%;
+        padding: 10px 15px 10px 35px; 
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 1em;
+        transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .search-input input[type="text"]:focus {
+        border-color: #2a5298;
+        box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
+        outline: none;
+    }
+    .btn-secondary {
+        background-color: #f0f0f0;
+        color: #333;
+        border: 1px solid #ccc;
+        padding: 10px 18px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 500;
+    }
+
+    .btn-secondary:hover {
+        background-color: #e6e6e6;
+        border-color: #999;
+        color: #000;
+        box-shadow: 0px 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .btn-secondary i {
+        font-size: 14px;
+    }
+
+    .btn-small {
+        padding: 6px 12px;
+        font-size: 0.85em;
+        font-weight: 500;
+    }
+
+    .actions {
+        min-width: 100px;
+    }
 </style>
 
 <body>
@@ -70,15 +126,15 @@
                 </div>
                 <br>
                 <button type="submit" class="btn-primary" name="btntimkiem">Tìm kiếm</button>
-                <button type="submit" class="btn-secondary" name="btnbo">
-                    <i class="fas fa-times"></i> Bỏ tìm kiếm
+                <button type="submit" class="btn-danger" name="btnbo">
+                    <i class="fas fa-times"></i>
                 </button>
             </form>
             </div>
         </div>
         <form method="POST" style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 10px;">
             <input value="homnay" type="checkbox" name="homnay" id="homnay" onchange="this.form.submit()" <?php if (isset($_POST['homnay'])) echo 'checked'; ?>>
-            <label for="homnay" style="margin-left: 5px;"><b> Hôm nay</b></label>
+            <label for="homnay" style="margin-left: 5px; color: #5e4b93"><b> Hôm nay</b></label>
         </form>
         <div class="card">
             <div class="card-body no-padding">

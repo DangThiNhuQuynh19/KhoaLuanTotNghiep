@@ -1,3 +1,11 @@
+<style>
+    /* --- General & Layout --- */
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+    }
+</style>
+
 <?php
 include_once('Controllers/cphieukhambenh.php');
 include_once('Controllers/cbacsi.php');
@@ -98,7 +106,7 @@ if(isset($_POST["btnbo"])){
 
                     <div class="form-actions" style="margin-top: 10px;">
                         <button type="submit" class="btn-primary" name="btntimkiem">Tìm kiếm</button>
-                        <button type="submit" class="btn-secondary" name="btnbo"><i class="fas fa-times"></i>Bỏ tìm kiếm</button>
+                        <button type="submit" class="btn-danger" name="btnbo"><i class="fas fa-times"></i></button>
                     </div>
                 </form>
             </div>
