@@ -20,21 +20,54 @@ class cCaLam{
     }
 
     public function phanCaNhanVien($macalam, $hinhthuc, $manv_list) {
+
+        // ✅ Kiểm tra dữ liệu đầu vào
         if (empty($macalam) || empty($hinhthuc) || empty($manv_list)) {
-            return false;
+            return [
+                "success" => false,
+                "message" => "Thiếu dữ liệu đầu vào."
+            ];
         }
-        
-        // Gọi hàm phân ca theo thời hạn 6 tháng
-        $count = $this->mPhanCa->phanCaTheoThoiHan($macalam, $hinhthuc, $manv_list);
-
-        if ($count > 0) {
-            return true;
-        } else {
-            // Trả về false nếu lỗi CSDL (count = -1) hoặc không chèn được (count = 0)
-            return false;
+    
+        // ✅ Đảm bảo maphong tồn tại trong từng phần tử
+        foreach ($manv_list as &$item) {
+    
+            if (!isset($item["maphong"])) {
+                $item["maphong"] = null;
+            }
+    
+            // ✅ Online → maphong = null
+            if ($hinhthuc === "Online") {
+                $item["maphong"] = null;
+            }
         }
+    
+        // ✅ Gọi Model đúng cấu trúc kiểu hàm get_calam()
+        $p = new mCaLam();
+        $count = $p->phanCaTheoThoiHan($macalam, $hinhthuc, $manv_list);
+    
+        // ✅ Xử lý kết quả trả về
+        if ($count === -1) {
+            return [
+                "success" => false,
+                "message" => "Lỗi CSDL."
+            ];
+        }
+    
+        if ($count === 0) {
+            return [
+                "success" => false,
+                "message" => "Không có bản ghi nào được tạo."
+            ];
+        }
+    
+        // ✅ Thành công
+        return [
+            "success" => true,
+            "message" => "Tạo thành công $count lịch làm việc trong 6 tháng."
+        ];
     }
-
+    
 
 }
 ?>

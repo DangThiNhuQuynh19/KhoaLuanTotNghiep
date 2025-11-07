@@ -47,7 +47,7 @@ $message = "";
 if(isset($_POST['btnupdate'])) {
     if(isset($_POST['medications']) && !empty($_POST['medications'])){
         // Tạo đơn thuốc mới
-        if($cdonthuoc->create_donthuoc($_POST['ghichu'])){
+        if($cdonthuoc->create_donthuoc()){
             $donthuoc = $cdonthuoc->get_donthuoc_new();
             $madonthuoc=$donthuoc[0]['madonthuoc'];
             foreach($_POST['medications'] as $thuoc){
@@ -1121,7 +1121,7 @@ if(isset($_POST['btnupdate'])) {
             document.getElementById("lieudung").value = "";
             document.getElementById("songayuong").value = "";
             document.getElementById("thoigianuong").value = "";
-            document.getElementById("ghichu").value = "";
+           
         }
 
         // Thêm thuốc vào danh sách
@@ -1134,7 +1134,7 @@ if(isset($_POST['btnupdate'])) {
             const lieudung = document.getElementById("lieudung").value;
             const songayuong = document.getElementById("songayuong").value;
             const thoigianuong = document.getElementById("thoigianuong").value;
-            const ghichu = document.getElementById("ghichu").value;
+          
             
             // Kiểm tra các trường bắt buộc
             if (!mathuoc || !soluong) {
@@ -1149,8 +1149,7 @@ if(isset($_POST['btnupdate'])) {
                 soluong,
                 lieudung,
                 songayuong,
-                thoigianuong,
-                ghichu
+                thoigianuong
             });
             
             // Hiển thị bảng danh sách thuốc

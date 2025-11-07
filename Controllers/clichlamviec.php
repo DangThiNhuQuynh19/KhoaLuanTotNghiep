@@ -33,5 +33,18 @@ class cLichLamViec {
             }
         }
     }
+    public function getlichlamviec($ngay){
+        $p = new mLichLamViec();
+        $tbl = $p->lichlamviec($ngay);
+        if(!$tbl){
+            return -1;
+        }else{
+            if($tbl->num_rows > 0){
+                return $tbl;
+            }else{
+                return 0;
+            }
+        }
+    }
 }
 ?>

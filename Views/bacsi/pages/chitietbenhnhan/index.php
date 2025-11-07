@@ -179,7 +179,6 @@ $active_tab = $_GET['tab'] ?? 'medical-records';
                                         foreach ($donthuoc_list as $i) {
                                             echo '<div class="prescription-item">';
                                             echo '<div class="prescription-header">';
-                                            echo '<h3>#' . $i['ghichudonthuoc'] . '</h3>';
                                             echo '<span class="prescription-date">' . $i['ngaytaodonthuoc'] . '</span>';
                                             echo '</div>';
                                             echo '<div class="prescription-details">';

@@ -129,6 +129,8 @@ $tentk = $_SESSION['user']['tentk'];
         <div id="chatHeader">Chọn bệnh nhân để trò chuyện</div>
         <div id="chatMessages"></div>
         <textarea id="messageInput" placeholder="Nhập tin nhắn..." disabled></textarea>
+        <input type="file" id="fileInput" accept="application/pdf" style="margin-bottom: 10px;">
+
         <button id="sendButton" disabled>Gửi</button>
     </div>
 </div>
@@ -160,7 +162,14 @@ function connectWebSocket() {
             if (currentPatient && currentPatient.tentk === data.sender) {
                 displayMessage(data);
             }
+        }else if (data.command === 'receive_file') {
+            if (!messages[data.sender]) messages[data.sender] = [];
+            messages[data.sender].push(data);
+            if (currentPatient && currentPatient.tentk === data.sender) {
+                displayFileMessage(data);
+            }
         }
+
     };
     socket.onclose = () => {
         console.warn("WebSocket closed. Attempting to reconnect...");
@@ -197,8 +206,19 @@ function renderMessages(msgArray) {
 
 function displayMessage(msg) {
     const msgDiv = $('<div class="message"></div>');
-    msgDiv.text(msg.message);
-    msgDiv.addClass(msg.sender === user.tentk ? 'doctor' : 'patient');
+    const isSelf = msg.sender === user.tentk || msg.self;
+    msgDiv.addClass(isSelf ? 'doctor' : 'patient');
+
+    let content = msg.message;
+
+    // ✅ Nếu tin nhắn bắt đầu bằng [FILE], tự động chuyển thành link PDF
+    if (content.startsWith('[FILE]')) {
+        const url = content.replace('[FILE]', '').trim();
+        const filename = url.split('/').pop();
+        content = `<a href="${url}" target="_blank" download>📄 ${filename}</a>`;
+    }
+
+    msgDiv.html(content);
     $('#chatMessages').append(msgDiv);
     $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
 }
@@ -224,6 +244,43 @@ $('#sendButton').click(() => {
         console.warn("WebSocket is not ready.");
     }
 });
+$('#fileInput').on('change', function () {
+    const file = this.files[0];
+    if (!file || file.type !== 'application/pdf') {
+        alert("Vui lòng chọn đúng file PDF!");
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function () {
+        const base64Data = reader.result.split(',')[1]; // lấy phần base64
+        const msg = {
+            command: 'send_file',
+            sender: user.tentk,
+            receiver: currentPatient.tentk,
+            filename: file.name,
+            data: base64Data
+        };
+        socket.send(JSON.stringify(msg));
+        displayFileMessage({ sender: user.tentk, filename: file.name, url: null, self: true });
+        $('#fileInput').val('');
+    };
+    reader.readAsDataURL(file);
+});
+
+function displayFileMessage(msg) {
+    const msgDiv = $('<div class="message"></div>');
+    const isSelf = msg.sender === user.tentk || msg.self;
+    msgDiv.addClass(isSelf ? 'doctor' : 'patient');
+
+    const fileLink = msg.url
+        ? `<a href="${msg.url}" target="_blank">📄 ${msg.filename}</a>`
+        : `📄 ${msg.filename} (đang tải lên...)`;
+
+    msgDiv.html(fileLink);
+    $('#chatMessages').append(msgDiv);
+    $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
+}
 
 connectWebSocket();
 </script>

@@ -313,6 +313,17 @@ $('#sendButton').click(() => {
         }
     });
 });
+function displayFileMessage(msg) {
+    const msgDiv = $('<div class="message"></div>');
+    const isSelf = msg.sender === user.tentk || msg.self;
+    msgDiv.addClass(isSelf ? 'doctor' : 'patient');
+
+    const fileLink = `<a href="${msg.url}" target="_blank" download>📄 ${msg.filename}</a>`;
+
+    msgDiv.html(fileLink);
+    $('#chatMessages').append(msgDiv);
+    $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
+}
 
 // 🚀 Khởi động WebSocket khi tải trang
 $(document).ready(function() {

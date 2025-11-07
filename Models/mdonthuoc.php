@@ -10,6 +10,7 @@
                 JOIN donthuoc as dt ON cths.madonthuoc=dt.madonthuoc
                 JOIN hosobenhan as hs ON hs.mahoso = cths.mahoso 
                 JOIN bacsi as bs on cths.mabacsi= bs.mabacsi
+                JOIN nguoidung as nd on bs.mabacsi=nd.manguoidung
                 where mabenhnhan='$mabenhnhan'; ";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
