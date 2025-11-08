@@ -405,7 +405,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".btn-phan-ca").forEach(btn => {
         
         if (danhSachPhong.length === 0) {
-            fetch("/KLTN/Ajax/getphong.php")
+            fetch("/HanhPhuc/Ajax/getphong.php")
                 .then(res => res.json())
                 .then(data => {
                     danhSachPhong = data;
@@ -437,7 +437,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!machucvu) return;
 
-        fetch("/KLTN/Ajax/getnhanvien.php", {
+        fetch("/HanhPhuc/Ajax/getnhanvien.php", {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: `machucvu=${machucvu}&macalam=${macalam}` 
@@ -547,7 +547,7 @@ handlePhanCa('Online');
         formData.append("hinhthuc", hinhThuc);
         formData.append("manv_list", JSON.stringify(ds));
 
-        fetch("/KLTN/Ajax/phancanhanvien.php", {
+        fetch("/HanhPhuc/Ajax/phancanhanvien.php", {
             method: "POST",
             body: formData
         })
