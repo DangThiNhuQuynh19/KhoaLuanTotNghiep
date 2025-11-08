@@ -98,6 +98,15 @@ class cBacSi{
         $p = new mBacSi();
         return $p->updateBacSi($mabacsi, $data);
     }
-
+    public function getLichLamViecBacSi($tentk){
+        $p = new mBacSi();
+        $tbl = $p->xemlichlambacsi($tentk);
+    
+        if(!$tbl) return -1;
+        if($tbl->num_rows > 0) return $tbl->fetch_all(MYSQLI_ASSOC);
+        return 0;
+    }
+    
+    
 }
 ?>

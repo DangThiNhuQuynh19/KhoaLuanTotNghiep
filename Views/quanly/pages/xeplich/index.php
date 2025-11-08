@@ -29,47 +29,64 @@ $dataLich = $controller->getlichlamviec($ngay);
 
 /* BODY */
 body {
-    background: var(--bg);
-    font-family: "Inter", sans-serif;
-}
+    font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+    margin: 0;
+    background-color: var(--bg-light);
+    }
 
-/* SIDEBAR */
 .sidebar {
-    width: 240px;
+    width: 230px;
     height: 100vh;
-    background: #fff;
-    border-right: 1px solid #eaeaea;
     position: fixed;
-    top: 0;
+    top: 56px;
     left: 0;
-    padding-top: 20px;
-    box-shadow: 3px 0 12px rgba(0,0,0,0.05);
-}
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+    background: #fff;
+    border-right: 1px solid #e5e5ef;
+    box-shadow: 2px 0 6px rgba(0, 0, 0, 0.04);
+    }
 
-.sidebar h2 {
-    font-size: 18px;
+    .sidebar h2 {
+    color: var(--main-color);
     text-align: center;
-    font-weight: 700;
-    color: var(--main);
-    margin-bottom: 20px;
-}
+    font-size: 16px;
+    margin-bottom: 18px;
+    font-weight: 600;
+    }
 
-.sidebar ul { padding-left: 0; list-style: none; }
+    .sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    }
 
-.sidebar a {
-    text-decoration: none;
-    color: var(--main);
-    padding: 12px 20px;
+    .sidebar ul li {
+    margin: 6px 0;
+    }
+
+    .sidebar ul li a {
     display: flex;
     align-items: center;
+    padding: 10px 18px;
+    text-decoration: none;
+    color: var(--main-color);
+    font-size: 13px;
+    transition: var(--transition);
     border-radius: 8px;
-    font-weight: 500;
-}
-.sidebar a:hover,
-.sidebar a.active {
-    background: var(--main);
-    color: white;
-}
+    }
+
+    .sidebar ul li a i {
+    margin-right: 8px;
+    font-size: 14px;
+    }
+
+    .sidebar ul li a:hover,
+    .sidebar ul li a.active {
+    background-color: var(--hover-color);
+    color: #fff;
+    }
 
 /* MAIN */
 .main-content {

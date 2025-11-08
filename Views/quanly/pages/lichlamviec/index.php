@@ -84,7 +84,7 @@
     margin-left: 240px;
     margin-top: 70px;
     padding: 30px 20px;
-    width: calc(100% - 240px);
+    width: calc(100% - 230px);
     }
 
     h3 {
@@ -270,6 +270,7 @@
 </style>
 </head>
 <?php
+    date_default_timezone_set('Asia/Ho_Chi_Minh');
     include_once('Controllers/cbacsi.php');
     include_once('Controllers/ccalam.php');
     include_once('Controllers/cvaitro.php');
@@ -403,6 +404,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ========== LOAD PHÒNG KHI BẤM "PHÂN CA" ==========
     document.querySelectorAll(".btn-phan-ca").forEach(btn => {
+<<<<<<< HEAD
         
         if (danhSachPhong.length === 0) {
             fetch("/HanhPhuc/Ajax/getphong.php")
@@ -412,19 +414,30 @@ document.addEventListener("DOMContentLoaded", () => {
                 })
                 .catch(err => console.error("Lỗi tải phòng:", err));
         }
+=======
+>>>>>>> b42e291c34b94875e5a22f3bcacaf0080994436a
 
-        btn.addEventListener("click", () => {
-            const macalam = btn.dataset.macalamviec;
-            popupPhanCa.dataset.macalam = macalam;
+btn.addEventListener("click", () => {
+    const macalam = btn.dataset.macalamviec;
+    popupPhanCa.dataset.macalam = macalam;
 
-            chucVuSelect.value = "";
-            tbody.innerHTML = "";
-            tableNhanVienContainer.style.display = "none";
-            chonTatCa.checked = false;
+    // ✅ Load phòng mỗi lần mở popup phân ca (đúng nhất)
+    fetch("/KLTN/Ajax/getphong.php?macalam=" + macalam)
+        .then(res => res.json())
+        .then(data => {
+            danhSachPhong = data;
+        })
+        .catch(err => console.error("Lỗi tải phòng:", err));
 
-            popupPhanCa.style.display = "flex";
-        });
-    });
+    chucVuSelect.value = "";
+    tbody.innerHTML = "";
+    tableNhanVienContainer.style.display = "none";
+    chonTatCa.checked = false;
+
+    popupPhanCa.style.display = "flex";
+});
+});
+
 
     // ========== LOAD NHÂN VIÊN THEO CHỨC VỤ ==========
     chucVuSelect.addEventListener("change", function() {
@@ -498,31 +511,27 @@ document.addEventListener("DOMContentLoaded", () => {
         popupPhanCa.style.display = "none";
         popupHinhThuc.style.display = "flex";
     });
-    popupHinhThuc.querySelector(".online").addEventListener("click", () => {
+   // ONLINE
+popupHinhThuc.querySelector(".online").addEventListener("click", () => {
+    alert("Bạn chọn hình thức ONLINE — các lựa chọn phòng sẽ bị xóa.");
 
-// ✅ Hiện thông báo ngay lập tức
-alert("Bạn chọn hình thức ONLINE — các lựa chọn phòng sẽ bị xóa.");
+    document.querySelectorAll(".phong-select").forEach(select => {
+        select.value = "";
+    });
 
-// ✅ Xóa phòng trong UI để người dùng thấy rõ
-document.querySelectorAll(".phong-select").forEach(select => {
-    select.value = ""; // hoặc select.innerHTML = ""; nếu muốn xóa hết option
+    handlePhanCa("Online");
 });
 
-handlePhanCa('Online');
+// OFFLINE
+popupHinhThuc.querySelector(".offline").addEventListener("click", () => {
+    handlePhanCa("Offline");
 });
 
-    // HÌNH THỨC LÀM VIỆC
-    popupHinhThuc.querySelector(".cancel").addEventListener("click", () => {
-        popupHinhThuc.style.display = "none";
-    });
+// CANCEL
+popupHinhThuc.querySelector(".cancel").addEventListener("click", () => {
+    popupHinhThuc.style.display = "none";
+});
 
-    popupHinhThuc.querySelector(".offline").addEventListener("click", () => {
-        handlePhanCa("Offline");
-    });
-
-    popupHinhThuc.querySelector(".online").addEventListener("click", () => {
-        handlePhanCa("Online");
-    });
 
     // ========== XỬ LÝ PHÂN CA ==========
     function handlePhanCa(hinhThuc) {

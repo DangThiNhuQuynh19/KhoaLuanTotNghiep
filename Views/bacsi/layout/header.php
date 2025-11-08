@@ -32,14 +32,41 @@
             </ul>
         </nav>
         <div class="user-menu">
-            <div class="user-info">
-                <span><?php echo $bacsi["hoten"] ?? 'Bác sĩ'; ?></span>
-                <img src="<?php echo 'Assets/img/'.$bacsi["imgbs"].'';?>"alt="Avatar" class="user-avatar">
-            </div>
-            <div class="dropdown-menu">
-                <a href="?action=hoso"><i class="fas fa-user"></i> Hồ sơ</a>
-                <a href="#"><i class="fas fa-cog"></i> Cài đặt</a>
-                <a href="?action=dangxuat"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
-            </div>
+        <div class="user-info">
+            <span><?php echo $bacsi["hoten"] ?? 'Bác sĩ'; ?></span>
+            <img src="<?php echo 'Assets/img/'.$bacsi["imgbs"].'';?>" alt="Avatar" class="user-avatar">
         </div>
+
+        <div class="dropdown-menu">
+            <a href="?action=hoso"><i class="fas fa-user"></i> Hồ sơ</a>
+            <a href="?action=xemlichlamviec"><i class="fas fa-calendar"></i> Xem lịch làm việc</a>
+            <a href="?action=dangxuat"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+        </div>
+    </div>
+
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const userMenu = document.querySelector(".user-menu");
+    const dropdown = document.querySelector(".dropdown-menu");
+    const userInfo = document.querySelector(".user-info");
+
+    // ✅ Click vào user-info → bật/tắt dropdown
+    userInfo.addEventListener("click", function(e) {
+        e.stopPropagation(); 
+        dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+    });
+
+    // ✅ Không tắt dropdown khi bấm bên trong
+    dropdown.addEventListener("click", function(e) {
+        e.stopPropagation();
+    });
+
+    // ✅ Click ra ngoài → tắt dropdown
+    document.addEventListener("click", function() {
+        dropdown.style.display = "none";
+    });
+});
+</script>
+
     </header>
