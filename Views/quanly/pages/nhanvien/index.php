@@ -78,7 +78,7 @@ h2 {
   justify-content: center;
 }
 .nav-tabs .nav-link {
-  color: var(--primary);
+color: black !important;
   font-weight: 500;
   border: none;
   padding: 10px 20px;

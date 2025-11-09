@@ -1,5 +1,6 @@
 <?php
 require_once('ketnoi.php');
+include_once('Assets/config.php');
  class mBacSi{
         public function dsbacsi(){
             $p = new clsKetNoi();
@@ -9,8 +10,8 @@ require_once('ketnoi.php');
                 $str = "select * from bacsi 
                         join chuyenkhoa on bacsi.machuyenkhoa = chuyenkhoa.machuyenkhoa 
                         join nguoidung on bacsi.mabacsi = nguoidung.manguoidung
-                        join taikhoan on nguoidung.email = taikhoan.tentk
-                        join trangthai on taikhoan.matrangthai = trangthai.matrangthai
+                        left join taikhoan on nguoidung.email = taikhoan.tentk
+                        left join trangthai on taikhoan.matrangthai = trangthai.matrangthai
                         order by bacsi.mabacsi asc";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
@@ -47,8 +48,8 @@ require_once('ketnoi.php');
                         join nguoidung on bacsi.mabacsi = nguoidung.manguoidung
                         join xaphuong on nguoidung.maxaphuong = xaphuong.maxaphuong
                         join tinhthanhpho on xaphuong.matinhthanhpho = tinhthanhpho.matinhthanhpho
-                        join taikhoan on nguoidung.email = taikhoan.tentk
-                        join trangthai on taikhoan.matrangthai = trangthai.matrangthai
+                        left join taikhoan on nguoidung.email = taikhoan.tentk
+                        left join trangthai on taikhoan.matrangthai = trangthai.matrangthai
                         where bacsi.mabacsi='$id'";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
@@ -66,7 +67,8 @@ require_once('ketnoi.php');
                 $str = "SELECT * FROM bacsi
                 JOIN chuyenkhoa ON bacsi.machuyenkhoa = chuyenkhoa.machuyenkhoa
                 JOIN nguoidung ON bacsi.mabacsi = nguoidung.manguoidung
-                join taikhoan on nguoidung.email = taikhoan.tentk
+                left join taikhoan on nguoidung.email = taikhoan.tentk
+                left join trangthai on taikhoan.matrangthai = trangthai.matrangthai
                 WHERE nguoidung.hoten LIKE '%$name%'";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
@@ -82,8 +84,8 @@ require_once('ketnoi.php');
             if($con){
                 $str = "select * from bacsi join chuyenkhoa on bacsi.machuyenkhoa = chuyenkhoa.machuyenkhoa 
                 join nguoidung on bacsi.mabacsi = nguoidung.manguoidung
-                join taikhoan on nguoidung.email = taikhoan.tentk
-                join trangthai on taikhoan.matrangthai = trangthai.matrangthai
+                left join taikhoan on nguoidung.email = taikhoan.tentk
+                left join trangthai on taikhoan.matrangthai = trangthai.matrangthai
                 where bacsi.machuyenkhoa='$id'";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
@@ -100,8 +102,8 @@ require_once('ketnoi.php');
                 $str = "SELECT * FROM bacsi 
                 JOIN chuyenkhoa ON bacsi.machuyenkhoa = chuyenkhoa.machuyenkhoa 
                 JOIN nguoidung ON bacsi.mabacsi = nguoidung.manguoidung
-                join taikhoan on nguoidung.email = taikhoan.tentk
-                join trangthai on bacsi.matrangthai = trangthai.matrangthai
+                left join taikhoan on nguoidung.email = taikhoan.tentk
+                left join trangthai on taikhoan.matrangthai = trangthai.matrangthai
                 WHERE nguoidung.hoten LIKE '%$name%' AND bacsi.machuyenkhoa='$id'";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
@@ -250,6 +252,122 @@ require_once('ketnoi.php');
             $p->dongketnoi($con);
             return $tbl;
         }
+        public function luuNguoiDungVaBacSi($data, $files) {
+            $db = new clsKetNoi();
+            $con = $db->moketnoi();
+            if (!$con) return false;
+        
+            $con->begin_transaction();
+        
+            try {
+                /* --- Thư mục upload --- */
+                $uploadDir = __DIR__ . '/../Assets/img';
+                $uploadDirCCCD = $uploadDir . '/cccd';
+        
+                if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+                if (!is_dir($uploadDirCCCD)) mkdir($uploadDirCCCD, 0777, true);
+        
+                $safeName = function($name){
+                    $ext = pathinfo($name, PATHINFO_EXTENSION);
+                    return time() . "_" . bin2hex(random_bytes(4)) . "." . $ext;
+                };
+        
+                $upload = function($file, $dir) use ($safeName){
+                    if (!isset($file) || $file['error'] !== 0) return null;
+                    $newName = $safeName($file['name']);
+                    move_uploaded_file($file['tmp_name'], $dir . '/' . $newName);
+                    // chỉ lưu tên file
+                    return $newName;
+                };
+        
+                /* --- Upload từng file --- */
+                $imgbs       = $upload($files['imgbs'] ?? null, $uploadDir);        // ảnh bác sĩ
+                $cccd_before = $upload($files['cccd_matruoc'] ?? null, $uploadDirCCCD); // CCCD trước
+                $cccd_after  = $upload($files['cccd_matsau'] ?? null, $uploadDirCCCD);  // CCCD sau
+        
+                /* --- Chuẩn bị dữ liệu --- */
+                $manguoidung   = $data['manguoidung'] ?? null;
+                $hoten         = $data['hoten'] ?? null;
+                $ngaysinh      = $data['ngaysinh'] ?? null;
+                $gioitinh      = $data['gioitinh'] ?? null;
+                $cccd          = isset($data['cccd']) ? encryptData($data['cccd']) : null;
+                $dantoc        = $data['dantoc'] ?? null;
+                $sdt           = isset($data['sdt']) ? encryptData($data['sdt']) : null;
+                $emailcanhan   = isset($data['emailcanhan']) ? encryptData($data['emailcanhan']) : null;
+                $sonha         = $data['sonha'] ?? null;
+                $maxaphuong    = $data['xaphuong'] ?? null;
+                $email         = !empty($data['email']) ? $data['email'] : null; // FK nullable
+        
+                /* --- INSERT bảng nguoidung --- */
+                $stmt = $con->prepare("
+                    INSERT INTO nguoidung
+                    (manguoidung, hoten, ngaysinh, gioitinh, cccd, cccd_matruoc, cccd_matsau, dantoc, sdt, emailcanhan, sonha, maxaphuong, email)
+                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
+                ");
+        
+                $stmt->bind_param(
+                    "sssssssssssss",
+                    $manguoidung,
+                    $hoten,
+                    $ngaysinh,
+                    $gioitinh,
+                    $cccd,
+                    $cccd_before,
+                    $cccd_after,
+                    $dantoc,
+                    $sdt,
+                    $emailcanhan,
+                    $sonha,
+                    $maxaphuong,
+                    $email
+                );
+        
+                if (!$stmt->execute()) throw new Exception("Lỗi lưu bảng nguoidung: ".$stmt->error);
+                $stmt->close();
+        
+                /* --- INSERT bảng bacsi --- */
+                $motabs       = $data['motabs'] ?? null;
+                $gioithieubs  = $data['gioithieubs'] ?? null;
+                $ngaybatdau   = $data['ngaybatdau'] ?? null;
+                $ngayketthuc  = $data['ngayketthuc'] ?? null;
+                $giakham      = isset($data['giakham']) ? intval($data['giakham']) : 0;
+                $machuyenkhoa = $data['machuyenkhoa'] ?? null;
+                $capbac       = $data['capbac'] ?? null;
+        
+                $stmt2 = $con->prepare("
+                    INSERT INTO bacsi
+                    (mabacsi, motabs, gioithieubs, ngaybatdau, ngayketthuc, imgbs, giakham, machuyenkhoa, capbac)
+                    VALUES (?,?,?,?,?,?,?,?,?)
+                ");
+        
+                $stmt2->bind_param(
+                    "ssssssiss",
+                    $manguoidung,
+                    $motabs,
+                    $gioithieubs,
+                    $ngaybatdau,
+                    $ngayketthuc,
+                    $imgbs,
+                    $giakham,
+                    $machuyenkhoa,
+                    $capbac
+                );
+        
+                if (!$stmt2->execute()) throw new Exception("Lỗi lưu bảng bacsi: ".$stmt2->error);
+                $stmt2->close();
+        
+                $con->commit();
+                $db->dongketnoi($con);
+                return true;
+        
+            } catch (Exception $e) {
+                $con->rollback();
+                error_log("[ERROR] " . $e->getMessage());
+                return false;
+            }
+        }
+        
+        
         
     }
 ?>

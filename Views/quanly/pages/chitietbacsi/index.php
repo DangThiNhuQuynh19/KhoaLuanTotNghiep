@@ -98,11 +98,11 @@ $row = $bacsi->fetch_assoc();
         <tr><th>Họ tên</th><td><?php echo htmlspecialchars($row['hoten']); ?></td></tr>
         <tr><th>Ngày sinh</th><td><?php echo htmlspecialchars($row['ngaysinh']); ?></td></tr>
         <tr><th>Giới tính</th><td><?php echo htmlspecialchars($row['gioitinh']); ?></td></tr>
-        <tr><th>CCCD</th><td><?php echo htmlspecialchars($row['cccd']); ?></td></tr>
+        <tr><th>CCCD</th><td><?php echo htmlspecialchars(decryptData($row['cccd'])); ?></td></tr>
         <tr><th>Dân tộc</th><td><?php echo htmlspecialchars($row['dantoc']); ?></td></tr>
         <tr><th>SĐT</th><td><?php echo htmlspecialchars(decryptData($row['sdt'])); ?></td></tr>
         <tr><th>Email TK</th><td><?php echo htmlspecialchars(decryptData($row['email'])); ?></td></tr>
-        <tr><th>Email cá nhân</th><td><?php echo htmlspecialchars($row['emailcanhan']); ?></td></tr>
+        <tr><th>Email cá nhân</th><td><?php echo htmlspecialchars(decryptData($row['emailcanhan'])); ?></td></tr>
         <tr><th>Địa chỉ:</th> 
         <td><?= htmlspecialchars($row['sonha']) . ', ' 
             . htmlspecialchars($row['tenxaphuong']) . ', ' 

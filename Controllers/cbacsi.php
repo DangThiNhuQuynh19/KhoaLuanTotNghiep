@@ -107,6 +107,29 @@ class cBacSi{
         return 0;
     }
     
-    
+    public function generateDoctorCode() {
+        return "BS_" . str_pad(rand(0, 999999999), 9, '0', STR_PAD_LEFT);
+    }
+
+    public function luuBacSi($data, $files) {
+
+        if (empty($data['hoten']) || empty($data['cccd']) || 
+            empty($data['tinhthanhpho']) || empty($data['xaphuong'])) {
+            return -1; // thiếu dữ liệu
+        }
+
+        $data['giakham'] = max(0, intval($data['giakham'] ?? 0));
+
+        if (empty($data['mabs'])) {
+            $data['mabs'] = $this->generateDoctorCode();
+        }
+
+        $data['manguoidung'] = $data['mabs']; // Quan trọng
+
+        $model = new mBacSi();
+        $ok = $model->luuNguoiDungVaBacSi($data, $files);
+
+        return $ok ? 1 : 0;
+    }
 }
 ?>
