@@ -404,18 +404,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ========== LOAD PHÒNG KHI BẤM "PHÂN CA" ==========
     document.querySelectorAll(".btn-phan-ca").forEach(btn => {
-<<<<<<< HEAD
-        
-        if (danhSachPhong.length === 0) {
-            fetch("/HanhPhuc/Ajax/getphong.php")
-                .then(res => res.json())
-                .then(data => {
-                    danhSachPhong = data;
-                })
-                .catch(err => console.error("Lỗi tải phòng:", err));
-        }
-=======
->>>>>>> b42e291c34b94875e5a22f3bcacaf0080994436a
 
 btn.addEventListener("click", () => {
     const macalam = btn.dataset.macalamviec;
@@ -450,7 +438,7 @@ btn.addEventListener("click", () => {
 
         if (!machucvu) return;
 
-        fetch("/HanhPhuc/Ajax/getnhanvien.php", {
+        fetch("/KLTN/Ajax/getnhanvien.php", {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: `machucvu=${machucvu}&macalam=${macalam}` 
@@ -556,7 +544,7 @@ popupHinhThuc.querySelector(".cancel").addEventListener("click", () => {
         formData.append("hinhthuc", hinhThuc);
         formData.append("manv_list", JSON.stringify(ds));
 
-        fetch("/HanhPhuc/Ajax/phancanhanvien.php", {
+        fetch("/KLTN/Ajax/phancanhanvien.php", {
             method: "POST",
             body: formData
         })
