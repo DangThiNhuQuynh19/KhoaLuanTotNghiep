@@ -2,8 +2,8 @@
 require_once 'vendor/autoload.php';
 
 $client = new Google_Client();
-$client->setClientId('946684689164-qhp3cu89gf0h5b2t3rdnoscd44okrj6q.apps.googleusercontent.com');
-$client->setClientSecret('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');
-$client->setRedirectUri('http://localhost/hanhphuchospital3?action=logingoogle');
+$client->setClientId('464279125155-qqo3akm7mlq3lo8jllfvntviercjef78.apps.googleusercontent.com');
+$client->setClientSecret('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');
+$client->setRedirectUri('http://hanhphuc.site/KhoaLuanTotNghiep?action=logingoogle');
 $client->addScope("email");
 $client->addScope("profile");
