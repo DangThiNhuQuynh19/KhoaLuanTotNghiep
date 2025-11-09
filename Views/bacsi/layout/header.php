@@ -54,16 +54,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
     userInfo.addEventListener("click", function(e) {
         e.stopPropagation();
-        dropdown.style.display =
-            dropdown.style.display === "block" ? "none" : "block";
-    });
-
-    dropdown.addEventListener("click", function(e) {
-        e.stopPropagation();
+        dropdown.classList.toggle("show");
     });
 
     document.addEventListener("click", function() {
-        dropdown.style.display = "none";
+        dropdown.classList.remove("show");
     });
 });
+
 </script>

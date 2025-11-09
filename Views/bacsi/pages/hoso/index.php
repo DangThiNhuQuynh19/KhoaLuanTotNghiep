@@ -1,6 +1,6 @@
 <?php
 include_once(__DIR__ . '/../../../../Controllers/cbacsi.php');
-include ("Assets/config.php");
+include_once ("Assets/config.php");
 $cBacSi = new cBacSi();
 
 // Lấy email đăng nhập từ session

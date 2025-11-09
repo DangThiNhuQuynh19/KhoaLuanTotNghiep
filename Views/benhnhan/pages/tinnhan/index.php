@@ -146,8 +146,14 @@ $tentk = $_SESSION['user']['tentk'];
         <div id="chatHeader">Chọn bác sĩ/chuyên gia để trò chuyện</div>
         <div id="chatMessages"></div>
         <textarea id="messageInput" placeholder="Nhập tin nhắn..." disabled></textarea>
+        
+        <!-- Upload file -->
+        <input type="file" id="fileInput" style="display:none;">
+        <button id="fileButton">📎 Gửi file</button>
+        
         <button id="sendButton" disabled>Gửi</button>
     </div>
+
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -157,9 +163,8 @@ let user = {
     tentk: "<?php echo htmlspecialchars($tentk, ENT_QUOTES, 'UTF-8'); ?>", 
     vaitro: 1 
 };
-
 let currentDoctor = null;
-let messages = {}; // Lưu lịch sử theo từng bác sĩ
+let messages = {}; // lưu lịch sử theo từng bác sĩ
 
 // 📡 Kết nối WebSocket
 function connectWebSocket() {
@@ -173,10 +178,10 @@ function connectWebSocket() {
             role: user.vaitro 
         }));
 
-        // 🔁 Nếu có bác sĩ được lưu trước đó => tự động mở lại chat
+        // Tự động mở chat với bác sĩ lưu trước đó
         const savedDoctor = localStorage.getItem('selectedDoctor');
         const savedDoctorName = localStorage.getItem('selectedDoctorName');
-        if (savedDoctor && savedDoctorName) {
+        if(savedDoctor && savedDoctorName){
             setTimeout(() => selectUser(savedDoctor, savedDoctorName), 300);
         }
     };
@@ -184,46 +189,40 @@ function connectWebSocket() {
     socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
 
-        switch (data.command) {
-            case 'messages': // 📥 Nhận lịch sử tin nhắn
-                const partner = data.receiver_tentk;   // 👈 lấy đúng key server gửi về
+        switch(data.command){
+            case 'messages': // lịch sử tin nhắn
+                const partner = data.receiver_tentk;
                 messages[partner] = data.messages;
-                console.log("bác sĩ " + partner + ":", currentDoctor.tentk);
-                if (currentDoctor && currentDoctor.tentk === partner) {
+                if(currentDoctor && currentDoctor.tentk === partner){
                     renderMessages(messages[partner]);
-                    console.log("📥 Lịch sử tin nhắn nhận được:", data);
                 }
                 break;
 
-            case 'receive': // 📥 Nhận tin nhắn mới từ bác sĩ
-                if (!messages[data.sender]) messages[data.sender] = [];
+            case 'receive': // nhận tin nhắn mới
+                if(!messages[data.sender]) messages[data.sender] = [];
                 messages[data.sender].push({
                     sender: data.sender,
                     message: data.message,
+                    filename: data.filename || null,
+                    url: data.url || null,
                     thoigiangui: new Date().toISOString()
                 });
-
-                if (currentDoctor && currentDoctor.tentk === data.sender) {
-                    displayMessage({
-                        sender: data.sender,
-                        message: data.message
-                    });
+                if(currentDoctor && currentDoctor.tentk === data.sender){
+                    displayMessage(messages[data.sender][messages[data.sender].length-1]);
                 }
                 break;
 
-            case 'sent': // 📤 Xác nhận gửi thành công
-                if (!messages[data.receiver]) messages[data.receiver] = [];
+            case 'sent': // xác nhận gửi tin nhắn
+                if(!messages[data.receiver]) messages[data.receiver] = [];
                 messages[data.receiver].push({
                     sender: user.tentk,
                     message: data.message,
+                    filename: data.filename || null,
+                    url: data.url || null,
                     thoigiangui: new Date().toISOString()
                 });
-
-                if (currentDoctor && currentDoctor.tentk === data.receiver) {
-                    displayMessage({
-                        sender: user.tentk,
-                        message: data.message
-                    });
+                if(currentDoctor && currentDoctor.tentk === data.receiver){
+                    displayMessage(messages[data.receiver][messages[data.receiver].length-1]);
                 }
                 break;
         }
@@ -235,11 +234,9 @@ function connectWebSocket() {
     };
 }
 
-// 👨‍⚕️ Khi chọn một bác sĩ để chat
-function selectUser(tentk, name) {
+// 👨‍⚕️ Chọn bác sĩ để chat
+function selectUser(tentk, name){
     currentDoctor = { tentk, name };
-
-    // Lưu lại người đang chat vào localStorage
     localStorage.setItem('selectedDoctor', tentk);
     localStorage.setItem('selectedDoctorName', name);
 
@@ -247,11 +244,10 @@ function selectUser(tentk, name) {
     $('#messageInput').prop('disabled', false);
     $('#sendButton').prop('disabled', false);
 
-    // Hiển thị trạng thái tải
     $('#chatMessages').html('<p style="text-align:center;color:#777;">Đang tải tin nhắn...</p>');
 
     // Gửi yêu cầu load lịch sử
-    if (socket && socket.readyState === WebSocket.OPEN) {
+    if(socket && socket.readyState === WebSocket.OPEN){
         socket.send(JSON.stringify({
             command: "load_messages",
             tentk: user.tentk,
@@ -261,74 +257,120 @@ function selectUser(tentk, name) {
 }
 
 // 📝 Hiển thị toàn bộ tin nhắn
-function renderMessages(msgArray) {
+function renderMessages(msgArray){
     $('#chatMessages').html('');
     msgArray.forEach(m => displayMessage(m));
 }
 
-// 🧾 Hiển thị 1 tin nhắn
-function displayMessage(msg) {
+function displayMessage(msg){
     const msgDiv = $('<div class="message"></div>');
-    msgDiv.text(msg.message);
-    msgDiv.addClass(msg.sender === user.tentk ? 'patient' : 'doctor');
+    const isPatient = msg.sender === user.tentk;
+    msgDiv.addClass(isPatient ? 'patient' : 'doctor');
+
+    // 🔥 Kiểm tra tin nhắn file (bắt đầu bằng [FILE])
+    if(msg.message && msg.message.startsWith('[FILE]')){
+        const url = msg.url || msg.message.replace('[FILE] ', '');
+        const filename = msg.filename || url.split('/').pop();
+
+        msgDiv.html(`<a href="${url}" target="_blank" download>📄 ${filename}</a>`);
+    } 
+    else {
+        msgDiv.text(msg.message || '');
+    }
+
     $('#chatMessages').append(msgDiv);
     $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
 }
 
-// ✉️ Gửi tin nhắn
-$('#sendButton').click(() => {
-    const text = $('#messageInput').val().trim();
-    if (!text || !currentDoctor) return;
 
-    // ✅ Kiểm tra lịch hẹn trước khi gửi
+// ✉️ Gửi tin nhắn text
+$('#sendButton').click(()=>{
+    const text = $('#messageInput').val().trim();
+    if(!text || !currentDoctor) return;
+
     $.ajax({
-        url: '/HanhPhuc/Ajax/getlichhen.php',
+        url: '/KLTN/Ajax/getlichhen.php',
         type: 'POST',
         dataType: 'json', 
-        data: {
-            bs: currentDoctor.tentk,
-            bn: user.tentk
-        },
-        success: function(response) {
-            if (response.status === 'ok') {
+        data: { bs: currentDoctor.tentk, bn: user.tentk },
+        success: function(response){
+            if(response.status === 'ok'){
                 const msg = {
                     command: 'send',
                     sender: user.tentk,
                     receiver: currentDoctor.tentk,
                     message: text
                 };
-
-                if (socket && socket.readyState === WebSocket.OPEN) {
+                if(socket && socket.readyState === WebSocket.OPEN){
                     socket.send(JSON.stringify(msg));
                 }
-
-                // ✅ Không hiển thị ở đây nữa, chờ server gửi lại 'sent'
                 $('#messageInput').val('');
             } else {
                 alert(response.message);
             }
         },
-        error: function() {
+        error: function(){
             alert("Không thể kiểm tra lịch hẹn.");
         }
     });
 });
-function displayFileMessage(msg) {
-    const msgDiv = $('<div class="message"></div>');
-    const isSelf = msg.sender === user.tentk || msg.self;
-    msgDiv.addClass(isSelf ? 'doctor' : 'patient');
 
-    const fileLink = `<a href="${msg.url}" target="_blank" download>📄 ${msg.filename}</a>`;
+// 📎 Gửi file PDF
+$('#fileButton').click(()=>{
+    if(!currentDoctor) return alert("Chọn bác sĩ trước!");
+    $('#fileInput').click();
+});
 
-    msgDiv.html(fileLink);
-    $('#chatMessages').append(msgDiv);
-    $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
-}
+$('#fileInput').change(function(){
+    const file = this.files[0];
+    if(!file) return;
 
-// 🚀 Khởi động WebSocket khi tải trang
-$(document).ready(function() {
+    if(file.type !== "application/pdf"){
+        alert("Chỉ chấp nhận file PDF!");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('receiver', currentDoctor.tentk);
+
+    $.ajax({
+        url: 'Views/benhnhan/pages/tinnhan/uploadFile.php',
+        type: 'POST',
+        data: formData,
+        contentType: false,
+        processData: false,
+        dataType: 'json',
+        success: function(res){
+            if(res.success){
+                const msg = {
+                    command: 'send',
+                    sender: user.tentk,
+                    receiver: currentDoctor.tentk,
+                    message: '[FILE]',
+                    filename: res.filename,
+                    url: res.url
+                };
+                if(socket && socket.readyState === WebSocket.OPEN){
+                    socket.send(JSON.stringify(msg));
+                }
+            } else {
+                alert("Upload thất bại: " + res.error);
+            }
+        },
+        error: function(){
+            alert("Upload thất bại!");
+        }
+    });
+
+    $(this).val('');
+});
+
+// 🚀 Khởi động WebSocket
+$(document).ready(function(){
     connectWebSocket();
 });
+
 </script>
 
 </body>

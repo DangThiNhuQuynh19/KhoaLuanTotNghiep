@@ -405,7 +405,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ========== LOAD PHÒNG KHI BẤM "PHÂN CA" ==========
     document.querySelectorAll(".btn-phan-ca").forEach(btn => {
         if (danhSachPhong.length === 0) {
-            fetch("/HanhPhuc/Ajax/getphong.php")
+            fetch("/KLTN/Ajax/getphong.php")
                 .then(res => res.json())
                 .then(data => {
                     danhSachPhong = data;
@@ -418,7 +418,7 @@ btn.addEventListener("click", () => {
     popupPhanCa.dataset.macalam = macalam;
 
     // ✅ Load phòng mỗi lần mở popup phân ca (đúng nhất)
-    fetch("/HanhPhuc/Ajax/getphong.php?macalam=" + macalam)
+    fetch("/KLTN/Ajax/getphong.php?macalam=" + macalam)
         .then(res => res.json())
         .then(data => {
             danhSachPhong = data;
