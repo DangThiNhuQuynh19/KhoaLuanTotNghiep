@@ -342,7 +342,7 @@
     <h3>Phân ca nhân viên</h3>
 
     <div class="row mb-3">
-      <div class="col-6">
+      <div class="col-12">
         <label for="chucVu" class="form-label fw-semibold text-secondary small">Chức vụ</label>
         <select id="chucVu" class="form-select form-select-sm">
           <option value="">-- Chọn chức vụ --</option>
@@ -367,7 +367,7 @@
         <thead>
           <tr>
             <th style="width: 60px;">Chọn</th>
-            <th>Mã Nhân Viên</th>
+            <th>MaNV</th>
             <th>Tên Nhân Viên</th>
             <th>Phòng</th>
           </tr>
@@ -403,9 +403,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnXacNhan = document.getElementById("btnXacNhan");
 
     // ========== LOAD PHÒNG KHI BẤM "PHÂN CA" ==========
-    document.querySelectorAll(".btn-phan-ca").forEach(btn => {
-<<<<<<< HEAD
-        
+    document.querySelectorAll(".btn-phan-ca").forEach(btn => {        
         if (danhSachPhong.length === 0) {
             fetch("/HanhPhuc/Ajax/getphong.php")
                 .then(res => res.json())
@@ -414,15 +412,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 })
                 .catch(err => console.error("Lỗi tải phòng:", err));
         }
-=======
->>>>>>> b42e291c34b94875e5a22f3bcacaf0080994436a
-
 btn.addEventListener("click", () => {
     const macalam = btn.dataset.macalamviec;
     popupPhanCa.dataset.macalam = macalam;
 
     // ✅ Load phòng mỗi lần mở popup phân ca (đúng nhất)
-    fetch("/KLTN/Ajax/getphong.php?macalam=" + macalam)
+    fetch("/HanhPhuc/Ajax/getphong.php?macalam=" + macalam)
         .then(res => res.json())
         .then(data => {
             danhSachPhong = data;

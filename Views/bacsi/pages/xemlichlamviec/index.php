@@ -126,7 +126,6 @@ function changeWeek(step) {
         year--; 
         week = getWeeksInYear(year);
     }
-
     const action = params.get("action") || "xemlichlamviec";
     window.location.href = window.location.pathname + "?action=" + action + "&week=" + week + "&year=" + year;
 }
