@@ -57,10 +57,6 @@ document.addEventListener("DOMContentLoaded", function() {
         dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
     });
 
-    // ✅ Không tắt dropdown khi bấm bên trong
-    dropdown.addEventListener("click", function(e) {
-        e.stopPropagation();
-    });
 
     // ✅ Click ra ngoài → tắt dropdown
     document.addEventListener("click", function() {
