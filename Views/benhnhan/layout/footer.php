@@ -109,7 +109,7 @@
 
 <!-- Khung chatbot -->
 <div class="chatbot-frame" id="chatbotFrame">
-    <iframe src="https://xaito.vn/App/embed/Chatbot/hfi87DePnBf0BLel"></iframe>
+  <iframe src= "https://xaito.vn/App/embed/Chatbot/hfi87DePnBf0BLel" width="100%" height="500px" name="chatbot" frameborder="0" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"> </iframe>
 </div>
 <script>
     const chatbotBtn = document.getElementById('chatbotBtn');
