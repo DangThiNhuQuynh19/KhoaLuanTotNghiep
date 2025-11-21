@@ -405,7 +405,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ========== LOAD PHÒNG KHI BẤM "PHÂN CA" ==========
     document.querySelectorAll(".btn-phan-ca").forEach(btn => {
         if (danhSachPhong.length === 0) {
-            fetch("/KLTN/Ajax/getphong.php")
+            fetch("Ajax/getphong.php")
                 .then(res => res.json())
                 .then(data => {
                     danhSachPhong = data;
@@ -418,7 +418,7 @@ btn.addEventListener("click", () => {
     popupPhanCa.dataset.macalam = macalam;
 
     // ✅ Load phòng mỗi lần mở popup phân ca (đúng nhất)
-    fetch("/KLTN/Ajax/getphong.php?macalam=" + macalam)
+    fetch("Ajax/getphong.php?macalam=" + macalam)
         .then(res => res.json())
         .then(data => {
             danhSachPhong = data;
@@ -446,7 +446,7 @@ btn.addEventListener("click", () => {
 
         if (!machucvu) return;
 
-        fetch("/KLTN/Ajax/getnhanvien.php", {
+        fetch("Ajax/getnhanvien.php", {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: `machucvu=${machucvu}&macalam=${macalam}` 
@@ -552,7 +552,7 @@ popupHinhThuc.querySelector(".cancel").addEventListener("click", () => {
         formData.append("hinhthuc", hinhThuc);
         formData.append("manv_list", JSON.stringify(ds));
 
-        fetch("/KLTN/Ajax/phancanhanvien.php", {
+        fetch("Ajax/phancanhanvien.php", {
             method: "POST",
             body: formData
         })

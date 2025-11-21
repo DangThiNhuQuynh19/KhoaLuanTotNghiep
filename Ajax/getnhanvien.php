@@ -13,7 +13,7 @@ if (!$macalam || !$machucvu) {
     exit;
 }
 
-$conn = new mysqli("localhost", "root", "", "hanhphuc");
+$conn = new mysqli("localhost", "kltn", "Kltntrangquynh2025@", "hanhphuc");
 $conn->set_charset("utf8");
 
 if ($conn->connect_error) {
