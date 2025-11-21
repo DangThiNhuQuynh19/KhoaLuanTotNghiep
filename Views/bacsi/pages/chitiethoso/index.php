@@ -319,19 +319,32 @@ if(isset($_POST['btnupdate'])) {
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php 
+                            <?php 
                                 if (isset($chitiethoso_mahoso) && is_array($chitiethoso_mahoso)):
-                                    foreach ($chitiethoso_mahoso as $cd): 
+                                    foreach ($chitiethoso_mahoso as $cd):
+
+                                        // Lấy chi tiết hồ sơ
                                         $chitiet = $cchitiethoso->get_chitiethoso_machitiethoso($cd['machitiethoso']);
-                                        $chitietJson = json_encode($chitiet);
+
+                                        if (!empty($chitiet) && isset($chitiet[0]['mabacsi'])) {
+                                            // Lấy thông tin bác sĩ từ mã bác sĩ
+                                            $result = $cbacsi->getBacSiById($chitiet[0]['mabacsi']); // trả về mysqli_result
+                                            $bacsi_info = $result->fetch_assoc(); // chuyển sang array
+                                            $chitiet[0]['hoten'] = $bacsi_info['hoten'] ?? '-';
+                                        } else {
+                                            $chitiet[0]['hoten'] = '-';
+                                        }
+
+                                        // Chuyển chi tiết hồ sơ sang JSON để JS dùng
+                                        $chitietJson = json_encode($chitiet, JSON_HEX_APOS | JSON_HEX_QUOT);
                                 ?>
                                 <tr>
                                     <td><?php echo $cd['ngaykham']; ?></td>
-                                    <td><?php echo $cd['hoten']; ?></td>
+                                    <td><?php echo $chitiet[0]['hoten']; ?></td>
                                     <td><?php echo $cd['trieuchungbandau']; ?></td>
                                     <td><?php echo $cd['ketluan']; ?></td>
                                     <td>
-                                        <button class="btn-small btn-primary" onclick='openChuanDoanPopup(<?php echo $chitietJson;?>)'>
+                                        <button class="btn-small btn-primary" onclick='openChuanDoanPopup(<?php echo $chitietJson; ?>)'>
                                             Xem chi tiết
                                         </button>
                                     </td>
@@ -340,6 +353,7 @@ if(isset($_POST['btnupdate'])) {
                                     endforeach;
                                 endif;
                                 ?>
+
                             </tbody>
                         </table>
                     </div>
@@ -1300,6 +1314,8 @@ if(isset($_POST['btnupdate'])) {
                 alert("Không có khung giờ trống cho ngày này. Vui lòng chọn ngày khác.");
             }
         };
+        console.log(chitiet[0]); 
+
     </script>
 </body>
 </html>

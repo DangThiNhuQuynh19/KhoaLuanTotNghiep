@@ -41,6 +41,18 @@ class cBenhNhan{
         }
         return $ds;
     }
+
+    public function getAllBenhNhanByTK1($manguoigiamho) {
+        $m = new mBenhNhan();
+        $tbl = $m->select_benhnhan_manguoigiamho($manguoigiamho);
+        $ds = [];
+        if ($tbl && $tbl->num_rows > 0) {
+            while ($row = $tbl->fetch_assoc()) {
+                $ds[] = $row;
+            }
+        }
+        return $ds;
+    }
     public function getBenhNhanChinhByTK($tentk){
         $p = new mBenhNhan();
         $tbl = $p->getBenhNhanChinhByTenTK($tentk);

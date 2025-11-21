@@ -213,11 +213,15 @@ if ($currentTab === 'active') {
         /* Tăng độ rộng cho cột Trạng thái và Hành động */
         th:nth-child(7),
         td:nth-child(7) {
-            width: 150px;
+            width: 110px;
         }
 
         th:nth-child(8),
         td:nth-child(8) {
+            width: 170px;
+        }
+        th:nth-child(9),
+        td:nth-child(9) {
             width: 130px;
         }
 
@@ -253,6 +257,7 @@ if ($currentTab === 'active') {
                 <th>Giới tính</th>
                 <th>SĐT</th>
                 <th>Địa chỉ</th>
+                <th>Quan hệ với người giám hộ</th>
                 <th>Trạng thái</th>
                 <th>Hành động</th>
             </tr>
@@ -266,6 +271,7 @@ if ($currentTab === 'active') {
                     <td><?= htmlspecialchars($bn['gioitinh']) ?></td>
                     <td><?= htmlspecialchars(decryptData($bn['sdt'])); ?></td>
                     <td><?= htmlspecialchars($bn['sonha']) . ', ' . htmlspecialchars($bn['tenxaphuong']) . ', ' . htmlspecialchars($bn['tentinhthanhpho']); ?></td>
+                    <td><?= htmlspecialchars($bn['moiquanhevoinguoithan']) ?></td>
                     <td>
                         <?php 
                         $status = $bn['tentrangthai'] ?? 'Đang hoạt động';

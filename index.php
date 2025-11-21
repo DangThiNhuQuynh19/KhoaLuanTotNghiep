@@ -1,5 +1,5 @@
 <?php
-//error_reporting(1);
+// error_reporting(0);
 ob_start();
 session_start();
 
@@ -73,7 +73,7 @@ if (isset($_SESSION['dangnhap']) && ($_SESSION['dangnhap'] == 2)){
 } else {
     // Khách / bệnh nhân chưa đăng nhập
     if (file_exists("Views/benhnhan/pages/$page/index.php")) {
-        require("Views/benhnhan/layout/header.php");
+       require("Views/benhnhan/layout/header.php");
         include("Views/benhnhan/pages/$page/index.php");
     } else {
         include("Views/benhnhan/pages/404/index.php");

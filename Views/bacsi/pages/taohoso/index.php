@@ -2,60 +2,110 @@
 include_once('Controllers/cbenhnhan.php');
 include_once('Controllers/cchuyenkhoa.php');
 include_once('Controllers/chosobenhandientu.php');
-include_once('Controllers/cdonthuoc.php'); // Thêm controller đơn thuốc
+include_once('Controllers/cdonthuoc.php');
 include_once('Controllers/cthuoc.php');
 include_once('Controllers/cchitietdonthuoc.php');
 include_once('Controllers/cchitiethoso.php');
 include_once('Controllers/cbacsi.php');
 include_once("Assets/config.php");
+
+// KHỞI TẠO CONTROLLER
 $cbacsi = new cBacSi();
 $chosobenhandientu = new cHoSoBenhAnDienTu();
-$cchitietdongthuoc = new cChiTietDonThuoc();
 $cchitiethoso = new cChiTietHoSo();
+$cchitietdonthuoc = new cChiTietDonThuoc();
+$cdonthuoc = new cDonThuoc();
 $cbenhnhan = new cBenhnhan();
 $cchuyenkhoa = new cChuyenKhoa();
-$cdonthuoc = new cDonThuoc();
 $cthuoc = new cThuoc();
+
+// KIỂM TRA ĐỦ THAM SỐ
+if (!isset($_GET['mabenhnhan']) || empty($_GET['mabenhnhan'])) {
+    die("Thiếu mã bệnh nhân!");
+}
+
 $mabenhnhan = $_GET['mabenhnhan'];
+
+// LẤY DỮ LIỆU
 $thuoc = $cthuoc->get_thuoc();
-$benhnhan = $cbenhnhan->getbenhnhanbyid($_GET['mabenhnhan']);
+$benhnhan = $cbenhnhan->getbenhnhanbyid($mabenhnhan);
 $chuyenkhoa = $cchuyenkhoa->get_chuyenkhoa_notmabenhnhan($mabenhnhan);
-$bacsi= $cbacsi->getBacSiByTenTK($_SESSION['user']['tentk']);
+
+// LẤY BÁC SĨ HIỆN TẠI
+if (!isset($_SESSION['user']['tentk'])) {
+    die("Bạn chưa đăng nhập!");
+}
+
+$bacsi = $cbacsi->getBacSiByTenTK($_SESSION['user']['tentk']);
 $chuyenkhoa_bacsi = $cchuyenkhoa->get_chuyenkhoa_mabacsi($bacsi['mabacsi']);
+
 $message = "";
 
-if(isset($_POST['submit'])){
-    // Tạo hồ sơ bệnh án mới
-    if($chosobenhandientu->create_hosobenhan_mabenhnhan($mabenhnhan)){
+
+// ==================== XỬ LÝ SUBMIT ===================
+$just_created = false;
+
+if (isset($_POST['submit'])) {
+    if ($chosobenhandientu->create_hosobenhan_mabenhnhan($mabenhnhan)) {
+        $just_created = true; // đánh dấu vừa tạo
         $hosonew = $chosobenhandientu->get_hsba_new($mabenhnhan);
-        $mahoso = $hosonew[0]['mahoso']; // Lấy mã hồ sơ vừa tạo
-        // Lưu đơn thuốc nếu có
-        if(isset($_POST['medications']) && !empty($_POST['medications'])){
-            // Tạo đơn thuốc mới
-            if($cdonthuoc->create_donthuoc()){
-                $donthuoc = $cdonthuoc->get_donthuoc_new();
-                $madonthuoc=$donthuoc[0]['madonthuoc'];
-                foreach($_POST['medications'] as $thuoc){
-                    $cchitietdongthuoc->create_chitietdonthuoc(
-                        $madonthuoc,
-                        $thuoc['tenthuoc'],
-                        $thuoc['lieudung'],
-                        $thuoc['thoigianuong'],
-                        $thuoc['songayuong']  
-                    );
+
+        if (!$hosonew || !isset($hosonew[0]['mahoso'])) {
+            $message = "Không lấy được mã hồ sơ mới!";
+        } else {
+
+            $mahoso = $hosonew[0]['mahoso'];
+            $madonthuoc = NULL;
+
+            // 2. Nếu có đơn thuốc → tạo đơn thuốc
+            if (isset($_POST['medications']) && !empty($_POST['medications'])) {
+
+                if ($cdonthuoc->create_donthuoc()) {
+
+                    $donthuoc = $cdonthuoc->get_donthuoc_new();
+
+                    if ($donthuoc && isset($donthuoc[0]['madonthuoc'])) {
+
+                        $madonthuoc = $donthuoc[0]['madonthuoc'];
+
+                        // Lưu chi tiết từng thuốc
+                        foreach ($_POST['medications'] as $thuocitem) {
+
+                            // CHỐT LỖI: kiểm tra key trước khi dùng
+                            $tenthuoc = $thuocitem['tenthuoc'] ?? '';
+                            $lieudung = $thuocitem['lieudung'] ?? '';
+                            $thoigian = $thuocitem['thoigianuong'] ?? '';
+                            $songay = $thuocitem['songayuong'] ?? '';
+
+                            $cchitietdonthuoc->create_chitietdonthuoc(
+                                $madonthuoc,
+                                $tenthuoc,
+                                $lieudung,
+                                $thoigian,
+                                $songay
+                            );
+                        }
+                    }
                 }
             }
-        }else{
-            $madonthuoc=NULL;
+
+            // 3. Lưu chi tiết hồ sơ
+            if ($cchitiethoso->create_chitiethoso(
+                $mahoso,
+                $bacsi['mabacsi'],
+                $_POST['trieuchung'],
+                $_POST['chuandoan'],
+                $_POST['huongdieutri'],
+                $madonthuoc,
+                $_POST['note']
+            )) {
+                $message = "Hồ sơ bệnh án đã được tạo thành công!";
+            } else {
+                $message = "Không thể lưu chi tiết hồ sơ bệnh án!";
+            }
         }
-       if( $cchitiethoso->create_chitiethoso($mahoso,$bacsi['mabacsi'],$_POST['trieuchung'],$_POST['chuandoan'],$_POST['huongdieutri'],$madonthuoc,$_POST['note']) ){
-            $message = "Hồ sơ bệnh án đã được tạo thành công!";
-       }
-       else{
-            $message = "Hồ sơ bệnh án không được tạo thành công!";
-       }  
     } else {
-        $message = "Hồ sơ bệnh án không được tạo thành công!";
+        $message = "Không thể tạo hồ sơ bệnh án mới!";
     }
 }
 ?>
@@ -450,7 +500,7 @@ if(isset($_POST['submit'])){
 </style>
 </head>
 <body>
-    <main class="container">
+<main class="container">
         <div class="content-header">
             <div class="back-button">
                 <a href="medical-records.php" class="btn-icon">
@@ -460,6 +510,7 @@ if(isset($_POST['submit'])){
             </div>
         </div>
 
+        <!-- Thông báo thành công -->
         <?php if (!empty($message)): ?>
         <div class="alert alert-success">
             <i class="fas fa-check-circle"></i>
@@ -469,6 +520,7 @@ if(isset($_POST['submit'])){
         </div>
         <?php endif; ?>
 
+        <!-- Thông báo lỗi / cảnh báo -->
         <?php if (empty($mabenhnhan)): ?>
         <div class="alert alert-warning">
             <i class="fas fa-exclamation-triangle"></i>
@@ -493,7 +545,7 @@ if(isset($_POST['submit'])){
                 <i class="fas fa-user-injured"></i> Chọn bệnh nhân khác
             </a>
         </div>
-        <?php elseif ($chosobenhandientu->get_hoso_machuyenkhoa($mabenhnhan,$chuyenkhoa_bacsi['machuyenkhoa'])): ?>
+        <?php elseif (!$just_created && $chosobenhandientu->get_hoso_machuyenkhoa($mabenhnhan,$chuyenkhoa_bacsi['machuyenkhoa'])): ?>
         <div class="alert alert-danger">
             <i class="fas fa-exclamation-circle"></i>
             <div>
@@ -506,6 +558,7 @@ if(isset($_POST['submit'])){
             </a>
         </div>
         <?php else: ?>
+        <!-- Hiển thị form chỉ khi không có thông báo nào -->
         <div class="card">
             <div class="card-header">
                 <h2>Thông Tin Bệnh Nhân</h2>
@@ -518,7 +571,6 @@ if(isset($_POST['submit'])){
                     <div class="patient-details">
                         <h3 class="patient-name"><?php echo $benhnhan['hoten']; ?></h3>
                         <div class="patient-id"><?php echo $benhnhan['mabenhnhan']; ?></div>
-                        
                         <div class="patient-data">
                             <div class="patient-data-item">
                                 <div class="data-label">Ngày sinh</div>
@@ -529,11 +581,11 @@ if(isset($_POST['submit'])){
                                 <div class="data-value"><?php echo $benhnhan['gioitinh']; ?></div>
                             </div>
                             <div class="patient-data-item">
-                                <div class="data-label">Tiền sử bệnh tật của bệnh nhân</div>
+                                <div class="data-label">Tiền sử bệnh tật cá nhân</div>
                                 <div class="data-value"><?php echo decryptData($benhnhan['tiensubenhtatcuabenhnhan']); ?></div>
                             </div>
                             <div class="patient-data-item">
-                                <div class="data-label">Tiền sử bệnh tật của gia đình</div>
+                                <div class="data-label">Tiền sử bệnh tật gia đình</div>
                                 <div class="data-value"><?php echo decryptData($benhnhan['tiensubenhtatcuagiadinh']); ?></div>
                             </div>
                             <div class="patient-data-item">
@@ -561,53 +613,29 @@ if(isset($_POST['submit'])){
         <!-- Medical Record Form -->
         <form action="" method="post" id="medicalRecordForm">
             <input type="hidden" name="patientId" value="<?php echo $benhnhan['mabenhnhan']; ?>">
-            
-            <!-- <div class="card">
-                <div class="card-header">
-                    <h2>Chọn Chuyên Khoa</h2>
-                </div>
-                <div class="card-body">
-                    <div class="specialty-selection">
-                        <?php foreach ($chuyenkhoa as $i): ?>
-                        <div class="specialty-card" onclick="selectSpecialty('<?php echo $i['machuyenkhoa']; ?>')">
-                            <div class="specialty-name"><?php echo $i['tenchuyenkhoa']; ?></div>
-                            <input type="radio" name="chuyenkhoa" value="<?php echo $i['machuyenkhoa']; ?>" style="display: none;" required>
-                        </div>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-            </div> -->
+
             <div class="card">
                 <div class="card-header">
                     <h2>Thông Tin Lâm Sàng</h2>
                 </div>
                 <div class="card-body">
-                    <div class="tabs">
-                        <div class="tab-header">
-                            <button type="button" class="tab-button active" onclick="openTab(event, 'tab-complaint')">Lý do khám & Bệnh sử</button>
-                        </div>
+                    <div class="form-group">
+                        <label for="chiefComplaint">Triệu chứng ban đầu</label>
+                        <textarea name="trieuchung" id="chiefComplaint" rows="3" required placeholder="Nhập lý do khám chính của bệnh nhân..."></textarea>
                     </div>
-                    <!-- Lý do khám & Bệnh sử -->
-                    <div id="tab-complaint" class="tab-content active">
-                        <div class="form-group">
-                            <label for="chiefComplaint">Triệu chứng ban đầu</label>
-                            <textarea name="trieuchung" id="chiefComplaint" rows="3" required placeholder="Nhập lý do khám chính của bệnh nhân..."></textarea>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="chuandoan">Chẩn đoán</label>
-                            <textarea name="chuandoan" id="chuandoan" rows="3" placeholder="Nhập chẩn đoán về bệnh của bệnh nhân..."></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="note">Kết luận</label>
-                            <textarea name="note" id="note" rows="3" placeholder="Nhập kết luận..."></textarea>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="huongdieutri">Hướng điều trị</label>
-                            <textarea name="huongdieutri" id="huongdieutri" rows="3" placeholder="Cho biết hướng điều trị..."></textarea>
-                        </div>
+                    <div class="form-group">
+                        <label for="chuandoan">Chẩn đoán</label>
+                        <textarea name="chuandoan" id="chuandoan" rows="3" placeholder="Nhập chẩn đoán..."></textarea>
                     </div>
+                    <div class="form-group">
+                        <label for="note">Kết luận</label>
+                        <textarea name="note" id="note" rows="3" placeholder="Nhập kết luận..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="huongdieutri">Hướng điều trị</label>
+                        <textarea name="huongdieutri" id="huongdieutri" rows="3" placeholder="Cho biết hướng điều trị..."></textarea>
+                    </div>
+
                     <div style="display: flex; justify-content: space-between; margin-top: 24px;">
                         <button type="button" class="btn-outline" onclick="window.location.href='?action=taohoso&mabenhnhan=<?php echo $mabenhnhan?>'">
                             <i class="fas fa-times"></i> Hủy
@@ -623,8 +651,7 @@ if(isset($_POST['submit'])){
                     </div>
                 </div>
             </div>
-            
-            <!-- Container ẩn để lưu trữ dữ liệu thuốc -->
+
             <div id="medicationsContainer"></div>
         </form>
         <?php endif; ?>
@@ -715,9 +742,6 @@ if(isset($_POST['submit'])){
             <div style="display: flex; justify-content: flex-end; margin-top: 20px; gap: 10px;">
                 <button type="button" class="btn-outline" onclick="closeMedicationPopup()">
                     <i class="fas fa-times"></i> Hủy
-                </button>
-                <button type="button" class="btn-success" onclick="savePrescription()">
-                    <i class="fas fa-save"></i> Tạo đơn thuốc
                 </button>
             </div>
         </div>
@@ -882,6 +906,7 @@ if(isset($_POST['submit'])){
                 modal.style.display = "none";
             }
         }
+        
     </script>
 </body>
 </html>

@@ -145,9 +145,9 @@ class cPhieuKhamBenh {
                 }
         }
     }
-    public function get_lichkhamonl_homnay($mabacsi){
+    public function get_lichkhamonl_homnay($mabacsi,$ngay){
         $p = new mPhieuKhamBenh();
-        $tbl = $p->select_phieukhamonl_homnay($mabacsi);
+        $tbl = $p->select_phieukhamonl_homnay($mabacsi,$ngay);
         $list=array();
             if (!$tbl) {
                 return -1;
@@ -166,9 +166,9 @@ class cPhieuKhamBenh {
         }
     }
     
-    public function get_lichkhamoff_homnay($mabacsi){
+    public function get_lichkhamoff_homnay($mabacsi,$ngay){
         $p = new mPhieuKhamBenh();
-        $tbl = $p->select_phieukhamoff_homnay($mabacsi);
+        $tbl = $p->select_phieukhamoff_homnay($mabacsi,$ngay);
         $list=array();
             if (!$tbl) {
                 return -1;
@@ -187,7 +187,7 @@ class cPhieuKhamBenh {
         }
     }
     public function count_benhnhan_homnay($mabacsi){
-        $list = $this->get_lichkhamonl_homnay($mabacsi);
+        $list = $this->get_lichkhamonl_homnay($mabacsi,$ngay=date('Y-m-d'));
         return is_array($list) ? count($list) : 0;
     }
 

@@ -9,12 +9,22 @@ class cHoSoBenhAnDienTu{
             return -1;
         } else {
             if ($tbl->num_rows > 0) {
-                return $tbl;
+                return $tbl->fetch_assoc();
             } else {
                 return 0;
             }
         }
     }
+    public function getAllHSBADTOfTK1($tentk) {
+        $p = new mHoSoBenhAnDienTu();
+        $tbl = $p->gethosotheotentk($tentk);
+        if ($tbl === false) {
+            return false;  
+        }
+        return $tbl;
+    }
+    
+    
     public function getChiTietHSBADTOfTK($id) {
         $p = new mHoSoBenhAnDienTu();
         $tbl = $p->getchitiethosotheotentk($id);

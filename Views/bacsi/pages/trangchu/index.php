@@ -3,12 +3,13 @@
     include_once('Controllers/cbacsi.php');
     include_once('Controllers/cchuyenkhoa.php');
     include_once('Controllers/cketquaxetnghiem.php');
+    date_default_timezone_set('Asia/Ho_Chi_Minh');
     $cchuyenkhoa = new cChuyenKhoa();
     $cketquaxetnghiem= new cKetQuaXetNghiem();
     $cbacsi = new cBacSi();
     $cphieukhambenh = new cPhieuKhamBenh();
     $bacsi= $cbacsi->getBacSiByTenTK($_SESSION['user']['tentk']);
-    $lichhenhomnay_list=$cphieukhambenh->get_lichkhamonl_homnay($bacsi['mabacsi']);
+    $lichhenhomnay_list=$cphieukhambenh->get_lichkhamonl_homnay($bacsi['mabacsi'], date('Y-m-d'));
     $tongbenhnhanhomnay= $cphieukhambenh->count_benhnhan($bacsi['mabacsi']);
     $tongketquaxetnghiemhomnay= $cketquaxetnghiem->count_ketquaxetnghiem($bacsi['mabacsi']);
     $sophieukhamtrongtuan = $cphieukhambenh->get_sophieukham_trongtuan($bacsi['mabacsi']);
