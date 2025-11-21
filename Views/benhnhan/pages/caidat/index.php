@@ -1,6 +1,6 @@
 <?php
-include_once('Controllers/cBenhNhan.php');
-include_once("Assets/config.php");
+include_once(__DIR__ .'Controllers/cBenhNhan.php');
+include_once(__DIR__ ."Assets/config.php");
 
 if (!isset($_SESSION['user']) || !isset($_SESSION['user']['tentk'])) {
     echo "<p>Bạn chưa đăng nhập.</p>";
