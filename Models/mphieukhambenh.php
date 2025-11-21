@@ -326,7 +326,23 @@
         //         return false;
         //     }
         // }
-
+        public function updateTrangThaiPhieu($maphieukhambenh, $trangthai){
+            $p = new clsKetNoi();
+            $con = $p->moketnoi();
+            $con->set_charset('utf8');
+        
+            if($con){
+                $stmt = $con->prepare("UPDATE phieukhambenh SET matrangthai=(SELECT matrangthai FROM trangthai WHERE tentrangthai=?) WHERE maphieukhambenh=?");
+                $stmt->bind_param("ss", $trangthai, $maphieukhambenh);
+                $result = $stmt->execute();
+                $stmt->close();
+                $p->dongketnoi($con);
+                return $result;
+            } else {
+                return false;
+            }
+        }
+        
         public function select_phieukhamonl_homnay($manguoidung,$ngay){
             $p = new clsKetNoi();
             $con = $p->moketnoi();

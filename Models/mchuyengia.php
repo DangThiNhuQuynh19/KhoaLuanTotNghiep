@@ -115,7 +115,13 @@ require_once('ketnoi.php');
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if($con){
-                $str = "select * from chuyengia b  join nguoidung d on b.machuyengia=d.manguoidung where email = '$tentk'";
+                $str = "select * from chuyengia b  join nguoidung d on b.machuyengia=d.manguoidung 
+                join linhvuc lv on b.malinhvuc=lv.malinhvuc
+                 join taikhoan tk on d.email=tk.tentk
+                 join xaphuong xp on d.maxaphuong=xp.maxaphuong
+                 join tinhthanhpho ttp on xp.matinhthanhpho=ttp.matinhthanhpho
+                 join trangthai tt on b.matrangthai=tt.matrangthai
+                where email = '$tentk'";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;

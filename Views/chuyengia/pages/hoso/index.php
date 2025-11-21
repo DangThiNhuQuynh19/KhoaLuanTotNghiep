@@ -1,7 +1,7 @@
 <?php
-include_once(__DIR__ . '/../../../../Controllers/cbacsi.php');
-include ("Assets/config.php");
-$cBacSi = new cBacSi();
+include_once(__DIR__ . '/../../../../Controllers/cchuyengia.php');
+include_once ("Assets/config.php");
+$cChuyenGia = new cChuyenGia();
 
 // Lấy email đăng nhập từ session
 $tentk = $_SESSION["user"]["tentk"] ?? null;
@@ -12,10 +12,10 @@ if (!$tentk) {
 }
 
 // Lấy thông tin
-$bs = $cBacSi->getBacSiByTenTK($tentk);
+$bs = $cChuyenGia->getChuyenGiaByTenTK($tentk);
 
 if (!$bs || $bs === 0) {
-    echo "Không tìm thấy thông tin bác sĩ!";
+    echo "Không tìm thấy thông tin chuyên gia!";
     exit;
 }
 ?>
@@ -88,17 +88,17 @@ if (!$bs || $bs === 0) {
 <body>
 <div class="card">
     <div class="card-header">
-        <img src="Assets/img/<?= htmlspecialchars($bs['imgbs']) ?>" 
+        <img src="Assets/img/<?= htmlspecialchars($bs['imgcg']) ?>" 
              alt="Ảnh bác sĩ">
         <div><?= htmlspecialchars($bs['hoten']) ?></div>
     </div>
 
     <div class="card-body">
-        <p><strong>Mã bác sĩ:</strong> <?= htmlspecialchars($bs['mabacsi']) ?></p>
-        <p><strong>Chuyên khoa:</strong> <?= htmlspecialchars($bs['tenchuyenkhoa']) ?></p>
-        <p><strong>Mô tả bác sĩ:</strong> <?= htmlspecialchars($bs['motabs']) ?></p>
-        <p><strong>Giới thiệu bác sĩ:</strong> <?= htmlspecialchars($bs['gioithieubs']) ?></p>
-        <p><strong>Giá khám:</strong> <?= htmlspecialchars($bs['giakham']) ?></p>
+        <p><strong>Mã chuyên gia:</strong> <?= htmlspecialchars($bs['machuyengia']) ?></p>
+        <p><strong>Lĩnh vực:</strong> <?= htmlspecialchars($bs['tenlinhvuc']) ?></p>
+        <p><strong>Mô tả chuyên gia:</strong> <?= htmlspecialchars($bs['motacg']) ?></p>
+        <p><strong>Giới thiệu chuyên gia:</strong> <?= htmlspecialchars($bs['gioithieucg']) ?></p>
+        <p><strong>Giá tư vấn:</strong> <?= htmlspecialchars($bs['giatuvan']) ?></p>
         <p><strong>Ngày bắt đầu làm việc:</strong> <?= date('d-m-Y', strtotime($bs['ngaybatdau'])) ?></p>
         <p><strong>Email:</strong> <?= htmlspecialchars(decryptData($bs['email'])) ?></p>
         <p><strong>Số điện thoại:</strong> <?= htmlspecialchars(decryptData($bs['sdt'])) ?></p>
@@ -118,9 +118,9 @@ if (!$bs || $bs === 0) {
         </p>
         <div class="text-center mt-3">
             <a href="index.php" class="btn btn-primary me-2">Quay lại trang chủ</a>
-            <a href="?action=suathongtin&id=<?= htmlspecialchars($bs['mabacsi']) ?>" class="btn btn-warning">
+            <!-- <a href="?action=suathongtin&id=<?= htmlspecialchars($bs['machuyengia']) ?>" class="btn btn-warning">
                 ✏ Sửa thông tin
-            </a>
+            </a> -->
         </div>
     </div>
 </div>

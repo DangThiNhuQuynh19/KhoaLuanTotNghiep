@@ -1,11 +1,4 @@
 <?php
-<<<<<<< HEAD
-// error_reporting(0);
-=======
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
->>>>>>> 3aef86daa7c05440116a076e996f8c0e5a2b3a6d
 ob_start();
 session_start();
 
