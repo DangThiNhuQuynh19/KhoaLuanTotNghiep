@@ -1,5 +1,5 @@
 <?php
-require_once('ketnoi.php');
+require_once(__DIR__ . '/ketnoi.php');
 include_once('Assets/config.php');
  class mBacSi{
         public function dsbacsi(){
