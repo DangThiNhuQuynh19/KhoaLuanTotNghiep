@@ -1,6 +1,6 @@
 <?php
-session_start();
 include("Controllers/chosobenhandientu.php");
+include_once("Assets/config.php");
 $p = new cHoSoBenhAnDienTu();
 $mahoso = $_GET['id'];
 $tbl = $p->getChiTietHSBADTOfTK( $mahoso);
@@ -69,20 +69,35 @@ $tests = $p->getXetNghiemByIDHS($mahoso);
 </head>
 <body>
 <div class="container">
-    <div class="card">
-        <h2 class="text-center text-primary mb-4">📋 Chi tiết hồ sơ bệnh án</h2>
+<div class="card">
+    <h2 class="text-center text-primary mb-4">📋 Chi tiết hồ sơ bệnh án</h2>
 
-        <div class="section-title">🧑‍⚕️ Thông tin bác sĩ phụ trách</div>
-        <div class="row align-items-center mb-4">
-            <div class="col-md-3 text-center">
-                <img src="Assets/img/<?= htmlspecialchars($firstRow['imgbs']) ?>" alt="Bác sĩ" class="doctor-photo">
-            </div>
-            <div class="col-md-9">
-                <p><strong>Họ tên:</strong> <?= htmlspecialchars($firstRow['capbac']) ?> - <?= htmlspecialchars($firstRow['hoten']) ?></p>
-                <p><strong>Chuyên khoa:</strong> <?= htmlspecialchars($firstRow['tenchuyenkhoa']) ?></p>
-                <p><strong>SDT:</strong> <?= htmlspecialchars($firstRow['sdt']) ?></p>
-            </div>
-        </div>
+    <div class="section-title">🧑‍⚕️ Thông tin người phụ trách</div>
+<div class="row align-items-center mb-4">
+    <div class="col-md-3 text-center">
+        <img src="Assets/img/<?= htmlspecialchars($firstRow['hotenchuyengia'] ? $firstRow['imgcg'] : $firstRow['imgbs']) ?>" 
+             alt="<?= htmlspecialchars($firstRow['hotenchuyengia'] ?? $firstRow['hotenbacsi']) ?>" 
+             class="doctor-photo">
+    </div>
+    <div class="col-md-9">
+        <p><strong>Họ tên:</strong> 
+           <?= htmlspecialchars($firstRow['hotenchuyengia'] ?? $firstRow['capbac'].' - '.$firstRow['hotenbacsi']) ?>
+        </p>
+        <p><strong><?= $firstRow['hotenchuyengia'] ? 'Lĩnh vực' : 'Chuyên khoa'; ?>:</strong> 
+           <?= htmlspecialchars($firstRow['hotenchuyengia'] ? $firstRow['tenlinhvuc'] : $firstRow['tenchuyenkhoa']) ?>
+        </p>
+        <p><strong>SDT:</strong> 
+            <?= htmlspecialchars(
+                decryptData(
+                    $firstRow['hotenchuyengia'] ? $firstRow['sdt_cg'] ?? '' : $firstRow['sdt'] ?? ''
+                )
+            ) ?>
+        </p>
+    </div>
+</div>
+
+</div>
+    <div class="card mt-4">
 
         <div class="section-title">👤 Thông tin bệnh nhân</div>
         <div class="row">
@@ -91,27 +106,25 @@ $tests = $p->getXetNghiemByIDHS($mahoso);
                 <label>Giới tính:</label> <?= htmlspecialchars($firstRow['gioitinh']) ?><br>
                 <label>Ngày sinh:</label> <?= htmlspecialchars($firstRow['ngaysinh']) ?><br>
                 <label>Nghề nghiệp:</label> <?= htmlspecialchars($firstRow['nghenghiep']) ?><br>
-                <label>CCCD:</label> <?= htmlspecialchars($firstRow['cccdbenhnhan']) ?><br>
-                <label>Quan hệ:</label> <?= htmlspecialchars($firstRow['quanhe']) ?><br>
+                <label>CCCD:</label> <?= htmlspecialchars(decryptData($firstRow['cccdbn'])) ?><br>
+                <label>Quan hệ:</label> <?= htmlspecialchars($firstRow['moiquanhevoinguoithan']) ?><br>
                 <label>Tiền sử bệnh tật của gia đình:</label> <?= htmlspecialchars($firstRow['tiensubenhtatcuagiadinh']) ?><br>   
                 <label>Tiền sử bệnh tật của bản thân:</label> <?= htmlspecialchars($firstRow['tiensubenhtatcuabenhnhan']) ?><br>               
             </div>
             <div class="col-md-6 info-group">
-                <label>SĐT:</label> <?= htmlspecialchars($firstRow['sdtbenhnhan']) ?><br>
-                <label>Email:</label> <?= htmlspecialchars($firstRow['email']) ?><br>
+                <label>SĐT:</label> <?= htmlspecialchars(decryptData($firstRow['sdtbenhnhan'])) ?><br>
+                <label>Email:</label> <?= htmlspecialchars(decryptData($firstRow['emailbenhnhan'])) ?><br>
                 <label>Dân tộc:</label> <?= htmlspecialchars($firstRow['dantoc']) ?><br>
                 <label>Địa chỉ:</label> <?= htmlspecialchars($firstRow['sonha']). ', ' .
-                                htmlspecialchars($firstRow['xa/phuong']). ', ' .
-                                htmlspecialchars($firstRow['quan/huyen']). ', ' . 
-                                htmlspecialchars($firstRow['tinh/thanhpho']) ?><br>
-                <label>Nhóm máu:</label> <?= htmlspecialchars($firstRow['nhommau']) ?><br>   
+                                htmlspecialchars($firstRow['tenxaphuong']). ', ' .
+                                htmlspecialchars($firstRow['tentinhthanhpho'])?><br> 
                 
             </div>
         </div>
 
         <div class="section-title">📅 Thông tin khám bệnh</div>
         <div class="info-group">
-            <label>Ngày lập hồ sơ:</label> <?= htmlspecialchars($firstRow['ngaytao']) ?>
+            <label>Ngày lập hồ sơ:</label> <?= htmlspecialchars($firstRow['ngaykham']) ?>
         </div>
         <div class="info-group">
             <label>Triệu chứng ban đầu:</label>
@@ -199,10 +212,10 @@ $tests = $p->getXetNghiemByIDHS($mahoso);
                         <td><?= htmlspecialchars($test['tenloaixetnghiem']) ?></td>
                         <td><?= htmlspecialchars($test['ngayhen']) ?></td>
                         <td><?= htmlspecialchars($test['giobatdau']) ?> - <?= htmlspecialchars($test['gioketthuc']) ?></td>
-                        <td><?= htmlspecialchars($test['trangthailichxetnghiem']) ?></td>
+                        <td><?= htmlspecialchars($test['tentrangthai']) ?></td>
                         <td><?= htmlspecialchars($test['tenchisoxetnghiem']) ?></td>
                         <td><?= htmlspecialchars($test['giatriketqua']) ?></td>
-                        <td><?= htmlspecialchars($test['donvikq']) ?></td>
+                        <td><?= htmlspecialchars($test['donviketqua']) ?></td>
                         <td><?= htmlspecialchars($test['nhanxet']) ?></td>
                     </tr>
                 <?php endforeach; ?>

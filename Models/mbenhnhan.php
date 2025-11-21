@@ -40,6 +40,30 @@
                 return false; 
             }
         }
+        public function select_benhnhan_manguoigiamho1($manguoigiamho){
+            $p = new clsKetNoi();
+            $con = $p->moketnoi();
+            $con->set_charset('utf8');
+            if($con){
+                $str = "select * from benhnhan as b 
+                        join trangthai tt on tt.matrangthai =b.matrangthai
+                        join nguoidung as n on b.mabenhnhan=n.manguoidung 
+                        join xaphuong as p on p.maxaphuong = n.maxaphuong 
+                        join tinhthanhpho as t on t.matinhthanhpho = p.matinhthanhpho
+                        join hosobenhan as hs on hs.mabenhnhan = b.mabenhnhan
+                        join chitiethoso ct on hs.mahoso = ct.mahoso 
+                        left join bacsi bs on ct.mabacsi = bs.mabacsi 
+                        left join chuyenkhoa ck on bs.machuyenkhoa = ck.machuyenkhoa 
+                        left join chuyengia cg on cg.machuyengia = ct.mabacsi
+                        left join linhvuc lv on cg.malinhvuc = lv.malinhvuc
+                        where b.mabenhnhan = '$manguoigiamho' OR manguoigiamho = '$manguoigiamho'";
+                $tbl = $con->query($str);
+                $p->dongketnoi($con);
+                return $tbl;
+            }else{
+                return false; 
+            }
+        }
         public function getBenhNhanChinhByTenTK($tentk) {
             $p = new clsKetNoi();
             $con = $p->moketnoi();

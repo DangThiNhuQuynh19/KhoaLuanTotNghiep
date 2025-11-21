@@ -157,7 +157,7 @@ if (isset($_SESSION['user']['tentk'])) {
     $benhnhans = $pBenhNhan->getAllBenhNhanByTK($tk['mabenhnhan']);
 }
 
-$batBuoc = ['hoten','ngaysinh','gioitinh','dantoc','tentinhthanhpho','tenxaphuong','sonha'];
+$batBuoc = ['hoten','ngaysinh','cccd','gioitinh','dantoc','tentinhthanhpho','tenxaphuong','sonha'];
 function checkMissingFields($record, $required) {
     foreach ($required as $f) if (!isset($record[$f]) || trim($record[$f]) === '') return true;
     return false;

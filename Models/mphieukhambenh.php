@@ -238,7 +238,7 @@
             $con->set_charset('utf8');
             if($con){
                 $str = "SELECT nd_bs.hoten AS tenbacsi, tt.tentrangthai, pk.*, kg.*, bn.*, nd_bn.*, bs.*, 
-                llv.ngaylam, llv.hinhthuclamviec FROM phieukhambenh AS pk 
+                llv.ngaylam, llv.hinhthuclamviec,  bs.giatuvan as giakhamcg  FROM phieukhambenh AS pk 
                 JOIN khunggiokhambenh kg ON pk.makhunggiokb = kg.makhunggiokb 
                 JOIN trangthai tt ON tt.matrangthai = pk.matrangthai 
                 JOIN chuyengia AS bs ON pk.mabacsi = bs.machuyengia 
@@ -286,7 +286,7 @@
             $con->set_charset('utf8');
             if($con){
                 $str = "SELECT nd_bs.hoten AS tenbacsi, tt.tentrangthai, pk.*, kg.*, bn.*, nd_bn.*, bs.*, 
-                llv.ngaylam, llv.hinhthuclamviec FROM phieukhambenh AS pk 
+                llv.ngaylam, llv.hinhthuclamviec, bs.giatuvan as giakhamcg FROM phieukhambenh AS pk 
                 JOIN khunggiokhambenh kg ON pk.makhunggiokb = kg.makhunggiokb 
                 JOIN trangthai tt ON tt.matrangthai = pk.matrangthai 
                 JOIN chuyengia AS bs ON pk.mabacsi = bs.machuyengia 
@@ -327,24 +327,57 @@
         //     }
         // }
 
-        public function select_phieukhamonl_homnay($mabacsi){
+        public function select_phieukhamonl_homnay($manguoidung,$ngay){
             $p = new clsKetNoi();
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if($con){
-                $str = "SELECT nd_bs.hoten AS tenbacsi, tt.tentrangthai, pk.*, kg.*, bn.*, nd_bn.*, bs.*, 
-                llv.ngaylam, llv.hinhthuclamviec, ck.* FROM phieukhambenh AS pk 
-                JOIN khunggiokhambenh kg ON pk.makhunggiokb = kg.makhunggiokb 
-                JOIN trangthai tt ON tt.matrangthai = pk.matrangthai 
-                JOIN bacsi AS bs ON pk.mabacsi = bs.mabacsi 
-                JOIN chuyenkhoa AS ck ON bs.machuyenkhoa = ck.machuyenkhoa
-                JOIN nguoidung nd_bs ON nd_bs.manguoidung = bs.mabacsi 
-                JOIN benhnhan AS bn ON bn.mabenhnhan = pk.mabenhnhan 
-                JOIN nguoidung nd_bn ON nd_bn.manguoidung = bn.mabenhnhan 
-                JOIN lichlamviec llv ON llv.manguoidung = pk.mabacsi 
-                AND llv.ngaylam = pk.ngaykham AND llv.macalamviec = kg.macalamviec 
-                JOIN calamviec clv ON clv.macalamviec = llv.macalamviec 
-                WHERE bs.mabacsi = '$mabacsi' AND llv.hinhthuclamviec = 'online' AND  pk.ngaykham = CURDATE()";
+                $str = "SELECT 
+            pk.*,
+            kg.*,
+            tt.tentrangthai,
+            bn.*,
+            nd_bn.*,
+            llv.ngaylam,
+            llv.hinhthuclamviec,
+            clv.*,
+            kg.*,
+            -- thông tin bác sĩ
+            nd_bs.hoten AS hotenbacsi,
+            nd_bs.sdt AS sdtbacsi,
+            bs.capbac AS capbac,
+            bs.imgbs,
+            bs.giakham AS giakham,
+            ck.tenchuyenkhoa,
+            -- thông tin chuyên gia
+            nd_cg.hoten AS hotenchuyengia,
+            nd_cg.sdt AS sdtchuyengia,
+            cg.imgcg,
+            cg.giatuvan AS giakhamcg,
+            lv.tenlinhvuc
+        FROM phieukhambenh AS pk
+        JOIN khunggiokhambenh kg ON pk.makhunggiokb = kg.makhunggiokb
+        JOIN trangthai tt ON tt.matrangthai = pk.matrangthai
+        -- join bác sĩ
+        LEFT JOIN bacsi bs ON pk.mabacsi = bs.mabacsi
+        LEFT JOIN nguoidung nd_bs ON nd_bs.manguoidung = bs.mabacsi
+        LEFT JOIN chuyenkhoa ck ON bs.machuyenkhoa = ck.machuyenkhoa
+        -- join chuyên gia
+        LEFT JOIN chuyengia cg ON pk.mabacsi = cg.machuyengia
+        LEFT JOIN nguoidung nd_cg ON nd_cg.manguoidung = cg.machuyengia
+        LEFT JOIN linhvuc lv ON cg.malinhvuc = lv.malinhvuc
+        -- bệnh nhân
+        JOIN benhnhan bn ON bn.mabenhnhan = pk.mabenhnhan
+        JOIN nguoidung nd_bn ON nd_bn.manguoidung = bn.mabenhnhan
+        -- lịch làm việc & ca
+        JOIN lichlamviec llv ON llv.manguoidung = pk.mabacsi 
+            AND llv.ngaylam = pk.ngaykham 
+            AND llv.macalamviec = kg.macalamviec
+        JOIN calamviec clv ON clv.macalamviec = llv.macalamviec
+        WHERE llv.hinhthuclamviec = 'online'
+        AND pk.ngaykham = '$ngay'
+        AND (bs.mabacsi = '$manguoidung' OR cg.machuyengia = '$manguoidung')
+        ORDER BY pk.ngaykham ASC, kg.giobatdau ASC";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;
@@ -352,23 +385,57 @@
                 return false; 
             }
         }
-        public function select_phieukhamoff_homnay($mabacsi){
+        public function select_phieukhamoff_homnay($manguoidung,$ngay){
             $p = new clsKetNoi();
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if($con){
-                $str = "SELECT nd_bs.hoten AS tenbacsi, tt.tentrangthai, pk.*, kg.*, bn.*, nd_bn.*, bs.*, 
-                llv.ngaylam, llv.hinhthuclamviec FROM phieukhambenh AS pk 
-                JOIN khunggiokhambenh kg ON pk.makhunggiokb = kg.makhunggiokb 
-                JOIN trangthai tt ON tt.matrangthai = pk.matrangthai 
-                JOIN bacsi AS bs ON pk.mabacsi = bs.mabacsi 
-                JOIN nguoidung nd_bs ON nd_bs.manguoidung = bs.mabacsi 
-                JOIN benhnhan AS bn ON bn.mabenhnhan = pk.mabenhnhan 
-                JOIN nguoidung nd_bn ON nd_bn.manguoidung = bn.mabenhnhan 
-                JOIN lichlamviec llv ON llv.manguoidung = pk.mabacsi 
-                AND llv.ngaylam = pk.ngaykham AND llv.macalamviec = kg.macalamviec 
-                JOIN calamviec clv ON clv.macalamviec = llv.macalamviec 
-                WHERE bs.mabacsi = '$mabacsi' AND llv.hinhthuclamviec = 'offline' AND  pk.ngaykham = CURDATE()";
+                $str = "SELECT 
+            pk.*,
+            kg.*,
+            tt.tentrangthai,
+            bn.*,
+            nd_bn.*,
+            llv.ngaylam,
+            llv.hinhthuclamviec,
+            clv.*,
+            kg.*,
+            -- thông tin bác sĩ
+            nd_bs.hoten AS hotenbacsi,
+            nd_bs.sdt AS sdtbacsi,
+            bs.capbac AS capbac,
+            bs.imgbs,
+            bs.giakham AS giakham,
+            ck.tenchuyenkhoa,
+            -- thông tin chuyên gia
+            nd_cg.hoten AS hotenchuyengia,
+            nd_cg.sdt AS sdtchuyengia,
+            cg.imgcg,
+            cg.giatuvan AS giakhamcg,
+            lv.tenlinhvuc
+        FROM phieukhambenh AS pk
+        JOIN khunggiokhambenh kg ON pk.makhunggiokb = kg.makhunggiokb
+        JOIN trangthai tt ON tt.matrangthai = pk.matrangthai
+        -- join bác sĩ
+        LEFT JOIN bacsi bs ON pk.mabacsi = bs.mabacsi
+        LEFT JOIN nguoidung nd_bs ON nd_bs.manguoidung = bs.mabacsi
+        LEFT JOIN chuyenkhoa ck ON bs.machuyenkhoa = ck.machuyenkhoa
+        -- join chuyên gia
+        LEFT JOIN chuyengia cg ON pk.mabacsi = cg.machuyengia
+        LEFT JOIN nguoidung nd_cg ON nd_cg.manguoidung = cg.machuyengia
+        LEFT JOIN linhvuc lv ON cg.malinhvuc = lv.malinhvuc
+        -- bệnh nhân
+        JOIN benhnhan bn ON bn.mabenhnhan = pk.mabenhnhan
+        JOIN nguoidung nd_bn ON nd_bn.manguoidung = bn.mabenhnhan
+        -- lịch làm việc & ca
+        JOIN lichlamviec llv ON llv.manguoidung = pk.mabacsi 
+            AND llv.ngaylam = pk.ngaykham 
+            AND llv.macalamviec = kg.macalamviec
+        JOIN calamviec clv ON clv.macalamviec = llv.macalamviec
+        WHERE llv.hinhthuclamviec = 'offline'
+        AND pk.ngaykham = '$ngay'
+        AND (bs.mabacsi = '$manguoidung' OR cg.machuyengia = '$manguoidung')
+        ORDER BY pk.ngaykham ASC, kg.giobatdau ASC";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;

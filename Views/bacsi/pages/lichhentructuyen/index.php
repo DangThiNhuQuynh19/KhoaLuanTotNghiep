@@ -27,7 +27,7 @@ $homnay_checked = isset($_POST['homnay']) ? 'checked' : '';
 
 // Checkbox Hôm nay
 if(isset($_POST['homnay'])){
-    $lichkham_list = $cphieukhambenh->get_lichkhamonl_homnay($bacsi['mabacsi']);
+    $lichkham_list = $cphieukhambenh->get_lichkhamonl_homnay($bacsi['mabacsi'], date('Y-m-d'));
 }
 
 // Tìm kiếm

@@ -1,7 +1,7 @@
 <?php
 include_once('Controllers/cphieukhambenh.php');
 include_once('Controllers/cchuyengia.php');
-
+date_default_timezone_set('Asia/Ho_Chi_Minh'); // đặt múi giờ Việt Nam
 $cchuyengia = new cChuyenGia();
 $cphieukhambenh = new cPhieuKhamBenh();
 
@@ -11,9 +11,11 @@ $chuyengia = $cchuyengia->getChuyenGiaByTenTK($_SESSION['user']['tentk']);
 $lichkham_list = $cphieukhambenh->get_lichkhamoff_machuyengia($chuyengia['machuyengia']);
 
 // Nếu nhấn checkbox Hôm nay
-if(isset($_POST['homnay'])){
-    $lichkham_list = $cphieukhambenh->get_lichkhamoff_homnay($chuyengia['machuyengia']);
+if(isset($_POST['homnay']) && !empty($_POST['ngay'])){
+    $ngayHienTai = $_POST['ngay'];
+    $lichkham_list = $cphieukhambenh->get_lichkhamoff_homnay($chuyengia['machuyengia'], $ngayHienTai);
 }
+
 
 // Nếu nhấn Tìm kiếm
 if(isset($_POST["btntimkiem"])){
@@ -105,10 +107,12 @@ if(isset($_POST["btnbo"])){
             </div>
 
             <!-- Checkbox Hôm nay -->
-            <form method="POST" style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 10px;">
-                <input type="checkbox" name="homnay" id="homnay" onchange="this.form.submit()" <?php if (isset($_POST['homnay'])) echo 'checked'; ?>>
-                <label for="homnay" style="margin-left: 5px;"><b>Hôm nay</b></label>
+            <form method="POST" style="display:flex; justify-content:flex-end; align-items:center; margin-bottom:10px;">
+                <input type="checkbox" name="homnay" id="homnay" value="1" onchange="this.form.submit()" <?php if(isset($_POST['homnay'])) echo 'checked'; ?>>
+                <input type="hidden" name="ngay" value="<?= date('Y-m-d') ?>">
+                <label for="homnay" style="margin-left:5px;"><b>Hôm nay</b></label>
             </form>
+
 
             <!-- Bảng lịch hẹn -->
             <div class="card">
@@ -148,7 +152,7 @@ if(isset($_POST["btnbo"])){
                                     echo '<td>' . date('d/m/Y', strtotime($i['ngaykham'])) . '</td>';
                                     echo '<td>' . $i['giobatdau'].'-'.$i['gioketthuc'] . '</td>';
                                     echo '<td>' . $i['hoten'] . '</td>';
-                                    echo '<td>' . number_format($i['giatuvan'], 0, ',', '.') . ' VND</td>';
+                                    echo '<td>' . number_format($i['giakhamcg'], 0, ',', '.') . ' VND</td>';
                                     echo '<td><span class="status-badge ' . $statusClass . '">' . $i['tentrangthai'] . '</span></td>';
                                     echo '<td>';
                                     if($i['tentrangthai']=='Chưa khám'){

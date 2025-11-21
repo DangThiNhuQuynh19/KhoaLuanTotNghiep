@@ -9,7 +9,7 @@ if (!isset($_SESSION['dangnhap']) || $_SESSION['dangnhap'] != 1) {
     header("Location: index.php?action=dangnhap");
     exit;
 }
-
+date_default_timezone_set('Asia/Ho_Chi_Minh'); // đặt múi giờ Việt Nam
 
 include_once("Controllers/cchuyengia.php");
 include_once("Controllers/clichkham.php");

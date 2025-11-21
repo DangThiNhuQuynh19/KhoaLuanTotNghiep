@@ -1,26 +1,23 @@
 <?php
 include_once('Controllers/cphieukhambenh.php');
 include_once('Controllers/cbacsi.php');
-include_once('Controllers/cchuyenkhoa.php');
-
-$cchuyenkhoa = new cChuyenKhoa();
-$chuyenkhoa_list = $cchuyenkhoa->getAllChuyenKhoa();
-
+date_default_timezone_set('Asia/Ho_Chi_Minh'); // đặt múi giờ Việt Nam
 $cbacsi = new cBacSi();
 $cphieukhambenh = new cPhieuKhamBenh();
 
-// Lấy thông tin bác sĩ hiện tại
 $bacsi = $cbacsi->getBacSiByTenTK($_SESSION['user']['tentk']);
 
-// Danh sách mặc định
+// Xử lý danh sách lịch hẹn mặc định
 $lichkham_list = $cphieukhambenh->get_lichkhamoff_mabacsi($bacsi['mabacsi']);
 
-// Checkbox Hôm nay
-if(isset($_POST['homnay'])){
-    $lichkham_list = $cphieukhambenh->get_lichkhamoff_homnay($bacsi['mabacsi']);
+// Nếu nhấn checkbox Hôm nay
+if(isset($_POST['homnay']) && !empty($_POST['ngay'])){
+    $ngayHienTai = $_POST['ngay'];
+    $lichkham_list = $cphieukhambenh->get_lichkhamoff_homnay($bacsi['mabacsi'], $ngayHienTai);
 }
 
-// Tìm kiếm
+
+// Nếu nhấn Tìm kiếm
 if(isset($_POST["btntimkiem"])){
     $tukhoa = $_POST["tukhoa"];
     $trangthai = $_POST["trangthai"];
@@ -28,18 +25,13 @@ if(isset($_POST["btntimkiem"])){
     $lichkham_list = $cphieukhambenh->search_phieukhamoff($tukhoa, $trangthai, $ngay, $bacsi['mabacsi']);
 }
 
-// Bỏ tìm kiếm
+// Nếu nhấn Bỏ tìm kiếm, reset về danh sách mặc định
 if(isset($_POST["btnbo"])){
     $lichkham_list = $cphieukhambenh->get_lichkhamoff_mabacsi($bacsi['mabacsi']);
     $_POST = []; // reset form
 }
 ?>
 <style>
-/* --- General & Layout --- */
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #333;
-}
 .btn-secondary {
     background-color: #f0f0f0;
     color: #333;
@@ -61,7 +53,9 @@ body {
     box-shadow: 0px 2px 6px rgba(0,0,0,0.1);
 }
 
-.btn-secondary i { font-size: 14px; }
+.btn-secondary i {
+    font-size: 14px;
+}
 
 .status-pending { color: orange; font-weight: bold; }
 .status-completed { color: green; font-weight: bold; }
@@ -113,10 +107,12 @@ body {
             </div>
 
             <!-- Checkbox Hôm nay -->
-            <form method="POST" style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 10px;">
-                <input type="checkbox" name="homnay" id="homnay" onchange="this.form.submit()" <?php if (isset($_POST['homnay'])) echo 'checked'; ?>>
-                <label for="homnay" style="margin-left: 5px;"><b>Hôm nay</b></label>
+            <form method="POST" style="display:flex; justify-content:flex-end; align-items:center; margin-bottom:10px;">
+                <input type="checkbox" name="homnay" id="homnay" value="1" onchange="this.form.submit()" <?php if(isset($_POST['homnay'])) echo 'checked'; ?>>
+                <input type="hidden" name="ngay" value="<?= date('Y-m-d') ?>">
+                <label for="homnay" style="margin-left:5px;"><b>Hôm nay</b></label>
             </form>
+
 
             <!-- Bảng lịch hẹn -->
             <div class="card">
@@ -138,10 +134,17 @@ body {
                             if($lichkham_list){
                                 foreach ($lichkham_list as $i) {
                                     switch ($i['tentrangthai']) {
-                                        case 'Chưa khám': $statusClass = 'status-pending'; break;
-                                        case 'Đã khám': $statusClass = 'status-completed'; break;
-                                        case 'Đã hủy': $statusClass = 'status-canceled'; break;
-                                        default: $statusClass = '';
+                                        case 'Chưa khám':
+                                            $statusClass = 'status-pending';
+                                            break;
+                                        case 'Đã khám':
+                                            $statusClass = 'status-completed';
+                                            break;
+                                        case 'Đã hủy':
+                                            $statusClass = 'status-canceled';
+                                            break;
+                                        default:
+                                            $statusClass = '';
                                     }
 
                                     echo '<tr>';
@@ -156,7 +159,7 @@ body {
                                         echo '<a class="btn-primary btn-small" href="?action=chitietbenhnhan&id=' . $i['mabenhnhan'] . '">
                                         <i class="fas fa-comment-medical"></i> Khám bệnh</a>';
                                     }
-                                    echo '</td>';
+                                    echo'</td>';
                                     echo '</tr>';
                                 }
                             } else {

@@ -2,12 +2,12 @@
     include_once('Controllers/cphieukhambenh.php');
     include_once('Controllers/cchuyengia.php');
     include_once('Controllers/clinhvuc.php');
-   
+    date_default_timezone_set('Asia/Ho_Chi_Minh'); // đặt múi giờ Việt Nam
     $clinhvuc = new cLinhVuc();
     $cchuyengia = new cChuyenGia();
     $cphieukhambenh = new cPhieuKhamBenh();
     $chuyengia= $cchuyengia->getChuyenGiaByTenTK($_SESSION['user']['tentk']);
-    $lichhenhomnay_list=$cphieukhambenh->get_lichkhamonl_homnay($chuyengia['machuyengia']);
+    $lichhenhomnay_list=$cphieukhambenh->get_lichkhamonl_homnay($chuyengia['machuyengia'], date('Y-m-d'));
     $tongbenhnhanhomnay= $cphieukhambenh->count_benhnhan($chuyengia['machuyengia']);
     $sophieukhamtrongtuan = $cphieukhambenh->get_sophieukham_trongtuan($chuyengia['machuyengia']);
     $lichkhamsapden = $cphieukhambenh->get_lichkham_sapden($chuyengia['machuyengia']);

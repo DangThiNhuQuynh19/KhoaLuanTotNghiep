@@ -3,22 +3,62 @@
  include_once('Assets/config.php');
  class mHoSoBenhAnDienTu{
         public function gethosotheotentk($tentk){
-            $tentk= decryptData($tentk);
-            echo $tentk;
             $p = new clsKetNoi();
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if($con){
-                $str = "SELECT * FROM hosobenhan hs 
-                join benhnhan bn on hs.mabenhnhan=bn.mabenhnhan 
-                join nguoidung nd on nd.manguoidung = bn.mabenhnhan
-                join xaphuong xp on xp.maxaphuong = nd.maxaphuong
-                join tinhthanhpho tp on tp.matinhthanhpho = xp.matinhthanhpho
-                join chitiethoso ct on hs.mahoso = ct.mahoso 
-                join bacsi bs on ct.mabacsi = bs.mabacsi 
-                join chuyenkhoa ck on bs.machuyenkhoa = ck.machuyenkhoa 
-                where nd.email= '$tentk'
-                order by hs.mahoso";
+                $str = "SELECT 
+                            hs.mahoso,
+                            ct.machitiethoso,
+                            ct.ngaykham,
+                            ct.chandoan,
+                            bs.capbac AS capbac,
+                            bs.imgbs AS imgbs,
+                            ck.tenchuyenkhoa AS tenchuyenkhoa,
+                            nd_hn.hoten AS hotenbenhnhan,
+                            nd_hn.gioitinh,
+                            nd_hn.ngaysinh,
+                            bn.mabenhnhan,
+                            bn.nghenghiep,
+                            nd_hn.dantoc,
+                            nd_hn.sdt,
+                            bn.moiquanhevoinguoithan,
+                            nd_hn.email AS emailbenhnhan,
+                            nd_hn.sonha,
+                            xp.tenxaphuong,
+                            tp.tentinhthanhpho,
+                            nd_bs.hoten AS hotenbacsi,
+                            -- Thông tin chuyên gia & lĩnh vực
+                           cg.imgcg AS imgcg,
+                            lv.tenlinhvuc,
+                            nd_cg.hoten AS hotenchuyengia
+
+                        FROM hosobenhan hs
+                        JOIN benhnhan bn ON hs.mabenhnhan = bn.mabenhnhan
+                        JOIN nguoidung nd_hn ON nd_hn.manguoidung = bn.mabenhnhan
+                        JOIN xaphuong xp ON xp.maxaphuong = nd_hn.maxaphuong
+                        JOIN tinhthanhpho tp ON tp.matinhthanhpho = xp.matinhthanhpho
+                        JOIN chitiethoso ct ON hs.mahoso = ct.mahoso
+                        LEFT JOIN bacsi bs ON ct.mabacsi = bs.mabacsi
+                        LEFT JOIN nguoidung nd_bs ON nd_bs.manguoidung = bs.mabacsi
+                        LEFT JOIN chuyenkhoa ck ON bs.machuyenkhoa = ck.machuyenkhoa
+                        -- Join bảng chuyên gia và lĩnh vực nếu bác sĩ là chuyên gia
+                        LEFT JOIN chuyengia cg ON ct.mabacsi = cg.machuyengia
+                        LEFT JOIN linhvuc lv ON cg.malinhvuc = lv.malinhvuc
+                        LEFT JOIN nguoidung nd_cg ON cg.machuyengia = nd_cg.manguoidung
+                        WHERE bn.mabenhnhan = (
+                                SELECT manguoidung 
+                                FROM nguoidung 
+                                WHERE email = '$tentk'
+                            )
+                        OR bn.manguoigiamho = (
+                                SELECT manguoidung 
+                                FROM nguoidung 
+                                WHERE email = '$tentk'
+                            )
+                        ORDER BY hs.mahoso DESC;
+                        ";
+
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;
@@ -30,20 +70,67 @@
             $p = new clsKetNoi();
             $con = $p->moketnoi();
             $con->set_charset('utf8');
+        
             if($con){
-                $str = "SELECT * FROM hosobenhan hs
-                  join chitiethoso ct on hs.mahoso = ct.mahoso  
-                join benhnhan bn on hs.mabenhnhan=bn.mabenhnhan 
-                join bacsi bs on ct.mabacsi = bs.mabacsi 
-                join chuyenkhoa ck on bs.machuyenkhoa = ck.machuyenkhoa  
-                where ct.machitiethoso = '$id'";
+                $str = "SELECT 
+                            hs.mahoso,
+                            ct.machitiethoso,
+                            ct.ngaykham,
+                            ct.chandoan,
+                            bs.capbac AS capbac,
+                            bs.imgbs AS imgbs,
+                            ck.tenchuyenkhoa AS tenchuyenkhoa,
+                            nd_hn.hoten AS hotenbenhnhan,
+                            nd_hn.gioitinh,
+                            nd_hn.ngaysinh,
+                            bn.mabenhnhan,
+                            bn.nghenghiep,
+                            nd_hn.dantoc,
+                            nd_hn.sdt AS sdtbenhnhan,
+                            bn.moiquanhevoinguoithan,
+                            nd_hn.email AS emailbenhnhan,
+                            nd_hn.sonha,
+                            xp.tenxaphuong,
+                            tp.tentinhthanhpho,
+                            nd_bs.hoten AS hotenbacsi,
+                            nd_bs.sdt AS sdt,
+                            nd_hn.cccd AS cccdbn,
+                            bn.tiensubenhtatcuagiadinh,
+                            bn.tiensubenhtatcuabenhnhan,
+                            ct.trieuchungbandau,
+                            ct.huongdieutri,
+                            ct.ketluan,
+                            -- Thông tin chuyên gia
+                            cg.imgcg AS imgcg,
+                            nd_cg.hoten AS hotenchuyengia,
+                            lv.tenlinhvuc,
+                            nd_bs.sdt AS sdt,          -- SDT bác sĩ
+                            nd_cg.sdt AS sdt_cg 
+                        FROM hosobenhan hs
+                        JOIN chitiethoso ct ON hs.mahoso = ct.mahoso
+                        JOIN benhnhan bn ON hs.mabenhnhan = bn.mabenhnhan
+                        JOIN nguoidung nd_hn ON nd_hn.manguoidung = bn.mabenhnhan
+                        JOIN xaphuong xp ON xp.maxaphuong = nd_hn.maxaphuong
+                        JOIN tinhthanhpho tp ON tp.matinhthanhpho = xp.matinhthanhpho
+                        LEFT JOIN bacsi bs ON ct.mabacsi = bs.mabacsi
+                        LEFT JOIN nguoidung nd_bs ON nd_bs.manguoidung = bs.mabacsi
+                        LEFT JOIN chuyenkhoa ck ON bs.machuyenkhoa = ck.machuyenkhoa
+                        -- LEFT JOIN chuyên gia nếu là chuyên gia
+                        LEFT JOIN chuyengia cg ON ct.mabacsi = cg.machuyengia
+                        LEFT JOIN nguoidung nd_cg ON cg.machuyengia = nd_cg.manguoidung
+                        LEFT JOIN linhvuc lv ON cg.malinhvuc = lv.malinhvuc
+                        WHERE ct.machitiethoso = '$id'
+                        LIMIT 1;
+                        ";
+        
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
-                return $tbl;
-            }else{
+                return $tbl ?: false;
+            } else {
                 return false; 
             }
         }
+        
         public function getchitiethosotheohoso($id){
             $p = new clsKetNoi();
             $con = $p->moketnoi();
@@ -65,9 +152,9 @@
             $con->set_charset('utf8');
             if($con){
                 $str = "SELECT * FROM  donthuoc dt 
-                join chitiethoso ct on ct.madonthuoc = dt.madonthuoc
                 join chitietdonthuoc ctdt on dt.madonthuoc = ctdt.madonthuoc
                 join thuoc t on t.mathuoc = ctdt.mathuoc
+                join chitiethoso ct on ct.madonthuoc = dt.madonthuoc
                 where ct.machitiethoso = '$id'";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
@@ -86,6 +173,7 @@
                 join loaixetnghiem lxn on xn.maloaixetnghiem = lxn.maloaixetnghiem
                 join khunggioxetnghiem kg on xn.makhunggio=kg.makhunggioxetnghiem
                 join ketquaxetnghiem kq on xn.malichxetnghiem = kq.malichxetnghiem
+                join trangthai tt on xn.matrangthai=tt.matrangthai
                 where ct.machitiethoso = '$id'";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);

@@ -1,7 +1,7 @@
 <?php
 include_once('Controllers/cphieukhambenh.php');
 include_once('Controllers/cchuyengia.php');
-
+date_default_timezone_set('Asia/Ho_Chi_Minh'); // đặt múi giờ Việt Nam
 $cchuyengia = new cChuyenGia();
 $cphieukhambenh = new cPhieuKhamBenh();
 
@@ -12,7 +12,7 @@ $lichkham_list = $cphieukhambenh->get_lichkhamonl_machuyengia($chuyengia['machuy
 
 // Nếu nhấn checkbox Hôm nay
 if(isset($_POST['homnay'])){
-    $lichkham_list = $cphieukhambenh->get_lichkhamonl_homnay($chuyengia['machuyengia']);
+    $lichkham_list = $cphieukhambenh->get_lichkhamonl_homnay($chuyengia['machuyengia'], date('Y-m-d'));
 }
 
 // Nếu nhấn Tìm kiếm
@@ -139,7 +139,7 @@ if(isset($_POST["btnbo"])){
                                     echo '<td>' . date('d/m/Y', strtotime($i['ngaykham'])) . '</td>';
                                     echo '<td>' . $i['giobatdau'].'-'.$i['gioketthuc'] . '</td>';
                                     echo '<td>' . $i['hoten'] . '</td>';
-                                    echo '<td>' . number_format($i['giatuvan'], 0, ',', '.') . ' VND</td>';
+                                    echo '<td>' . number_format($i['giakhamcg'], 0, ',', '.') . ' VND</td>';
                                     echo '<td><span class="status-badge ' . $statusClass . '">' . $i['tentrangthai'] . '</span></td>';
                                     echo '<td>';
                                     if($i['tentrangthai']=='Chưa khám'){

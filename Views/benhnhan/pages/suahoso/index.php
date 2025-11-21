@@ -1,5 +1,4 @@
 <?php
-session_start();
 include_once("Assets/config.php");
 include_once("Controllers/cbenhnhan.php");
 include_once("Controllers/ctaikhoan.php");

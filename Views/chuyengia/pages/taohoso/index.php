@@ -427,179 +427,174 @@ if(isset($_POST['submit'])){
 </style>
 </head>
 <body>
-    <main class="container">
-        <div class="content-header">
-            <div class="back-button">
-                <a href="medical-records.php" class="btn-icon">
-                    <i class="fas fa-arrow-left"></i>
-                </a>
-                <h1>Tạo Hồ Sơ Bệnh Án</h1>
-            </div>
+<main class="container">
+    <div class="content-header">
+        <div class="back-button">
+            <a href="medical-records.php" class="btn-icon">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <h1>Tạo Hồ Sơ Bệnh Án</h1>
         </div>
+    </div>
 
-        <?php if (!empty($message)): ?>
+    <!-- Thông báo thành công -->
+    <?php if (!empty($message)): ?>
         <div class="alert alert-success">
             <i class="fas fa-check-circle"></i>
             <div>
                 <strong>Thành công!</strong> <?php echo $message; ?>
             </div>
         </div>
-        <?php endif; ?>
+    <?php endif; ?>
 
+    <!-- Chỉ hiển thị form khi không có thông báo -->
+    <?php if (empty($message)): ?>
+
+        <!-- Chưa chọn bệnh nhân -->
         <?php if (empty($mabenhnhan)): ?>
-        <div class="alert alert-warning">
-            <i class="fas fa-exclamation-triangle"></i>
-            <div>
-                <strong>Lưu ý!</strong> Vui lòng chọn bệnh nhân trước khi tạo hồ sơ bệnh án.
-            </div>
-        </div>
-        <div style="text-align: center; margin-top: 40px;">
-            <a href="?action=benhnhan" class="btn-primary">
-                <i class="fas fa-user-injured"></i> Chọn bệnh nhân
-            </a>
-        </div>
-        <?php elseif (!$mabenhnhan): ?>
-        <div class="alert alert-danger">
-            <i class="fas fa-exclamation-circle"></i>
-            <div>
-                <strong>Lỗi!</strong> Không tìm thấy thông tin bệnh nhân với mã <strong><?php echo $mabenhnhan; ?></strong>.
-            </div>
-        </div>
-        <div style="text-align: center; margin-top: 40px;">
-            <a href="?action=benhnhan" class="btn-primary">
-                <i class="fas fa-user-injured"></i> Chọn bệnh nhân khác
-            </a>
-        </div>
-        <?php elseif ($chosobenhandientu->get_hoso_malinhvuc($mabenhnhan,$linhvuc_chuyengia['malinhvuc'])): ?>
-        <div class="alert alert-danger">
-            <i class="fas fa-exclamation-circle"></i>
-            <div>
-                <strong>Lỗi!</strong> Hồ sơ của lĩnh vực <?php echo $linhvuc_chuyengia['tenlinhvuc'];?> đã được tạo.
-            </div>
-        </div>
-        <div style="text-align: center; margin-top: 40px;">
-            <a href="?action=chitietbenhnhan&id=<?php echo $mabenhnhan ?>" class="btn-primary">
-                <i class="fas fa-user-injured"></i> Chọn hồ sơ để xem
-            </a>
-        </div>
-        <?php else: ?>
-        <div class="card">
-            <div class="card-header">
-                <h2>Thông Tin Bệnh Nhân</h2>
-            </div>
-            <div class="card-body">
-                <div class="patient-info">
-                    <div class="patient-avatar">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <div class="patient-details">
-                        <h3 class="patient-name"><?php echo $benhnhan['hoten']; ?></h3>
-                        <div class="patient-id"><?php echo $benhnhan['mabenhnhan']; ?></div>
-                        
-                        <div class="patient-data">
-                            <div class="patient-data-item">
-                                <div class="data-label">Ngày sinh</div>
-                                <div class="data-value"><?php echo $benhnhan['ngaysinh']; ?></div>
-                            </div>
-                            <div class="patient-data-item">
-                                <div class="data-label">Giới tính</div>
-                                <div class="data-value"><?php echo $benhnhan['gioitinh']; ?></div>
-                            </div>
-                            <div class="patient-data-item">
-                                <div class="data-label">Tiền sử bệnh tật của bệnh nhân</div>
-                                <div class="data-value"><?php echo decryptData($benhnhan['tiensubenhtatcuabenhnhan']); ?></div>
-                            </div>
-                            <div class="patient-data-item">
-                                <div class="data-label">Tiền sử bệnh tật của gia đình</div>
-                                <div class="data-value"><?php echo decryptData($benhnhan['tiensubenhtatcuagiadinh']); ?></div>
-                            </div>
-                            <div class="patient-data-item">
-                                <div class="data-label">Địa chỉ</div>
-                                <div class="data-value"><?php echo $benhnhan['sonha'].'-'.$benhnhan['xaphuong'].'-'.$benhnhan['tinhthanhpho']; ?></div>
-                            </div>
-                            <div class="patient-data-item">
-                                <div class="data-label">Số điện thoại</div>
-                                <div class="data-value"><?php echo decryptData($benhnhan['sdt']); ?></div>
-                            </div>
-                            <div class="patient-data-item">
-                                <div class="data-label">Email cá nhân</div>
-                                <div class="data-value"><?php echo decryptData($benhnhan['emailcanhan']); ?></div>
-                            </div>
-                            <div class="patient-data-item">
-                                <div class="data-label">CCCD</div>
-                                <div class="data-value"><?php echo decryptData($benhnhan['cccd']); ?></div>
-                            </div>
-                        </div>
-                    </div>
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                <div>
+                    <strong>Lưu ý!</strong> Vui lòng chọn bệnh nhân trước khi tạo hồ sơ bệnh án.
                 </div>
             </div>
-        </div>
+            <div style="text-align: center; margin-top: 40px;">
+                <a href="?action=benhnhan" class="btn-primary">
+                    <i class="fas fa-user-injured"></i> Chọn bệnh nhân
+                </a>
+            </div>
 
-        <!-- Medical Record Form -->
-        <form action="" method="post" id="medicalRecordForm">
-            <input type="hidden" name="patientId" value="<?php echo $benhnhan['mabenhnhan']; ?>">
-            
-            <!-- <div class="card">
-                <div class="card-header">
-                    <h2>Chọn Chuyên Khoa</h2>
+        <!-- Không tìm thấy bệnh nhân -->
+        <?php elseif (!$mabenhnhan): ?>
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle"></i>
+                <div>
+                    <strong>Lỗi!</strong> Không tìm thấy thông tin bệnh nhân với mã <strong><?php echo $mabenhnhan; ?></strong>.
                 </div>
-                <div class="card-body">
-                    <div class="specialty-selection">
-                        <?php foreach ($linhvuc as $i): ?>
-                        <div class="specialty-card" onclick="selectSpecialty('<?php echo $i['malinhvuc']; ?>')">
-                            <div class="specialty-name"><?php echo $i['tenlinhvuc']; ?></div>
-                            <input type="radio" name="chuyenkhoa" value="<?php echo $i['malinhvuc']; ?>" style="display: none;" required>
-                        </div>
-                        <?php endforeach; ?>
-                    </div>
+            </div>
+            <div style="text-align: center; margin-top: 40px;">
+                <a href="?action=benhnhan" class="btn-primary">
+                    <i class="fas fa-user-injured"></i> Chọn bệnh nhân khác
+                </a>
+            </div>
+
+        <!-- Hồ sơ lĩnh vực đã tồn tại -->
+        <?php elseif ($chosobenhandientu->get_hoso_malinhvuc($mabenhnhan,$linhvuc_chuyengia['malinhvuc'])): ?>
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle"></i>
+                <div>
+                    <strong>Lỗi!</strong> Hồ sơ của lĩnh vực <?php echo $linhvuc_chuyengia['tenlinhvuc'];?> đã được tạo.
                 </div>
-            </div> -->
+            </div>
+            <div style="text-align: center; margin-top: 40px;">
+                <a href="?action=chitietbenhnhan&id=<?php echo $mabenhnhan ?>" class="btn-primary">
+                    <i class="fas fa-user-injured"></i> Chọn hồ sơ để xem
+                </a>
+            </div>
+
+        <!-- Hiển thị form tạo hồ sơ -->
+        <?php else: ?>
             <div class="card">
                 <div class="card-header">
-                    <h2>Thông Tin Tư Vấn</h2>
+                    <h2>Thông Tin Bệnh Nhân</h2>
                 </div>
                 <div class="card-body">
-                    <div class="tabs">
-                        <div class="tab-header">
-                            <button type="button" class="tab-button active" onclick="openTab(event, 'tab-complaint')">Lý do tư vấn & Lịch sử</button>
+                    <div class="patient-info">
+                        <div class="patient-avatar">
+                            <i class="fas fa-user"></i>
                         </div>
-                    </div>
-                    <!-- Lý do khám & Bệnh sử -->
-                    <div id="tab-complaint" class="tab-content active">
-                        <div class="form-group">
-                            <label for="chiefComplaint">Tình trạng bệnh nhân</label>
-                            <textarea name="trieuchung" id="chiefComplaint" rows="3" required placeholder="Nhập tình trạng của bệnh nhân..."></textarea>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="chuandoan">Chẩn đoán</label>
-                            <textarea name="chuandoan" id="chuandoan" rows="3" placeholder="Nhập chẩn đoán về bệnh của bệnh nhân..."></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="note">Kết luận</label>
-                            <textarea name="note" id="note" rows="3" placeholder="Nhập kết luận..."></textarea>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="huongdieutri">Hướng điều trị</label>
-                            <textarea name="huongdieutri" id="huongdieutri" rows="3" placeholder="Cho biết hướng điều trị..."></textarea>
-                        </div>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin-top: 24px;">
-                        <button type="button" class="btn-outline" onclick="window.location.href='?action=taohoso&mabenhnhan=<?php echo $mabenhnhan?>'">
-                            <i class="fas fa-times"></i> Hủy
-                        </button>
-                        <div>
-                            <button type="submit" name="submit" class="btn-primary">
-                                <i class="fas fa-check"></i> Hoàn thành hồ sơ
-                            </button>
+                        <div class="patient-details">
+                            <h3 class="patient-name"><?php echo $benhnhan['hoten']; ?></h3>
+                            <div class="patient-id"><?php echo $benhnhan['mabenhnhan']; ?></div>
+                            <div class="patient-data">
+                                <div class="patient-data-item">
+                                    <div class="data-label">Ngày sinh</div>
+                                    <div class="data-value"><?php echo $benhnhan['ngaysinh']; ?></div>
+                                </div>
+                                <div class="patient-data-item">
+                                    <div class="data-label">Giới tính</div>
+                                    <div class="data-value"><?php echo $benhnhan['gioitinh']; ?></div>
+                                </div>
+                                <div class="patient-data-item">
+                                    <div class="data-label">Tiền sử bệnh tật của bệnh nhân</div>
+                                    <div class="data-value"><?php echo decryptData($benhnhan['tiensubenhtatcuabenhnhan']); ?></div>
+                                </div>
+                                <div class="patient-data-item">
+                                    <div class="data-label">Tiền sử bệnh tật của gia đình</div>
+                                    <div class="data-value"><?php echo decryptData($benhnhan['tiensubenhtatcuagiadinh']); ?></div>
+                                </div>
+                                <div class="patient-data-item">
+                                    <div class="data-label">Địa chỉ</div>
+                                    <div class="data-value"><?php echo $benhnhan['sonha'].'-'.$benhnhan['xaphuong'].'-'.$benhnhan['tinhthanhpho']; ?></div>
+                                </div>
+                                <div class="patient-data-item">
+                                    <div class="data-label">Số điện thoại</div>
+                                    <div class="data-value"><?php echo decryptData($benhnhan['sdt']); ?></div>
+                                </div>
+                                <div class="patient-data-item">
+                                    <div class="data-label">Email cá nhân</div>
+                                    <div class="data-value"><?php echo decryptData($benhnhan['emailcanhan']); ?></div>
+                                </div>
+                                <div class="patient-data-item">
+                                    <div class="data-label">CCCD</div>
+                                    <div class="data-value"><?php echo decryptData($benhnhan['cccd']); ?></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-       
-        </form>
+
+            <!-- Medical Record Form -->
+            <form action="" method="post" id="medicalRecordForm">
+                <input type="hidden" name="patientId" value="<?php echo $benhnhan['mabenhnhan']; ?>">
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Thông Tin Tư Vấn</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="tabs">
+                            <div class="tab-header">
+                                <button type="button" class="tab-button active" onclick="openTab(event, 'tab-complaint')">Lý do tư vấn & Lịch sử</button>
+                            </div>
+                        </div>
+                        <div id="tab-complaint" class="tab-content active">
+                            <div class="form-group">
+                                <label for="chiefComplaint">Tình trạng bệnh nhân</label>
+                                <textarea name="trieuchung" id="chiefComplaint" rows="3" required placeholder="Nhập tình trạng của bệnh nhân..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="chuandoan">Chẩn đoán</label>
+                                <textarea name="chuandoan" id="chuandoan" rows="3" placeholder="Nhập chẩn đoán về bệnh của bệnh nhân..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="note">Kết luận</label>
+                                <textarea name="note" id="note" rows="3" placeholder="Nhập kết luận..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="huongdieutri">Hướng điều trị</label>
+                                <textarea name="huongdieutri" id="huongdieutri" rows="3" placeholder="Cho biết hướng điều trị..."></textarea>
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 24px;">
+                            <button type="button" class="btn-outline" onclick="window.location.href='?action=taohoso&mabenhnhan=<?php echo $mabenhnhan?>'">
+                                <i class="fas fa-times"></i> Hủy
+                            </button>
+                            <div>
+                                <button type="submit" name="submit" class="btn-primary">
+                                    <i class="fas fa-check"></i> Hoàn thành hồ sơ
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
         <?php endif; ?>
-    </main>
+
+    <?php endif; ?>
+</main>
 </body>
 </html>
