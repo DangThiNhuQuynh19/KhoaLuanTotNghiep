@@ -27,12 +27,30 @@
             $con->set_charset('utf8');
             if($con){
                 $str = "select * from benhnhan as b 
-                        join trangthai tt on tt.matrangthai =b.matrangthai
+                        left join trangthai tt on tt.matrangthai =b.matrangthai
+                        join nguoidung as n on b.mabenhnhan=n.manguoidung 
+                        join xaphuong as p on p.maxaphuong = n.maxaphuong 
+                        join tinhthanhpho as t on t.matinhthanhpho = p.matinhthanhpho 
+                        where mabenhnhan = '$manguoigiamho' OR manguoigiamho = '$manguoigiamho'";
+                $tbl = $con->query($str);
+                $p->dongketnoi($con);
+                return $tbl;
+            }else{
+                return false; 
+            }
+        }
+        public function select_benhnhan_manguoigiamhodl($manguoigiamho){
+            $p = new clsKetNoi();
+            $con = $p->moketnoi();
+            $con->set_charset('utf8');
+            if($con){
+                $str = "select * from benhnhan as b 
+                        left join trangthai tt on tt.matrangthai =b.matrangthai
                         join nguoidung as n on b.mabenhnhan=n.manguoidung 
                         join xaphuong as p on p.maxaphuong = n.maxaphuong 
                         join tinhthanhpho as t on t.matinhthanhpho = p.matinhthanhpho 
                         where mabenhnhan = '$manguoigiamho' OR manguoigiamho = '$manguoigiamho'
-                        and b.matrangthai=1";
+                        and b.matrangthai = 1";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;
@@ -331,6 +349,18 @@
             } else {
                 return "Lỗi khi thêm người dùng: " . $stmtInsertND->error;
             }
+        }
+        public function canDelete($id) {
+            $p = new clsKetNoi();
+            $con = $p->moketnoi();
+            
+            // Kiểm tra xem bệnh nhân có phiếu khám nào chưa
+            $sql = "SELECT COUNT(*) as count FROM phieukhambenh WHERE mabenhnhan='$id'";
+            $result = mysqli_query($con, $sql);
+            $row = mysqli_fetch_assoc($result);
+            
+            $p->dongketnoi($con);
+            return ($row['count'] == 0); // true nếu chưa có phiếu khám
         }
         
         public function deletebenhnhan($id) {

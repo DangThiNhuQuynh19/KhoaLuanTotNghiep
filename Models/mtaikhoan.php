@@ -13,7 +13,7 @@ class mtaikhoan{
     // Đăng ký tài khoản
     public function dangkytk ($mabenhnhan, $email, $hoten, $ngaysinh, $sdt, $cccd, $cccd_truoc_name, $cccd_sau_name, $gioitinh, $nghenghiep, $tiensucuagiadinh, $tiensucuabanthan, $sonha, $xa, $tinh, $matkhau) {
         // Kiểm tra email đã tồn tại
-        $dantoc='kinh';
+        $dantoc='';
         $stmtCheck = $this->conn->prepare("SELECT * FROM taikhoan WHERE tentk = ?");
         $stmtCheck->bind_param("s", $email);
         $stmtCheck->execute();
@@ -43,7 +43,7 @@ class mtaikhoan{
             
             if($stmtInsertND->execute()){
                 // Thêm bệnh nhân
-                $stmtInsertBN = $this->conn->prepare("INSERT INTO benhnhan(mabenhnhan, nghenghiep, tiensubenhtatcuagiadinh, tiensubenhtatcuabenhnhan) VALUES (?, ?, ?, ?)");
+                $stmtInsertBN = $this->conn->prepare("INSERT INTO benhnhan(mabenhnhan, nghenghiep, tiensubenhtatcuagiadinh, tiensubenhtatcuabenhnhan,matrangthai,moiquanhevoinguoithan) VALUES (?, ?, ?, ?, 1, 'bản thân')");
                 $stmtInsertBN->bind_param("ssss", $mabenhnhan, $nghenghiep, $tiensucuagiadinh, $tiensucuabanthan);
                 if(!$stmtInsertBN->execute()){
                     var_dump($stmtInsertBN->error); exit;
@@ -184,7 +184,8 @@ class mtaikhoan{
         $con = $p->moketnoi();
         $con->set_charset('utf8');
         if($con){
-            $str = "select * from taikhoan join nguoidung on taikhoan.tentk=nguoidung.email";
+            $str = "select * from taikhoan join nguoidung on taikhoan.tentk=nguoidung.email
+                    join trangthai on taikhoan.matrangthai=trangthai.matrangthai";
             $tbl = $con->query($str);
             $p->dongketnoi($con);
             return $tbl;

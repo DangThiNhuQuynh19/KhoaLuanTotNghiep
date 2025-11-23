@@ -154,10 +154,10 @@ if (isset($_SESSION['user']['tentk'])) {
     $tentk = $_SESSION['user']['tentk'];
     $pBenhNhan = new cBenhNhan();
     $tk = $pBenhNhan->getbenhnhanbytk($tentk);
-    $benhnhans = $pBenhNhan->getAllBenhNhanByTK($tk['mabenhnhan']);
+    $benhnhans = $pBenhNhan->getAllBenhNhanByTKdl($tk['mabenhnhan']);
 }
 
-$batBuoc = ['hoten','ngaysinh','cccd','gioitinh','dantoc','tentinhthanhpho','tenxaphuong','sonha'];
+$batBuoc = ['hoten','ngaysinh','cccd','gioitinh','tentinhthanhpho','tenxaphuong','sonha'];
 function checkMissingFields($record, $required) {
     foreach ($required as $f) if (!isset($record[$f]) || trim($record[$f]) === '') return true;
     return false;
@@ -232,7 +232,8 @@ if (isset($_POST['datlich'])) {
               </div>
               <div>
                 <p><strong>Điện thoại:</strong> <?php echo htmlspecialchars(decryptData($bn['sdt'])); ?></p>
-                <p><strong>Email:</strong> <?php echo htmlspecialchars(decryptData($bn['email'])); ?></p>
+                <p><strong>Email tài khoản:</strong> <?php echo htmlspecialchars(decryptData($bn['email'])); ?></p>
+                <p><strong>Email cá nhân:</strong> <?php echo htmlspecialchars(decryptData($bn['emailcanhan'])); ?></p>
                 <p><strong>Dân tộc:</strong> <?php echo htmlspecialchars($bn['dantoc']); ?></p>
               </div>
             </div>
@@ -256,7 +257,6 @@ if (isset($_POST['datlich'])) {
             <?php endif; ?>
             <div class="d-flex justify-content-center gap-2 mt-3">
               <a href="?action=suahoso&mabenhnhan=<?php echo $bn['mabenhnhan']; ?>" class="btn btn-warning">Sửa hồ sơ</a>
-              <a href="?action=xoahoso&mabenhnhan=<?php echo $bn['mabenhnhan']; ?>" class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa hồ sơ này?');">Xóa hồ sơ</a>
             </div>
           </div>
         </div>
@@ -266,7 +266,9 @@ if (isset($_POST['datlich'])) {
   <?php else: ?>
     <p class="text-danger">Không có bệnh nhân nào được tìm thấy.</p>
   <?php endif; ?>
+  <?php if (count($benhnhans) < 4): ?>
   <a href="?action=taohoso" class="btn btn-success mt-3">+ Tạo hồ sơ bệnh nhân mới</a>
+<?php endif; ?>
 </div>
 </body>
 </html>
