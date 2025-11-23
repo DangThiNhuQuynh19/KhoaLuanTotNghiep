@@ -266,7 +266,7 @@ if (isset($_POST['datlich'])) {
   <?php else: ?>
     <p class="text-danger">Không có bệnh nhân nào được tìm thấy.</p>
   <?php endif; ?>
-  <?php if (count($benhnhans) < 4): ?>
+  <?php if (count($benhnhans) < 6): ?>
   <a href="?action=taohoso" class="btn btn-success mt-3">+ Tạo hồ sơ bệnh nhân mới</a>
 <?php endif; ?>
 </div>

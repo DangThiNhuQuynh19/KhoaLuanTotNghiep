@@ -263,7 +263,7 @@ input.form-control:focus, select.form-select:focus, textarea.form-control:focus 
 </div>
 
 <div class="d-flex justify-content-between mt-3">
-<a href="?action=caidat" class="btn btn-secondary">← Quay lại</a>
+<a href="?action=caidat" class="btn btn-secondary">Hủy</a>
 <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
 </div>
 </form>

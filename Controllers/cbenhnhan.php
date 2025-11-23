@@ -192,14 +192,12 @@ class cBenhNhan{
 
     public function deletebenhnhan($id){
         $p = new mBenhNhan();
-        
-        // Kiểm tra trước khi xóa
-        if(!$p->canDelete($id)) {
-            return false; // không xóa nếu đã có phiếu khám
+        $kq = $p -> deletebenhnhan($id);
+        if($kq){
+            return $kq;
+        }else{
+            return false;
         }
-    
-        $kq = $p->deletebenhnhan($id);
-        return $kq ? true : false;
     }
     public function get_benhnhan_homnay($mabacsi){
         $p = new mBenhNhan();

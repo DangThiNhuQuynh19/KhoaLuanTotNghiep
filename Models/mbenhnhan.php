@@ -350,18 +350,7 @@
                 return "Lỗi khi thêm người dùng: " . $stmtInsertND->error;
             }
         }
-        public function canDelete($id) {
-            $p = new clsKetNoi();
-            $con = $p->moketnoi();
-            
-            // Kiểm tra xem bệnh nhân có phiếu khám nào chưa
-            $sql = "SELECT COUNT(*) as count FROM phieukhambenh WHERE mabenhnhan='$id'";
-            $result = mysqli_query($con, $sql);
-            $row = mysqli_fetch_assoc($result);
-            
-            $p->dongketnoi($con);
-            return ($row['count'] == 0); // true nếu chưa có phiếu khám
-        }
+    
         
         public function deletebenhnhan($id) {
             $p = new clsketnoi();
