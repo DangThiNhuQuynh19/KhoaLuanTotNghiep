@@ -75,7 +75,7 @@ if(isset($_POST['btnupdate'])) {
         $builder = new Builder(
             writer: new PngWriter(),
             data: $data = "Họ tên: " . $benhnhan[0]['mabenhnhan'] . "\n" .
-            "SĐT: " . decryptData($benhnhan[0]['sdtbenhnhan']) . "\n" .
+            "SĐT: " . decryptData($benhnhan[0]['sdt']) . "\n" .
             "Tên xét nghiệm: ".$loai[0]['tenloaixetnghiem']. "\n" .
             "Ngày xét nghiệm: " . $_POST['appointmentDate'] . "\n" .
             "Giờ xét nghiệm: " . $kg[0]['giobatdau']. "\n" .

@@ -8,6 +8,5 @@ if (isset($_POST["btndangnhap"])) {
     $tentk =encryptData($_POST["tentk"]);
     $password = MD5($_POST["password"]);
     $nguoidung->dangnhap($tentk, $password);
-
 }
 ?>

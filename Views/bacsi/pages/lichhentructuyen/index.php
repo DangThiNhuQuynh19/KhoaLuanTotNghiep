@@ -154,6 +154,10 @@ if(isset($_POST["btnbo"])){
                                 echo '<td>';
                                 if($i['tentrangthai']=='Chưa khám'){
                                     echo '<a class="btn-primary btn-small" href="?action=tinnhan&id='.$i['mabenhnhan'].'"><i class="fas fa-comment-medical"></i> Nhắn tin</a>';
+                                     // Button đổi trạng thái -> Đã khám
+                                     echo '<a class="btn-success btn-small" href="?action=update_phieukhambenh&maphieukhambenh=' . $i['maphieukhambenh'] . '" 
+                                     onclick="return confirm(\'Bạn có chắc chắn muốn đổi trạng thái phiếu này sang Đã khám?\')">
+                                     <i class="fas fa-check"></i> Hoàn tất khám</a>';
                                 }
                                 echo '</td>';
                                 echo '</tr>';

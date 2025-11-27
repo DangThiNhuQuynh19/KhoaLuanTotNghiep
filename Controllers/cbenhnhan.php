@@ -41,6 +41,17 @@ class cBenhNhan{
         }
         return $ds;
     }
+    public function getAllBenhNhanByTKdl($manguoigiamho) {
+        $m = new mBenhNhan();
+        $tbl = $m->select_benhnhan_manguoigiamhodl($manguoigiamho);
+        $ds = [];
+        if ($tbl && $tbl->num_rows > 0) {
+            while ($row = $tbl->fetch_assoc()) {
+                $ds[] = $row;
+            }
+        }
+        return $ds;
+    }
 
     public function getAllBenhNhanByTK1($manguoigiamho) {
         $m = new mBenhNhan();
@@ -178,6 +189,7 @@ class cBenhNhan{
             return false;
         }
     }
+
     public function deletebenhnhan($id){
         $p = new mBenhNhan();
         $kq = $p -> deletebenhnhan($id);

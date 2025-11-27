@@ -14,7 +14,55 @@ $hsba_list= $chsba->get_hsba_mabenhnhan($mabenhnhan);
 $lichxetnghiem_list=$clichxetnghiem->get_lichxetnghiem_mabenhnhan($mabenhnhan);
 $donthuoc_list= $cdonthuoc->get_donthuoc_mabenhnhan($mabenhnhan);
 $active_tab = $_GET['tab'] ?? 'medical-records';
-?>    
+?>  
+<style>
+    /* Thu nhỏ ảnh CCCD */
+.cccd-thumb {
+    max-width: 100px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: transform 0.2s;
+}
+.cccd-thumb:hover {
+    transform: scale(1.1);
+}
+
+/* Popup overlay */
+.popup-overlay {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    padding-top: 60px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.8);
+}
+
+.popup-img {
+    margin: auto;
+    display: block;
+    max-width: 80%;
+    max-height: 80%;
+}
+
+.popup-close {
+    position: absolute;
+    top: 20px;
+    right: 35px;
+    color: #fff;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.popup-close:hover {
+    color: #bbb;
+}
+
+</style>  
 <div class="container">
     <div class="content-header">
         <div class="back-button">
@@ -51,8 +99,30 @@ $active_tab = $_GET['tab'] ?? 'medical-records';
                             <span class="info-value"><?php echo $bn['sonha'].",".$bn['tenxaphuong'].",".$bn['tentinhthanhpho']; ?></span>
                         </div>
                         <div class="info-row">
-                            <span class="info-label">Tiền sử bệnh tật:</span>
+                            <span class="info-label">Tiền sử bệnh tật của bệnh nhân:</span>
                             <span class="info-value"><?php echo decryptData($bn['tiensubenhtatcuabenhnhan']); ?></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Tiền sử bệnh tật của gia đình:</span>
+                            <span class="info-value"><?php echo decryptData($bn['tiensubenhtatcuagiadinh']); ?></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">CCCD mặt trước:</span>
+                            <span class="info-value">
+                                <img class="cccd-thumb" src="Assets/img/cccd/<?php echo $bn['cccd_matruoc']; ?>" alt="CCCD mặt trước">
+                            </span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">CCCD mặt sau:</span>
+                            <span class="info-value">
+                                <img class="cccd-thumb" src="Assets/img/cccd/<?php echo $bn['cccd_matsau']; ?>" alt="CCCD mặt sau">
+                            </span>
+                        </div>
+
+                        <!-- Popup overlay -->
+                        <div id="cccd-popup" class="popup-overlay">
+                            <span class="popup-close">&times;</span>
+                            <img class="popup-img" src="" alt="CCCD lớn">
                         </div>
                     </div>
                 </div>
@@ -216,4 +286,30 @@ $active_tab = $_GET['tab'] ?? 'medical-records';
         </div>
     </div>
 </div>
+<script>
+    // Lấy tất cả ảnh CCCD
+const thumbs = document.querySelectorAll('.cccd-thumb');
+const popup = document.getElementById('cccd-popup');
+const popupImg = document.querySelector('.popup-img');
+const closeBtn = document.querySelector('.popup-close');
+
+thumbs.forEach(thumb => {
+    thumb.addEventListener('click', () => {
+        popup.style.display = "block";
+        popupImg.src = thumb.src; // Hiển thị ảnh lớn
+    });
+});
+
+// Đóng popup
+closeBtn.addEventListener('click', () => {
+    popup.style.display = "none";
+});
+
+// Click ra ngoài ảnh cũng đóng popup
+popup.addEventListener('click', (e) => {
+    if (e.target === popup) {
+        popup.style.display = "none";
+    }
+});
+</script>
 <?php require("Views/bacsi/layout/footer.php"); ?>
