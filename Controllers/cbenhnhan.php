@@ -226,6 +226,14 @@ class cBenhNhan{
             return false;
         }
     }
-
+    public function  update_vitien_id($id, $tongtien){
+        $p = new mBenhNhan();
+        $kq = $p ->  update_vitien_id($id, $tongtien);
+        if($kq){
+            return $kq;
+        }else{
+            return false;
+        }
+    }
 }
 ?>

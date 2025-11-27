@@ -39,189 +39,405 @@ if ($tennv !== '') {
     $dsNhanVien = $cNhanVien->getdanhsachnhanvien();
 }
 ?>
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-<meta charset="UTF-8">
-<title>Quản lý nhân sự</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
 <style>
-:root {
-  --primary: #3c1561;
-  --primary-light: #5e2c8a;
-  --secondary: #f5f5f7;
-  --text-dark: #333;
-  --text-muted: #666;
-  --border-color: #e0e0e0;
-  --card-bg: #fff;
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --radius: 14px;
+/* ===== HEADER ===== */
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
 }
 
-body {
-  font-family: "Segoe UI", Tahoma, sans-serif;
-  background-color: var(--secondary);
-  color: var(--text-dark);
-  line-height: 1.6;
+.main-header h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-h2 {
-  color: var(--primary);
-  font-weight: 700;
-  letter-spacing: 0.5px;
+.main-header i {
+    color: #3b82f6;
+    font-size: 28px;
 }
 
-/* Tabs */
+/* ===== ALERT ===== */
+.alert-status {
+    margin-bottom: 20px;
+    padding: 14px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideDown 0.3s ease-out;
+}
+
+.alert-success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-danger {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== TAB NAVIGATION ===== */
 .nav-tabs {
-  border-bottom: 2px solid var(--primary);
-  justify-content: center;
+    display: flex;
+    border-bottom: 2px solid #e0e0e0;
+    margin-bottom: 24px;
+    gap: 8px;
 }
+
 .nav-tabs .nav-link {
-color: black !important;
-  font-weight: 500;
-  border: none;
-  padding: 10px 20px;
-  transition: all 0.3s;
-  border-radius: var(--radius) var(--radius) 0 0;
+    padding: 12px 16px;
+    background: transparent;
+    color: #666;
+    font-weight: 500;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
 }
+
 .nav-tabs .nav-link:hover {
-  background-color: var(--primary-light);
-  color: #fff;
+    color: #3b82f6;
+    background: rgba(59, 130, 246, 0.05);
 }
+
 .nav-tabs .nav-link.active {
-  background-color: var(--primary);
-  color: #fff;
-  box-shadow: 0 -2px 8px rgba(60, 21, 97, 0.3);
+    color: #3b82f6;
+    border-bottom-color: #3b82f6;
 }
 
-/* Search bar */
+/* ===== SEARCH BAR ===== */
 .search-bar {
-  margin: 25px 0 20px;
-  background-color: var(--card-bg);
-  padding: 15px 20px;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
+    background: white;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
 }
+
+.search-bar form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    flex: 1;
+}
+
 .textsearch {
-  border-radius: 25px;
-  width: 220px;
-  height: 38px;
-  padding: 0 15px;
-  border: 1px solid var(--border-color);
-  margin-right: 8px;
-  font-size: 14px;
-  transition: all 0.3s;
+    padding: 10px 12px;
+    border: 1px solid #d0d0d0;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: all 0.3s ease;
+    background: white;
+    color: #333;
+    min-width: 200px;
 }
+
 .textsearch:focus {
-  border-color: var(--primary);
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(60, 21, 97, 0.2);
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
+
+.textsearch::placeholder {
+    color: #999;
+}
+
 .btnsearch {
-  min-width: 100px;
-  height: 38px;
-  border-radius: 20px;
-  color: #fff;
-  background-color: var(--primary);
-  border: none;
-  font-weight: 500;
-  transition: background-color 0.3s;
+    padding: 10px 16px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
 }
-.btnsearch:hover { background-color: var(--primary-light); }
-.btn-light { border-radius: 20px; border: 1px solid var(--border-color); transition: all 0.3s; }
-.btn-light:hover { background-color: #f0f0f0; }
-.btn-success { border-radius: 20px; font-weight: 500; box-shadow: 0 3px 6px rgba(25, 135, 84, 0.25); }
 
-/* Card nhân sự */
+.btnsearch:hover {
+    background: #2563eb;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.btn-light {
+    padding: 10px 16px;
+    background: #f0f0f0;
+    color: #333;
+    border: 1px solid #d0d0d0;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.btn-light:hover {
+    background: #e0e0e0;
+    border-color: #999;
+}
+
+.btn-success {
+    padding: 10px 16px;
+    background: #10b981;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-success:hover {
+    background: #059669;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+/* ===== CARD ITEMS ===== */
 .card-item {
-  display: flex;
-  gap: 20px;
-  background-color: var(--card-bg);
-  padding: 15px;
-  margin-bottom: 15px;
-  border-radius: var(--radius);
-  border: 1px solid var(--border-color);
-  box-shadow: var(--shadow);
-  transition: transform 0.3s, box-shadow 0.3s;
+    background: white;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    display: flex;
+    gap: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border: 1px solid #e8e8e8;
 }
-.card-item:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12); }
+
+.card-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    border-color: #3b82f6;
+}
+
 .card-item img {
-  width: 140px; height: 140px; object-fit: cover; border-radius: var(--radius);
-  border: 1px solid var(--border-color); flex-shrink: 0;
+    width: 100px;
+    height: 100px;
+    border-radius: 8px;
+    object-fit: cover;
+    background: #f0f0f0;
 }
-.card-info { flex: 1; display: flex; flex-direction: column; justify-content: center; }
-.card-info h5 { margin: 0 0 5px; font-weight: 600; font-size: 18px; color: var(--primary); }
-.card-info p { margin: 3px 0; color: var(--text-muted); font-size: 14px; }
-.card-info a.btn { margin-top: 8px; border-radius: 20px; font-size: 13px; font-weight: 500; }
 
-/* Buttons Xem chi tiết & Chỉnh sửa */
-.card-info a.btn-detail, .card-info a.btn-edit {
-    display: inline-flex !important;
-    align-items: center; justify-content: center;
-    width: auto !important; padding: 2px 8px;
-    font-size: 12px; font-weight: 500; line-height: 1; border-radius: 18px;
-    white-space: nowrap; text-decoration: none; margin-right: 5px;
+.card-info {
+    flex: 1;
 }
-.card-info a.btn-detail {
-    color: var(--primary); border: 1px solid var(--primary); background-color: #fff;
-    transition: all 0.25s ease;
-}
-.card-info a.btn-detail i { font-size: 13px; margin-right: 4px; }
-.card-info a.btn-detail:hover { background-color: var(--primary); color: #fff; transform: translateY(-1px); box-shadow: 0 2px 6px rgba(60, 21, 97, 0.25); }
 
-.card-info a.btn-edit {
-    color: #198754; border: 1px solid #198754; background-color: #fff;
-    transition: all 0.25s ease;
+.card-info h5 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0 0 8px 0;
 }
-.card-info a.btn-edit i { font-size: 13px; margin-right: 4px; }
-.card-info a.btn-edit:hover { background-color: #198754; color: #fff; transform: translateY(-1px); box-shadow: 0 2px 6px rgba(25, 135, 84, 0.25); }
 
-/* Responsive */
+.card-info p {
+    font-size: 13px;
+    color: #666;
+    margin: 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.card-info p i {
+    color: #3b82f6;
+    font-size: 14px;
+}
+
+.card-info > div {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+/* ===== BUTTONS ===== */
+.btn-detail, .btn-edit {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 5px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s ease;
+}
+
+.btn-detail {
+    background: #3b82f6;
+    color: white;
+}
+
+.btn-detail:hover {
+    background: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+}
+
+.btn-edit {
+    background: #f59e0b;
+    color: white;
+}
+
+.btn-edit:hover {
+    background: #d97706;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(245, 158, 11, 0.3);
+}
+
+/* ===== EMPTY STATE ===== */
+.text-center {
+    text-align: center;
+    color: #999;
+    padding: 40px 20px;
+    font-size: 14px;
+}
+
+/* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
-  .card-item { flex-direction: column; align-items: center; text-align: center; }
-  .card-item img { width: 120px; height: 120px; }
-  .search-bar { flex-direction: column; gap: 10px; }
+    .main-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .main-header h2 {
+        font-size: 20px;
+    }
+
+    .search-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-bar form {
+        flex-direction: column;
+    }
+
+    .textsearch {
+        min-width: 100%;
+    }
+
+    .card-item {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .card-item img {
+        width: 80px;
+        height: 80px;
+    }
+
+    .card-info > div {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn-success {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-container {
+        padding: 16px;
+    }
+
+    .main-header h2 {
+        font-size: 18px;
+    }
+
+    .nav-tabs {
+        overflow-x: auto;
+    }
+
+    .card-item {
+        padding: 12px;
+    }
+
+    .card-info h5 {
+        font-size: 14px;
+    }
+
+    .btn-detail, .btn-edit {
+        flex: 1;
+        justify-content: center;
+    }
 }
 </style>
-</head>
-<body class="bg-light">
-<div class="container mt-4">
-    <h2 class="text-center mb-4"><i class="bi bi-people"></i> Quản lý nhân sự</h2>
+
+<div class="main-container">
+    <div class="main-header">
+        <h2><i class="bi bi-people"></i> Quản lý nhân sự</h2>
+    </div>
+
     <?php if (isset($_GET['status'])): ?>
-    <div class="container mt-3">
         <?php if ($_GET['status'] === 'success'): ?>
-            <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+            <div class="alert-status alert-success">
                 <i class="bi bi-check-circle-fill"></i> Cập nhật thành công!
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
             </div>
         <?php elseif ($_GET['status'] === 'error'): ?>
-            <div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+            <div class="alert-status alert-danger">
                 <i class="bi bi-exclamation-triangle-fill"></i> Đã xảy ra lỗi. Vui lòng thử lại!
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
             </div>
         <?php endif; ?>
-    </div>
-<?php endif; ?>
+    <?php endif; ?>
 
     <!-- TAB NAV -->
-    <ul class="nav nav-tabs" id="nhansuTab" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="bacsi-tab" data-bs-toggle="tab" data-bs-target="#bacsi" type="button">Bác sĩ</button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="chuyengia-tab" data-bs-toggle="tab" data-bs-target="#chuyengia" type="button">Chuyên gia</button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="nhanvien-tab" data-bs-toggle="tab" data-bs-target="#nhanvien" type="button">Nhân viên</button>
-        </li>
-    </ul>
+    <div class="nav-tabs" role="tablist">
+        <button class="nav-link active" data-tab="bacsi" onclick="switchTab(event, 'bacsi')">Bác sĩ</button>
+        <button class="nav-link" data-tab="chuyengia" onclick="switchTab(event, 'chuyengia')">Chuyên gia</button>
+        <button class="nav-link" data-tab="nhanvien" onclick="switchTab(event, 'nhanvien')">Nhân viên</button>
+    </div>
 
-    <div class="tab-content" id="nhansuTabContent">
+    <div class="tab-content">
         <!-- BÁC SĨ -->
-        <div class="tab-pane fade show active" id="bacsi">
-            <div class="search-bar d-flex justify-content-between align-items-center">
-                <form method="GET" class="d-flex flex-wrap">
+        <div class="tab-pane active" id="bacsi">
+            <div class="search-bar">
+                <form method="GET">
                     <input type="hidden" name="action" value="nhanvien">
                     <input type="hidden" name="tab" value="bacsi">
                     <input class="textsearch" type="text" name="tenbs" placeholder="Tên bác sĩ..." value="<?= htmlspecialchars($tenbs) ?>">
@@ -233,33 +449,33 @@ color: black !important;
                             </option>
                         <?php }} ?>
                     </select>
-                    <button class="btnsearch" type="submit">Tìm</button>
-                    <a href="?action=nhanvien&tab=bacsi" class="btn btn-light">Bỏ lọc</a>
+                    <button class="btnsearch" type="submit"><i class="bi bi-search"></i> Tìm</button>
+                    <a href="?action=nhanvien&tab=bacsi" class="btn-light"><i class="bi bi-x-circle"></i> Bỏ lọc</a>
                 </form>
-                <a href="?action=thembacsi" class="btn btn-success ms-2"><i class="bi bi-plus-circle"></i> Tạo mới</a>
+                <a href="?action=thembacsi" class="btn-success"><i class="bi bi-plus-circle"></i> Tạo mới</a>
             </div>
             <?php if($dsBacSi && $dsBacSi->num_rows>0){
                 while($row=$dsBacSi->fetch_assoc()){ ?>
-            <div class="card-item bg-white">
-                <img src="Assets/img/<?= htmlspecialchars($row['imgbs']) ?>" alt="">
-                <div class="card-info">
-                    <h5><?= htmlspecialchars($row['capbac'].' '.$row['hoten']) ?></h5>
-                    <p><i class="bi bi-hospital"></i> <?= htmlspecialchars($row['tenchuyenkhoa']) ?></p>
-                    <p><i class="bi bi-person-circle"></i> Trạng thái: <?= htmlspecialchars($row['tentrangthai']) ?></p>
-                    <p><?= mb_strimwidth(strip_tags($row['motabs']),0,200,'...','UTF-8') ?></p>
-                    <div>
-                        <a href="?action=chitietbacsi&id=<?= urlencode($row['mabacsi']) ?>" class="btn-detail"><i class="bi bi-eye"></i> Xem chi tiết</a>
-                        <a href="?action=suabacsi&id=<?= urlencode($row['mabacsi']) ?>" class="btn-edit"><i class="bi bi-pencil-square"></i> Chỉnh sửa</a>
+                <div class="card-item">
+                    <img src="Assets/img/<?= htmlspecialchars($row['imgbs']) ?>" alt="<?= htmlspecialchars($row['hoten']) ?>">
+                    <div class="card-info">
+                        <h5><?= htmlspecialchars($row['capbac'].' '.$row['hoten']) ?></h5>
+                        <p><i class="bi bi-hospital"></i> <?= htmlspecialchars($row['tenchuyenkhoa']) ?></p>
+                        <p><i class="bi bi-person-circle"></i> Trạng thái: <?= htmlspecialchars($row['tentrangthai']) ?></p>
+                        <p><?= mb_strimwidth(strip_tags($row['motabs']),0,200,'...','UTF-8') ?></p>
+                        <div>
+                            <a href="?action=chitietbacsi&id=<?= urlencode($row['mabacsi']) ?>" class="btn-detail"><i class="bi bi-eye"></i> Xem chi tiết</a>
+                            <a href="?action=suabacsi&id=<?= urlencode($row['mabacsi']) ?>" class="btn-edit"><i class="bi bi-pencil-square"></i> Chỉnh sửa</a>
+                        </div>
                     </div>
                 </div>
-            </div>
             <?php }} else echo "<p class='text-center'>Không có bác sĩ.</p>"; ?>
         </div>
 
         <!-- CHUYÊN GIA -->
-        <div class="tab-pane fade" id="chuyengia">
-            <div class="search-bar d-flex justify-content-between align-items-center">
-                <form method="GET" class="d-flex flex-wrap">
+        <div class="tab-pane" id="chuyengia" style="display: none;">
+            <div class="search-bar">
+                <form method="GET">
                     <input type="hidden" name="action" value="nhanvien">
                     <input type="hidden" name="tab" value="chuyengia">
                     <input class="textsearch" type="text" name="tencg" placeholder="Tên chuyên gia..." value="<?= htmlspecialchars($tencg) ?>">
@@ -271,69 +487,90 @@ color: black !important;
                             </option>
                         <?php }} ?>
                     </select>
-                    <button class="btnsearch" type="submit">Tìm</button>
-                    <a href="?action=nhanvien&tab=chuyengia" class="btn btn-light">Bỏ lọc</a>
+                    <button class="btnsearch" type="submit"><i class="bi bi-search"></i> Tìm</button>
+                    <a href="?action=nhanvien&tab=chuyengia" class="btn-light"><i class="bi bi-x-circle"></i> Bỏ lọc</a>
                 </form>
-                <a href="?action=themchuyengia" class="btn btn-success ms-2"><i class="bi bi-plus-circle"></i> Tạo mới</a>
+                <a href="?action=themchuyengia" class="btn-success"><i class="bi bi-plus-circle"></i> Tạo mới</a>
             </div>
             <?php if($dsChuyenGia && $dsChuyenGia->num_rows>0){
                 while($row=$dsChuyenGia->fetch_assoc()){ ?>
-            <div class="card-item bg-white">
-                <img src="Assets/img/<?= htmlspecialchars($row['imgcg']) ?>" alt="">
-                <div class="card-info">
-                    <h5><?= htmlspecialchars($row['capbac'].' '.$row['hoten']) ?></h5>
-                    <p><i class="bi bi-journal-medical"></i> <?= htmlspecialchars($row['tenlinhvuc']) ?></p>
-                    <p><i class="bi bi-person-circle"></i> Trạng thái: <?= htmlspecialchars($row['tentrangthai']) ?></p>
-                    <p><?= mb_strimwidth(strip_tags($row['motacg']),0,200,'...','UTF-8') ?></p>
-                    <div>
-                        <a href="?action=chitietchuyengia&id=<?= urlencode($row['machuyengia']) ?>" class="btn-detail"><i class="bi bi-eye"></i> Xem chi tiết</a>
-                        <a href="?action=suachuyengia&id=<?= urlencode($row['machuyengia']) ?>" class="btn-edit"><i class="bi bi-pencil-square"></i> Chỉnh sửa</a>
+                <div class="card-item">
+                    <img src="Assets/img/<?= htmlspecialchars($row['imgcg']) ?>" alt="<?= htmlspecialchars($row['hoten']) ?>">
+                    <div class="card-info">
+                        <h5><?= htmlspecialchars($row['capbac'].' '.$row['hoten']) ?></h5>
+                        <p><i class="bi bi-journal-medical"></i> <?= htmlspecialchars($row['tenlinhvuc']) ?></p>
+                        <p><i class="bi bi-person-circle"></i> Trạng thái: <?= htmlspecialchars($row['tentrangthai']) ?></p>
+                        <p><?= mb_strimwidth(strip_tags($row['motacg']),0,200,'...','UTF-8') ?></p>
+                        <div>
+                            <a href="?action=chitietchuyengia&id=<?= urlencode($row['machuyengia']) ?>" class="btn-detail"><i class="bi bi-eye"></i> Xem chi tiết</a>
+                            <a href="?action=suachuyengia&id=<?= urlencode($row['machuyengia']) ?>" class="btn-edit"><i class="bi bi-pencil-square"></i> Chỉnh sửa</a>
+                        </div>
                     </div>
                 </div>
-            </div>
             <?php }} else echo "<p class='text-center'>Không có chuyên gia.</p>"; ?>
         </div>
 
         <!-- NHÂN VIÊN -->
-        <div class="tab-pane fade" id="nhanvien">
-            <div class="search-bar d-flex justify-content-between align-items-center">
-                <form method="GET" class="d-flex flex-wrap">
+        <div class="tab-pane" id="nhanvien" style="display: none;">
+            <div class="search-bar">
+                <form method="GET">
                     <input type="hidden" name="action" value="nhanvien">
                     <input type="hidden" name="tab" value="nhanvien">
                     <input class="textsearch" type="text" name="tennv" placeholder="Tên nhân viên..." value="<?= htmlspecialchars($tennv) ?>">
-                    <button class="btnsearch" type="submit">Tìm</button>
-                    <a href="?action=nhanvien&tab=nhanvien" class="btn btn-light">Bỏ lọc</a>
+                    <button class="btnsearch" type="submit"><i class="bi bi-search"></i> Tìm</button>
+                    <a href="?action=nhanvien&tab=nhanvien" class="btn-light"><i class="bi bi-x-circle"></i> Bỏ lọc</a>
                 </form>
-                <a href="?action=themnhanvien" class="btn btn-success ms-2"><i class="bi bi-plus-circle"></i> Tạo mới</a>
+                <a href="?action=themnhanvien" class="btn-success"><i class="bi bi-plus-circle"></i> Tạo mới</a>
             </div>
             <?php if($dsNhanVien && $dsNhanVien->num_rows>0){
                 while($row=$dsNhanVien->fetch_assoc()){ ?>
-            <div class="card-item bg-white">
-                <img src="Assets/img/<?= htmlspecialchars($row['imgnv'] ?? 'default.png') ?>" alt="">
-                <div class="card-info">
-                    <h5><?= htmlspecialchars($row['hoten']) ?></h5>
-                    <p><i class="bi bi-person-badge"></i> <?= htmlspecialchars($row['chucvu']) ?></p>
-                    <p><i class="bi bi-person-circle"></i> Trạng thái: <?= htmlspecialchars($row['tentrangthai']) ?></p>
-                    <div>
-                        <a href="?action=chitietnhanvien&id=<?= urlencode($row['manhanvien']) ?>" class="btn-detail"><i class="bi bi-eye"></i> Xem chi tiết</a>
-                        <a href="?action=suanhanvien&id=<?= urlencode($row['manhanvien']) ?>" class="btn-edit"><i class="bi bi-pencil-square"></i> Chỉnh sửa</a>
+                <div class="card-item">
+                    <img src="Assets/img/<?= htmlspecialchars($row['imgnv'] ?? 'default.png') ?>" alt="<?= htmlspecialchars($row['hoten']) ?>">
+                    <div class="card-info">
+                        <h5><?= htmlspecialchars($row['hoten']) ?></h5>
+                        <p><i class="bi bi-person-badge"></i> <?= htmlspecialchars($row['chucvu']) ?></p>
+                        <p><i class="bi bi-person-circle"></i> Trạng thái: <?= htmlspecialchars($row['tentrangthai']) ?></p>
+                        <div>
+                            <a href="?action=chitietnhanvien&id=<?= urlencode($row['manhanvien']) ?>" class="btn-detail"><i class="bi bi-eye"></i> Xem chi tiết</a>
+                            <a href="?action=suanhanvien&id=<?= urlencode($row['manhanvien']) ?>" class="btn-edit"><i class="bi bi-pencil-square"></i> Chỉnh sửa</a>
+                        </div>
                     </div>
                 </div>
-            </div>
             <?php }} else echo "<p class='text-center'>Không có nhân viên.</p>"; ?>
         </div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// Giữ tab khi reload
-const urlParams = new URLSearchParams(window.location.search);
-const tab = urlParams.get('tab');
-if(tab){
-  const tabTrigger = document.querySelector(`#${tab}-tab`);
-  if(tabTrigger){ new bootstrap.Tab(tabTrigger).show(); }
+function switchTab(event, tabName) {
+    event.preventDefault();
+    
+    // Ẩn tất cả tab pane
+    const panes = document.querySelectorAll('.tab-pane');
+    panes.forEach(pane => pane.style.display = 'none');
+    
+    // Bỏ active từ tất cả nav-link
+    const links = document.querySelectorAll('.nav-link');
+    links.forEach(link => link.classList.remove('active'));
+    
+    // Hiện tab được chọn
+    document.getElementById(tabName).style.display = 'block';
+    
+    // Đánh dấu nav-link là active
+    event.target.classList.add('active');
+    
+    // Cập nhật URL
+    window.history.pushState(null, null, `?action=nhanvien&tab=${tabName}`);
 }
+
+// Lấy tab từ URL
+window.addEventListener('load', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tab = urlParams.get('tab') || 'bacsi';
+    const tabButton = document.querySelector(`[data-tab="${tab}"]`);
+    if (tabButton) {
+        tabButton.click();
+    }
+});
 </script>
-</body>
-</html>
+

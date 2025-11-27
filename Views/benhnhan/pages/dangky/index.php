@@ -226,7 +226,7 @@ function getAge($dob) {
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label>CCCD mặt trước <span class="required">*</span></label>
+                                <label>CCCD mặt trước <span class=""></span></label>
                                 <div class="file-upload">
                                     <input type="file" name="cccd_truoc" accept="image/*" onchange="previewImage(this, 'preview-truoc')">
                                     <div class="file-upload-label">
@@ -237,7 +237,7 @@ function getAge($dob) {
                                 <img id="preview-truoc" class="image-preview">
                             </div>
                             <div class="form-group">
-                                <label>CCCD mặt sau <span class="required">*</span></label>
+                                <label>CCCD mặt sau <span class=""></span></label>
                                 <div class="file-upload">
                                     <input type="file" name="cccd_sau" accept="image/*" onchange="previewImage(this, 'preview-sau')">
                                     <div class="file-upload-label">
@@ -259,8 +259,8 @@ function getAge($dob) {
                     </div>
                     
                     <div class="form-group">
-                        <label>Nghề nghiệp <span class="required">*</span></label>
-                        <select name="job" id="job" onchange="toggleOtherJob()" required>
+                        <label>Nghề nghiệp <span class=""></span></label>
+                        <select name="job" id="job" onchange="toggleOtherJob()">
                             <option value="">-- Chọn nghề nghiệp --</option>
                             <option value="Học sinh" <?php echo ($_POST['job'] ?? '') == 'Học sinh' ? 'selected' : ''; ?>>Học sinh</option>
                             <option value="Sinh viên" <?php echo ($_POST['job'] ?? '') == 'Sinh viên' ? 'selected' : ''; ?>>Sinh viên</option>
@@ -470,3 +470,4 @@ function getAge($dob) {
     </script>
 </body>
 </html>
+

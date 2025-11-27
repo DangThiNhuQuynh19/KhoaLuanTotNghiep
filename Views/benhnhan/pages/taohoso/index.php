@@ -32,12 +32,16 @@ $pBenhNhan = new cBenhNhan();
 $taikhoan = $pBenhNhan ->getbenhnhanbytk($email);
 // Xử lý khi submit
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = $_POST['email'] ?? '';
-    $sdt = $_POST['sdt'] ?? '';
+    $rawEmail = $_POST['email'] ?? '';
+    $email = !empty($rawEmail) ? encryptData($rawEmail) : null;
+    $rawSdt = $_POST['sdt'] ?? '';
+    $sdt = !empty($rawSdt) ? encryptData($rawSdt) : null;
+
     $hoten = $_POST['fullname'];
     $ngaysinh = $_POST['dob'];
     $dantoc = $_POST['dantoc'] ?? '';
-    $cccd = $_POST['cccd'] ?? '';
+    $rawCccd = $_POST['cccd'] ?? '';
+    $cccd = !empty($rawCccd) ? encryptData($rawCccd) : null;
     $gioitinh = $_POST['gender'];
     $nghenghiep = 'null';
     $tiensucuagiadinh = $_POST['history_family'];
@@ -49,12 +53,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $age = getAge($ngaysinh);
 
     // Validate cơ bản
-    if ($age >= 16 && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    if ($age >= 16 && !empty($rawEmail) && !filter_var($rawEmail, FILTER_VALIDATE_EMAIL)) {
         $message = "Email không hợp lệ.";
-    } elseif ($age >= 16 && !preg_match("/^[0-9]{10}$/", $sdt)) {
-        $message = "Số điện thoại không hợp lệ (10 số).";
-    } elseif ($age >= 16 && !preg_match("/^[0-9]{9,12}$/", $cccd)) {
-        $message = "Số CCCD không hợp lệ (9-12 số).";
+    } elseif (!empty($rawSdt) && !preg_match('/^\d{10,11}$/', $rawSdt)) {
+        $message = "Số điện thoại không hợp lệ.";
+    } elseif (!empty($rawCccd) && !preg_match('/^\d{9}$|^\d{12}$/', $rawCccd)) {
+        $message = "CCCD/CMND không hợp lệ.";
     } elseif (!preg_match("/^[a-zA-ZÀ-ỹ\s]+$/u", $hoten)) {
         $message = "Họ tên chỉ được chứa chữ cái và khoảng trắng.";
     } else {
@@ -450,3 +454,4 @@ function getAge($dob) {
 </body>
 </html>
 <?php include_once ("js.php")?>
+

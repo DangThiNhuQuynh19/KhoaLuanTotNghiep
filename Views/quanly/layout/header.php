@@ -12,267 +12,440 @@ $action = $_GET['action'] ?? '';
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<title>Hệ thống Quản lý Bệnh viện</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>hanhphuc</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            padding-top: 70px;
+        }
+        
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 999; /* để luôn nằm trên cùng */
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+            background-color: #3498db;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
 
-<style>
-    :root {
-        --primary-color: #483a73;
-        --hover-color: #5d4c9a;
-        --light-gray: #f4f5f7;
-    }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 14px;
+        }
+        
+        .header-right a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .container {
+            display: flex;
+            min-height: calc(100vh - 60px);
+        }
+        
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 220px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px 0;
+            overflow-y: auto;
+            height: 100%
+        }
+        
+        .sidebar-title {
+            padding: 15px 20px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #95a5a6;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+        }
+        
+        .sidebar-menu li {
+            position: relative;
+        }
+        
+        .sidebar-menu a {
+            display: block;
+            padding: 12px 20px;
+            color: #bdc3c7;
+            text-decoration: none;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-menu a:hover {
+            background-color: #34495e;
+            color: white;
+            padding-left: 30px;
+        }
+        
+        .sidebar-menu a.active {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .sidebar-menu li.has-submenu > a {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .sidebar-menu li.has-submenu > a::after {
+            content: '\f078';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 12px;
+            transition: transform 0.3s;
+        }
+        
+        .sidebar-menu li.has-submenu.active > a::after {
+            transform: rotate(-180deg);
+        }
+        
+        .submenu {
+            display: none;
+            background-color: #34495e;
+            list-style: none;
+        }
+        
+        .sidebar-menu li.has-submenu.active .submenu {
+            display: block;
+        }
+        
+        .submenu li a {
+            padding: 10px 20px 10px 40px;
+            font-size: 13px;
+            color: #95a5a6;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .submenu li a:hover {
+            background-color: #2c3e50;
+            color: white;
+            padding-left: 50px;
+        }
+        
+        .submenu li a.active {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            background-color: #f5f5f5;
+        }
 
-    body {
-        overflow-x: hidden !important; /* ✅ tránh scroll ngang */
-        background: #fafafa;
-    }
+        .main-container {
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            padding: 24px;
+            margin-left: 240px;
+            padding: 24px 20px;
+            width: calc(100% - 230px);
+        }
+        
+        .breadcrumb {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+        
+        .breadcrumb a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        
+        .breadcrumb span {
+            color: #7f8c8d;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .page-title {
+            font-size: 24px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        .page-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-secondary {
+            background-color: #27ae60;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #229954;
+        }
+        
+        .form-container {
+            background: white;
+            padding: 25px;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .form-section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e74c3c;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+        
+        .required {
+            color: #e74c3c;
+        }
+        
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="password"],
+        .form-group input[type="tel"],
+        .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        
+        .form-group select {
+            cursor: pointer;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ecf0f1;
+        }
+        
+        .alert {
+            padding: 15px 20px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .help-text {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .info-icon {
+            color: #3498db;
+            cursor: help;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        .logo-circle {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden; /* cắt ảnh theo hình tròn */
+            border: 2px solid #fff; /* đường viền cho ảnh nổi bật */
+        }
 
-    /* ✅ HEADER ĐỨNG YÊN */
-    .navbar {
-        position: sticky !important;
-        top: 0;
-        width: 100%;
-        z-index: 9999;
-        background: var(--primary-color);
-        padding: 10px 20px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
+        .logo-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* giữ tỉ lệ, zoom vừa khít */
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;       /* bo tròn avatar */
+            object-fit: cover;        /* giữ tỉ lệ ảnh, không méo */
+            border: 2px solid #fff3;  /* viền mờ nhẹ cho đẹp */
+            margin-right: 8px;
+        }
 
-    /* LOGO */
-    .navbar-brand img {
-        height: 42px;
-        border-radius: 6px;
-        background: #fff;
-        padding: 4px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    }
 
-    .nav-link {
-        color: #fff !important;
-        padding: 8px 14px;
-        border-radius: 8px;
-        transition: 0.25s;
-    }
-
-    .nav-link:hover, .nav-link.active {
-        background: #fff;
-        color: var(--primary-color) !important;
-    }
-/* Giữ header không thay đổi chiều cao */
-.navbar {
-    display: flex;
-    align-items: center;
-    min-height: 70px;           /* ✅ chiều cao cố định */
-    height: 70px;
-}
-
-/* Giữ menu khi sidebar mở không đẩy item */
-.navbar-collapse {
-    align-items: center !important;
-}
-
-/* Khi collapse mở (.show) -> KHÔNG được tự thêm padding/margin */
-.navbar-collapse.show {
-    display: flex !important;
-    align-items: center !important;
-    padding: 0 !important;
-    margin: 0 !important;
-}
-
-/* Ngăn khoảng cách bị thay đổi khi menu mobile mở */
-@media (max-width: 992px) {
-
-    .navbar {
-        height: auto; /* header cao theo nội dung nhưng các phần tử không nhảy */
-    }
-
-    .navbar-collapse {
-        background: var(--primary-color);
-        border-radius: 12px;
-        padding: 15px !important;
-        margin-top: 10px;
-    }
-
-    /* Fix đẩy item */
-    .navbar-nav {
-        width: 100%;
-        gap: 6px;
-    }
-
-    .navbar-nav .nav-link {
-        text-align: center;
-        width: 100%;
-        padding: 10px 0;
-    }
-}
-
-    .user-dropdown {
-    position: relative;
-    cursor: pointer;
-}
-
-/* Avatar */
-.avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #fff;
-}
-
-/* Menu nhỏ gọn */
-.dropdown-menu-custom {
-    position: absolute;
-    top: 110%;
-    right: 0;
-
-    width: 170px;                /* ✅ nhỏ gọn hơn */
-    background: #fff;
-    padding: 6px 0;
-    border-radius: 10px;
-
-    box-shadow: 0 4px 14px rgba(0,0,0,0.12);
-    border: 1px solid #ececec;
-
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(8px);
-    transition: 0.2s ease;
-
-    z-index: 9999;
-}
-
-/* Hiện menu */
-.user-dropdown.show .dropdown-menu-custom {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-}
-
-/* Mũi tên nhỏ */
-.dropdown-menu-custom::before {
-    content: "";
-    position: absolute;
-    top: -6px;
-    right: 18px;
-    width: 10px;
-    height: 10px;
-    background: #fff;
-    border-left: 1px solid #ececec;
-    border-top: 1px solid #ececec;
-    transform: rotate(45deg);
-}
-
-/* Item nhỏ gọn */
-.dropdown-item-custom {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-
-    padding: 8px 14px;
-    font-size: 0.9rem;
-    font-weight: 500;
-
-    color: #444;
-    white-space: nowrap;
-
-    border-radius: 6px;
-    text-decoration: none !important;  /* ✅ bỏ gạch chân */
-    transition: 0.15s;
-}
-
-/* Hover sạch sẽ */
-.dropdown-item-custom:hover {
-    background: #f2f3f5;
-    color: var(--primary-color);
-}
-
-/* Icon nhỏ gọn */
-.dropdown-item-custom i {
-    font-size: 1rem;
-    opacity: 0.8;
-}
-
-.dropdown-divider {
-    margin: 6px 12px;
-    border-top: 1px solid #e5e5e5;
-}
-</style>
+    </style>
 </head>
-
 <body>
-
-<!-- ✅ HEADER -->
-<nav class="navbar navbar-expand-lg">
-    <div class="container-fluid">
-
-        <a class="navbar-brand d-flex align-items-center" href="index.php">
-            <img src="Assets/img/logo.png">
-            <span class="ms-2 fw-semibold text-white">Quản lý Bệnh viện</span>
-        </a>
-
-        <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target="#menu">
-            <i class="bi bi-list"></i>
-        </button>
-
-        <div class="collapse navbar-collapse" id="menu">
-
-            <ul class="navbar-nav mx-auto">
-                <li><a class="nav-link <?=($action=='nhanvien'?'active':'')?>" href="?action=nhanvien"><i class="bi bi-people"></i> Nhân sự</a></li>
-                <li><a class="nav-link <?=($action=='lichlamviec'?'active':'')?>" href="?action=lichlamviec"><i class="bi bi-calendar-week"></i> Lịch làm việc</a></li>
-            </ul>
-
-            <div class="user-dropdown ms-3">
-              <div class="d-flex align-items-center user-trigger">
-                  <img src="<?='Assets/img/'.($nhanvien['imgnv']??'default.png')?>" class="avatar me-2">
-                  <span class="text-white"><?=htmlspecialchars($nhanvien['hoten'] ?? 'Quản lý')?></span>
-              </div>
-
-              <div class="dropdown-menu-custom">
-
-                  <a class="dropdown-item-custom" href="?action=hoso">
-                      <i class="bi bi-person-circle"></i> Hồ sơ cá nhân
-                  </a>
-
-                  <a class="dropdown-item-custom" href="?action=lichlamviec">
-                      <i class="bi bi-calendar3"></i> Lịch làm việc
-                  </a>
-
-                  <hr class="dropdown-divider">
-
-                  <a class="dropdown-item-custom" href="?action=dangxuat">
-                      <i class="bi bi-box-arrow-right"></i> Đăng xuất
-                  </a>
-
-              </div>
-          </div>
-
-
+    <!-- Header -->
+    <div class="header">
+        <div class="header-left">
+            <div class="logo-circle">
+                <img src="Assets/img/logo.png" alt="Logo">
+            </div>
+        </div>
+        <div class="header-right">
+            <span><i class="fas fa-phone"></i> Hỗ trợ 24/7: 1900 9477</span>
+            <a href="mailto:web@pav.vn"><i class="fas fa-envelope"></i> hanhphuc@hospital.vn</a>
+            <a href="#">
+                <img src="<?='Assets/img/'.($nhanvien['imgnv']??'default.png')?>" class="avatar me-2">
+                <span class="text-white"><?=htmlspecialchars($nhanvien['hoten'] ?? 'Quản lý')?></span>
+            </a>
+            <a href="?action=dangxuat"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
         </div>
     </div>
-</nav>
 
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    const menu = document.querySelector(".user-dropdown");
-    const trigger = document.querySelector(".user-trigger");
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-title">Chức năng hệ thống</div>
+            <ul class="sidebar-menu">
+                <li><a href="?action=trangchu"><i class="fas fa-home"></i> Trang chủ</a></li>
+                <li><a href="?action=nhanvien"><i class="fas fa-users"></i> Quản lý hồ sơ nhân sự</a></li>
+                <li class="has-submenu" id="schedule-menu">
+                    <a href="javascript:void(0)"><i class="fas fa-calendar"></i> Quản lý lịch làm việc</a>
+                    <ul class="submenu">
+                        <li><a href="?action=xeplich"><i class="fas fa-calendar-alt"></i> Xem lịch làm</a></li>
+                        <li><a href="?action=lichlamviec"><i class="fas fa-tasks"></i> Phân ca</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <script>
+            document.querySelectorAll('.has-submenu > a').forEach(menu => {
+                menu.addEventListener('click', function () {
+                    const li = this.parentElement;
 
-    trigger.addEventListener("click", (e) => {
-        e.stopPropagation();
-        menu.classList.toggle("show");
-    });
-
-    document.addEventListener("click", () => {
-        menu.classList.remove("show");
-    });
-});
-
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-</body>
-</html>
+                    // Toggle class active
+                    li.classList.toggle('active');
+                });
+            });
+        </script>

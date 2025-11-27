@@ -4,6 +4,7 @@ include_once("Controllers/cbenhnhan.php");
 include_once("Controllers/ctaikhoan.php");
 include_once("Controllers/ctinhthanhpho.php");
 include_once("Controllers/cxaphuong.php");
+include_once("Assets/config.php");
 
 // 🟡 Kiểm tra đăng nhập
 if (!isset($_SESSION['user']['tentk'])) {
@@ -33,10 +34,7 @@ if (!$benhnhan) {
     exit;
 }
 
-// 🟡 Hàm giải mã an toàn
-function safeDecrypt($data){
-    return !empty($data) ? decryptData($data) : '';
-}
+
 
 // 🟡 Tính tuổi
 $tuoi = 0;
@@ -55,8 +53,9 @@ function keepOld($newValue, $oldValue) {
 
 // 🟡 Xử lý POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $sdt = keepOld($_POST['sdt'] ?? '', safeDecrypt($benhnhan['sdt']));
-    $email = keepOld($_POST['emailcanhan'] ?? '', safeDecrypt($benhnhan['emailcanhan']));
+    $sdt = keepOld($_POST['sdt'] ?? '', decryptData($benhnhan['sdt']));
+    $email = !empty($_POST['emailcanhan']) ? $_POST['emailcanhan'] : null;
+    $dantoc = $_POST['dantoc'] ?? $benhnhan['dantoc'];
     $nghenghiep = keepOld($_POST['nghenghiep'] ?? '', $benhnhan['nghenghiep']);
     $tiensu_banthan = $_POST['tiensubenhtatcuabenhnhan'] ?? '';
     $tiensu_giadinh = $_POST['tiensubenhtatcuagiadinh'] ?? '';
@@ -101,8 +100,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $benhnhan['hoten'],
         $benhnhan['ngaysinh'],
         $benhnhan['gioitinh'],
-        decryptData($benhnhan['cccd']),
-        $benhnhan['dantoc'],
+        $benhnhan['cccd'],
+        $dantoc,
         encryptData($sdt),
         encryptData($email),
         $sonha,
@@ -161,11 +160,11 @@ input.form-control:focus, select.form-select:focus, textarea.form-control:focus 
     </div>
     <div class="mb-3">
         <label class="form-label">Số điện thoại</label>
-        <input type="text" class="form-control" name="sdt" value="<?= htmlspecialchars(safeDecrypt($benhnhan['sdt'] ?? '')) ?>">
+        <input type="text" class="form-control" name="sdt" value="<?= htmlspecialchars(decryptData($benhnhan['sdt'] ?? '')) ?>">
     </div>
     <div class="mb-3">
         <label class="form-label">Email cá nhân</label>
-        <input type="text" class="form-control" name="emailcanhan" value="<?= htmlspecialchars(safeDecrypt($benhnhan['emailcanhan'] ?? '')) ?>">
+        <input type="text" class="form-control" name="emailcanhan" value="<?= htmlspecialchars(decryptData($benhnhan['emailcanhan'] ?? '')) ?>">
     </div>
     <div class="mb-3">
         <label class="form-label">Tiền sử bệnh tật của bản thân</label>
@@ -177,22 +176,42 @@ input.form-control:focus, select.form-select:focus, textarea.form-control:focus 
     </div>
 </div>
 
-<div class="form-col">
-    <div class="mb-3">
-        <label class="form-label">Giới tính</label>
-        <select class="form-select" disabled>
-            <option <?= $benhnhan['gioitinh']=='Nam'?'selected':'' ?>>Nam</option>
-            <option <?= $benhnhan['gioitinh']=='Nữ'?'selected':'' ?>>Nữ</option>
-        </select>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Số CCCD/CMND</label>
-        <input type="text" class="form-control" value="<?= htmlspecialchars(safeDecrypt($benhnhan['cccd'])) ?>" readonly>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Dân tộc</label>
-        <input type="text" class="form-control" value="<?= htmlspecialchars($benhnhan['dantoc']) ?>" disabled>
-    </div>
+    <div class="form-col">
+        <div class="mb-3">
+            <label class="form-label">Giới tính</label>
+            <select class="form-select" disabled>
+                <option <?= $benhnhan['gioitinh']=='Nam'?'selected':'' ?>>Nam</option>
+                <option <?= $benhnhan['gioitinh']=='Nữ'?'selected':'' ?>>Nữ</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Số CCCD/CMND</label>
+            <input type="text" class="form-control" value="<?= htmlspecialchars(decryptData($benhnhan['cccd'])) ?>" readonly>
+        </div>
+        <div class="mb-3">
+    <label class="form-label" for="dantoc">Dân tộc</label>
+    <select name="dantoc" id="dantoc" class="form-control">
+        <!-- Placeholder -->
+        <option value="" disabled <?= empty($benhnhan['dantoc']) ? 'selected' : '' ?>>--Chọn dân tộc--</option>
+        
+        <?php 
+        $ds_dantoc = ["Kinh","Tày","Thái","Hoa","Khơ-me","Mường","Nùng","HMông","Dao",
+                      "Gia-rai","Ngái","Ê-đê","Ba-na","Xơ-Đăng","Sán chay","Cơ-ho","Chăm",
+                      "Sán Dìu","Hrê","Mnông","Ra-glai","Xtiêng","Bru-Vân Kiều","Giáy",
+                      "Cơ-tu","Triêng","Mạ","Khơ-mú","Co","Tà-ôi","Chơ-ro","Kháng",
+                      "Xinh-mun","Hà Nhì","Chu ru","Lào","La Chí","La Ha","Phù Lá",
+                      "La Hủ","Lự","Lô Lô","Chứt","Mảng","Pà Thẻn","Co Lao","Cống",
+                      "Bố Y","Si La","Pu Péo","Brâu","Ơ Đu","Rơ măm"];
+
+        foreach($ds_dantoc as $dt) {
+            $selected = ($benhnhan['dantoc'] ?? '') === $dt ? 'selected' : '';
+            echo "<option value=\"$dt\" $selected>$dt</option>";
+        }
+        ?>
+    </select>
+</div>
+
+
     <div class="mb-3">
         <label class="form-label">Nghề nghiệp</label>
         <input type="text" class="form-control" name="nghenghiep" value="<?= htmlspecialchars($benhnhan['nghenghiep'] ?? '') ?>">
@@ -244,7 +263,7 @@ input.form-control:focus, select.form-select:focus, textarea.form-control:focus 
 </div>
 
 <div class="d-flex justify-content-between mt-3">
-<a href="?action=caidat" class="btn btn-secondary">← Quay lại</a>
+<a href="?action=caidat" class="btn btn-secondary">Hủy</a>
 <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
 </div>
 </form>
@@ -282,3 +301,4 @@ function previewImage(input, id){
 </script>
 </body>
 </html>
+
