@@ -69,7 +69,7 @@
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if($con){
-                $str = "select * from benhnhan where tentk = '$tentk' and quanhe = 'bản thân'";
+                $str = "select * from taikhoan where tentk = '$tentk'";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;
@@ -376,6 +376,21 @@
             $con->set_charset('utf8');
             if($con){
                 $str = "SELECT * FROM benhnhan b JOIN nguoidung d on b.mabenhnhan = d.manguoidung where b.mabenhnhan='$mabenhnhan'";
+                $tbl = $con->query($str);
+                $p->dongketnoi($con);
+                return $tbl;
+            }else{
+                return false; 
+            }
+        }
+
+        public function update_vitien_id($id, $tongtien){
+            $p = new clsKetNoi();
+            $con = $p->moketnoi();
+            $con->set_charset('utf8');
+            if($con){
+                $str = "update taikhoan set vitien = vitien - $tongtien
+                        where tentk = '$id'";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;
