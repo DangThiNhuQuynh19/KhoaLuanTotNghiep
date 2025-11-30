@@ -3,6 +3,9 @@ session_start();
 header('Content-Type: application/json');
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 
+// Load environment configuration
+require_once(__DIR__ . '/../../../../env.php');
+
 // --- Kiểm tra đăng nhập ---
 if(!isset($_SESSION['user']['tentk'])){
     echo json_encode(['success'=>false,'error'=>'Chưa đăng nhập']);
@@ -23,8 +26,8 @@ if($file['type'] !== 'application/pdf'){
     exit;
 }
 
-// Thư mục uploads
-$uploadDir = 'C:/xampp/htdocs/KLTN/uploads/';
+// Thư mục uploads - now configurable
+$uploadDir = getUploadDir();
 if(!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
 
 // Tên file an toàn
@@ -33,7 +36,7 @@ $path = $uploadDir.$safeName;
 
 // Upload file
 if(move_uploaded_file($file['tmp_name'],$path)){
-    $url = "http://localhost/KLTN/uploads/".$safeName;
+    $url = getUploadUrl($safeName);
     echo json_encode(['success'=>true,'filename'=>$file['name'],'url'=>$url]);
     exit;
 }else{

@@ -71,5 +71,46 @@ class ChatUserModel {
         return $messages;
     }
 
+    // Lấy tin nhắn mới sau một timestamp (cho polling)
+    public function getNewMessages($user1, $user2, $lastTimestamp = null) {
+        $sql = "
+            SELECT * FROM tinnhan
+            WHERE ((tentk_gui = ? AND tentk_nhan = ?) OR (tentk_gui = ? AND tentk_nhan = ?))
+        ";
+        
+        if (!empty($lastTimestamp)) {
+            $sql .= " AND thoigiangui > ?";
+        }
+        
+        $sql .= " ORDER BY thoigiangui ASC";
+        
+        $stmt = $this->connect->prepare($sql);
+        if (!$stmt) {
+            error_log("SQL prepare failed: " . $this->connect->error);
+            return false;
+        }
+
+        if (!empty($lastTimestamp)) {
+            $stmt->bind_param("sssss", $user1, $user2, $user2, $user1, $lastTimestamp);
+        } else {
+            $stmt->bind_param("ssss", $user1, $user2, $user2, $user1);
+        }
+        
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $messages = [];
+        while ($row = $result->fetch_assoc()) {
+            $messages[] = [
+                'sender' => $row['tentk_gui'],
+                'receiver' => $row['tentk_nhan'],
+                'message' => $row['noidung'],
+                'time' => $row['thoigiangui'],
+                'messageId' => $row['matinnhan']
+            ];
+        }
+        return $messages;
+    }
+
     public function close() { $this->connect->close(); }
 }

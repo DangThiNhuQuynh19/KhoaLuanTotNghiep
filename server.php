@@ -1,10 +1,14 @@
 <?php
 require_once('vendor/autoload.php');
+require_once('env.php');
 require_once('Chat.php'); 
 
 use Ratchet\Server\IoServer;
 use Ratchet\WebSocket\WsServer;
 use Ratchet\Http\HttpServer;
+
+// Get port from environment or use default
+$port = (int)config('websocket.port', 8080);
 
 // Khởi động server
 $server = IoServer::factory(
@@ -13,8 +17,9 @@ $server = IoServer::factory(
             new ChatServer()
         )
     ),
-    8080 // Cổng WebSocket
+    $port // Cổng WebSocket từ config
 );
 
-echo "WebSocket server running on ws://localhost:8080\n";
+echo "WebSocket server running on port {$port}\n";
+echo "Press Ctrl+C to stop\n";
 $server->run();

@@ -1,5 +1,6 @@
 <?php
 require_once('vendor/autoload.php');
+require_once('env.php');
 require_once('Models/ChatUserModel.php');
 include_once('Assets/config.php');
 use Ratchet\MessageComponentInterface;
