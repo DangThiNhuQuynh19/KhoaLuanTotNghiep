@@ -109,9 +109,10 @@ if (isset($_POST['submit'])) {
                     // Sanitize and validate the appointment ID
                     $maphieukhambenh_sanitized = trim(htmlspecialchars($_POST['maphieukhambenh'], ENT_QUOTES, 'UTF-8'));
                     
-                    // Validate that the appointment belongs to the current doctor
+                    // Validate that the appointment belongs to the current doctor (explicit null/false check)
                     $phieukham = $cphieukhambenh->getPhieuKhamBenhOfIDPK($maphieukhambenh_sanitized);
-                    if ($phieukham && $phieukham['mabacsi'] == $bacsi['mabacsi']) {
+                    if ($phieukham !== null && $phieukham !== false && $phieukham !== 0 && $phieukham !== -1 
+                        && isset($phieukham['mabacsi']) && $phieukham['mabacsi'] === $bacsi['mabacsi']) {
                         $cphieukhambenh->updateTrangThaiPKB($maphieukhambenh_sanitized, 'Đã khám');
                         $message .= " Đã cập nhật trạng thái lịch hẹn thành Đã khám.";
                     }

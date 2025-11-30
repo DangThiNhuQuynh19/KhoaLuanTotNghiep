@@ -87,30 +87,34 @@ if(isset($_POST['btnHoanTat'])) {
         
         // Xử lý lịch xét nghiệm nếu có
         if (!empty($mabenhnhan) && !empty($test_sanitized) && !empty($appointmentDate_sanitized) && !empty($appointmentTime_sanitized) && !empty($mahoso)) {
-            // Validate date format
+            // Validate date format and check if it's a valid calendar date
             if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $appointmentDate_sanitized)) {
-                $filename = 'qr_' . time() . '.png';
-                $savePath = 'Assets/img/' . $filename;
+                $dateParts = explode('-', $appointmentDate_sanitized);
+                if (checkdate((int)$dateParts[1], (int)$dateParts[2], (int)$dateParts[0])) {
+                    $filename = 'qr_' . time() . '.png';
+                    $savePath = 'Assets/img/' . $filename;
 
-                $kg = $ckhunggioxetnghiem->get_khunggioxetnghiem_makhunggio($appointmentTime_sanitized);
-                $loai = $cloaixetnghiem->get_loaixetnghiem_maloaixetnghiem($test_sanitized);
-                $benhnhan_info = $chosobenhandientu->get_benhnhan_mahoso($mahoso);
-                
-                if ($kg && $loai && $benhnhan_info) {
-                    // Tạo QR code
-                    $builder = new Builder(
-                        writer: new PngWriter(),
-                        data: $data = "Họ tên: " . $benhnhan_info[0]['hoten'] . "\n" .
-                        "SĐT: " . decryptData($benhnhan_info[0]['sdt']) . "\n" .
-                        "Tên xét nghiệm: " . $loai[0]['tenloaixetnghiem'] . "\n" .
-                        "Ngày xét nghiệm: " . $appointmentDate_sanitized . "\n" .
-                        "Giờ xét nghiệm: " . $kg[0]['giobatdau'] . "\n" .
-                        "Bác sĩ đặt lịch: " . $bacsi['hoten']
-                    );
-                    $result = $builder->build();
-                    file_put_contents($savePath, $result->getString());
+                    $kg = $ckhunggioxetnghiem->get_khunggioxetnghiem_makhunggio($appointmentTime_sanitized);
+                    $loai = $cloaixetnghiem->get_loaixetnghiem_maloaixetnghiem($test_sanitized);
+                    $benhnhan_info = $chosobenhandientu->get_benhnhan_mahoso($mahoso);
                     
-                    $clichxetnghiem->create_lichxetnghiem($mabenhnhan, $test_sanitized, $appointmentDate_sanitized, $appointmentTime_sanitized, 'Đã đặt lịch', $mahoso, $filename);
+                    if ($kg && $loai && $benhnhan_info) {
+                        // Tạo QR code - using masked phone number for privacy
+                        $maskedPhone = substr(decryptData($benhnhan_info[0]['sdt']), 0, 4) . '****' . substr(decryptData($benhnhan_info[0]['sdt']), -3);
+                        $builder = new Builder(
+                            writer: new PngWriter(),
+                            data: $data = "Họ tên: " . $benhnhan_info[0]['hoten'] . "\n" .
+                            "SĐT: " . $maskedPhone . "\n" .
+                            "Tên xét nghiệm: " . $loai[0]['tenloaixetnghiem'] . "\n" .
+                            "Ngày xét nghiệm: " . $appointmentDate_sanitized . "\n" .
+                            "Giờ xét nghiệm: " . $kg[0]['giobatdau'] . "\n" .
+                            "Bác sĩ đặt lịch: " . $bacsi['hoten']
+                        );
+                        $result = $builder->build();
+                        file_put_contents($savePath, $result->getString());
+                        
+                        $clichxetnghiem->create_lichxetnghiem($mabenhnhan, $test_sanitized, $appointmentDate_sanitized, $appointmentTime_sanitized, 'Đã đặt lịch', $mahoso, $filename);
+                    }
                 }
             }
         }
@@ -121,15 +125,21 @@ if(isset($_POST['btnHoanTat'])) {
         $huongdieutri_sanitized = isset($_POST['huongdieutri']) ? trim(htmlspecialchars($_POST['huongdieutri'], ENT_QUOTES, 'UTF-8')) : '';
         $ketluan_sanitized = isset($_POST['ketluan']) ? trim(htmlspecialchars($_POST['ketluan'], ENT_QUOTES, 'UTF-8')) : '';
         
-        // Tạo chi tiết hồ sơ
-        if($cchitiethoso->create_chitiethoso($mahoso, $bacsi['mabacsi'], $trieuchung_sanitized, $chandoan_sanitized, $huongdieutri_sanitized, $madonthuoc, $ketluan_sanitized)){
-            // Cập nhật trạng thái phiếu khám bệnh thành 'Đã khám' (mã 8)
-            $cphieukhambenh->updateTrangThaiPKB($maphieukhambenh, 'Đã khám');
-            $message = 'Cập nhật hồ sơ và hoàn tất khám thành công!';
-            $messageType = 'success';
-        } else {
-            $message = 'Cập nhật hồ sơ thất bại, vui lòng thử lại!';
+        // Server-side validation for required field
+        if (empty($ketluan_sanitized)) {
+            $message = 'Vui lòng nhập kết luận!';
             $messageType = 'error';
+        } else {
+            // Tạo chi tiết hồ sơ
+            if($cchitiethoso->create_chitiethoso($mahoso, $bacsi['mabacsi'], $trieuchung_sanitized, $chandoan_sanitized, $huongdieutri_sanitized, $madonthuoc, $ketluan_sanitized)){
+                // Cập nhật trạng thái phiếu khám bệnh thành 'Đã khám' (mã 8)
+                $cphieukhambenh->updateTrangThaiPKB($maphieukhambenh, 'Đã khám');
+                $message = 'Cập nhật hồ sơ và hoàn tất khám thành công!';
+                $messageType = 'success';
+            } else {
+                $message = 'Cập nhật hồ sơ thất bại, vui lòng thử lại!';
+                $messageType = 'error';
+            }
         }
     }
 }
