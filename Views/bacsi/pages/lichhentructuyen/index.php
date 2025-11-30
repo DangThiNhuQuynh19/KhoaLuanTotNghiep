@@ -53,7 +53,7 @@ if(isset($_POST['btnHoanTat'])) {
     
     // Validate that the appointment belongs to the current doctor
     $phieukham = $cphieukhambenh->getPhieuKhamBenhOfIDPK($maphieukhambenh);
-    if (!$phieukham || $phieukham['mabacsi'] != $bacsi['mabacsi']) {
+    if (!$phieukham || !is_array($phieukham) || !isset($phieukham['mabacsi']) || $phieukham['mabacsi'] != $bacsi['mabacsi']) {
         $message = 'Bạn không có quyền cập nhật phiếu khám này!';
         $messageType = 'error';
     } else {
@@ -90,7 +90,9 @@ if(isset($_POST['btnHoanTat'])) {
             // Validate date format and check if it's a valid calendar date
             if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $appointmentDate_sanitized)) {
                 $dateParts = explode('-', $appointmentDate_sanitized);
-                if (checkdate((int)$dateParts[1], (int)$dateParts[2], (int)$dateParts[0])) {
+                // Validate date is valid and in the future (at least tomorrow)
+                $minDate = date('Y-m-d', strtotime('+1 day'));
+                if (checkdate((int)$dateParts[1], (int)$dateParts[2], (int)$dateParts[0]) && $appointmentDate_sanitized >= $minDate) {
                     $filename = 'qr_' . time() . '.png';
                     $savePath = 'Assets/img/' . $filename;
 
@@ -100,7 +102,8 @@ if(isset($_POST['btnHoanTat'])) {
                     
                     if ($kg && $loai && $benhnhan_info) {
                         // Tạo QR code - using masked phone number for privacy
-                        $maskedPhone = substr(decryptData($benhnhan_info[0]['sdt']), 0, 4) . '****' . substr(decryptData($benhnhan_info[0]['sdt']), -3);
+                        $decryptedPhone = decryptData($benhnhan_info[0]['sdt']);
+                        $maskedPhone = substr($decryptedPhone, 0, 4) . '****' . substr($decryptedPhone, -3);
                         $builder = new Builder(
                             writer: new PngWriter(),
                             data: $data = "Họ tên: " . $benhnhan_info[0]['hoten'] . "\n" .
@@ -511,6 +514,13 @@ window.addEventListener('click', function(event) {
     if (event.target === modal) modal.style.display = 'none';
 });
 
+// HTML escape function to prevent XSS
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
 // MEDICATIONS: manage local list and hidden inputs
 let medications = [];
 
@@ -550,11 +560,11 @@ function updateMedicationTable() {
     medications.forEach((m, idx) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `<td>${idx+1}</td>
-            <td>${m.tenthuoc}</td>
-            <td>${m.soluong}</td>
-            <td>${m.lieudung || '-'}</td>
-            <td>${m.songayuong || '-'}</td>
-            <td>${m.thoigianuong || '-'}</td>
+            <td>${escapeHtml(m.tenthuoc)}</td>
+            <td>${escapeHtml(m.soluong)}</td>
+            <td>${escapeHtml(m.lieudung || '-')}</td>
+            <td>${escapeHtml(m.songayuong || '-')}</td>
+            <td>${escapeHtml(m.thoigianuong || '-')}</td>
             <td><button type="button" class="btn-danger btn-small" onclick="removeMedication(${idx})">Xóa</button></td>`;
         tbody.appendChild(tr);
     });
@@ -564,12 +574,12 @@ function updateMedicationInputs() {
     const container = document.getElementById('medicationsContainer');
     container.innerHTML = '';
     medications.forEach((m, idx) => {
-        container.innerHTML += `<input type="hidden" name="medications[${idx}][mathuoc]" value="${m.mathuoc}">
-            <input type="hidden" name="medications[${idx}][tenthuoc]" value="${m.tenthuoc}">
-            <input type="hidden" name="medications[${idx}][soluong]" value="${m.soluong}">
-            <input type="hidden" name="medications[${idx}][lieudung]" value="${m.lieudung || ''}">
-            <input type="hidden" name="medications[${idx}][songayuong]" value="${m.songayuong || ''}">
-            <input type="hidden" name="medications[${idx}][thoigianuong]" value="${m.thoigianuong || ''}">`;
+        container.innerHTML += `<input type="hidden" name="medications[${idx}][mathuoc]" value="${escapeHtml(m.mathuoc)}">
+            <input type="hidden" name="medications[${idx}][tenthuoc]" value="${escapeHtml(m.tenthuoc)}">
+            <input type="hidden" name="medications[${idx}][soluong]" value="${escapeHtml(m.soluong)}">
+            <input type="hidden" name="medications[${idx}][lieudung]" value="${escapeHtml(m.lieudung || '')}">
+            <input type="hidden" name="medications[${idx}][songayuong]" value="${escapeHtml(m.songayuong || '')}">
+            <input type="hidden" name="medications[${idx}][thoigianuong]" value="${escapeHtml(m.thoigianuong || '')}">`;
     });
 }
 
