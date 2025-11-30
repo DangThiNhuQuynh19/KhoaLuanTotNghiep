@@ -106,8 +106,15 @@ if (isset($_POST['submit'])) {
                 
                 // Cập nhật trạng thái phiếu khám bệnh thành 'Đã khám' nếu có mã phiếu
                 if (!empty($_POST['maphieukhambenh'])) {
-                    $cphieukhambenh->updateTrangThaiPKB($_POST['maphieukhambenh'], 'Đã khám');
-                    $message .= " Đã cập nhật trạng thái lịch hẹn thành Đã khám.";
+                    // Sanitize and validate the appointment ID
+                    $maphieukhambenh_sanitized = trim(htmlspecialchars($_POST['maphieukhambenh'], ENT_QUOTES, 'UTF-8'));
+                    
+                    // Validate that the appointment belongs to the current doctor
+                    $phieukham = $cphieukhambenh->getPhieuKhamBenhOfIDPK($maphieukhambenh_sanitized);
+                    if ($phieukham && $phieukham['mabacsi'] == $bacsi['mabacsi']) {
+                        $cphieukhambenh->updateTrangThaiPKB($maphieukhambenh_sanitized, 'Đã khám');
+                        $message .= " Đã cập nhật trạng thái lịch hẹn thành Đã khám.";
+                    }
                 }
             } else {
                 $message = "Không thể lưu chi tiết hồ sơ bệnh án!";
