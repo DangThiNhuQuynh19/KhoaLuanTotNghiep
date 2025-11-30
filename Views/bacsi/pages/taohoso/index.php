@@ -7,6 +7,7 @@ include_once('Controllers/cthuoc.php');
 include_once('Controllers/cchitietdonthuoc.php');
 include_once('Controllers/cchitiethoso.php');
 include_once('Controllers/cbacsi.php');
+include_once('Controllers/cphieukhambenh.php');
 include_once("Assets/config.php");
 
 // KHỞI TẠO CONTROLLER
@@ -18,6 +19,7 @@ $cdonthuoc = new cDonThuoc();
 $cbenhnhan = new cBenhnhan();
 $cchuyenkhoa = new cChuyenKhoa();
 $cthuoc = new cThuoc();
+$cphieukhambenh = new cPhieuKhamBenh();
 
 // KIỂM TRA ĐỦ THAM SỐ
 if (!isset($_GET['mabenhnhan']) || empty($_GET['mabenhnhan'])) {
@@ -25,6 +27,7 @@ if (!isset($_GET['mabenhnhan']) || empty($_GET['mabenhnhan'])) {
 }
 
 $mabenhnhan = $_GET['mabenhnhan'];
+$maphieukhambenh = $_GET['maphieukhambenh'] ?? '';
 
 // LẤY DỮ LIỆU
 $thuoc = $cthuoc->get_thuoc();
@@ -100,6 +103,12 @@ if (isset($_POST['submit'])) {
                 $_POST['note']
             )) {
                 $message = "Hồ sơ bệnh án đã được tạo thành công!";
+                
+                // Cập nhật trạng thái phiếu khám bệnh thành 'Đã khám' nếu có mã phiếu
+                if (!empty($_POST['maphieukhambenh'])) {
+                    $cphieukhambenh->updateTrangThaiPKB($_POST['maphieukhambenh'], 'Đã khám');
+                    $message .= " Đã cập nhật trạng thái lịch hẹn thành Đã khám.";
+                }
             } else {
                 $message = "Không thể lưu chi tiết hồ sơ bệnh án!";
             }
@@ -613,6 +622,7 @@ if (isset($_POST['submit'])) {
         <!-- Medical Record Form -->
         <form action="" method="post" id="medicalRecordForm">
             <input type="hidden" name="patientId" value="<?php echo $benhnhan['mabenhnhan']; ?>">
+            <input type="hidden" name="maphieukhambenh" value="<?php echo htmlspecialchars($maphieukhambenh); ?>">
 
             <div class="card">
                 <div class="card-header">
