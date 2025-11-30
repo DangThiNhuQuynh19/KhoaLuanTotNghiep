@@ -5,6 +5,16 @@ define('ENCRYPTION_KEY', hash('sha256', 'mySuperSecretKey123!', true)); // bạn
 define('ENCRYPTION_METHOD', 'AES-256-CBC');
 define('ENCRYPTION_IV', substr(hash('sha256', 'myInitVector'), 0, 16)); // 16 bytes IV
 
+// Cấu hình domain và WebSocket cho VPS host
+define('SITE_DOMAIN', 'hanhphuc.site');
+define('SITE_URL', 'https://hanhphuc.site');
+define('WEBSOCKET_HOST', 'hanhphuc.site');
+define('WEBSOCKET_PORT', '8080');
+// Sử dụng ws:// nếu VPS chưa cấu hình SSL cho WebSocket, đổi thành 'wss://' nếu có SSL
+define('WEBSOCKET_URL', 'ws://' . WEBSOCKET_HOST . ':' . WEBSOCKET_PORT);
+define('UPLOAD_DIR', __DIR__ . '/../uploads/');
+define('UPLOAD_URL', SITE_URL . '/uploads/');
+
 // Hàm mã hóa dữ liệu
 function encryptData($data) {
     return base64_encode(openssl_encrypt($data, ENCRYPTION_METHOD, ENCRYPTION_KEY, 0, ENCRYPTION_IV));

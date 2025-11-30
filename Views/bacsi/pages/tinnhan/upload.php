@@ -3,6 +3,7 @@ session_start();
 header('Content-Type: application/json');
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 require_once('../../../../Models/ChatUserModel.php'); // Model chat
+require_once('../../../../Assets/config.php'); // Config với domain
 
 if (!isset($_SESSION['user']['tentk'])) {
     echo json_encode(['success'=>false,'error'=>'Chưa đăng nhập']); exit;
@@ -17,8 +18,8 @@ if ($file['type'] !== 'application/pdf') {
     echo json_encode(['success'=>false,'error'=>'Chỉ chấp nhận PDF']); exit;
 }
 
-// Thư mục uploads
-$uploadDir = 'C:/xampp/htdocs/KLTN/uploads/';
+// Thư mục uploads - sử dụng đường dẫn từ config
+$uploadDir = UPLOAD_DIR;
 if(!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
 
 // Tên file an toàn
@@ -27,7 +28,7 @@ $path = $uploadDir.$safeName;
 
 // Upload file
 if(move_uploaded_file($file['tmp_name'], $path)){
-    $url = "http://localhost/KLTN/uploads/".$safeName;
+    $url = UPLOAD_URL.$safeName;
 
     // Lưu file vào database dưới dạng tin nhắn [FILE]
     if(isset($_POST['receiver'])){ // gửi từ client kèm tentk người nhận
