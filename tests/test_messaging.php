@@ -103,7 +103,10 @@ if ($connection) {
     test('getNewMessages returns recent messages', count($newMessages) > 0);
     
     // Cleanup test data
-    $connection->query("DELETE FROM tinnhan WHERE tentk_gui = '{$testSender}'");
+    $stmt = $connection->prepare("DELETE FROM tinnhan WHERE tentk_gui = ?");
+    $stmt->bind_param("s", $testSender);
+    $stmt->execute();
+    $stmt->close();
     echo "\n[Cleanup] Test messages deleted\n";
     
     $db->dongKetNoi($connection);

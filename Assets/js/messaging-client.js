@@ -327,8 +327,9 @@ class MessagingClient {
                     if (data.messages && data.messages.length > 0) {
                         const lastMsg = data.messages[data.messages.length - 1];
                         this.lastTimestamp = lastMsg.time;
+                    } else {
+                        this.lastTimestamp = data.timestamp;
                     }
-                    this.lastTimestamp = data.timestamp;
                 } else {
                     this.onError(data.error);
                 }

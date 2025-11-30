@@ -20,9 +20,14 @@ if (file_exists($envFile)) {
             $key = trim($key);
             $value = trim($value);
             
-            // Remove quotes from value if present
-            if (preg_match('/^["\'](.*)["\']\s*$/', $value, $matches)) {
-                $value = $matches[1];
+            // Remove quotes from value if present (handle single and double quotes separately)
+            $value = trim($value);
+            if (strlen($value) >= 2) {
+                $firstChar = $value[0];
+                $lastChar = $value[strlen($value) - 1];
+                if (($firstChar === '"' && $lastChar === '"') || ($firstChar === "'" && $lastChar === "'")) {
+                    $value = substr($value, 1, -1);
+                }
             }
             
             // Set environment variable if not already set

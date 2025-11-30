@@ -73,6 +73,11 @@ class ChatUserModel {
 
     // Lấy tin nhắn mới sau một timestamp (cho polling)
     public function getNewMessages($user1, $user2, $lastTimestamp = null) {
+        if (!$this->connect) {
+            error_log("Database connection not available");
+            return false;
+        }
+        
         $sql = "
             SELECT * FROM tinnhan
             WHERE ((tentk_gui = ? AND tentk_nhan = ?) OR (tentk_gui = ? AND tentk_nhan = ?))

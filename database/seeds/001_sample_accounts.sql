@@ -4,6 +4,10 @@
 --
 -- IMPORTANT: This seed creates test accounts for manual testing.
 -- Password for all test accounts: Test@123 (hashed using PHP password_hash)
+-- 
+-- WARNING: Remove these test accounts before deploying to production!
+-- These accounts are for development/testing purposes only.
+--
 -- Modify mavaitro values according to your role configuration:
 --   mavaitro = 1: Bệnh nhân (Patient)
 --   mavaitro = 2: Bác sĩ (Doctor)
