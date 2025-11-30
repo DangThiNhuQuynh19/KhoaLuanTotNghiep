@@ -1,0 +1,14 @@
+# Chặn liệt kê danh sách file trong thư mục
+Options -Indexes
+
+# Chỉ cho phép truy cập các file được upload (hình ảnh và PDF)
+<FilesMatch "\.(jpg|jpeg|png|gif|pdf)$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>
+
+# Chặn truy cập file PHP trong thư mục uploads để bảo mật
+<FilesMatch "\.php$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
