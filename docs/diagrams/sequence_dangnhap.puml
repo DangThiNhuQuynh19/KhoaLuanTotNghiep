@@ -1,0 +1,109 @@
+@startuml sequence_dangnhap
+
+title Sơ đồ Sequence - Chức năng Đăng nhập
+
+skinparam backgroundColor #FEFEFE
+skinparam sequenceArrowThickness 2
+skinparam roundcorner 10
+skinparam maxmessagesize 200
+skinparam sequenceParticipant underline
+
+actor "Người dùng" as User #LightBlue
+participant "View\n(dangnhap/index.php)" as View #LightGreen
+participant "Xử lý đăng nhập\n(xulydangnhap.php)" as XuLy #LightCyan
+participant "Controller\n(ctaikhoan.php)" as Controller #LightYellow
+participant "Model\n(mtaikhoan.php)" as Model #LightPink
+database "Database\n(MySQL)" as DB #LightGray
+
+== Bắt đầu đăng nhập ==
+
+User -> View : Truy cập trang đăng nhập\n(index.php?action=dangnhap)
+activate View
+View --> User : Hiển thị form đăng nhập
+deactivate View
+
+== Nhập thông tin đăng nhập ==
+
+User -> View : Nhập email và mật khẩu
+activate View
+
+User -> View : Click "Đăng nhập" (POST request)
+
+View -> XuLy : Submit form với\n(tentk, password)
+activate XuLy
+
+XuLy -> XuLy : Mã hóa email\n(encryptData(tentk))
+XuLy -> XuLy : Hash mật khẩu\n(MD5(password))
+
+XuLy -> Controller : dangnhap(tentk, password)
+activate Controller
+
+Controller -> Model : select_01_taikhoan(tentk, matkhau)
+activate Model
+
+Model -> DB : SELECT * FROM taikhoan\nWHERE tentk = ? AND matkhau = ?
+activate DB
+DB --> Model : Kết quả truy vấn
+deactivate DB
+
+Model --> Controller : return $result (mysqli_result)
+deactivate Model
+
+== Xử lý kết quả đăng nhập ==
+
+alt Không tìm thấy tài khoản (num_rows == 0)
+    Controller --> View : echo alert("Email hoặc password không chính xác")
+    deactivate Controller
+    View --> User : Hiển thị thông báo lỗi\n(JavaScript alert)
+    View --> User : Quay lại trang đăng nhập\n(window.history.back())
+    
+else Tài khoản tồn tại (num_rows > 0)
+    Controller -> Controller : fetch_assoc() - Lấy thông tin user
+    
+    alt Tài khoản bị vô hiệu hóa (matrangthai != 1)
+        Controller --> View : echo alert("Tài khoản đã bị vô hiệu hóa")
+        deactivate Controller
+        View --> User : Hiển thị thông báo\n(JavaScript alert)
+        View --> User : Quay lại trang đăng nhập\n(window.history.back())
+        
+    else Tài khoản hoạt động (matrangthai == 1)
+        Controller -> Controller : Lưu SESSION\n$_SESSION['dangnhap'] = mavaitro\n$_SESSION['user'] = row
+        
+        Controller --> View : header("Location:index.php?action=trangchu")
+        deactivate Controller
+        
+        View --> User : Chuyển hướng đến trang chủ
+    end
+end
+
+deactivate XuLy
+deactivate View
+
+== Phân quyền theo vai trò ==
+
+note over User, DB
+    Sau khi đăng nhập thành công, hệ thống sẽ phân quyền theo mavaitro:
+    - mavaitro = 1: Bệnh nhân → Views/benhnhan
+    - mavaitro = 2: Bác sĩ → Views/bacsi
+    - mavaitro = 3: Chuyên gia → Views/chuyengia
+    - mavaitro = 4: Nhân viên tiếp tân → Views/nhanvientieptan
+    - mavaitro = 5: Nhân viên xét nghiệm → Views/nhanvienxetnghiem
+    - mavaitro = 6: Admin → Views/admin
+    - mavaitro = 7: Quản lý → Views/quanly
+end note
+
+== Đăng nhập bằng Google (OAuth) ==
+
+User -> View : Click "Đăng nhập bằng Google"
+activate View
+View -> View : Redirect đến Google OAuth\n($client->createAuthUrl())
+View --> User : Chuyển hướng đến Google
+deactivate View
+
+note right of View
+    Xử lý OAuth được cấu hình trong:
+    - config.php (Google API Client)
+    - logingoogle/ (callback handler)
+end note
+
+@enduml
