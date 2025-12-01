@@ -1,0 +1,123 @@
+@startuml sequence_dangky
+
+title Sơ đồ Sequence - Chức năng Đăng ký tài khoản
+
+skinparam backgroundColor #FEFEFE
+skinparam sequenceArrowThickness 2
+skinparam roundcorner 10
+skinparam maxmessagesize 200
+skinparam sequenceParticipant underline
+
+actor "Người dùng" as User #LightBlue
+participant "View\n(dangky/index.php)" as View #LightGreen
+participant "Controller\n(ctaikhoan.php)" as Controller #LightYellow
+participant "Model\n(mtaikhoan.php)" as Model #LightPink
+database "Database\n(MySQL)" as DB #LightGray
+
+== Bắt đầu đăng ký ==
+
+User -> View : Truy cập trang đăng ký
+activate View
+View --> User : Hiển thị form đăng ký
+deactivate View
+
+== Nhập thông tin đăng ký ==
+
+User -> View : Nhập thông tin cá nhân\n(email, họ tên, ngày sinh, giới tính,\n CCCD, SĐT, nghề nghiệp, địa chỉ, mật khẩu)
+activate View
+
+View -> View : Validate dữ liệu ở client-side\n(JavaScript validation)
+
+alt Dữ liệu không hợp lệ
+    View --> User : Hiển thị thông báo lỗi validation
+else Dữ liệu hợp lệ
+    User -> View : Submit form (POST request)
+end
+
+== Xử lý đăng ký ==
+
+View -> View : Validate dữ liệu ở server-side\n(kiểm tra email, SĐT, CCCD, tuổi >= 18)
+
+alt Dữ liệu không hợp lệ
+    View --> User : Hiển thị thông báo lỗi (SweetAlert)
+else Dữ liệu hợp lệ
+    
+    View -> View : Mã hóa dữ liệu nhạy cảm\n(encryptData: email, SĐT, CCCD)
+    View -> View : Upload ảnh CCCD (nếu có)
+    View -> View : Tạo mã bệnh nhân (BN_XXXXXXXX)
+    
+    View -> Controller : dangkytk(mabenhnhan, email, hoten,\n ngaysinh, sdt, cccd, cccd_truoc,\n cccd_sau, gioitinh, nghenghiep,\n tiensucuagiadinh, tiensucuabanthan,\n sonha, xa, tinh, matkhau)
+    activate Controller
+    
+    Controller -> Model : dangkytk(...)
+    activate Model
+    
+    Model -> DB : SELECT * FROM taikhoan WHERE tentk = ?
+    activate DB
+    DB --> Model : Kết quả kiểm tra email
+    deactivate DB
+    
+    alt Email đã tồn tại
+        Model --> Controller : return "email_ton_tai"
+        deactivate Model
+        Controller --> View : return "email_ton_tai"
+        deactivate Controller
+        View --> User : Hiển thị thông báo\n"Email đã tồn tại" (SweetAlert)
+        
+    else Email chưa tồn tại
+        activate Model
+        
+        Model -> Model : Hash mật khẩu (MD5)\n(Khuyến nghị: sử dụng password_hash())
+        
+        Model -> DB : INSERT INTO taikhoan\n(tentk, matkhau, mavaitro, matrangthai)
+        activate DB
+        DB --> Model : OK (tài khoản đã tạo)
+        deactivate DB
+        
+        Model -> Model : Tính tuổi bệnh nhân
+        
+        Model -> DB : INSERT INTO nguoidung\n(manguoidung, hoten, ngaysinh, gioitinh,\n cccd, cccd_matruoc, cccd_matsau,\n dantoc, sdt, sonha, maxaphuong, email)
+        activate DB
+        DB --> Model : OK (người dùng đã tạo)
+        deactivate DB
+        
+        Model -> DB : INSERT INTO benhnhan\n(mabenhnhan, nghenghiep,\n tiensubenhtatcuagiadinh,\n tiensubenhtatcuabenhnhan,\n matrangthai, moiquanhevoinguoithan)
+        activate DB
+        DB --> Model : OK (bệnh nhân đã tạo)
+        deactivate DB
+        
+        Model --> Controller : return true
+        deactivate Model
+        
+        Controller --> View : return true
+        deactivate Controller
+        
+        View --> User : Hiển thị thông báo\n"Đăng ký thành công!" (SweetAlert)
+        
+        User -> View : Click "OK"
+        View --> User : Chuyển hướng đến trang đăng nhập\n(index.php?action=dangnhap)
+    end
+end
+
+deactivate View
+
+== Kết thúc ==
+
+note right of DB
+    Các bảng liên quan:
+    - taikhoan: Lưu thông tin đăng nhập
+    - nguoidung: Lưu thông tin cá nhân
+    - benhnhan: Lưu thông tin y tế bệnh nhân
+end note
+
+note left of View
+    Validation bao gồm:
+    - Email hợp lệ
+    - SĐT 10 số
+    - CCCD 9-12 số
+    - Họ tên chỉ chứa chữ
+    - Mật khẩu >= 6 ký tự
+    - Tuổi >= 18
+end note
+
+@enduml
