@@ -1,0 +1,73 @@
+@startuml sequence-diagram-dangnhap
+title Sequence Diagram - Chức năng Đăng nhập (Login)
+skinparam backgroundColor #FEFEFE
+skinparam sequenceArrowThickness 2
+skinparam roundcorner 10
+skinparam maxmessagesize 200
+skinparam sequenceParticipant underline
+
+actor "Người dùng\n(User)" as User
+participant "index.php\n(Giao diện đăng nhập)" as View
+participant "xulydangnhap.php\n(Xử lý đăng nhập)" as Handler
+participant "ctaiKhoan\n(Controller)" as Controller
+participant "mtaikhoan\n(Model)" as Model
+participant "clsketnoi\n(Database Connection)" as DBConnection
+database "Database\n(hanhphuc)" as DB
+
+== Bước 1: Hiển thị trang đăng nhập ==
+User -> View: Truy cập trang đăng nhập\n(?action=dangnhap)
+View --> User: Hiển thị form đăng nhập\n(email, password)
+
+== Bước 2: Người dùng nhập thông tin ==
+User -> View: Nhập email và mật khẩu
+User -> View: Click nút "Đăng nhập"
+
+== Bước 3: Gửi dữ liệu đăng nhập ==
+View -> Handler: POST request\n(tentk, password)
+
+== Bước 4: Mã hóa dữ liệu ==
+Handler -> Handler: encryptData(tentk)\nmã hóa email
+Handler -> Handler: MD5(password)\nmã hóa mật khẩu
+
+== Bước 5: Gọi Controller xử lý ==
+Handler -> Controller: dangnhap($tentk, $password)
+
+== Bước 6: Controller gọi Model ==
+Controller -> Model: new mtaikhoan()
+Model -> DBConnection: new clsketnoi()
+DBConnection -> DB: mysqli_connect()
+DB --> DBConnection: Connection object
+DBConnection --> Model: $conn
+
+Controller -> Model: select_01_taikhoan($tentk, $matkhau)
+
+== Bước 7: Truy vấn Database ==
+Model -> DB: prepare("SELECT * FROM taikhoan\nWHERE tentk = ? AND matkhau = ?")
+Model -> DB: bind_param("ss", $tentk, $matkhau)
+Model -> DB: execute()
+DB --> Model: Result set
+
+Model --> Controller: Return kết quả truy vấn
+
+== Bước 8: Xử lý kết quả ==
+alt Đăng nhập thành công (num_rows > 0)
+    Controller -> Controller: fetch_assoc()\nlấy thông tin user
+    
+    alt Tài khoản đang hoạt động (matrangthai = 1)
+        Controller -> Controller: $_SESSION['dangnhap'] = mavaitro
+        Controller -> Controller: $_SESSION['user'] = user_data
+        Controller --> View: header("Location:index.php?action=trangchu")
+        View --> User: Chuyển hướng đến trang chủ
+    else Tài khoản bị vô hiệu hóa (matrangthai != 1)
+        Controller --> User: alert("Tài khoản đã bị vô hiệu hóa")
+        Controller --> View: window.history.back()
+        View --> User: Quay lại trang đăng nhập
+    end
+    
+else Đăng nhập thất bại (num_rows = 0)
+    Controller --> User: alert("Email hoặc password không chính xác")
+    Controller --> View: window.history.back()
+    View --> User: Quay lại trang đăng nhập
+end
+
+@enduml
