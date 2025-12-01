@@ -1,0 +1,142 @@
+@startuml sequence_xemdanhsachbacsi
+
+title Sơ đồ Sequence - Xem danh sách và Tìm kiếm bác sĩ
+
+skinparam backgroundColor #FEFEFE
+skinparam sequenceArrowThickness 2
+skinparam roundcorner 10
+skinparam maxmessagesize 200
+skinparam sequenceParticipant underline
+
+actor "Người dùng" as User #LightBlue
+participant "View\n(bacsi/index.php)" as View #LightGreen
+participant "Controller\n(cbacsi.php)" as Controller #LightYellow
+participant "Controller Khoa\n(cchuyenkhoa.php)" as ControllerKhoa #LightCyan
+participant "Model\n(mbacsi.php)" as Model #LightPink
+participant "Model Khoa\n(mchuyenkhoa.php)" as ModelKhoa #Orange
+database "Database\n(MySQL)" as DB #LightGray
+
+== Truy cập trang danh sách bác sĩ ==
+
+User -> View : Truy cập trang danh sách bác sĩ\n(index.php?action=bacsi)
+activate View
+
+View -> ControllerKhoa : getAllChuyenKhoa()
+activate ControllerKhoa
+ControllerKhoa -> ModelKhoa : dschuyenkhoa()
+activate ModelKhoa
+ModelKhoa -> DB : SELECT * FROM chuyenkhoa
+activate DB
+DB --> ModelKhoa : Kết quả danh sách chuyên khoa
+deactivate DB
+ModelKhoa --> ControllerKhoa : return $tbl
+deactivate ModelKhoa
+ControllerKhoa --> View : return $dsKhoa
+deactivate ControllerKhoa
+
+== Xử lý tìm kiếm/lọc ==
+
+alt Không có điều kiện lọc (Xem tất cả)
+    View -> Controller : getAllBacSi1()
+    activate Controller
+    Controller -> Model : dsbacsi1()
+    activate Model
+    Model -> DB : SELECT * FROM bacsi\nJOIN chuyenkhoa, nguoidung, taikhoan, trangthai\nWHERE matrangthai = 1\nORDER BY mabacsi ASC
+    activate DB
+    DB --> Model : Danh sách bác sĩ đang hoạt động
+    deactivate DB
+    Model --> Controller : return $tbl
+    deactivate Model
+    Controller --> View : return $ds
+    deactivate Controller
+
+else Tìm theo tên bác sĩ (?name=...)
+    View -> Controller : getBacSiByName(name)
+    activate Controller
+    Controller -> Model : bacsitheoten(name)
+    activate Model
+    Model -> DB : SELECT * FROM bacsi\nJOIN chuyenkhoa, nguoidung\nWHERE hoten LIKE '%name%'
+    activate DB
+    DB --> Model : Danh sách bác sĩ phù hợp
+    deactivate DB
+    Model --> Controller : return $tbl
+    deactivate Model
+    Controller --> View : return $ds
+    deactivate Controller
+
+else Lọc theo chuyên khoa (?khoa=...)
+    View -> Controller : getBacSiByKhoa(khoa)
+    activate Controller
+    Controller -> Model : bacsitheokhoa(id)
+    activate Model
+    Model -> DB : SELECT * FROM bacsi\nJOIN chuyenkhoa, nguoidung\nWHERE machuyenkhoa = 'id'
+    activate DB
+    DB --> Model : Danh sách bác sĩ theo khoa
+    deactivate DB
+    Model --> Controller : return $tbl
+    deactivate Model
+    Controller --> View : return $ds
+    deactivate Controller
+
+else Tìm theo tên VÀ lọc theo khoa (?name=...&khoa=...)
+    View -> Controller : getBacSiByTenAndKhoa(name, khoa)
+    activate Controller
+    Controller -> Model : bacsitheotenandkhoa(name, id)
+    activate Model
+    Model -> DB : SELECT * FROM bacsi\nJOIN chuyenkhoa, nguoidung\nWHERE hoten LIKE '%name%'\nAND machuyenkhoa = 'id'
+    activate DB
+    DB --> Model : Danh sách bác sĩ phù hợp
+    deactivate DB
+    Model --> Controller : return $tbl
+    deactivate Model
+    Controller --> View : return $ds
+    deactivate Controller
+end
+
+== Hiển thị kết quả ==
+
+alt Lỗi kết nối ($ds == -1)
+    View --> User : Hiển thị thông báo\n"Lỗi kết nối dữ liệu"
+    
+else Không tìm thấy ($ds == 0)
+    View --> User : Hiển thị thông báo\n"Không có bác sĩ nào"
+    
+else Có kết quả
+    View -> View : Lặp qua danh sách bác sĩ\n(while $row = $ds->fetch_assoc())
+    View --> User : Hiển thị danh sách bác sĩ\n(Card: ảnh, tên, cấp bậc, chuyên khoa,\nmô tả, nút "Xem chi tiết")
+end
+
+deactivate View
+
+== Xem chi tiết bác sĩ ==
+
+User -> View : Click "Xem chi tiết"\n(index.php?action=chitietbacsi&id=...)
+note right of User
+    Chuyển sang màn hình
+    chi tiết bác sĩ
+end note
+
+== Form tìm kiếm ==
+
+note over View
+    Form tìm kiếm bao gồm:
+    - Input text: Nhập tên bác sĩ
+    - Dropdown: Chọn chuyên khoa
+    - Button: Tìm kiếm
+    
+    Submit form gửi GET request:
+    index.php?action=bacsi&name=...&khoa=...
+end note
+
+== Thông tin hiển thị ==
+
+note over DB
+    Dữ liệu bác sĩ từ các bảng:
+    - bacsi: mabacsi, motabs, imgbs, giakham, capbac
+    - nguoidung: hoten, ngaysinh, gioitinh, sdt, email
+    - chuyenkhoa: tenchuyenkhoa
+    - taikhoan: tentk, matrangthai
+    - trangthai: tentrangthai
+end note
+
+@enduml

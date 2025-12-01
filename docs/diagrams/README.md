@@ -8,6 +8,7 @@ Tài liệu này mô tả các sơ đồ sequence UML cho các chức năng chí
 |-----------|---------------|----------|
 | Đăng ký | [sequence_dangky.puml](./sequence_dangky.puml) | [sequence_dangky.png](./sequence_dangky.png) |
 | Đăng nhập | [sequence_dangnhap.puml](./sequence_dangnhap.puml) | [sequence_dangnhap.png](./sequence_dangnhap.png) |
+| Xem danh sách & tìm kiếm bác sĩ | [sequence_xemdanhsachbacsi.puml](./sequence_xemdanhsachbacsi.puml) | [sequence_xemdanhsachbacsi.png](./sequence_xemdanhsachbacsi.png) |
 
 ---
 
@@ -220,7 +221,95 @@ sudo apt-get install plantuml
 # Render sơ đồ
 plantuml sequence_dangky.puml
 plantuml sequence_dangnhap.puml
+plantuml sequence_xemdanhsachbacsi.puml
 ```
 
 ## Tác giả
 Hệ thống Bệnh viện Hạnh Phúc
+
+---
+
+# 3. Sơ đồ Sequence - Xem danh sách và Tìm kiếm bác sĩ
+
+## Mô tả
+
+Sơ đồ sequence này mô tả luồng hoạt động của chức năng xem danh sách bác sĩ và tìm kiếm/lọc bác sĩ trong hệ thống Bệnh viện Hạnh Phúc.
+
+## Các thành phần tham gia
+
+| Thành phần | Mô tả |
+|------------|-------|
+| **Người dùng** | Actor - người dùng muốn xem/tìm bác sĩ |
+| **View** | bacsi/index.php - Giao diện danh sách bác sĩ |
+| **Controller** | cbacsi.php - Xử lý logic lấy danh sách bác sĩ |
+| **Controller Khoa** | cchuyenkhoa.php - Xử lý logic lấy danh sách chuyên khoa |
+| **Model** | mbacsi.php - Tương tác với database bác sĩ |
+| **Model Khoa** | mchuyenkhoa.php - Tương tác với database chuyên khoa |
+| **Database** | MySQL - Lưu trữ dữ liệu |
+
+## Luồng hoạt động chính
+
+### 1. Truy cập trang danh sách bác sĩ
+- Người dùng truy cập `index.php?action=bacsi`
+- View load danh sách chuyên khoa cho dropdown filter
+
+### 2. Các trường hợp tìm kiếm/lọc
+
+**Trường hợp 1: Xem tất cả bác sĩ (mặc định)**
+- Không có tham số `name` hoặc `khoa`
+- Gọi `getAllBacSi1()` → `dsbacsi1()`
+- Lấy danh sách bác sĩ đang hoạt động (matrangthai = 1)
+
+**Trường hợp 2: Tìm theo tên bác sĩ**
+- Có tham số `?name=...`
+- Gọi `getBacSiByName(name)` → `bacsitheoten(name)`
+- Tìm bác sĩ có họ tên chứa từ khóa (LIKE '%name%')
+
+**Trường hợp 3: Lọc theo chuyên khoa**
+- Có tham số `?khoa=...`
+- Gọi `getBacSiByKhoa(khoa)` → `bacsitheokhoa(id)`
+- Lấy danh sách bác sĩ thuộc chuyên khoa được chọn
+
+**Trường hợp 4: Tìm theo tên VÀ lọc theo khoa**
+- Có cả tham số `?name=...&khoa=...`
+- Gọi `getBacSiByTenAndKhoa(name, khoa)` → `bacsitheotenandkhoa(name, id)`
+- Kết hợp cả hai điều kiện
+
+### 3. Hiển thị kết quả
+
+| Kết quả | Hiển thị |
+|---------|----------|
+| Lỗi kết nối (-1) | Thông báo "Lỗi kết nối dữ liệu" |
+| Không có kết quả (0) | Thông báo "Không có bác sĩ nào" |
+| Có kết quả | Danh sách card bác sĩ |
+
+### 4. Thông tin hiển thị mỗi bác sĩ
+- Ảnh đại diện
+- Cấp bậc + Họ tên
+- Tên chuyên khoa
+- Mô tả ngắn (tối đa 300 ký tự)
+- Nút "Xem chi tiết" → chuyển đến `?action=chitietbacsi&id=...`
+
+## Form tìm kiếm
+
+```
+- Input text: Nhập tên bác sĩ
+- Dropdown: Chọn chuyên khoa
+- Button: Tìm kiếm
+```
+
+Submit form gửi GET request: `index.php?action=bacsi&name=...&khoa=...`
+
+## Sơ đồ Sequence (PlantUML)
+
+File: [sequence_xemdanhsachbacsi.puml](./sequence_xemdanhsachbacsi.puml)
+
+## Các bảng Database liên quan
+
+| Bảng | Mô tả |
+|------|-------|
+| `bacsi` | Thông tin bác sĩ (mabacsi, motabs, imgbs, giakham, capbac, machuyenkhoa) |
+| `nguoidung` | Thông tin cá nhân (hoten, ngaysinh, gioitinh, sdt, email) |
+| `chuyenkhoa` | Danh sách chuyên khoa (machuyenkhoa, tenchuyenkhoa) |
+| `taikhoan` | Trạng thái tài khoản (tentk, matrangthai) |
+| `trangthai` | Mô tả trạng thái (matrangthai, tentrangthai) |
