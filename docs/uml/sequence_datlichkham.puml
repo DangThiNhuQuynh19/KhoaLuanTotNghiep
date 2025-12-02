@@ -20,8 +20,8 @@ participant "mBenhNhan" as ModelBN <<Model>>
 participant "mPhieuKhamBenh" as ModelPKB <<Model>>
 database "Database" as DB
 
-== Bước 1: Xem thông tin lịch khám ==
-BenhNhan -> ViewDatLich : Chọn Bác sĩ/Chuyên gia,\nNgày khám, Khung giờ
+== Bước 1: Chọn Bác sĩ ==
+BenhNhan -> ViewDatLich : Chọn Bác sĩ/Chuyên gia
 
 ViewDatLich -> ControllerBS : getBacSiById(idbs)\nhoặc getChuyenGiaById(idcg)
 activate ControllerBS
@@ -34,6 +34,11 @@ deactivate ModelBS
 ControllerBS --> ViewDatLich : Thông tin BS/CG\n(hoten, capbac, chuyenkhoa, giakham)
 deactivate ControllerBS
 
+ViewDatLich --> BenhNhan : Hiển thị thông tin Bác sĩ/Chuyên gia
+
+== Bước 2: Xem lịch khám ==
+BenhNhan -> ViewDatLich : Chọn Ngày khám, Khung giờ
+
 ViewDatLich -> ControllerLK : getlich(makhunggiokb, ngay, idbs)
 activate ControllerLK
 ControllerLK -> ModelLK : xemlich(idca, ngay, idbs)
@@ -45,7 +50,7 @@ deactivate ModelLK
 ControllerLK --> ViewDatLich : Thông tin lịch\n(giokham, thongtin)
 deactivate ControllerLK
 
-== Bước 2: Lấy danh sách hồ sơ bệnh nhân ==
+== Bước 3: Lấy danh sách hồ sơ bệnh nhân ==
 ViewDatLich -> ControllerBN : getbenhnhanbytk(tentk)
 activate ControllerBN
 ControllerBN -> ModelBN : benhnhanbytk(tentk)
@@ -70,7 +75,7 @@ deactivate ControllerBN
 
 ViewDatLich --> BenhNhan : Hiển thị thông tin BS/CG,\nlịch khám, danh sách hồ sơ BN
 
-== Bước 3: Đặt lịch khám ==
+== Bước 4: Đặt lịch khám ==
 BenhNhan -> ViewDatLich : Chọn hồ sơ bệnh nhân\nvà nhấn "Đặt lịch khám"
 
 ViewDatLich -> ControllerPKB : kiemTraTrungLich(mabenhnhan, ngaykham, makhunggiokb)
@@ -91,7 +96,7 @@ else Không có lịch trùng
     ViewDatLich --> BenhNhan : Chuyển hướng đến trang Thanh toán
 end
 
-== Bước 4: Thanh toán và xác nhận ==
+== Bước 5: Thanh toán và xác nhận ==
 BenhNhan -> ViewThanhToan : Truy cập trang thanh toán
 
 ViewThanhToan -> ControllerBS : getBacSiById(mabacsi)\nhoặc getChuyenGiaById(machuyengia)

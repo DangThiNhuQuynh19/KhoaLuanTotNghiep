@@ -10,21 +10,24 @@ Sơ đồ tuần tự mô tả luồng chức năng đặt lịch khám bệnh t
 
 #### Mô tả luồng:
 
-1. **Bước 1: Xem thông tin lịch khám**
-   - Bệnh nhân chọn Bác sĩ/Chuyên gia, ngày khám, và khung giờ
-   - Hệ thống lấy thông tin bác sĩ/chuyên gia từ database
+1. **Bước 1: Chọn Bác sĩ**
+   - Bệnh nhân chọn Bác sĩ/Chuyên gia
+   - Hệ thống lấy và hiển thị thông tin bác sĩ/chuyên gia từ database
+
+2. **Bước 2: Xem lịch khám**
+   - Bệnh nhân chọn ngày khám và khung giờ
    - Hệ thống lấy thông tin lịch khám (giờ khám, địa điểm)
 
-2. **Bước 2: Lấy danh sách hồ sơ bệnh nhân**
+3. **Bước 3: Lấy danh sách hồ sơ bệnh nhân**
    - Hệ thống lấy thông tin tài khoản bệnh nhân
    - Hệ thống lấy danh sách tất cả hồ sơ bệnh nhân (bao gồm người được giám hộ)
 
-3. **Bước 3: Đặt lịch khám**
+4. **Bước 4: Đặt lịch khám**
    - Bệnh nhân chọn hồ sơ và nhấn "Đặt lịch khám"
    - Hệ thống kiểm tra lịch trùng
    - Nếu không trùng, chuyển đến trang thanh toán
 
-4. **Bước 4: Thanh toán và xác nhận**
+5. **Bước 5: Thanh toán và xác nhận**
    - Hiển thị thông tin thanh toán và mã QR
    - Bệnh nhân xác nhận thanh toán
    - Hệ thống lưu phiếu khám bệnh vào database
