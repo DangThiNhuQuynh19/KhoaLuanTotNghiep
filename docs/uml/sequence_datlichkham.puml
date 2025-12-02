@@ -1,0 +1,151 @@
+@startuml sequence_datlichkham
+
+title Sequence Diagram - Chức năng Đặt Lịch Khám
+
+skinparam sequenceArrowThickness 2
+skinparam roundcorner 5
+skinparam maxmessagesize 200
+skinparam sequenceParticipant underline
+
+actor "Bệnh nhân" as BenhNhan
+participant "Giao diện\nDatLichKham" as ViewDatLich <<View>>
+participant "Giao diện\nThanhToan" as ViewThanhToan <<View>>
+participant "cBacSi /\ncChuyenGia" as ControllerBS <<Controller>>
+participant "cLichKham" as ControllerLK <<Controller>>
+participant "cBenhNhan" as ControllerBN <<Controller>>
+participant "cPhieuKhamBenh" as ControllerPKB <<Controller>>
+participant "mBacSi /\nmChuyenGia" as ModelBS <<Model>>
+participant "mLichKham" as ModelLK <<Model>>
+participant "mBenhNhan" as ModelBN <<Model>>
+participant "mPhieuKhamBenh" as ModelPKB <<Model>>
+database "Database" as DB
+
+== Bước 1: Xem thông tin lịch khám ==
+BenhNhan -> ViewDatLich : Chọn Bác sĩ/Chuyên gia,\nNgày khám, Khung giờ
+
+ViewDatLich -> ControllerBS : getBacSiById(idbs)\nhoặc getChuyenGiaById(idcg)
+activate ControllerBS
+ControllerBS -> ModelBS : selectbyid(id)
+activate ModelBS
+ModelBS -> DB : SELECT * FROM bacsi/chuyengia WHERE id = ?
+DB --> ModelBS : Thông tin bác sĩ/chuyên gia
+ModelBS --> ControllerBS : result
+deactivate ModelBS
+ControllerBS --> ViewDatLich : Thông tin BS/CG\n(hoten, capbac, chuyenkhoa, giakham)
+deactivate ControllerBS
+
+ViewDatLich -> ControllerLK : getlich(makhunggiokb, ngay, idbs)
+activate ControllerLK
+ControllerLK -> ModelLK : xemlich(idca, ngay, idbs)
+activate ModelLK
+ModelLK -> DB : SELECT giokham, thongtin FROM lichlamviec...
+DB --> ModelLK : Thông tin lịch khám
+ModelLK --> ControllerLK : result
+deactivate ModelLK
+ControllerLK --> ViewDatLich : Thông tin lịch\n(giokham, thongtin)
+deactivate ControllerLK
+
+== Bước 2: Lấy danh sách hồ sơ bệnh nhân ==
+ViewDatLich -> ControllerBN : getbenhnhanbytk(tentk)
+activate ControllerBN
+ControllerBN -> ModelBN : benhnhanbytk(tentk)
+activate ModelBN
+ModelBN -> DB : SELECT * FROM benhnhan WHERE tentk = ?
+DB --> ModelBN : Thông tin bệnh nhân
+ModelBN --> ControllerBN : result
+deactivate ModelBN
+ControllerBN --> ViewDatLich : Thông tin BN
+deactivate ControllerBN
+
+ViewDatLich -> ControllerBN : getAllBenhNhanByTKdl(mabenhnhan)
+activate ControllerBN
+ControllerBN -> ModelBN : selectAllBenhnhanTheoTK(manguoigiamho)
+activate ModelBN
+ModelBN -> DB : SELECT * FROM benhnhan\nWHERE mabenhnhan = ? OR manguoigiamho = ?
+DB --> ModelBN : Danh sách hồ sơ bệnh nhân
+ModelBN --> ControllerBN : result
+deactivate ModelBN
+ControllerBN --> ViewDatLich : Danh sách hồ sơ
+deactivate ControllerBN
+
+ViewDatLich --> BenhNhan : Hiển thị thông tin BS/CG,\nlịch khám, danh sách hồ sơ BN
+
+== Bước 3: Đặt lịch khám ==
+BenhNhan -> ViewDatLich : Chọn hồ sơ bệnh nhân\nvà nhấn "Đặt lịch khám"
+
+ViewDatLich -> ControllerPKB : kiemTraTrungLich(mabenhnhan, ngaykham, makhunggiokb)
+activate ControllerPKB
+ControllerPKB -> ModelPKB : kiemTraTrungLich(mabenhnhan, ngaykham, makhunggiokb)
+activate ModelPKB
+ModelPKB -> DB : SELECT * FROM phieukhambenh\nWHERE mabenhnhan = ? AND ngaykham = ? AND makhunggiokb = ?
+DB --> ModelPKB : Kết quả kiểm tra
+ModelPKB --> ControllerPKB : result
+deactivate ModelPKB
+ControllerPKB --> ViewDatLich : true/false
+deactivate ControllerPKB
+
+alt Đã có lịch trùng
+    ViewDatLich --> BenhNhan : Thông báo "Bạn đã có lịch hẹn\ntrong ca này vào ngày này"
+else Không có lịch trùng
+    ViewDatLich -> ViewDatLich : Lưu thông tin vào SESSION\n(mabenhnhan, makhunggiokb, mabacsi, ngaykham, tongtien)
+    ViewDatLich --> BenhNhan : Chuyển hướng đến trang Thanh toán
+end
+
+== Bước 4: Thanh toán và xác nhận ==
+BenhNhan -> ViewThanhToan : Truy cập trang thanh toán
+
+ViewThanhToan -> ControllerBS : getBacSiById(mabacsi)\nhoặc getChuyenGiaById(machuyengia)
+activate ControllerBS
+ControllerBS -> ModelBS : selectbyid(id)
+ModelBS -> DB : SELECT * FROM bacsi/chuyengia WHERE id = ?
+DB --> ModelBS : Thông tin BS/CG
+ModelBS --> ControllerBS : result
+ControllerBS --> ViewThanhToan : Thông tin BS/CG
+deactivate ControllerBS
+
+ViewThanhToan -> ControllerLK : getlich(makhunggiokb, ngaykham, idbs)
+activate ControllerLK
+ControllerLK -> ModelLK : xemlich(idca, ngay, idbs)
+ModelLK -> DB : SELECT giokham, thongtin FROM lichlamviec\nWHERE makhunggiokb = ? AND ngaylam = ? AND manguoidung = ?
+DB --> ModelLK : Thông tin lịch khám
+ModelLK --> ControllerLK : result
+ControllerLK --> ViewThanhToan : Thông tin lịch khám
+deactivate ControllerLK
+
+ViewThanhToan -> ControllerBN : getbenhnhanbyid(mabenhnhan)
+activate ControllerBN
+ControllerBN -> ModelBN : selectbyid(mabenhnhan)
+ModelBN -> DB : SELECT * FROM benhnhan WHERE mabenhnhan = ?
+DB --> ModelBN : Thông tin BN
+ModelBN --> ControllerBN : result
+ControllerBN --> ViewThanhToan : Thông tin bệnh nhân
+deactivate ControllerBN
+
+ViewThanhToan --> BenhNhan : Hiển thị thông tin thanh toán\nvà mã QR thanh toán
+
+alt Bệnh nhân xác nhận thanh toán
+    BenhNhan -> ViewThanhToan : Nhấn "Xác nhận đã thanh toán"
+    
+    ViewThanhToan -> ControllerPKB : insertphieukham(maphieukb, ngaykham,\nmakhunggiokb, mabacsi, mabenhnhan, matrangthai)
+    activate ControllerPKB
+    ControllerPKB -> ModelPKB : insertphieukham(...)
+    activate ModelPKB
+    ModelPKB -> DB : INSERT INTO phieukhambenh\n(maphieukhambenh, ngaykham, makhunggiokb,\nmabacsi, mabenhnhan, matrangthai)\nVALUES (...)
+    DB --> ModelPKB : success/fail
+    ModelPKB --> ControllerPKB : result
+    deactivate ModelPKB
+    ControllerPKB --> ViewThanhToan : true/false
+    deactivate ControllerPKB
+    
+    alt Lưu thành công
+        ViewThanhToan --> BenhNhan : Thông báo "Đặt lịch khám thành công"\nvà chuyển đến trang Lịch hẹn
+    else Lưu thất bại
+        ViewThanhToan --> BenhNhan : Thông báo "Đặt lịch khám thất bại.\nVui lòng thử lại"
+    end
+    
+else Bệnh nhân hủy thanh toán
+    BenhNhan -> ViewThanhToan : Nhấn "Hủy thanh toán"
+    ViewThanhToan --> BenhNhan : Thông báo "Đã hủy thanh toán"\nvà chuyển đến trang Lịch hẹn
+end
+
+@enduml
