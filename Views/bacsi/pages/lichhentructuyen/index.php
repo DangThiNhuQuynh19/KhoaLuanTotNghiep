@@ -1,20 +1,23 @@
 <?php
-// Cập nhật view/handler cho trang quản lý lịch khám
-// File này xử lý POST khi lưu hồ sơ bệnh án từ modal và cập nhật trạng thái phiếu thành "Đã khám".
+/**
+ * Trang quản lý lịch hẹn trực tuyến
+ * Xử lý hiển thị danh sách lịch hẹn và modal khám bệnh
+ */
 
 include_once('Controllers/cphieukhambenh.php');
 include_once('Controllers/cbacsi.php');
-include_once('Controllers/chosobenhandientu.php'); // controller hồ sơ bệnh án (nếu có)
+include_once('Controllers/chosobenhandientu.php');
 include_once('Controllers/cthuoc.php');
 include_once('Controllers/cloaixetnghiem.php');
 include_once('Controllers/ckhunggioxetnghiem.php');
-include_once("Assets/config.php"); // cung cấp $conn nếu cần (PDO hoặc mysqli)
+include_once("Assets/config.php");
 
 // Include handler for complete examination
 if (isset($_POST['btnHoanTat'])) {
     include_once('Controllers/xulyhoantatkham.php');
 }
 
+// Initialize controllers
 $cbacsi = new cBacSi();
 $cphieukhambenh = new cPhieuKhamBenh();
 $chsba = new cHoSoBenhAnDienTu();
@@ -27,107 +30,11 @@ $thuoc_list = $cthuoc->get_thuoc();
 $loaixetnghiem_list = $cloaixetnghiem->get_loaixetnghiem();
 $khunggioxetnghiem_list = $ckhunggioxetnghiem->get_khunggioxetnghiem();
 
-// Xử lý POST lưu hồ sơ bệnh án từ modal
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_hsba'])) {
-    // Lấy dữ liệu từ form
-    $maphieu = $_POST['maphieukhambenh'] ?? '';
-    $mabenhnhan = $_POST['mabenhnhan'] ?? '';
-    $ngaykham = $_POST['ngaykham'] ?? date('Y-m-d');
-    $trieuchung = $_POST['trieuchung'] ?? '';
-    $chandoan = $_POST['chandoan'] ?? '';
-    $huongdieutri = $_POST['huongdieutri'] ?? ($_POST['donthuoc'] ?? '');
-    $donthuoc = $_POST['donthuoc'] ?? '';
-    $thanhtien = $_POST['thanhtien'] ?? 0;
-    $trangthai_post = $_POST['trangthai'] ?? 'Đã khám'; // mặc định lưu là Đã khám
-
-    // 1) Tạo hồ sơ bệnh án (sử dụng controller nếu có function tương ứng, ngược lại dùng raw SQL)
-    $insert_ok = false;
-    if (isset($chsba) && method_exists($chsba, 'create_hsba')) {
-        // Nếu controller có method create_hsba(array $data)
-        try {
-            $data = [
-                'mabenhnhan' => $mabenhnhan,
-                'mahoso' => '', // nếu cần mã tự sinh, controller sẽ xử lý
-                'ngaytao' => $ngaykham,
-                'trieuchungbandau' => $trieuchung,
-                'chandoan' => $chandoan,
-                'huongdieutri' => $huongdieutri,
-                'donthuoc' => $donthuoc,
-                'thanhtien' => $thanhtien,
-                'mabacsi' => $_SESSION['user']['mabacsi'] ?? null
-            ];
-            $insert_ok = $chsba->create_hsba($data);
-        } catch (Exception $e) {
-            // nếu exception, fallback xuống SQL
-            $insert_ok = false;
-        }
-    }
-
-    if (!$insert_ok) {
-        // Fallback: chèn trực tiếp vào DB. TÊN BẢNG VÀ CỘT có thể khác trong hệ thống của bạn.
-        // Hãy điều chỉnh tên bảng/cột cho khớp nếu cần. Mình dùng tên giả là hosobenhandientu.
-        try {
-            if (isset($conn)) {
-                // Giả sử $conn là PDO (nếu không thì cần thay đổi)
-                $sql = "INSERT INTO hosobenhandientu (mabenhnhan, ngaytao, trieuchungbandau, chandoan, huongdieutri, donthuoc, thanhtien, mabacsi)
-                        VALUES (:mabenhnhan, :ngaytao, :trieuchungbandau, :chandoan, :huongdieutri, :donthuoc, :thanhtien, :mabacsi)";
-                $stmt = $conn->prepare($sql);
-                $stmt->execute([
-                    ':mabenhnhan' => $mabenhnhan,
-                    ':ngaytao' => $ngaykham,
-                    ':trieuchungbandau' => $trieuchung,
-                    ':chandoan' => $chandoan,
-                    ':huongdieutri' => $huongdieutri,
-                    ':donthuoc' => $donthuoc,
-                    ':thanhtien' => $thanhtien,
-                    ':mabacsi' => $_SESSION['user']['mabacsi'] ?? null
-                ]);
-                $insert_ok = true;
-            } else {
-                // Nếu không có $conn, không chèn được — set false
-                $insert_ok = false;
-            }
-        } catch (Exception $e) {
-            $insert_ok = false;
-        }
-    }
-
-    // 2) Cập nhật trạng thái phiếu khám sang "Đã khám" (sử dụng method controller nếu có)
-    $update_ok = false;
-    if (!empty($maphieu)) {
-        if (method_exists($cphieukhambenh, 'update_trangthai')) {
-            try {
-                $update_ok = $cphieukhambenh->update_trangthai($maphieu, 'Đã khám');
-            } catch (Exception $e) {
-                $update_ok = false;
-            }
-        } else {
-            // Fallback raw SQL cập nhật bảng phieukhambenh (tên bảng có thể khác)
-            try {
-                if (isset($conn)) {
-                    $sql2 = "UPDATE phieukhambenh SET tentrangthai = :trangthai WHERE maphieukhambenh = :maphieu";
-                    $stmt2 = $conn->prepare($sql2);
-                    $stmt2->execute([':trangthai' => 'Đã khám', ':maphieu' => $maphieu]);
-                    $update_ok = $stmt2->rowCount() >= 0;
-                } else {
-                    $update_ok = false;
-                }
-            } catch (Exception $e) {
-                $update_ok = false;
-            }
-        }
-    }
-
-    // Sau khi lưu + cập nhật, redirect về trang quản lý lịch để tránh submit lại khi reload
-    header("Location: " . $_SERVER['REQUEST_URI']);
-    exit;
-}
-
 // ------------------- PHẦN HIỂN THỊ -------------------
 // Lấy thông tin bác sĩ hiện tại
 $bacsi = $cbacsi->getBacSiByTenTK($_SESSION['user']['tentk']);
 
-// Lấy dữ liệu tìm kiếm (chuyển sang GET để dễ phân trang và giữ params)
+// Lấy dữ liệu tìm kiếm (sử dụng GET để hỗ trợ phân trang)
 $tukhoa = $_GET['tukhoa'] ?? '';
 $trangthai = $_GET['trangthai'] ?? '';
 $ngay = $_GET['ngay'] ?? '';
@@ -155,7 +62,7 @@ if(isset($_GET["btnbo"])){
     exit;
 }
 
-// PHÂN TRANG (server-side, đơn giản)
+// PHÂN TRANG (server-side)
 $total = is_array($lichkham_list) ? count($lichkham_list) : 0;
 $page = max(1, intval($_GET['page'] ?? 1));
 $perPage = 10;
@@ -359,7 +266,7 @@ $paged_list = $total ? array_slice($lichkham_list, $offset, $perPage) : [];
                                 <select id="tenthuoc" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
                                     <option value="">-- Chọn thuốc --</option>
                                     <?php foreach($thuoc_list as $thuoc): ?>
-                                        <option value="<?php echo $thuoc['mathuoc']; ?>"><?php echo htmlspecialchars($thuoc['tenthuoc']); ?></option>
+                                        <option value="<?php echo htmlspecialchars($thuoc['mathuoc']); ?>" data-tenthuoc="<?php echo htmlspecialchars($thuoc['tenthuoc']); ?>"><?php echo htmlspecialchars($thuoc['tenthuoc']); ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
@@ -413,7 +320,7 @@ $paged_list = $total ? array_slice($lichkham_list, $offset, $perPage) : [];
                             <select name="test" id="test" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
                                 <option value="">-- Chọn loại xét nghiệm --</option>
                                 <?php foreach($loaixetnghiem_list as $loai): ?>
-                                    <option value="<?php echo $loai['maloaixetnghiem']; ?>"><?php echo htmlspecialchars($loai['tenloaixetnghiem']); ?></option>
+                                    <option value="<?php echo htmlspecialchars($loai['maloaixetnghiem']); ?>"><?php echo htmlspecialchars($loai['tenloaixetnghiem']); ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -428,7 +335,7 @@ $paged_list = $total ? array_slice($lichkham_list, $offset, $perPage) : [];
                             <select name="appointmentTime" id="appointmentTime" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
                                 <option value="">-- Chọn khung giờ --</option>
                                 <?php foreach($khunggioxetnghiem_list as $khunggio): ?>
-                                    <option value="<?php echo $khunggio['makhunggio']; ?>"><?php echo htmlspecialchars($khunggio['giobatdau'] . ' - ' . $khunggio['gioketthuc']); ?></option>
+                                    <option value="<?php echo htmlspecialchars($khunggio['makhunggio']); ?>"><?php echo htmlspecialchars($khunggio['giobatdau'] . ' - ' . $khunggio['gioketthuc']); ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -473,9 +380,22 @@ function openModalTab(evt, tabName) {
 var medicationList = [];
 var medicationIndex = 0;
 
+// Helper function to escape HTML
+function escapeHtml(text) {
+    var map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+}
+
 function addMedicationToList() {
     var mathuoc = document.getElementById('tenthuoc').value;
-    var tenthuoc = document.getElementById('tenthuoc').options[document.getElementById('tenthuoc').selectedIndex].text;
+    var selectElement = document.getElementById('tenthuoc');
+    var tenthuoc = selectElement.options[selectElement.selectedIndex].getAttribute('data-tenthuoc') || selectElement.options[selectElement.selectedIndex].text;
     var lieudung = document.getElementById('lieudung').value;
     var thoigianuong = document.getElementById('thoigianuong').value;
     var songayuong = document.getElementById('songayuong').value;
@@ -521,12 +441,27 @@ function updateMedicationTable() {
         document.getElementById('bangthuoc').style.display = 'block';
         medicationList.forEach(function(med, idx) {
             var row = tbody.insertRow();
-            row.innerHTML = '<td>' + (idx + 1) + '</td>' +
-                '<td>' + med.tenthuoc + '</td>' +
-                '<td>' + med.lieudung + '</td>' +
-                '<td>' + med.thoigianuong + '</td>' +
-                '<td>' + med.songayuong + '</td>' +
-                '<td><button type="button" class="btn-danger btn-small" onclick="removeMedication(' + med.index + ')"><i class="fas fa-trash"></i></button></td>';
+            
+            // Create cells using DOM methods for security
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            var cell3 = row.insertCell(2);
+            var cell4 = row.insertCell(3);
+            var cell5 = row.insertCell(4);
+            var cell6 = row.insertCell(5);
+            
+            cell1.textContent = idx + 1;
+            cell2.textContent = med.tenthuoc;
+            cell3.textContent = med.lieudung;
+            cell4.textContent = med.thoigianuong;
+            cell5.textContent = med.songayuong;
+            
+            var btnDelete = document.createElement('button');
+            btnDelete.type = 'button';
+            btnDelete.className = 'btn-danger btn-small';
+            btnDelete.innerHTML = '<i class="fas fa-trash"></i>';
+            btnDelete.onclick = function() { removeMedication(med.index); };
+            cell6.appendChild(btnDelete);
         });
     } else {
         document.getElementById('bangthuoc').style.display = 'none';
@@ -538,10 +473,30 @@ function updateMedicationInputs() {
     container.innerHTML = '';
 
     medicationList.forEach(function(med, idx) {
-        container.innerHTML += '<input type="hidden" name="medications[' + idx + '][mathuoc]" value="' + med.mathuoc + '">';
-        container.innerHTML += '<input type="hidden" name="medications[' + idx + '][lieudung]" value="' + med.lieudung + '">';
-        container.innerHTML += '<input type="hidden" name="medications[' + idx + '][thoigianuong]" value="' + med.thoigianuong + '">';
-        container.innerHTML += '<input type="hidden" name="medications[' + idx + '][songayuong]" value="' + med.songayuong + '">';
+        // Create hidden inputs using DOM methods
+        var inputMathuoc = document.createElement('input');
+        inputMathuoc.type = 'hidden';
+        inputMathuoc.name = 'medications[' + idx + '][mathuoc]';
+        inputMathuoc.value = med.mathuoc;
+        container.appendChild(inputMathuoc);
+        
+        var inputLieudung = document.createElement('input');
+        inputLieudung.type = 'hidden';
+        inputLieudung.name = 'medications[' + idx + '][lieudung]';
+        inputLieudung.value = med.lieudung;
+        container.appendChild(inputLieudung);
+        
+        var inputThoigianuong = document.createElement('input');
+        inputThoigianuong.type = 'hidden';
+        inputThoigianuong.name = 'medications[' + idx + '][thoigianuong]';
+        inputThoigianuong.value = med.thoigianuong;
+        container.appendChild(inputThoigianuong);
+        
+        var inputSongayuong = document.createElement('input');
+        inputSongayuong.type = 'hidden';
+        inputSongayuong.name = 'medications[' + idx + '][songayuong]';
+        inputSongayuong.value = med.songayuong;
+        container.appendChild(inputSongayuong);
     });
 }
 
