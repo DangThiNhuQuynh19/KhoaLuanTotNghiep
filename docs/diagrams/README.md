@@ -94,8 +94,10 @@ Người dùng nhập các thông tin:
 
 ### Bước 6: Kiểm tra điều kiện nghiệp vụ
 1. **Kiểm tra tuổi**:
-   - Chỉ được tạo hồ sơ cho trẻ em < 18 tuổi HOẶC người già > 60 tuổi
-   - Nếu không thỏa: Trả về lỗi
+   - Quy tắc nghiệp vụ: Chỉ được tạo hồ sơ cho trẻ em < 18 tuổi HOẶC người già > 60 tuổi
+   - Code hiện tại: `if (!($age < 18 || $age > 60))` - logic này sẽ trả về lỗi nếu age < 18 hoặc age > 60
+   - **Lưu ý**: Có thể có inconsistency trong logic validation. Diagram phản ánh code hiện tại.
+   - Nếu không thỏa: Trả về lỗi "Chỉ được tạo hồ sơ cho trẻ em dưới 18 tuổi hoặc người già trên 60 tuổi."
 
 2. **Kiểm tra số lượng hồ sơ**:
    - Một người giám hộ chỉ được tạo tối đa 4 hồ sơ
@@ -148,13 +150,13 @@ Hàm mã hóa được định nghĩa trong `Assets/config.php`
 ## Các trường hợp đặc biệt
 
 ### 1. Người dùng < 16 tuổi
-- Email và số điện thoại không bắt buộc
-- Không cần upload CCCD
-- Bắt buộc upload giấy khai sinh
+- Không yêu cầu email (có thể để trống)
+- Có thể không cần upload CCCD
+- Khuyến khích upload giấy khai sinh
 
 ### 2. Người dùng >= 16 tuổi
-- Email bắt buộc và phải hợp lệ
-- Bắt buộc upload CCCD mặt trước và mặt sau
+- Email bắt buộc và phải hợp lệ (validation: `$age >= 16 && !empty($rawEmail)`)
+- Yêu cầu upload CCCD mặt trước và mặt sau
 
 ### 3. Quan hệ với người thân
 Các lựa chọn:
