@@ -166,6 +166,8 @@ $paged_list = $total ? array_slice($lichkham_list, $offset, $perPage) : [];
                         <th>Ngày</th>
                         <th>Ca</th>
                         <th>Bệnh nhân</th>
+                        <th>Hồ sơ</th>
+                        <th>Chuyên khoa/Lĩnh vực</th>
                         <th>Tổng tiền</th>
                         <th>Trạng thái</th>
                         <th>Thao tác</th>
@@ -188,6 +190,28 @@ $paged_list = $total ? array_slice($lichkham_list, $offset, $perPage) : [];
                             <td><?php echo date('d/m/Y', strtotime($i['ngaykham'])); ?></td>
                             <td><?php echo htmlspecialchars($i['giobatdau']).' - '.htmlspecialchars($i['gioketthuc']); ?></td>
                             <td><?php echo htmlspecialchars($i['hoten']); ?></td>
+                            <td>
+                                <?php if(!empty($i['mahoso'])): ?>
+                                    <a href="?action=chitiethoso&mahoso=<?php echo urlencode($i['mahoso']); ?>" 
+                                       style="color: var(--primary); text-decoration: none;">
+                                        <i class="fas fa-folder-open"></i> HS-<?php echo htmlspecialchars($i['mahoso']); ?>
+                                    </a>
+                                <?php else: ?>
+                                    <span style="color: #999;"><i class="fas fa-folder"></i> Chưa có</span>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <?php 
+                                    // Hiển thị chuyên khoa (bác sĩ) hoặc lĩnh vực (chuyên gia)
+                                    if(!empty($i['tenchuyenkhoa'])) {
+                                        echo '<span style="color: var(--primary);"><i class="fas fa-hospital"></i> ' . htmlspecialchars($i['tenchuyenkhoa']) . '</span>';
+                                    } elseif(!empty($i['tenlinhvuc'])) {
+                                        echo '<span style="color: var(--secondary);"><i class="fas fa-user-md"></i> ' . htmlspecialchars($i['tenlinhvuc']) . '</span>';
+                                    } else {
+                                        echo '<span style="color: #999;">Chưa xác định</span>';
+                                    }
+                                ?>
+                            </td>
                             <td><?php echo number_format($i['giakham'],0,',','.'); ?> VND</td>
                             <td><span class="status-badge <?php echo $statusClass; ?>"><?php echo htmlspecialchars($i['tentrangthai']); ?></span></td>
                             <td>
@@ -196,6 +220,7 @@ $paged_list = $total ? array_slice($lichkham_list, $offset, $perPage) : [];
                                     <button type="button" class="btn-success btn-small btn-kham" 
                                         data-maphieu="<?php echo htmlspecialchars($i['maphieukhambenh']); ?>"
                                         data-mabenhnhan="<?php echo htmlspecialchars($i['mabenhnhan']); ?>"
+                                        data-mahoso="<?php echo htmlspecialchars($i['mahoso'] ?? ''); ?>"
                                         data-hoten="<?php echo htmlspecialchars($i['hoten']); ?>"
                                         data-ngay="<?php echo htmlspecialchars($i['ngaykham']); ?>"
                                         ><i class="fas fa-stethoscope"></i> Khám</button>
@@ -204,7 +229,7 @@ $paged_list = $total ? array_slice($lichkham_list, $offset, $perPage) : [];
                         </tr>
                         <?php endforeach; ?>
                     <?php else: ?>
-                        <tr><td colspan="7" style="text-align:center; color:gray;">Không có lịch hẹn</td></tr>
+                        <tr><td colspan="9" style="text-align:center; color:gray;">Không có lịch hẹn</td></tr>
                     <?php endif; ?>
                 </tbody>
             </table>

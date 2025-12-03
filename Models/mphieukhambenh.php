@@ -214,17 +214,24 @@
             $con->set_charset('utf8');
             if($con){
                 $str = "SELECT nd_bs.hoten AS tenbacsi, tt.tentrangthai, pk.*, kg.*, bn.*, nd_bn.*, bs.*, 
-                llv.ngaylam, llv.hinhthuclamviec FROM phieukhambenh AS pk 
+                llv.ngaylam, llv.hinhthuclamviec,
+                ck.tenchuyenkhoa,
+                hs.mahoso,
+                hs.ngaytao AS ngaytaohoso
+                FROM phieukhambenh AS pk 
                 JOIN khunggiokhambenh kg ON pk.makhunggiokb = kg.makhunggiokb 
                 JOIN trangthai tt ON tt.matrangthai = pk.matrangthai 
                 JOIN bacsi AS bs ON pk.mabacsi = bs.mabacsi 
+                LEFT JOIN chuyenkhoa ck ON bs.machuyenkhoa = ck.machuyenkhoa
                 JOIN nguoidung nd_bs ON nd_bs.manguoidung = bs.mabacsi 
                 JOIN benhnhan AS bn ON bn.mabenhnhan = pk.mabenhnhan 
                 JOIN nguoidung nd_bn ON nd_bn.manguoidung = bn.mabenhnhan 
+                LEFT JOIN hosobenhan hs ON hs.mabenhnhan = pk.mabenhnhan
                 JOIN lichlamviec llv ON llv.manguoidung = pk.mabacsi 
                 AND llv.ngaylam = pk.ngaykham AND llv.macalamviec = kg.macalamviec 
                 JOIN calamviec clv ON clv.macalamviec = llv.macalamviec 
-                WHERE bs.mabacsi = '$mabacsi' AND llv.hinhthuclamviec = 'online';";
+                WHERE bs.mabacsi = '$mabacsi' AND llv.hinhthuclamviec = 'online'
+                ORDER BY pk.ngaykham DESC, kg.giobatdau ASC;";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;
@@ -238,17 +245,24 @@
             $con->set_charset('utf8');
             if($con){
                 $str = "SELECT nd_bs.hoten AS tenbacsi, tt.tentrangthai, pk.*, kg.*, bn.*, nd_bn.*, bs.*, 
-                llv.ngaylam, llv.hinhthuclamviec,  bs.giatuvan as giakhamcg  FROM phieukhambenh AS pk 
+                llv.ngaylam, llv.hinhthuclamviec, bs.giatuvan as giakhamcg,
+                lv.tenlinhvuc,
+                hs.mahoso,
+                hs.ngaytao AS ngaytaohoso
+                FROM phieukhambenh AS pk 
                 JOIN khunggiokhambenh kg ON pk.makhunggiokb = kg.makhunggiokb 
                 JOIN trangthai tt ON tt.matrangthai = pk.matrangthai 
                 JOIN chuyengia AS bs ON pk.mabacsi = bs.machuyengia 
+                LEFT JOIN linhvuc lv ON bs.malinhvuc = lv.malinhvuc
                 JOIN nguoidung nd_bs ON nd_bs.manguoidung = bs.machuyengia 
                 JOIN benhnhan AS bn ON bn.mabenhnhan = pk.mabenhnhan 
                 JOIN nguoidung nd_bn ON nd_bn.manguoidung = bn.mabenhnhan 
+                LEFT JOIN hosobenhan hs ON hs.mabenhnhan = pk.mabenhnhan
                 JOIN lichlamviec llv ON llv.manguoidung = pk.mabacsi 
                 AND llv.ngaylam = pk.ngaykham AND llv.macalamviec = kg.macalamviec 
                 JOIN calamviec clv ON clv.macalamviec = llv.macalamviec 
-                WHERE bs.machuyengia = '$machuyengia' AND llv.hinhthuclamviec = 'online';";
+                WHERE bs.machuyengia = '$machuyengia' AND llv.hinhthuclamviec = 'online'
+                ORDER BY pk.ngaykham DESC, kg.giobatdau ASC;";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;
@@ -354,7 +368,10 @@
             nd_cg.sdt AS sdtchuyengia,
             cg.imgcg,
             cg.giatuvan AS giakhamcg,
-            lv.tenlinhvuc
+            lv.tenlinhvuc,
+            -- thông tin hồ sơ
+            hs.mahoso,
+            hs.ngaytao AS ngaytaohoso
         FROM phieukhambenh AS pk
         JOIN khunggiokhambenh kg ON pk.makhunggiokb = kg.makhunggiokb
         JOIN trangthai tt ON tt.matrangthai = pk.matrangthai
@@ -369,6 +386,8 @@
         -- bệnh nhân
         JOIN benhnhan bn ON bn.mabenhnhan = pk.mabenhnhan
         JOIN nguoidung nd_bn ON nd_bn.manguoidung = bn.mabenhnhan
+        -- hồ sơ bệnh án
+        LEFT JOIN hosobenhan hs ON hs.mabenhnhan = pk.mabenhnhan
         -- lịch làm việc & ca
         JOIN lichlamviec llv ON llv.manguoidung = pk.mabacsi 
             AND llv.ngaylam = pk.ngaykham 
@@ -471,13 +490,19 @@
             $con->set_charset('utf8');
             if($con){
                 $str = "SELECT nd_bs.hoten AS tenbacsi, tt.tentrangthai, pk.*, kg.*, bn.*, nd_bn.*, bs.*, 
-                llv.ngaylam, llv.hinhthuclamviec FROM phieukhambenh AS pk 
+                llv.ngaylam, llv.hinhthuclamviec,
+                ck.tenchuyenkhoa,
+                hs.mahoso,
+                hs.ngaytao AS ngaytaohoso
+                FROM phieukhambenh AS pk 
                 JOIN khunggiokhambenh kg ON pk.makhunggiokb = kg.makhunggiokb 
                 JOIN trangthai tt ON tt.matrangthai = pk.matrangthai 
                 JOIN bacsi AS bs ON pk.mabacsi = bs.mabacsi 
+                LEFT JOIN chuyenkhoa ck ON bs.machuyenkhoa = ck.machuyenkhoa
                 JOIN nguoidung nd_bs ON nd_bs.manguoidung = bs.mabacsi 
                 JOIN benhnhan AS bn ON bn.mabenhnhan = pk.mabenhnhan 
                 JOIN nguoidung nd_bn ON nd_bn.manguoidung = bn.mabenhnhan 
+                LEFT JOIN hosobenhan hs ON hs.mabenhnhan = pk.mabenhnhan
                 JOIN lichlamviec llv ON llv.manguoidung = pk.mabacsi 
                 AND llv.ngaylam = pk.ngaykham AND llv.macalamviec = kg.macalamviec 
                 JOIN calamviec clv ON clv.macalamviec = llv.macalamviec 
@@ -492,6 +517,7 @@
                     $ngay_mysql = date("Y-m-d", strtotime($ngay));
                     $str .= " AND pk.ngaykham = '$ngay_mysql'";
                 }
+                $str .= " ORDER BY pk.ngaykham DESC, kg.giobatdau ASC";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;
