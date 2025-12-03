@@ -74,10 +74,10 @@ View -> View: Lấy dữ liệu từ $_POST:\nkeepOld($newValue, $oldValue)\n- $
 View -> View: Xử lý upload file (nếu có):\nuploadFile($fileInput, $prefix, $id, $uploadDir)
 
 alt Tuổi < 16
-    View -> View: Upload giấy khai sinh\n(nếu có file mới)
+    View -> View: Upload giấy khai sinh\n(nếu có file mới)\nNote: Trẻ em dưới 16 tuổi\nchưa có CCCD
 else Tuổi >= 16
     View -> View: Upload CCCD mặt trước\n(nếu có file mới)
-    View -> View: Upload CCCD mặt sau\n(nếu có file mới)
+    View -> View: Upload CCCD mặt sau\n(nếu có file mới)\nNote: Người >= 16 tuổi\ncó CCCD/CMND
 end
 
 View -> View: Giữ tên file cũ\nnếu không upload mới:\n- $cccd_truoc_name\n- $cccd_sau_name\n- $giaykhaisinh_name

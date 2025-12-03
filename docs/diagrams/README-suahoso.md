@@ -178,16 +178,16 @@ WHERE mabenhnhan=?
 
 ## So sánh với Tạo Hồ Sơ
 
-| Tiêu chí | Tạo Hồ Sơ (taohoso) | Sửa Hồ Sơ (suahoso) |
-|----------|---------------------|---------------------|
-| **Mục đích** | Tạo mới hồ sơ bệnh nhân | Cập nhật hồ sơ đã có |
-| **Form fields** | Tất cả trường đều nhập mới | Một số trường readonly |
-| **Validation nghiệp vụ** | Kiểm tra tuổi (18-60), giới hạn số lượng (4 hồ sơ) | Không có validation đặc biệt |
-| **Database operation** | INSERT INTO nguoidung + benhnhan | UPDATE nguoidung + benhnhan |
-| **File upload** | Bắt buộc upload ảnh giấy tờ | Tùy chọn (có thể giữ ảnh cũ) |
-| **Mã bệnh nhân** | Tạo mới: BN_XXXXXXXX | Sử dụng mã có sẵn từ URL |
-| **keepOld() logic** | Không áp dụng (tất cả là dữ liệu mới) | Áp dụng cho tất cả trường |
-| **Redirect** | Chuyển đến trang cài đặt | Load lại trang hiện tại |
+| Tiêu chí                | Tạo Hồ Sơ (taohoso)                                      | Sửa Hồ Sơ (suahoso)                                    |
+|-------------------------|----------------------------------------------------------|--------------------------------------------------------|
+| **Mục đích**            | Tạo mới hồ sơ bệnh nhân                                   | Cập nhật hồ sơ đã có                                   |
+| **Form fields**         | Tất cả trường đều nhập mới                                | Một số trường readonly                                 |
+| **Validation nghiệp vụ**| Kiểm tra tuổi (18-60), giới hạn số lượng (4 hồ sơ)       | Không có validation đặc biệt                           |
+| **Database operation**  | INSERT INTO nguoidung + benhnhan                          | UPDATE nguoidung + benhnhan                            |
+| **File upload**         | Bắt buộc upload ảnh giấy tờ                               | Tùy chọn (có thể giữ ảnh cũ)                           |
+| **Mã bệnh nhân**        | Tạo mới: BN_XXXXXXXX                                      | Sử dụng mã có sẵn từ URL                               |
+| **keepOld() logic**     | Không áp dụng (tất cả là dữ liệu mới)                     | Áp dụng cho tất cả trường                              |
+| **Redirect**            | Chuyển đến trang cài đặt                                  | Load lại trang hiện tại                                |
 
 ## Đặc điểm kỹ thuật
 
@@ -338,4 +338,4 @@ if (!isset($_SESSION['user']['tentk'])) {
 
 ## Tác giả
 - Khóa luận tốt nghiệp - Bệnh viện Hạnh Phúc
-- Cập nhật: 2025-12-03
+- Cập nhật: Tháng 12/2024
