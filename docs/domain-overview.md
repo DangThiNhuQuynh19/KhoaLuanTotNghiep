@@ -163,26 +163,38 @@ sequenceDiagram
 ## Sơ Đồ Domain Context
 
 ```mermaid
-C4Context
-    title Sơ Đồ Context - Hệ Thống Bệnh Viện Hạnh Phúc
-
-    Person(benhnhan, "Bệnh Nhân", "Người đến khám và điều trị")
-    Person(bacsi, "Bác Sĩ", "Khám và điều trị bệnh")
-    Person(chuyengia, "Chuyên Gia", "Tư vấn chuyên môn")
-    Person(nhanvien, "Nhân Viên", "Quản lý hành chính")
+graph TB
+    subgraph "External Actors"
+        BN[👤 Bệnh Nhân<br/>Đặt lịch, xem hồ sơ]
+        BS[👨‍⚕️ Bác Sĩ<br/>Khám bệnh, kê đơn]
+        CG[👨‍🏫 Chuyên Gia<br/>Tư vấn, khám]
+        NV[👨‍💼 Nhân Viên<br/>Quản lý dữ liệu]
+    end
     
-    System(hethong, "Hệ Thống Quản Lý<br/>Bệnh Viện", "Quản lý toàn bộ<br/>hoạt động bệnh viện")
+    subgraph "Hospital Management System"
+        HT[🏥 Hệ Thống<br/>Quản Lý Bệnh Viện<br/><br/>Quản lý toàn bộ hoạt động]
+    end
     
-    System_Ext(email, "Email System", "Gửi thông báo email")
-    System_Ext(payment, "Payment Gateway", "Xử lý thanh toán")
+    subgraph "External Systems"
+        EM[📧 Email System<br/>Gửi thông báo]
+        PM[💳 Payment Gateway<br/>Xử lý thanh toán]
+    end
     
-    Rel(benhnhan, hethong, "Đặt lịch, xem hồ sơ")
-    Rel(bacsi, hethong, "Khám bệnh, kê đơn")
-    Rel(chuyengia, hethong, "Tư vấn, khám")
-    Rel(nhanvien, hethong, "Quản lý dữ liệu")
+    BN -->|Sử dụng| HT
+    BS -->|Sử dụng| HT
+    CG -->|Sử dụng| HT
+    NV -->|Quản lý| HT
     
-    Rel(hethong, email, "Gửi email thông báo")
-    Rel(hethong, payment, "Xử lý thanh toán")
+    HT -->|Gửi email| EM
+    HT -->|Thanh toán| PM
+    
+    style BN fill:#e1f5ff
+    style BS fill:#fff4e1
+    style CG fill:#fff4e1
+    style NV fill:#e1ffe1
+    style HT fill:#ffe1e1
+    style EM fill:#f0e1ff
+    style PM fill:#ffe1f0
 ```
 
 ## Các Thành Phần Chính

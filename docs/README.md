@@ -83,7 +83,7 @@ Hệ Thống Bệnh Viện Hạnh Phúc
 | NGUOIDUNG | Thông tin chung người dùng | Models/mnguoidung.php |
 | BACSI | Bác sĩ | Models/mbacsi.php |
 | BENHNHAN | Bệnh nhân | Models/mbenhnhan.php |
-| HOSOBENHAN | Hồ sơ bệnh án | Models/mhosobenhan.php |
+| HOSOBENHAN | Hồ sơ bệnh án | Models/mhosobenhandientu.php |
 | PHIEUKHAMBENH | Phiếu khám bệnh | Models/mphieukhambenh.php |
 | LICHXETNGHIEM | Lịch xét nghiệm | Models/mlichxetnghiem.php |
 | CHUYENKHOA | Chuyên khoa | Models/mchuyenkhoa.php |
@@ -129,7 +129,7 @@ Hệ Thống Bệnh Viện Hạnh Phúc
 
 ## Cập Nhật
 
-Tài liệu này được tạo vào: **03/12/2025**
+Tài liệu này được tạo vào: **03/12/2024**
 
 Để cập nhật sơ đồ:
 1. Chỉnh sửa file `.md` tương ứng
