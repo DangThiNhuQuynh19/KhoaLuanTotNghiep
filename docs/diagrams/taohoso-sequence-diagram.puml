@@ -1,0 +1,140 @@
+@startuml Sequence Diagram - Tạo Hồ Sơ Khám Bệnh
+
+title Sequence Diagram - Chức năng Tạo Hồ Sơ để Đăng Ký Khám Bệnh
+
+actor "Người dùng\n(Người thân)" as User
+participant "Browser" as Browser
+participant "index.php\n(View Layer)" as View
+participant "cBenhNhan\n(Controller)" as Controller
+participant "mBenhNhan\n(Model)" as Model
+participant "Database\nMySQL" as DB
+
+== Khởi tạo trang tạo hồ sơ ==
+User -> Browser: Truy cập trang tạo hồ sơ\n(action=taohoso)
+Browser -> View: GET request
+activate View
+
+View -> Controller: getbenhnhanbytk($email)
+activate Controller
+Controller -> Model: getBenhNhanByTenTK($email)
+activate Model
+Model -> DB: SELECT thông tin người thân\nFROM benhnhan, nguoidung, xaphuong, tinhthanhpho\nWHERE email = '$email'
+activate DB
+DB --> Model: Trả về thông tin người thân
+deactivate DB
+Model --> Controller: $tbl (ResultSet)
+deactivate Model
+Controller --> View: $taikhoan (Array)
+deactivate Controller
+
+View -> Controller: get_tinhthanhpho()
+activate Controller
+Controller -> Model: Lấy danh sách tỉnh/thành phố
+Model -> DB: SELECT * FROM tinhthanhpho
+activate DB
+DB --> Model: Danh sách tỉnh/thành
+deactivate DB
+Model --> Controller: $tbl
+Controller --> View: $thanhpho_list
+deactivate Controller
+
+View -> Controller: get_xaphuong()
+activate Controller
+Controller -> Model: Lấy danh sách xã/phường
+Model -> DB: SELECT * FROM xaphuong
+activate DB
+DB --> Model: Danh sách xã/phường
+deactivate DB
+Model --> Controller: $tbl
+Controller --> View: $xaphuong_list
+deactivate Controller
+
+View --> Browser: Hiển thị form tạo hồ sơ\nvới thông tin người thân đã điền sẵn
+deactivate View
+Browser --> User: Hiển thị form
+
+== Người dùng nhập thông tin bệnh nhân ==
+User -> Browser: Nhập thông tin bệnh nhân:\n- Họ tên, ngày sinh, giới tính\n- Dân tộc, CCCD\n- Email, SĐT\n- Tiền sử bệnh\n- Địa chỉ\n- Upload ảnh CCCD/Giấy khai sinh
+Browser -> Browser: Kiểm tra validation JavaScript:\n- Định dạng email\n- Số điện thoại (10-11 số)\n- CCCD (9-12 số)\n- Họ tên (chỉ chữ cái)
+
+User -> Browser: Nhấn nút "Tạo mới"
+Browser -> View: POST request với dữ liệu form\nvà file upload
+activate View
+
+== Xử lý và validation dữ liệu ==
+View -> View: Kiểm tra REQUEST_METHOD == "POST"
+View -> View: Nhận dữ liệu từ $_POST:\n- $hoten, $ngaysinh, $gioitinh\n- $dantoc, $cccd, $email, $sdt\n- $tiensucuagiadinh, $tiensucuabanthan\n- $sonha, $xa, $tinh, $quanhe
+
+View -> View: Mã hóa dữ liệu nhạy cảm:\n- encryptData($email)\n- encryptData($sdt)\n- encryptData($cccd)
+
+View -> View: Tính tuổi từ ngày sinh:\ngetAge($ngaysinh)
+
+View -> View: Validate dữ liệu:\n- Email hợp lệ (FILTER_VALIDATE_EMAIL)\n- SĐT: 10-11 số\n- CCCD: 9 hoặc 12 số\n- Họ tên: chỉ chữ cái và khoảng trắng
+
+alt Validation thất bại
+    View --> Browser: SweetAlert2 thông báo lỗi:\n"Email/SĐT/CCCD không hợp lệ"
+    Browser --> User: Hiển thị thông báo lỗi
+else Validation thành công
+    
+    == Xử lý upload file ==
+    View -> View: uploadFile('cccd_truoc'):\n- Kiểm tra file tồn tại\n- Kiểm tra định dạng (jpg, jpeg, png)\n- Tạo tên file unique\n- Move file vào Assets/img/cccd/
+    
+    View -> View: uploadFile('cccd_sau')
+    View -> View: uploadFile('birth_cert')
+    
+    View -> View: Tạo mã bệnh nhân:\n$mabenhnhan = "BN_" + random(8 số)
+    
+    == Lưu thông tin vào Database ==
+    View -> Controller: insertbenhnhan(\n  $mabenhnhan, $email, $hoten,\n  $ngaysinh, $sdt, $dantoc, $cccd,\n  $cccd_truoc_name, $birth_cert_name,\n  $cccd_sau_name, $gioitinh,\n  $nghenghiep, $tiensucuagiadinh,\n  $tiensucuabanthan, $sonha, $xa, $tinh,\n  $manguoithan, $quanhe\n)
+    activate Controller
+    
+    Controller -> Model: insertbenhnhan($mabenhnhan, ...)
+    activate Model
+    
+    Model -> Model: Tính tuổi:\n$age = $today->diff($dob)->y
+    
+    Model -> Model: Kiểm tra điều kiện tuổi:\nif (!($age < 18 || $age > 60))\n  return error message
+    
+    Model -> DB: SELECT COUNT(*) FROM benhnhan\nWHERE manguoigiamho = '$manguoithan'\nAND matrangthai = 1
+    activate DB
+    DB --> Model: $result['total']
+    deactivate DB
+    
+    Model -> Model: Kiểm tra giới hạn hồ sơ:\nif ($result['total'] >= 4)\n  return error message
+    
+    alt Điều kiện không thỏa mãn
+        Model --> Controller: Thông báo lỗi:\n"Chỉ tạo hồ sơ cho trẻ em < 18 tuổi\nhoặc người già > 60 tuổi"\nhoặc "Tối đa 4 hồ sơ"
+        Controller --> View: false hoặc error message
+        View --> Browser: SweetAlert2 hiển thị lỗi
+        Browser --> User: Thông báo lỗi
+    else Điều kiện thỏa mãn
+        
+        Model -> DB: BEGIN TRANSACTION
+        activate DB
+        
+        Model -> DB: INSERT INTO nguoidung(\n  manguoidung, hoten, ngaysinh,\n  gioitinh, cccd, cccd_matruoc,\n  cccd_matsau, dantoc, sdt,\n  sonha, maxaphuong, emailcanhan\n) VALUES (...)
+        DB --> Model: Success
+        
+        Model -> DB: INSERT INTO benhnhan(\n  mabenhnhan, nghenghiep,\n  tiensubenhtatcuagiadinh,\n  tiensubenhtatcuabenhnhan,\n  giaykhaisinh, moiquanhevoinguoithan,\n  manguoigiamho, matrangthai\n) VALUES (...)
+        DB --> Model: Success
+        
+        Model -> DB: COMMIT TRANSACTION
+        deactivate DB
+        
+        Model --> Controller: true
+        deactivate Model
+        
+        Controller --> View: true
+        deactivate Controller
+        
+        View --> Browser: SweetAlert2 thông báo:\n"Tạo hồ sơ thành công!"
+        Browser --> User: Hiển thị thông báo thành công
+        
+        Browser -> Browser: Sau khi click OK:\nwindow.location='?action=caidat'
+        Browser --> User: Chuyển hướng đến trang cài đặt
+    end
+end
+
+deactivate View
+
+@enduml
