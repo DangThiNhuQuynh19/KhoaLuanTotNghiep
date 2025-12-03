@@ -383,8 +383,8 @@
           
           <div class="options">
             <div class="remember">
-              <input type="checkbox" id="remember" name="remember" />
-              <label for="remember">Ghi nhớ đăng nhập</label>
+              <!-- <input type="checkbox" id="remember" name="remember" />
+              <label for="remember">Ghi nhớ đăng nhập</label> -->
             </div>
             <a href="?quenmatkhau" class="forgot-password">Quên mật khẩu?</a>
           </div>

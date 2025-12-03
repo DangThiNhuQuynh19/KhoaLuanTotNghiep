@@ -56,7 +56,10 @@ if(isset($_POST["btnbo"])){
 .btn-secondary i {
     font-size: 14px;
 }
-
+th:nth-child(7),
+        td:nth-child(7) {
+            width: 200px;
+        }
 .status-pending { color: orange; font-weight: bold; }
 .status-completed { color: green; font-weight: bold; }
 .status-canceled { color: red; font-weight: bold; }
@@ -158,6 +161,10 @@ if(isset($_POST["btnbo"])){
                                     if($i['tentrangthai']=='Chưa khám'){
                                         echo '<a class="btn-primary btn-small" href="?action=chitietbenhnhan&id=' . $i['mabenhnhan'] . '">
                                         <i class="fas fa-comment-medical"></i> Khám bệnh</a>';
+                                        // Button đổi trạng thái -> Đã khám
+                                        echo '<a class="btn-success btn-small" href="?action=update_phieukhambenh&maphieukhambenh=' . $i['maphieukhambenh'] . '" 
+                                        onclick="return confirm(\'Bạn có chắc chắn muốn đổi trạng thái phiếu này sang Đã khám?\')">
+                                        <i class="fas fa-check"></i> Hoàn tất khám</a>';
                                     }
                                     echo'</td>';
                                     echo '</tr>';

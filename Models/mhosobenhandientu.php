@@ -187,7 +187,6 @@
             $p = new clsKetNoi();
             $con = $p->moketnoi();
             $con->set_charset('utf8');
-	    $con->query("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
             if($con){
                 $str = "select * from hosobenhan hs 
                 join benhnhan bn on hs.mabenhnhan=bn.mabenhnhan 

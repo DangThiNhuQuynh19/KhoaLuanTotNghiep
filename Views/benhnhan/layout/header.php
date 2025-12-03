@@ -1,7 +1,6 @@
 <?php
     include_once('Controllers/cbenhnhan.php');
     $cbenhnhan= new cBenhNhan();
-    $vaitro ='Bệnh nhân';
     if(isset($_SESSION["dangnhap"]) && isset($_SESSION["user"])){
         $user = $_SESSION["user"];
         $benhnhan = $cbenhnhan-> getbenhnhanbytk($user["tentk"]);
@@ -366,12 +365,11 @@
                             <span class="user-name"><?php echo $_SESSION['name']?></span>
                             <span class="user-role"><?php echo $vaitro?></span>
                         </div>
-                    <?php elseif($benhnhan): ?>
+                    <?php endif ?>
                     <div class="user-info">
                         <span class="user-name"><?php echo $benhnhan["hoten"]?></span>
                         <span class="user-role"><?php echo $vaitro?></span>
                     </div>
-		    <?php endif; ?>
                     <div class="dropdown-menu" id="dropdownMenu">
                         <div class="dropdown-header">
                             <h4>Tài khoản của bạn</h4>

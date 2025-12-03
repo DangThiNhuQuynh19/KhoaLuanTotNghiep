@@ -470,4 +470,3 @@ function getAge($dob) {
     </script>
 </body>
 </html>
-

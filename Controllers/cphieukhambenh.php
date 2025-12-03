@@ -12,6 +12,11 @@ class cPhieuKhamBenh {
             return false;
         }
     }
+    public function updateTrangThaiPKB($maphieukb, $trangthai) {
+        $p = new mPhieuKhamBenh();
+        $kq = $p->updateTrangThaiPhieu($maphieukb, $trangthai);
+        return $kq;
+    }
     public function getAllPhieuKhamBenhOfBN($idbn){
         $p = new mPhieuKhamBenh();
         $tbl = $p->phieukhambenhcuabn($idbn);

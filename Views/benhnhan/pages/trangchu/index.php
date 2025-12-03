@@ -375,3 +375,6 @@
     </div>
 </body>
 </html>
+<?php
+require_once("Views/benhnhan/layout/footer.php");
+?>

@@ -27,12 +27,30 @@
             $con->set_charset('utf8');
             if($con){
                 $str = "select * from benhnhan as b 
-                        join trangthai tt on tt.matrangthai =b.matrangthai
+                        left join trangthai tt on tt.matrangthai =b.matrangthai
+                        join nguoidung as n on b.mabenhnhan=n.manguoidung 
+                        join xaphuong as p on p.maxaphuong = n.maxaphuong 
+                        join tinhthanhpho as t on t.matinhthanhpho = p.matinhthanhpho 
+                        where mabenhnhan = '$manguoigiamho' OR manguoigiamho = '$manguoigiamho'";
+                $tbl = $con->query($str);
+                $p->dongketnoi($con);
+                return $tbl;
+            }else{
+                return false; 
+            }
+        }
+        public function select_benhnhan_manguoigiamhodl($manguoigiamho){
+            $p = new clsKetNoi();
+            $con = $p->moketnoi();
+            $con->set_charset('utf8');
+            if($con){
+                $str = "select * from benhnhan as b 
+                        left join trangthai tt on tt.matrangthai =b.matrangthai
                         join nguoidung as n on b.mabenhnhan=n.manguoidung 
                         join xaphuong as p on p.maxaphuong = n.maxaphuong 
                         join tinhthanhpho as t on t.matinhthanhpho = p.matinhthanhpho 
                         where mabenhnhan = '$manguoigiamho' OR manguoigiamho = '$manguoigiamho'
-                        and b.matrangthai=1";
+                        and b.matrangthai = 1";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;
@@ -69,7 +87,7 @@
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if($con){
-                $str = "select * from taikhoan where tentk = '$tentk'";
+                $str = "select * from benhnhan where tentk = '$tentk' and quanhe = 'bản thân'";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;
@@ -332,6 +350,7 @@
                 return "Lỗi khi thêm người dùng: " . $stmtInsertND->error;
             }
         }
+    
         
         public function deletebenhnhan($id) {
             $p = new clsketnoi();
@@ -383,19 +402,6 @@
                 return false; 
             }
         }
-	public function update_vitien_id($id, $tongtien){
-            $p = new clsKetNoi();
-            $con = $p->moketnoi();
-            $con->set_charset('utf8');
-            if($con){
-                $str = "update taikhoan set vitien = vitien - $tongtien
-                        where tentk = '$id'";
-                $tbl = $con->query($str);
-                $p->dongketnoi($con);
-                return $tbl;
-            }else{
-                return false; 
-            }
-        }
     }
+    
 ?>

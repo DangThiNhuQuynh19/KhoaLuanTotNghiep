@@ -14,6 +14,13 @@ class ctaiKhoan {
     
         if ($user && $user->num_rows > 0) {
             $row = $user->fetch_assoc();
+    
+            // Kiểm tra trạng thái tài khoản
+            if ($row['matrangthai'] != 1) {
+                echo '<script>alert("Tài khoản của bạn đã bị vô hiệu hóa."); window.history.back();</script>';
+                exit();
+            }
+    
             $_SESSION['dangnhap'] = $row["mavaitro"];
             $_SESSION["user"] = $row;
             header("Location:index.php?action=trangchu");
@@ -22,6 +29,7 @@ class ctaiKhoan {
             echo '<script>alert("Email hoặc password không chính xác"); window.history.back();</script>';
         }
     }
+    
     
     public function gettkbacsi($tentk){
         $p = new mtaikhoan();

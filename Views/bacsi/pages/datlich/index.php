@@ -10,7 +10,7 @@
     include_once('Controllers/cbacsi.php');
     include_once('Controllers/chosobenhandientu.php');
     include_once('Controllers/clichkham.php');
-    include_once('Controllers/cphieukhambenh.php');
+    include_once('Controllers/cPhieuKhambenh.php');
     include_once('Controllers/ckhunggio.php');
 
     // Khởi tạo các đối tượng controller
@@ -637,26 +637,18 @@
             }
 
             // Nhóm khung giờ theo hình thức và ca
-// Nhóm khung giờ theo hình thức và ca
             khungTrong.forEach(kg => {
-                const hinhThuc = (kg.hinhthuclamviec || '').trim().toLowerCase();
-                const ca = String(kg.macalamviec || '').trim();
-                let caType = 'ca_toi'; // mặc định
-                
-                if (ca === '4' || ca === 4) caType = 'ca_sang';
-                else if (ca === '5' || ca === 5) caType = 'ca_chieu';
-                
-                const id_target = `${hinhThuc}_${caType}`;
+                const id_target = `${kg.hinhthuclamviec}_${kg.macalamviec === '4' ? 'ca_sang' : kg.macalamviec === '5' ? 'ca_chieu' : 'ca_toi'}`;
                 const container = document.getElementById(id_target);
 
                 if (container) {
                     const btn = document.createElement('div');
                     btn.className = 'khung-gio-btn';
                     btn.dataset.makhunggio = kg.makhunggiokb;
-                    btn.dataset.hinhthuc = hinhThuc;
+                    btn.dataset.hinhthuc = kg.hinhthuclamviec;
                     btn.innerHTML = `
                         <div class="time">${kg.giobatdau.split(':').slice(0, 2).join(':')} - ${kg.gioketthuc.split(':').slice(0, 2).join(':')}</div>
-                        <div class="status">${hinhThuc === 'online' ? 'Khám Online' : 'Tại Bệnh Viện'}</div>
+                        <div class="status">${kg.hinhthuclamviec === 'online' ? 'Khám Online' : 'Tại Bệnh Viện'}</div>
                     `;
 
                     btn.addEventListener('click', function() {
@@ -667,8 +659,6 @@
                     });
 
                     container.appendChild(btn);
-                } else {
-                    console.log('[v0] Container không tìm thấy:', id_target, 'Dữ liệu khung giờ:', kg);
                 }
             });
         }
