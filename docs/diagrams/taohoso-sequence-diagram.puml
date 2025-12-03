@@ -93,7 +93,7 @@ else Validation thành công
     
     Model -> Model: Tính tuổi:\n$age = $today->diff($dob)->y
     
-    Model -> Model: Kiểm tra điều kiện tuổi:\nif (!($age < 18 || $age > 60))\n  return error message\n\nNote: "Chỉ được tạo hồ sơ cho\ntrẻ em dưới 18 tuổi hoặc\nngười già trên 60 tuổi"
+    Model -> Model: Kiểm tra điều kiện tuổi:\nif (!($age < 18 || $age > 60))\n  return error message\n\nNote: Logic này trả về lỗi khi:\nage >= 18 AND age <= 60\n(Chỉ cho phép tạo hồ sơ\ncho người 18-60 tuổi)
     
     Model -> DB: SELECT COUNT(*) FROM benhnhan\nWHERE manguoigiamho = '$manguoithan'\nAND matrangthai = 1
     activate DB

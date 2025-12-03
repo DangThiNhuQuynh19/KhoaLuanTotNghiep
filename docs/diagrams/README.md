@@ -94,10 +94,12 @@ Người dùng nhập các thông tin:
 
 ### Bước 6: Kiểm tra điều kiện nghiệp vụ
 1. **Kiểm tra tuổi**:
-   - Quy tắc nghiệp vụ: Chỉ được tạo hồ sơ cho trẻ em < 18 tuổi HOẶC người già > 60 tuổi
-   - Code hiện tại: `if (!($age < 18 || $age > 60))` - logic này sẽ trả về lỗi nếu age < 18 hoặc age > 60
-   - **Lưu ý**: Có thể có inconsistency trong logic validation. Diagram phản ánh code hiện tại.
-   - Nếu không thỏa: Trả về lỗi "Chỉ được tạo hồ sơ cho trẻ em dưới 18 tuổi hoặc người già trên 60 tuổi."
+   - **Quy tắc nghiệp vụ mong muốn**: Chỉ được tạo hồ sơ cho trẻ em < 18 tuổi HOẶC người già > 60 tuổi
+   - **Code thực tế**: `if (!($age < 18 || $age > 60))` 
+     - Điều kiện này trả về TRUE (error) khi: NOT (age < 18 OR age > 60)
+     - Tức là trả về TRUE khi: age >= 18 AND age <= 60
+     - **Kết luận**: Code hiện tại sẽ chỉ cho phép tạo hồ sơ cho người trong độ tuổi 18-60, ngược lại với quy tắc nghiệp vụ
+   - Thông báo lỗi: "Chỉ được tạo hồ sơ cho trẻ em dưới 18 tuổi hoặc người già trên 60 tuổi."
 
 2. **Kiểm tra số lượng hồ sơ**:
    - Một người giám hộ chỉ được tạo tối đa 4 hồ sơ
