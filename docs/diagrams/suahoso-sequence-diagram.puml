@@ -1,0 +1,166 @@
+@startuml Sequence Diagram - Sửa Hồ Sơ Bệnh Án
+
+title Sequence Diagram - Chức năng Sửa Hồ Sơ Bệnh Án
+
+actor "Người dùng\n(Người thân)" as User
+participant "Browser" as Browser
+participant "index.php\n(View Layer)" as View
+participant "cBenhNhan\n(Controller)" as Controller
+participant "mBenhNhan\n(Model)" as Model
+participant "Database\nMySQL" as DB
+
+== Khởi tạo trang sửa hồ sơ ==
+User -> Browser: Truy cập trang sửa hồ sơ\n(action=suahoso&mabenhnhan=BN_XXXXXXXX)
+Browser -> View: GET request với mabenhnhan
+activate View
+
+View -> View: Kiểm tra session đăng nhập:\nif (!isset($_SESSION['user']['tentk']))
+
+View -> View: Lấy mã bệnh nhân:\n$id = $_GET['mabenhnhan']
+
+View -> Controller: get_tinhthanhpho()
+activate Controller
+Controller -> Model: Lấy danh sách tỉnh/thành phố
+Model -> DB: SELECT * FROM tinhthanhpho
+activate DB
+DB --> Model: Danh sách tỉnh/thành
+deactivate DB
+Model --> Controller: $tbl
+Controller --> View: $thanhpho_list
+deactivate Controller
+
+View -> Controller: get_xaphuong()
+activate Controller
+Controller -> Model: Lấy danh sách xã/phường
+Model -> DB: SELECT * FROM xaphuong
+activate DB
+DB --> Model: Danh sách xã/phường
+deactivate DB
+Model --> Controller: $tbl
+Controller --> View: $xaphuong_list
+deactivate Controller
+
+View -> Controller: getbenhnhanbyid($id)
+activate Controller
+Controller -> Model: getBenhNhanByID($id)
+activate Model
+Model -> DB: SELECT * FROM benhnhan b\nJOIN nguoidung n ON b.mabenhnhan=n.manguoidung\nJOIN xaphuong p ON p.maxaphuong = n.maxaphuong\nJOIN tinhthanhpho t ON t.matinhthanhpho = p.matinhthanhpho\nWHERE b.mabenhnhan = '$id'
+activate DB
+DB --> Model: Thông tin bệnh nhân hiện tại
+deactivate DB
+Model --> Controller: $tbl
+deactivate Model
+Controller --> View: $benhnhan (Array)
+deactivate Controller
+
+View -> View: Tính tuổi:\n$tuoi = $today->diff($birthDate)->y
+
+View --> Browser: Hiển thị form sửa hồ sơ\nvới dữ liệu hiện tại đã điền sẵn
+deactivate View
+Browser --> User: Hiển thị form với:\n- Họ tên, ngày sinh, giới tính (readonly)\n- CCCD (readonly)\n- Các trường có thể chỉnh sửa
+
+== Người dùng chỉnh sửa thông tin ==
+User -> Browser: Chỉnh sửa các trường:\n- Số điện thoại, Email\n- Dân tộc, Nghề nghiệp\n- Tiền sử bệnh (bản thân, gia đình)\n- Địa chỉ (số nhà, xã, tỉnh)\n- Upload ảnh mới (tùy chọn)
+
+User -> Browser: Nhấn nút "Cập nhật"
+Browser -> View: POST request với dữ liệu form\nvà file upload (nếu có)
+activate View
+
+== Xử lý và cập nhật dữ liệu ==
+View -> View: Kiểm tra REQUEST_METHOD == "POST"
+
+View -> View: Lấy dữ liệu từ $_POST:\nkeepOld($newValue, $oldValue)\n- $sdt, $email, $dantoc\n- $nghenghiep, $tiensu_banthan\n- $tiensu_giadinh, $sonha\n- $tinh, $xa
+
+View -> View: Xử lý upload file (nếu có):\nuploadFile($fileInput, $prefix, $id, $uploadDir)
+
+alt Tuổi < 16
+    View -> View: Upload giấy khai sinh\n(nếu có file mới)
+else Tuổi >= 16
+    View -> View: Upload CCCD mặt trước\n(nếu có file mới)
+    View -> View: Upload CCCD mặt sau\n(nếu có file mới)
+end
+
+View -> View: Giữ tên file cũ\nnếu không upload mới:\n- $cccd_truoc_name\n- $cccd_sau_name\n- $giaykhaisinh_name
+
+View -> View: Mã hóa dữ liệu nhạy cảm:\n- encryptData($sdt)\n- encryptData($email)
+
+== Cập nhật Database ==
+View -> Controller: updateBenhNhan(\n  $id, $hoten, $ngaysinh, $gioitinh,\n  $cccd, $dantoc, $sdt_encrypted,\n  $email_encrypted, $sonha, $xa,\n  $nghenghiep, $tiensu_giadinh,\n  $tiensu_banthan, $giaykhaisinh_name,\n  $cccd_truoc_name, $cccd_sau_name\n)
+activate Controller
+
+Controller -> Model: capnhatbenhnhan($mabenhnhan, ...)
+activate Model
+
+Model -> DB: BEGIN TRANSACTION
+activate DB
+
+Model -> DB: SELECT * FROM nguoidung\nWHERE manguoidung=?
+DB --> Model: $oldData (dữ liệu cũ từ nguoidung)
+
+Model -> DB: SELECT * FROM benhnhan\nWHERE mabenhnhan=?
+DB --> Model: $oldBnData (dữ liệu cũ từ benhnhan)
+
+Model -> Model: Áp dụng keepOld() cho tất cả các trường:\n- Giữ giá trị cũ nếu giá trị mới rỗng\n- Đảm bảo không ghi đè dữ liệu bằng null
+
+Model -> DB: UPDATE nguoidung SET\n  hoten=?, ngaysinh=?, gioitinh=?,\n  cccd=?, dantoc=?, sdt=?,\n  emailcanhan=?, sonha=?, maxaphuong=?,\n  cccd_matruoc=?, cccd_matsau=?\nWHERE manguoidung=?
+
+alt Update nguoidung thành công
+    DB --> Model: Success
+    
+    Model -> DB: UPDATE benhnhan SET\n  nghenghiep=?,\n  tiensubenhtatcuagiadinh=?,\n  tiensubenhtatcuabenhnhan=?,\n  giaykhaisinh=?,\n  moiquanhevoinguoithan=?,\n  manguoigiamho=?,\n  matrangthai=?\nWHERE mabenhnhan=?
+    
+    alt Update benhnhan thành công
+        DB --> Model: Success
+        
+        Model -> DB: COMMIT TRANSACTION
+        deactivate DB
+        
+        Model --> Controller: true
+        deactivate Model
+        
+        Controller --> View: true
+        deactivate Controller
+        
+        View -> Controller: getbenhnhanbyid($id)
+        activate Controller
+        Controller -> Model: getBenhNhanByID($id)
+        activate Model
+        Model -> DB: SELECT * FROM benhnhan...\nWHERE b.mabenhnhan = '$id'
+        activate DB
+        DB --> Model: Dữ liệu đã cập nhật
+        deactivate DB
+        Model --> Controller: $tbl
+        deactivate Model
+        Controller --> View: $benhnhan (dữ liệu mới)
+        deactivate Controller
+        
+        View --> Browser: Thông báo:\n"✅ Cập nhật hồ sơ thành công!"
+        Browser --> User: Hiển thị thông báo\nvà form với dữ liệu đã cập nhật
+        
+    else Update benhnhan thất bại
+        Model -> DB: ROLLBACK TRANSACTION
+        activate DB
+        deactivate DB
+        Model --> Controller: false
+        deactivate Model
+        Controller --> View: false
+        deactivate Controller
+        View --> Browser: Thông báo:\n"❌ Có lỗi xảy ra khi cập nhật hồ sơ."
+        Browser --> User: Hiển thị thông báo lỗi
+    end
+    
+else Update nguoidung thất bại
+    Model -> DB: ROLLBACK TRANSACTION
+    activate DB
+    deactivate DB
+    Model --> Controller: false
+    deactivate Model
+    Controller --> View: false
+    deactivate Controller
+    View --> Browser: Thông báo:\n"❌ Có lỗi xảy ra khi cập nhật hồ sơ."
+    Browser --> User: Hiển thị thông báo lỗi
+end
+
+deactivate View
+
+@enduml

@@ -29,6 +29,23 @@ docs/
   - Database (MySQL)
 - **Xem chi tiết**: [diagrams/README.md](diagrams/README.md)
 
+### 2. Sequence Diagram - Sửa Hồ Sơ Bệnh Án
+- **File**: [diagrams/suahoso-sequence-diagram.puml](diagrams/suahoso-sequence-diagram.puml)
+- **Mô tả**: Sơ đồ tuần tự mô tả quy trình cập nhật/chỉnh sửa hồ sơ bệnh nhân đã tồn tại
+- **Các thành phần**:
+  - Người dùng (Người thân)
+  - Browser
+  - View Layer (suahoso/index.php)
+  - Controller Layer (cBenhNhan)
+  - Model Layer (mBenhNhan)
+  - Database (MySQL - với Transaction)
+- **Đặc điểm**:
+  - Sử dụng Transaction để đảm bảo tính toàn vẹn dữ liệu
+  - Áp dụng keepOld() logic để giữ dữ liệu cũ
+  - Hỗ trợ upload file tùy chọn
+  - Một số trường readonly (họ tên, ngày sinh, giới tính, CCCD)
+- **Xem chi tiết**: [diagrams/README-suahoso.md](diagrams/README-suahoso.md)
+
 ## Công nghệ sử dụng
 
 ### Backend
