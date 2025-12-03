@@ -248,7 +248,7 @@ $lichkham = $cLichKham->getLichKhamOfBacSiByNgay($ngay, $mabacsi, $gioHienTai);
             $hinhthuc = $rowCa['hinhthuclamviec']; // "online" hoặc "offline"
             
             // Check if user is logged in
-            $isLoggedIn = isset($_SESSION['dangnhap']) && $_SESSION['dangnhap'] == 1;
+            $isLoggedIn = isset($_SESSION['dangnhap']) && $_SESSION['dangnhap'] === 1;
             
             $link = "";
             if ($ngay == $ngayHienTai) {
@@ -342,16 +342,26 @@ $lichkham = $cLichKham->getLichKhamOfBacSiByNgay($ngay, $mabacsi, $gioHienTai);
     }
 
     function redirectToLogin() {
-        // chuyển đến trang đăng nhập và sau khi đăng nhập sẽ quay lại redirectUrl
+        // Save the current redirect URL to session storage before going to login
+        // After successful login, the user will be redirected back
+        let redirectUrl = sessionStorage.getItem('redirectAfterLogin');
+        if (redirectUrl) {
+            // Store flag to indicate we're coming from this page
+            sessionStorage.setItem('shouldRedirectAfterLogin', 'true');
+        }
         window.location.href = "index.php?action=dangnhap";
     }
 
     // khi người dùng quay lại sau khi đăng nhập thành công
-    <?php if (isset($_SESSION['dangnhap'])): ?>
-    let redirectUrl = sessionStorage.getItem('redirectAfterLogin');
-    if (redirectUrl) {
-        sessionStorage.removeItem('redirectAfterLogin');
-        window.location.href = redirectUrl;
+    <?php if (isset($_SESSION['dangnhap']) && $_SESSION['dangnhap'] === 1): ?>
+    // Only redirect if we have the flag indicating we should redirect
+    if (sessionStorage.getItem('shouldRedirectAfterLogin') === 'true') {
+        let redirectUrl = sessionStorage.getItem('redirectAfterLogin');
+        if (redirectUrl) {
+            sessionStorage.removeItem('redirectAfterLogin');
+            sessionStorage.removeItem('shouldRedirectAfterLogin');
+            window.location.href = redirectUrl;
+        }
     }
     <?php endif; ?>
 </script>
