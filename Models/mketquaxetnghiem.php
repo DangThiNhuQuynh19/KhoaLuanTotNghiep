@@ -67,11 +67,10 @@ class mKetQuaXetNghiem{
         $con = $p->moketnoi();
         $con->set_charset('utf8');
         if($con){
-            $str = "select * from ketquaxetnghiem as kq
+            $str = "select distinct l.*, ct.* , kq.* from ketquaxetnghiem as kq
             join lichxetnghiem as l on kq.malichxetnghiem=l.malichxetnghiem
             join chitiethoso as ct on ct.mahoso= l.mahoso
-            where ct.mabacsi='$mabacsi' AND DATE(l.ngayhen) = CURDATE() - 1
-            group by l.malichxetnghiem ";
+            where ct.mabacsi='$mabacsi' AND DATE(l.ngayhen) = CURDATE() - 1";
             $tbl = $con->query($str);
             $p->dongketnoi($con);
             return $tbl;
@@ -84,8 +83,9 @@ class mKetQuaXetNghiem{
         $p = new clsKetNoi();
         $con = $p->moketnoi();
         $con->set_charset('utf8');
+        $con->query("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
         if($con){
-            $str = "select * from ketquaxetnghiem as kq
+            $str = "select distinct kq.*, l.*, ct .*, bs.*, bn.*, nd.*, ck.* from ketquaxetnghiem as kq
             join lichxetnghiem as l on kq.malichxetnghiem=l.malichxetnghiem
             join chitiethoso as ct on ct.mahoso= l.mahoso
             join bacsi as bs on bs.mabacsi=ct.mabacsi
@@ -93,7 +93,6 @@ class mKetQuaXetNghiem{
             join nguoidung as nd on nd.manguoidung=bn.mabenhnhan    
             join chuyenkhoa as ck on bs.machuyenkhoa=ck.machuyenkhoa
             where ct.mabacsi='$mabacsi'
-            group by l.malichxetnghiem
             ORDER BY ngayhen DESC LIMIT 3";
             $tbl = $con->query($str);
             $p->dongketnoi($con);
