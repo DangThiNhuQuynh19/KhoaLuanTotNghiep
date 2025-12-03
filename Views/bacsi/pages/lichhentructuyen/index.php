@@ -10,12 +10,12 @@ include_once('Controllers/chosobenhandientu.php');
 include_once('Controllers/cthuoc.php');
 include_once('Controllers/cloaixetnghiem.php');
 include_once('Controllers/ckhunggioxetnghiem.php');
+include_once('Controllers/cchitiethoso.php');
+include_once('Controllers/cdonthuoc.php');
+include_once('Controllers/cchitietdonthuoc.php');
+include_once('Controllers/clichxetnghiem.php');
+include_once('Controllers/cbenhnhan.php');
 include_once("Assets/config.php");
-
-// Include handler for complete examination
-if (isset($_POST['btnHoanTat'])) {
-    include_once('Controllers/xulyhoantatkham.php');
-}
 
 // Initialize controllers
 $cbacsi = new cBacSi();
@@ -24,6 +24,16 @@ $chsba = new cHoSoBenhAnDienTu();
 $cthuoc = new cThuoc();
 $cloaixetnghiem = new cLoaiXetNghiem();
 $ckhunggioxetnghiem = new cKhungGioXetNghiem();
+$cchitiethoso = new cChiTietHoSo();
+$cdonthuoc = new cDonThuoc();
+$cchitietdongthuoc = new cChiTietDonThuoc();
+$clichxetnghiem = new cLichXetNghiem();
+$cbenhnhan = new cBenhnhan();
+
+// Include handler for complete examination
+if (isset($_POST['btnHoanTat'])) {
+    include_once('Controllers/xulyhoantatkham.php');
+}
 
 // Get data for form dropdowns
 $thuoc_list = $cthuoc->get_thuoc();
@@ -78,6 +88,28 @@ $paged_list = $total ? array_slice($lichkham_list, $offset, $perPage) : [];
     <div class="content-header">
         <h1>Quản lý lịch hẹn trực tuyến</h1>
     </div>
+
+    <!-- Success/Error Messages -->
+    <?php if(isset($_GET['success']) && $_GET['success'] == '1'): ?>
+        <div class="alert alert-success" style="background-color: #d4edda; color: #155724; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #28a745;">
+            <i class="fas fa-check-circle"></i> <strong>Thành công!</strong> Đã lưu thông tin khám bệnh và cập nhật trạng thái.
+        </div>
+    <?php endif; ?>
+    
+    <?php if(isset($_GET['error'])): ?>
+        <div class="alert alert-danger" style="background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #dc3545;">
+            <i class="fas fa-exclamation-triangle"></i> <strong>Lỗi!</strong> 
+            <?php 
+                if($_GET['error'] == 'save_failed') {
+                    echo 'Không thể lưu chi tiết hồ sơ. Vui lòng thử lại.';
+                } elseif($_GET['error'] == 'exception' && isset($_GET['msg'])) {
+                    echo 'Đã xảy ra lỗi: ' . htmlspecialchars($_GET['msg']);
+                } else {
+                    echo 'Đã xảy ra lỗi không xác định. Vui lòng thử lại hoặc liên hệ admin.';
+                }
+            ?>
+        </div>
+    <?php endif; ?>
 
     <!-- SEARCH FORM (GET) -->
     <div class="card">
