@@ -240,13 +240,19 @@
             }
         }
 
-        public function insert_hosobenhandientu_mabenhnhan($mabenhnhan){
+        public function insert_hosobenhandientu_mabenhnhan($mabenhnhan, $nguoitao = null){
             $p = new clsKetNoi();
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if($con){
-                $str = "insert into hosobenhan(mabenhnhan,ngaytao,ngaycapnhat) 
-                values('$mabenhnhan',CURDATE(),CURDATE());";
+                // Nếu có nguoitao thì insert cả nguoitao, nếu không thì bỏ qua
+                if ($nguoitao !== null) {
+                    $str = "insert into hosobenhan(mabenhnhan, nguoitao, ngaytao, ngaycapnhat) 
+                    values('$mabenhnhan', '$nguoitao', CURDATE(), CURDATE());";
+                } else {
+                    $str = "insert into hosobenhan(mabenhnhan, ngaytao, ngaycapnhat) 
+                    values('$mabenhnhan', CURDATE(), CURDATE());";
+                }
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;

@@ -18,8 +18,8 @@ $linhvuc_chuyengia = $clinhvuc->get_linhvuc_machuyengia($chuyengia['machuyengia'
 $message = "";
 
 if(isset($_POST['submit'])){
-    // Tạo hồ sơ bệnh án mới
-    if($chosobenhandientu->create_hosobenhan_mabenhnhan($mabenhnhan)){
+    // Tạo hồ sơ bệnh án mới, truyền machuyengia làm nguoitao
+    if($chosobenhandientu->create_hosobenhan_mabenhnhan($mabenhnhan, $chuyengia['machuyengia'])){
         $hosonew = $chosobenhandientu->get_hsba_new($mabenhnhan);
         $mahoso = $hosonew[0]['mahoso']; // Lấy mã hồ sơ vừa tạo
         $madonthuoc=NULL;
