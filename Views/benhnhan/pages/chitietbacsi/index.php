@@ -1,14 +1,7 @@
 <?php
 
-// Kiểm tra đăng nhập
-if (!isset($_SESSION['dangnhap']) || $_SESSION['dangnhap'] != 1) {
-    // Lưu URL hiện tại để quay lại sau khi đăng nhập
-    $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
-    // Chuyển hướng sang trang đăng nhập
-    header("Location: index.php?action=dangnhap");
-    exit;
-}
-
+// Visitors and logged-in patients can view doctor details
+// Login is only required when booking an appointment
 
 include_once("Controllers/cbacsi.php");
 include_once("Controllers/clichkham.php");
@@ -254,15 +247,26 @@ $lichkham = $cLichKham->getLichKhamOfBacSiByNgay($ngay, $mabacsi, $gioHienTai);
             $gioketthuc = date('H:i', strtotime($rowCa['gioketthuc']));
             $hinhthuc = $rowCa['hinhthuclamviec']; // "online" hoặc "offline"
             
+            // Check if user is logged in
+            $isLoggedIn = isset($_SESSION['dangnhap']) && $_SESSION['dangnhap'] == 1;
+            
             $link = "";
             if ($ngay == $ngayHienTai) {
                 if ($giobatdau >= $gioHienTai) {
-                    $link = '<a href="index.php?action=datlichkham&idbs=' . $mabacsi . '&ngay=' . $ngay . '&makhunggiokb=' . $makhunggiokb . '">' . $giobatdau . ' - ' . $gioketthuc . '</a>';
+                    if ($isLoggedIn) {
+                        $link = '<a href="index.php?action=datlichkham&idbs=' . $mabacsi . '&ngay=' . $ngay . '&makhunggiokb=' . $makhunggiokb . '">' . $giobatdau . ' - ' . $gioketthuc . '</a>';
+                    } else {
+                        $link = '<a href="#" onclick="showLoginPopup(\'index.php?action=datlichkham&idbs=' . $mabacsi . '&ngay=' . $ngay . '&makhunggiokb=' . $makhunggiokb . '\'); return false;">' . $giobatdau . ' - ' . $gioketthuc . '</a>';
+                    }
                 } else {
                     $link = "<p>Ca này đã qua.</p>";
                 }
             } else {
-                $link = '<a href="index.php?action=datlichkham&idbs=' . $mabacsi . '&ngay=' . $ngay . '&makhunggiokb=' . $makhunggiokb . '">' . $giobatdau . ' - ' . $gioketthuc . '</a>';
+                if ($isLoggedIn) {
+                    $link = '<a href="index.php?action=datlichkham&idbs=' . $mabacsi . '&ngay=' . $ngay . '&makhunggiokb=' . $makhunggiokb . '">' . $giobatdau . ' - ' . $gioketthuc . '</a>';
+                } else {
+                    $link = '<a href="#" onclick="showLoginPopup(\'index.php?action=datlichkham&idbs=' . $mabacsi . '&ngay=' . $ngay . '&makhunggiokb=' . $makhunggiokb . '\'); return false;">' . $giobatdau . ' - ' . $gioketthuc . '</a>';
+                }
             }
             
             // Phân loại

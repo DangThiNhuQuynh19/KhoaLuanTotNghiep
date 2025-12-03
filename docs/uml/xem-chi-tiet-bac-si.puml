@@ -1,0 +1,78 @@
+@startuml Xem Chi Tiet Bac Si - Sequence Diagram
+title Use Case: Xem Chi Tiết Bác Sĩ\nSequence Diagram
+
+actor "Khách vãng lai/\nBệnh nhân" as User
+participant "Trang danh sách\nbác sĩ" as DanhSachBacSi
+participant "Controller\n(cBacSi)" as Controller
+participant "Model\n(mBacSi)" as Model
+participant "Database" as DB
+participant "Trang chi tiết\nbác sĩ" as ChiTietBacSi
+
+== Luồng sự kiện chính (Main Flow) ==
+
+User -> DanhSachBacSi: 1. Chọn "Xem chi tiết"\ntại một bác sĩ
+
+activate DanhSachBacSi
+DanhSachBacSi -> Controller: Gọi getBacSiById(id)
+activate Controller
+
+Controller -> Model: chitietbacsi(id)
+activate Model
+
+Model -> DB: SELECT * FROM bacsi\nJOIN chuyenkhoa\nJOIN nguoidung\nJOIN taikhoan\nWHERE mabacsi = id
+activate DB
+
+DB --> Model: Trả về thông tin bác sĩ
+deactivate DB
+
+Model --> Controller: Trả về ResultSet
+deactivate Model
+
+Controller --> DanhSachBacSi: Trả về thông tin bác sĩ
+deactivate Controller
+
+DanhSachBacSi -> ChiTietBacSi: Chuyển đến trang chi tiết
+activate ChiTietBacSi
+
+ChiTietBacSi --> User: 2. Hiển thị thông tin chi tiết:\n- Ảnh bác sĩ\n- Họ và tên, Chức danh, học vị\n- Chuyên khoa\n- Thông tin mô tả (thu gọn)\n- Lịch khám bệnh
+deactivate ChiTietBacSi
+deactivate DanhSachBacSi
+
+...Người dùng xem thông tin...
+
+User -> ChiTietBacSi: 4. Chọn "Xem thêm"
+activate ChiTietBacSi
+
+ChiTietBacSi --> User: 5. Hiển thị đầy đủ thông tin:\n- Mô tả chi tiết về kinh nghiệm\n- Giới thiệu bác sĩ
+deactivate ChiTietBacSi
+
+== Luồng sự kiện thay thế (Alternative Flow) ==
+
+group Alternative: Không tìm thấy thông tin bác sĩ [2.1]
+    Controller -> Model: chitietbacsi(id)
+    activate Controller
+    activate Model
+    
+    Model -> DB: SELECT * FROM bacsi...
+    activate DB
+    
+    DB --> Model: Không có dữ liệu (0 rows)
+    deactivate DB
+    
+    Model --> Controller: Trả về kết quả rỗng
+    deactivate Model
+    
+    Controller --> ChiTietBacSi: Trả về 0
+    deactivate Controller
+    
+    ChiTietBacSi --> User: Hiển thị thông báo:\n"Không tìm thấy thông tin bác sĩ"
+end
+
+== Luồng sự kiện ngoại lệ (Exception Flow) ==
+
+group Exception: Người dùng chuyển sang trang khác [Bước 1 hoặc Bước 2]
+    User -> DanhSachBacSi: Chuyển sang trang khác
+    note right: Use case kết thúc
+end
+
+@enduml
