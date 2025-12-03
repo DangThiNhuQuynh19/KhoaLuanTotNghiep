@@ -1,6 +1,6 @@
 <?php
 if (!isset($_SESSION['user']['tentk'])) {
-    header("Location: dangnhap.php");
+    header("Location: action=dangnhap");
     exit();
 }
 $tentk = $_SESSION['user']['tentk'];

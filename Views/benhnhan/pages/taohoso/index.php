@@ -138,7 +138,7 @@ function getAge($dob) {
 }
 ?>
 <body>
-    <div class="container">
+    <div class="container1">
         <div class="form-container">
             <?php if($message != ""): ?>
                 <script>

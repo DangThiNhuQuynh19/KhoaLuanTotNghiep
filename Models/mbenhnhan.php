@@ -329,7 +329,7 @@
             $stmtCheck->execute();
             $result = $stmtCheck->get_result()->fetch_assoc();
         
-            if ($result['total'] >= 4) {
+            if ($result['total'] >= 5) {
                 return "Một người giám hộ chỉ được tạo tối đa 4 hồ sơ.";
             }
         

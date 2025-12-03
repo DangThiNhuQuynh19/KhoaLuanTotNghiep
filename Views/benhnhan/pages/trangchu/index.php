@@ -1,10 +1,5 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bệnh viện Hạnh Phúc</title>
-    <style>
+<!-- Trang chủ content -->
+<style>
         * {
             margin: 0;
             padding: 0;
@@ -206,18 +201,26 @@
 
         .btn {
             display: inline-block;
-            padding: 10px 20px;
+            padding: 12px 32px;
             background-color: #9b59b6;
             color: white;
             text-decoration: none;
-            border-radius: 5px;
+            border-radius: 25px;
             margin-top: 20px;
             font-size: 16px;
-            transition: background-color 0.3s ease;
+            font-weight: 600;
+            border: 2px solid #9b59b6;
+            box-shadow: 0 4px 12px rgba(155, 89, 182, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
         }
 
         .btn:hover {
-            background-color: #800080;
+            background-color: #8e44ad;
+            border-color: #8e44ad;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(155, 89, 182, 0.4);
+            color: white;
         }
 
         /* Media Queries */
@@ -282,9 +285,7 @@
             }
         }
     </style>
-</head>
-<body>
-    <div class="main">
+<div class="main">
         <div class="banner">
             <img src="Assets/img/banner.jpg" alt="Banner">
             <div class="banner-text">
@@ -373,8 +374,3 @@
             </div>
         </div>
     </div>
-</body>
-</html>
-<?php
-require_once("Views/benhnhan/layout/footer.php");
-?>

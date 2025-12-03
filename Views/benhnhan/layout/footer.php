@@ -1,127 +1,114 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <!-- Bootstrap 5 -->
+<!-- Footer fragment: styles and markup only (no html/head/body wrappers) -->
+<!-- Bootstrap and icons (if not already loaded in page head) -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-<!-- Bootstrap Icons -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 <style>
-    .custom-footer {
-  background-color: #343177; /* Màu nền tím đậm */
-  color: white;
+:root{
+  --footer-bg: linear-gradient(180deg,#382a86 0%, #2b2366 100%);
+  --accent: #bfa6ff;
+  --muted: rgba(255,255,255,0.8);
 }
+.custom-footer{
+  background: var(--footer-bg);
+  color: #fff;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+.custom-footer a{ color: var(--muted); text-decoration: none; }
+.custom-footer a:hover{ color: var(--accent); text-decoration: none; }
+.footer-brand img{ height: 60px; margin-bottom: 12px; }
+.footer-title{ font-weight:700; color:#fff; margin-bottom:12px; font-size: 1.1rem; line-height: 1.3; }
+.footer-text{ color: var(--muted); font-size: .88rem; line-height: 1.5; margin-bottom: 10px; }
+.footer-links{ list-style:none; padding:0; margin:0; }
+.footer-links li{ margin:8px 0; }
+.social-icons a{ display:inline-flex; align-items:center; justify-content:center; width:40px; height:40px; border-radius:8px; background:rgba(255,255,255,0.06); color: #fff; margin-right:8px; transition:all .15s ease; }
+.social-icons a:hover{ transform:translateY(-3px); background: rgba(191,166,255,0.14); color: var(--accent); }
+.newsletter input[type="email"]{ background: rgba(255,255,255,0.06); border: none; color: #fff; }
+.newsletter .btn{ background: var(--accent); border: none; color: #2b2366; font-weight:600; }
+.footer-bottom{ border-top:1px solid rgba(255,255,255,0.06); padding-top:18px; color: rgba(255,255,255,0.7); font-size: .9rem; }
+@media (max-width:767px){ .social-icons a{ width:36px; height:36px; } }
 
-.custom-footer a {
-  color: white;
-  text-decoration: none;
-  transition: color 0.3s;
-}
-
-.custom-footer a:hover {
-  color: #d1c5f0;
-  text-decoration: underline;
-}
-
-.footer-links {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.footer-links li {
-  margin-bottom: 10px;
-}
-
-.social-icons a {
-  display: inline-block;
-  margin-right: 12px;
-  font-size: 24px;
-  color: white;
-}
-
-.social-icons a:hover {
-  color: #bba7ff;
-}
+/* Chatbot */
+.chatbot-icon{ position: fixed; right: 20px; bottom: 24px; width:56px; height:56px; border-radius:50%; background: #fff; display:flex; align-items:center; justify-content:center; box-shadow:0 8px 20px rgba(43,35,102,0.25); cursor:pointer; z-index:1050; }
+.chatbot-icon img{ width:40px; height:40px; }
+.chatbot-frame{ position: fixed; right: 20px; bottom: 96px; width: 360px; max-width: calc(100% - 40px); display:none; z-index:1050; }
+.chatbot-frame iframe{ width:100%; height:520px; border-radius:10px; border:0; }
 
 </style>
-</head>
-<body>
-    
-</body>
-</html>
 <footer class="custom-footer">
   <div class="container py-5">
-    <div class="row align-items-start">
-      <!-- Cột 1: Logo + Thông tin -->
-      <div class="col-md-4 mb-4">
-        <img src="Assets/img/logo-footer.png" alt="Logo" style="height: 60px; margin-bottom: 20px;">
-        <p><strong>Bệnh viện Đa khoa Quốc tế Hạnh Phúc</strong><br>
-          <i class="bi bi-telephone"></i> 1900 6765</p>
-        <hr style="border-color: rgba(255,255,255,0.2); width: 80%;">
+    <div class="row gy-4 align-items-start">
+      <div class="col-md-4">
+        <div class="footer-brand mb-2">
+          <img src="Assets/img/logo-footer.png" alt="Logo">
+        </div>
+        <div class="footer-title">Bệnh viện Đa khoa Quốc tế Hạnh Phúc</div>
+        <p class="mb-0"><i class="bi bi-telephone-fill"></i> 1900 6765</p>
       </div>
 
-      <!-- Cột 2: Menu -->
-      <div class="col-md-5 mb-4">
-        <div class="row">
-          <div class="col-6">
-            <ul class="footer-links">
-              <li><a href="#">Về chúng tôi</a></li>
-              <li><a href="#">Chuyên khoa</a></li>
-              <li><a href="#">Bác sĩ</a></li>
-              <li><a href="#">Gói khám</a></li>
-              <li><a href="#">Blog</a></li>
-            </ul>
-          </div>
-          <div class="col-6">
-            <ul class="footer-links">
-              <li><a href="#">Chính sách</a></li>
-              <li><a href="#">Tin tức</a></li>
-              <li><a href="#">Liên hệ</a></li>
-              <li><a href="#">Quyền riêng tư</a></li>
-            </ul>
-          </div>
-        </div>
+      <div class="col-md-2">
+        <div class="footer-title">Khám nhanh</div>
+        <ul class="footer-links">
+          <li><a href="?action=chuyenkhoa">Chuyên khoa</a></li>
+          <li><a href="?action=bacsi">Bác sĩ</a></li>
+          <li><a href="?action=lichhen">Đặt lịch</a></li>
+          <li><a href="?action=goikham">Gói khám</a></li>
+        </ul>
       </div>
-      <!-- Cột 3: Mạng xã hội -->
-      <div class="col-md-3 mb-4 text-md-end text-center">
-        <p><strong>Kết nối với chúng tôi</strong></p>
+
+      <div class="col-md-3">
+        <div class="footer-title">Thông tin</div>
+        <ul class="footer-links">
+          <li><a href="?action=gioithieu">Về chúng tôi</a></li>
+          <li><a href="?action=tintuc">Tin tức</a></li>
+          <li><a href="?action=chinhsach">Chính sách</a></li>
+          <li><a href="?action=lienhe">Liên hệ</a></li>
+        </ul>
+      </div>
+
+      <div class="col-md-3">
+        <div class="footer-title">Kết nối với chúng tôi</div>
+        <div class="mb-3 footer-text">Theo dõi chúng tôi qua mạng xã hội để cập nhật tin tức y tế mới nhất.</div>
         <div class="social-icons">
-          <a href="#"><i class="bi bi-facebook"></i></a>
-          <a href="#"><i class="bi bi-youtube"></i></a>
-          <a href="#"><img src="Assets/img/zalo-icon.png" alt="Zalo" style="height: 24px;"></a>
+          <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+          <a href="#" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+          <a href="#" aria-label="Zalo"><img src="Assets/img/zalo-icon.png" alt="Zalo" style="height:18px;"></a>
+          <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
         </div>
       </div>
     </div>
 
-    <!-- Copyright -->
-    <div class="text-center mt-4" style="font-size: 14px; color: #ddd;">
-      Copyright 2025 © Hanh Phuc International
+    <div class="footer-bottom d-flex flex-column flex-md-row justify-content-between align-items-center mt-4">
+      <div>© <span id="year"></span> Hanh Phuc International. All rights reserved.</div>
+      <div class="mt-2 mt-md-0">Thiết kế bởi <a href="#">Bệnh viện Hạnh Phúc</a></div>
     </div>
   </div>
 </footer>
-<div class="chatbot-icon" id="chatbotBtn">
+
+<div class="chatbot-icon" id="chatbotBtn" title="Mở chatbot">
     <img src="Assets/img/logo-banner.png" alt="Hospital Icon">
 </div>
 
 <!-- Khung chatbot -->
 <div class="chatbot-frame" id="chatbotFrame">
-  <iframe src= "https://xaito.vn/App/embed/Chatbot/hfi87DePnBf0BLel" width="100%" height="500px" name="chatbot" frameborder="0" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"> </iframe>
+  <iframe src="https://xaito.vn/App/embed/Chatbot/hfi87DePnBf0BLel" name="chatbot"></iframe>
 </div>
 <script>
-    const chatbotBtn = document.getElementById('chatbotBtn');
-    const chatbotFrame = document.getElementById('chatbotFrame');
+  // Footer small scripts
+  document.getElementById('year').textContent = new Date().getFullYear();
 
-    chatbotBtn.addEventListener('click', () => {
-        chatbotFrame.style.display = chatbotFrame.style.display === 'block' ? 'none' : 'block';
-    });
+  const chatbotBtn = document.getElementById('chatbotBtn');
+  const chatbotFrame = document.getElementById('chatbotFrame');
 
-    document.addEventListener('click', (e) => {
-        if (!chatbotFrame.contains(e.target) && !chatbotBtn.contains(e.target)) {
-            chatbotFrame.style.display = 'none';
-        }
-    });
+  chatbotBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    chatbotFrame.style.display = chatbotFrame.style.display === 'block' ? 'none' : 'block';
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!chatbotFrame.contains(e.target) && !chatbotBtn.contains(e.target)) {
+      chatbotFrame.style.display = 'none';
+    }
+  });
 </script>
+</body>
+</html>

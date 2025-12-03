@@ -82,6 +82,16 @@ $pChuyenGia  = new cChuyenGia();
 $pLichKham   = new cLichKham();
 $pBenhNhan   = new cBenhNhan();
 
+if(isset($_GET['maphieukhambenh'])){
+    $phieukham = $pPhieuKham->getPhieuKhamBenhOfIDPK($_GET['maphieukhambenh']);
+    $_SESSION['maphieukhambenh'] = $phieukham['maphieukhambenh'];
+    $_SESSION['ngaykham'] = $phieukham ['ngaykham'];
+    $_SESSION['makhunggiokb'] = $phieukham ['makhunggiokb'];
+    $_SESSION['mabacsi'] = $phieukham ['mabacsi'];
+    $_SESSION['mabenhnhan'] = $phieukham ['mabenhnhan'];
+    $_SESSION['tongtien'] = $phieukham ['giakham'];
+    $_SESSION['matrangthai'] = 6;
+}
 // Lấy thông tin bác sĩ hoặc chuyên gia
 $tblBacSi = null;
 $idbs = null;

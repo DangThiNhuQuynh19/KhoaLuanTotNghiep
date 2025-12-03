@@ -12,6 +12,76 @@
     $sophieukhamtrongtuan = $cphieukhambenh->get_sophieukham_trongtuan($chuyengia['machuyengia']);
     $lichkhamsapden = $cphieukhambenh->get_lichkham_sapden($chuyengia['machuyengia']);
 ?>
+<style>
+    /* ----- STAT CARDS (3 CÁI NẰM NGANG) ----- */
+    .stats-container {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        margin-top: 25px;
+    }
+
+    /* Mỗi card chiếm 1/3 chiều ngang */
+    .stat-card {
+        flex: 1;
+        background: #fff;
+        padding: 20px;
+        border-radius: 14px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        transition: 0.25s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+    }
+
+    /* Icon */
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        background: #3498db15;
+        color: #3498db;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        font-size: 26px;
+    }
+
+    /* Nội dung info */
+    .stat-info h3 {
+        margin: 0;
+        font-size: 16px;
+        color: #333;
+    }
+
+    .stat-number {
+        margin: 6px 0;
+        font-size: 28px;
+        font-weight: 700;
+        color: #3498db;
+    }
+
+    .stat-change {
+        font-size: 13px;
+        color: #666;
+    }
+
+    .stat-change.positive {
+        color: #2ecc71;
+    }
+
+    /* Responsive mobile */
+    @media (max-width: 768px) {
+        .stats-container {
+            flex-direction: column;
+        }
+    }
+</style>
 <div class="container">
         <div class="dashboard">
             <div class="notification-panel">

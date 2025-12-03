@@ -29,6 +29,24 @@
             }
         }
 
+        public function get_chitiethoso_mahoso_chuyengia($mahoso){
+            $p = new mChiTietHoSo();
+            $tbl = $p->select_chitiethoso_mahoso($mahoso);
+            $list=array();
+            if (!$tbl) {
+                return -1;
+            } else {
+                if($tbl->num_rows>0){
+                    while($r=$tbl->fetch_assoc()){
+                        $list[]=$r;
+                    }
+                    return $list;
+                }else{
+                    return 0;
+                }
+            }
+        }
+
         public function get_chitiethoso_machitiethoso($machitiet){
             $p = new mChiTietHoSo();
             $tbl = $p->select_chitiethoso_machitiethoso($machitiet);

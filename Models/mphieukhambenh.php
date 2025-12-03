@@ -168,15 +168,17 @@
         
         
         
-        public function huyPhieuKhamBenh($maphieukb) {
+        public function huyPhieuKhamBenh($maphieukb,$tk,$tongtien) {
             $p = new clsKetNoi();
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if($con){
-                $str = "update phieukhambenh set matrangthai='7' WHERE maphieukhambenh = '$maphieukb'";
-                $tbl = $con->query($str);
+                $str2 = "update phieukhambenh set matrangthai='7' WHERE maphieukhambenh = '$maphieukb'";
+                $str1 = "update taikhoan set vitien = vitien + $tongtien * 0.8 where tentk = '$tk' ";
+                $tbl1 = $con->query($str1);
+                $tbl2 = $con->query($str2);
                 $p->dongketnoi($con);
-                return $tbl;
+                return $tbl2;
             }else{
                 return false; 
             }
@@ -199,7 +201,7 @@
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if($con){
-                $str = "select * FROM phieukhambenh WHERE maphieukhambenh = '$maphieukb' ";
+                $str = "select * FROM phieukhambenh pk join bacsi bs on bs.mabacsi = pk.mabacsi WHERE maphieukhambenh = '$maphieukb' ";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;

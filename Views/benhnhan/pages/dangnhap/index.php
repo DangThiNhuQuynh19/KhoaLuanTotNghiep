@@ -5,22 +5,47 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Đăng nhập - Bệnh viện Hạnh Phúc</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    .container {
-        margin: auto;
-        margin-top: 100px;
+    .login-wrapper {
+      background-color: #f8f9fa;
+      min-height: calc(100vh - 80px);
+      margin-top: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      width: 100%;
+    }
+
+    .login-wrapper .container {
         display: flex;
-        width: 80%;
-        max-width: 900px;
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-        border-radius: 12px;
+        width: 100%;
+        max-width: 1200px;
+        background: white;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        border-radius: 20px;
         overflow: hidden;
+        animation: slideIn 0.6s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
     
     .image-side {
-        background: linear-gradient(135deg, #6f42c1 0%, #4a1d96 100%);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         flex: 1;
-        padding: 40px;
+        padding: 50px 40px;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -37,45 +62,86 @@
         left: -50%;
         width: 200%;
         height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+        background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
+        animation: rotate 20s linear infinite;
         z-index: 1;
+    }
+
+    @keyframes rotate {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
     }
     
     .image-side h1 {
-        font-size: 28px;
+        font-size: 32px;
         margin-bottom: 20px;
         position: relative;
         z-index: 2;
+        font-weight: 700;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        animation: fadeInUp 0.8s ease-out 0.2s both;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
     
     .image-side p {
       font-size: 16px;
       text-align: center;
       margin-bottom: 30px;
-      line-height: 1.6;
+      line-height: 1.8;
       position: relative;
       z-index: 2;
+      font-weight: 300;
+      opacity: 0.95;
+      animation: fadeInUp 0.8s ease-out 0.4s both;
     }
     
     .image-side img {
-      width: 180px;
+      width: 200px;
       height: auto;
       margin-bottom: 30px;
       position: relative;
       z-index: 2;
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));
+      animation: fadeInUp 0.8s ease-out both;
     }
     
     .login-side {
       background-color: #ffffff;
       flex: 1;
-      padding: 40px;
+      padding: 50px 45px;
       display: flex;
       flex-direction: column;
       justify-content: center;
+      animation: fadeIn 0.8s ease-out 0.3s both;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
     }
     
     .login-box {
       width: 100%;
+      max-width: 400px;
+      margin: 0 auto;
     }
     
     .login-box img.logo {
@@ -85,10 +151,14 @@
     }
     
     .login-box h2 {
-      color: #6f42c1;
-      margin-bottom: 30px;
-      font-size: 28px;
-      font-weight: 600;
+      color: #333;
+      margin-bottom: 35px;
+      font-size: 32px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
     
     .input-group {
@@ -99,40 +169,60 @@
     .input-group label {
       display: block;
       text-align: left;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       font-weight: 500;
-      color: #333;
-      font-size: 15px;
+      color: #555;
+      font-size: 14px;
+      letter-spacing: 0.3px;
     }
     
     .input-group input {
       width: 100%;
-      padding: 12px 15px;
-      padding-left: 40px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      font-size: 16px;
+      padding: 15px 18px;
+      padding-left: 48px;
+      border: 2px solid #e8e8e8;
+      border-radius: 12px;
+      font-size: 15px;
       transition: all 0.3s ease;
+      background-color: #fafafa;
+      font-family: 'Poppins', sans-serif;
+      line-height: 1.5;
     }
     
     .input-group input:focus {
       outline: none;
-      border-color: #6f42c1;
-      box-shadow: 0 0 0 3px rgba(111, 66, 193, 0.1);
+      border-color: #667eea;
+      background-color: #fff;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .input-group input::placeholder {
+      color: #bbb;
+      font-size: 14px;
     }
     
     .input-group i {
       position: absolute;
-      left: 15px;
-      bottom: 15px;
-      color: #999;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      margin-top: 17px;
+      color: #aaa;
+      font-size: 16px;
+      transition: color 0.3s ease;
+      pointer-events: none;
+    }
+
+    .input-group input:focus ~ i {
+      color: #667eea;
     }
     
     .options {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 25px;
+      margin-bottom: 30px;
     }
     
     .remember {
@@ -142,53 +232,71 @@
     
     .remember input {
       margin-right: 8px;
+      cursor: pointer;
+    }
+
+    .remember label {
+      font-size: 14px;
+      color: #666;
+      cursor: pointer;
     }
     
     .forgot-password {
-      color: #6f42c1;
+      color: #667eea;
       text-decoration: none;
       font-size: 14px;
-      transition: color 0.3s;
+      font-weight: 500;
+      transition: all 0.3s;
     }
     
     .forgot-password:hover {
-      color: #5a34a5;
-      text-decoration: underline;
+      color: #764ba2;
+      text-decoration: none;
+      transform: translateX(3px);
     }
     
     button {
       width: 100%;
-      padding: 14px;
-      background-color: #6f42c1;
+      padding: 16px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
       font-size: 16px;
+      font-weight: 600;
       border: none;
-      border-radius: 8px;
+      border-radius: 12px;
       cursor: pointer;
       transition: all 0.3s ease;
-      font-weight: 600;
-      box-shadow: 0 4px 6px rgba(111, 66, 193, 0.2);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+      font-family: 'Poppins', sans-serif;
+      letter-spacing: 0.5px;
     }
     
     button:hover {
-      background-color: #5a34a5;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 8px rgba(111, 66, 193, 0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 25px rgba(102, 126, 234, 0.4);
     }
     
     button:active {
-      transform: translateY(0);
+      transform: translateY(-1px);
     }
     
     .message {
-      margin-bottom: 15px;
+      margin-bottom: 20px;
       color: #e74c3c;
-      font-size: 15px;
+      font-size: 14px;
       text-align: center;
-      padding: 10px;
-      border-radius: 5px;
+      padding: 12px 16px;
+      border-radius: 10px;
       background-color: rgba(231, 76, 60, 0.1);
+      border-left: 4px solid #e74c3c;
       display: none;
+      animation: shake 0.5s ease;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      75% { transform: translateX(10px); }
     }
     
     .message.show {
@@ -197,21 +305,21 @@
     
     .register-link {
       text-align: center;
-      margin-top: 25px;
-      font-size: 15px;
-      color: #555;
+      margin-top: 30px;
+      font-size: 14px;
+      color: #666;
     }
     
     .register-link a {
-      color: #6f42c1;
+      color: #667eea;
       text-decoration: none;
       font-weight: 600;
-      transition: color 0.3s;
+      transition: all 0.3s;
     }
     
     .register-link a:hover {
-      color: #5a34a5;
-      text-decoration: underline;
+      color: #764ba2;
+      text-decoration: none;
     }
     
     .social-login {
@@ -220,9 +328,13 @@
     }
     
     .social-login p {
-      color: #777;
-      margin-bottom: 15px;
+      color: #999;
+      margin-bottom: 20px;
       position: relative;
+      font-size: 13px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
     
     .social-login p::before,
@@ -230,9 +342,9 @@
       content: "";
       position: absolute;
       top: 50%;
-      width: 30%;
+      width: 35%;
       height: 1px;
-      background-color: #ddd;
+      background: linear-gradient(to right, transparent, #ddd, transparent);
     }
     
     .social-login p::before {
@@ -253,54 +365,81 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
       background-color: #f8f9fa;
       color: #333;
-      font-size: 18px;
+      font-size: 20px;
       transition: all 0.3s ease;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
     }
     
     .social-icons a:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 5px 10px rgba(0,0,0,0.15);
+      transform: translateY(-5px);
+      box-shadow: 0 8px 15px rgba(0,0,0,0.15);
     }
     
     .social-icons a.facebook {
       color: #3b5998;
     }
+
+    .social-icons a.facebook:hover {
+      background-color: #3b5998;
+      color: white;
+    }
     
     .social-icons a.google {
       color: #db4437;
+    }
+
+    .social-icons a.google:hover {
+      background-color: #db4437;
+      color: white;
     }
     
     .social-icons a.apple {
       color: #000;
     }
+
+    .social-icons a.apple:hover {
+      background-color: #000;
+      color: white;
+    }
     
     /* Responsive styles */
     @media (max-width: 768px) {
+      .login-wrapper {
+        padding: 20px 10px;
+      }
+
       .container {
         flex-direction: column;
         max-width: 500px;
       }
       
       .image-side {
-        padding: 30px 20px;
+        padding: 40px 25px;
       }
       
       .image-side h1 {
-        font-size: 24px;
+        font-size: 26px;
       }
       
       .image-side p {
         font-size: 14px;
       }
+
+      .image-side img {
+        width: 150px;
+      }
       
       .login-side {
-        padding: 30px 20px;
+        padding: 40px 25px;
+      }
+
+      .login-box h2 {
+        font-size: 28px;
       }
     }
     
@@ -308,59 +447,70 @@
       .options {
         flex-direction: column;
         align-items: flex-start;
-        gap: 10px;
+        gap: 12px;
       }
       
       .social-icons {
-        gap: 10px;
+        gap: 12px;
       }
       
       .social-icons a {
-        width: 40px;
-        height: 40px;
+        width: 44px;
+        height: 44px;
+        font-size: 18px;
       }
       
       .login-box h2 {
-        font-size: 24px;
+        font-size: 26px;
+      }
+
+      .image-side h1 {
+        font-size: 22px;
       }
     }
 
     .google-btn {
         display: inline-flex;
         align-items: center;
-        padding: 10px 15px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
+        justify-content: center;
+        width: 100%;
+        padding: 14px 20px;
+        border: 2px solid #e8e8e8;
+        border-radius: 12px;
         background-color: #fff;
-        color: #444;
+        color: #555;
         font-weight: 500;
-        font-size: 16px;
+        font-size: 15px;
         text-decoration: none;
-        transition: background-color 0.3s ease;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         margin-top: 20px;
+        font-family: 'Poppins', sans-serif;
     }
 
     .google-btn img {
-        width: 20px;
-        height: 20px;
-        margin-right: 10px;
+        width: 22px;
+        height: 22px;
+        margin-right: 12px;
     }
 
     .google-btn:hover {
-        background-color: #f7f7f7;
+        background-color: #f8f9fa;
+        border-color: #667eea;
         text-decoration: none;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0,0,0,0.1);
     }
 
   </style>
 </head>
-<body>
+<div class="login-wrapper">
   <div class="container">
-    <div class="image-side">
-      <img src="Assets/img/logo-banner.png" alt="Logo" />
-      <h1>Chào mừng đến với Bệnh viện Hạnh Phúc</h1>
-      <p>Đăng nhập để đặt lịch khám, xem hồ sơ bệnh án và nhận tư vấn từ đội ngũ bác sĩ chuyên nghiệp của chúng tôi.</p>
-    </div>
+      <div class="image-side">
+        <img src="Assets/img/logo-banner.png" alt="Logo" />
+        <h1>Chào mừng đến với Bệnh viện Hạnh Phúc</h1>
+        <p>Đăng nhập để đặt lịch khám, xem hồ sơ bệnh án và nhận tư vấn từ đội ngũ bác sĩ chuyên nghiệp của chúng tôi.</p>
+      </div>
     
     <div class="login-side">
       <div class="login-box">
@@ -371,14 +521,14 @@
         <form method="POST" id="loginForm">
           <div class="input-group">
             <label for="tentk">Tên tài khoản:</label>
-            <i class="fas fa-envelope"></i>
             <input type="email" id="tentk" name="tentk" placeholder="Nhập email của bạn" required />
+            <i class="fas fa-envelope"></i>
           </div>
           
           <div class="input-group">
             <label for="password">Mật khẩu:</label>
-            <i class="fas fa-lock"></i>
             <input type="password" id="password" name="password" placeholder="Nhập mật khẩu của bạn" required />
+            <i class="fas fa-lock"></i>
           </div>
           
           <div class="options">
@@ -407,8 +557,7 @@
       </div>
     </div>
   </div>
-</body>
-</html>
+</div>
 <?php
     include_once("Views/benhnhan/pages/dangnhap/xulydangnhap.php");
 ?>

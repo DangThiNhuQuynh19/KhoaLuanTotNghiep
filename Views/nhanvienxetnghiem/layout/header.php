@@ -429,12 +429,11 @@ $action = $_GET['action'] ?? '';
             <div class="sidebar-title">Chức năng hệ thống</div>
             <ul class="sidebar-menu">
                 <li><a href="?action=trangchu"><i class="fas fa-home"></i> Trang chủ</a></li>
-                <li><a href="?action=nhanvien"><i class="fas fa-users"></i> Quản lý hồ sơ nhân sự</a></li>
                 <li class="has-submenu" id="schedule-menu">
-                    <a href="javascript:void(0)"><i class="fas fa-calendar"></i> Quản lý lịch làm việc</a>
+                    <a href="javascript:void(0)"><i class="fas fa-calendar"></i>Kết quả xét nghiệm</a>
                     <ul class="submenu">
-                        <li><a href="?action=xeplich"><i class="fas fa-calendar-alt"></i> Xem lịch làm</a></li>
-                        <li><a href="?action=lichlamviec"><i class="fas fa-tasks"></i> Phân ca</a></li>
+                        <li><a href="?action=chinhsua"><i class="fas fa-calendar-alt"></i>Nhập kết quả</a></li>
+                        <li><a href="?action=xemchitiet"><i class="fas fa-tasks"></i>Xem kết quả</a></li>
                     </ul>
                 </li>
             </ul>

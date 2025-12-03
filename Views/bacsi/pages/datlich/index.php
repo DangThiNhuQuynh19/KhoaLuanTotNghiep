@@ -29,16 +29,17 @@
     $loai_thong_bao = 'thanh_cong';
 
     if(isset($_POST['btn_xac_nhan'])){
+        $maphieukb = 'PKB' . time() . rand(100, 999);
         $_SESSION['mabenhnhan']   = $_POST['ma_benh_nhan'];
         $_SESSION['makhunggiokb'] = $_POST['gio_hen'];
         if ($idbs) $_SESSION['mabacsi'] = $_POST['mabacsi'];
         elseif ($idcg) $_SESSION['machuyengia'] = $_POST['machuyengia'];
         $_SESSION['ngaykham']     = $_POST['ngay_hen'];
         $_SESSION['tongtien']     = $_POST['giakham'];
-        $_SESSION['matrangthai']  = '6';
-      
+        $_SESSION['maphieukhambenh'] = $maphieukb;
+        $_SESSION['matrangthai']  = '10';
+        
         if(!empty($_POST['ma_benh_nhan']) && !empty($_POST['gio_hen']) && !empty($_POST['ngay_hen'])){
-            $maphieukb = 'PKB' . time() . rand(100, 999);
             $khung_gio = $ckhunggio->getKhunggio($_POST['gio_hen']);
 
         if (is_array($khung_gio)) {
@@ -54,7 +55,7 @@
             $_POST['gio_hen'],
             $bacsi['mabacsi'],
             $_POST['ma_benh_nhan'],
-            6
+            10
         );
 
         if ($result) {
@@ -102,7 +103,6 @@
     }
 
 ?>
-
 <style>
     .alert {
         padding: 15px 20px;

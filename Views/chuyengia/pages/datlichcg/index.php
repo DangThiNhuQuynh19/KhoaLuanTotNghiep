@@ -625,6 +625,7 @@
                     lh.ngaylam === ngay_chon && !khungDaDat.includes(lh.makhunggiokb)
                 );
             }
+            
             if (khungTrong.length === 0) {
                 Swal.fire({
                     icon: 'warning',

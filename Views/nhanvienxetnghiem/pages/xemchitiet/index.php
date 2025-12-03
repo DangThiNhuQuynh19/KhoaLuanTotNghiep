@@ -37,56 +37,118 @@ $statusId = (int)$lich['matrangthai'];
 $statusText = $statusMap[$statusId]['text'] ?? $lich['tentrangthai'];
 $statusClass = $statusMap[$statusId]['class'] ?? '';
 ?>
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-<meta charset="UTF-8">
-<title>Chi Tiết Lịch Xét Nghiệm</title>
 <style>
-body { font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#f5f7fa; margin:0; padding:0; }
-.container { max-width:1000px; margin:40px auto; padding:20px; background:#fff; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.1);}
-h2 { text-align:center; color:#6c3483; margin-bottom:30px;}
-.info-section { margin-bottom:20px; }
-.info-section h3 { margin-bottom:10px; color:#4b0082; border-bottom:1px solid #ddd; padding-bottom:5px;}
-.info-section table { width:100%; border-collapse: collapse; }
-.info-section table td { padding:8px; vertical-align: top; }
+/* ===== TITLE ===== */
+h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #006699;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
 
-.status-button { padding:4px 12px; font-size:14px; border-radius:6px; font-weight:bold; border:none; cursor:default; }
-.btn-pending { background:#ff9800; color:#fff; }
-.btn-inprogress { background:#0d6efd; color:#fff; }
-.btn-done { background:#6c757d; color:#fff; }
+/* ===== SECTION ===== */
+.info-section {
+    background: #f9fbfd;
+    border: 1px solid #d9e4ee;
+    padding: 18px 20px;
+    border-radius: 6px;
+    margin-bottom: 22px;
+}
 
-/* Bảng kết quả xét nghiệm */
+.info-section h3 {
+    font-size: 17px;
+    font-weight: 600;
+    color: #004d66;
+    margin-bottom: 12px;
+}
+
+.info-section table {
+    width: 100%;
+}
+
+.info-section table td {
+    padding: 6px 0;
+    font-size: 15px;
+    color: #333;
+}
+
+.info-section table strong {
+    color: #004d66;
+}
+
+/* ===== TABLE KẾT QUẢ ===== */
 .results-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 10px;
+    margin-top: 12px;
 }
-.results-table th, .results-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-}
+
 .results-table th {
-    background-color: #f0f0f0;
+    background: #e6f1f7;
+    padding: 10px;
+    font-weight: 600;
+    text-align: left;
+    color: #004d66;
+    border-bottom: 1px solid #c9dbe5;
+}
+
+.results-table td {
+    padding: 10px 8px;
+    border-bottom: 1px solid #e6edf2;
     color: #333;
 }
-.results-table tr:nth-child(even) {
-    background-color: #fafafa;
+
+.results-table tr:hover {
+    background: #f2f7fa;
 }
+
+/* ===== STATUS BUTTON ===== */
+.status-button {
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: none;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* chuẩn màu hệ thống y tế */
+.status-waiting { background: #f0ad4e; }
+.status-processing { background: #0275d8; }
+.status-done { background: #5cb85c; }
+.status-cancel { background: #d9534f; }
+
+/* ===== BACK BUTTON ===== */
 .back-btn {
-    display:inline-block;
-    margin-top:20px;
-    padding:6px 12px;
-    background:#6c3483;
-    color:#fff;
-    text-decoration:none;
-    border-radius:6px;
+    display: inline-block;
+    margin-top: 18px;
+    padding: 10px 16px;
+    background: #0275d8;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: 0.2s ease-in-out;
+}
+
+.back-btn:hover {
+    background: #025fa8;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 600px) {
+    .main-container {
+        padding: 20px;
+    }
+    .info-section table td {
+        display: block;
+        width: 100%;
+    }
 }
 </style>
-</head>
-<body>
-<div class="container">
+<div class="main-container">
 <h2>Chi Tiết Lịch Xét Nghiệm</h2>
 
 <!-- Thông Tin Bác Sĩ -->

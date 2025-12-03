@@ -209,15 +209,14 @@
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if($con){
-                $str = "select * from hosobenhan hs 
+                $str = "select distinct ct.mahoso, bn.*, nd_bn.*, ct.*, nd_bs.*, ck.*, hs.* from hosobenhan hs 
                 join benhnhan bn on hs.mabenhnhan=bn.mabenhnhan 
                 join nguoidung nd_bn on nd_bn.manguoidung = bn.mabenhnhan
                 join chitiethoso ct on hs.mahoso = ct.mahoso 
                 join chuyengia bs on ct.mabacsi = bs.machuyengia
                 join nguoidung nd_bs on nd_bs.manguoidung = bs.machuyengia
                 join linhvuc ck on bs.malinhvuc = ck.malinhvuc
-                where hs.mabenhnhan= '$mabenhnhan'
-                group by ct.mahoso";
+                where hs.mabenhnhan= '$mabenhnhan'";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;

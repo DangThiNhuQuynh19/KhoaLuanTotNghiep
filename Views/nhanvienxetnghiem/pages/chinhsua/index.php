@@ -100,30 +100,201 @@ $statusId = (int)$lich['matrangthai'];
 $statusText = $statusMap[$statusId]['text'] ?? $lich['tentrangthai'];
 $statusClass = $statusMap[$statusId]['class'] ?? '';
 ?>
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-<meta charset="UTF-8">
-<title>Chỉnh Sửa Kết Quả Xét Nghiệm</title>
 <style>
-body { font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#f5f7fa; margin:0; padding:0; }
-.container { max-width:900px; margin:40px auto; padding:20px; background:#fff; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.1);}
-h2 { text-align:center; color:#6c3483; margin-bottom:30px;}
-.info-section { margin-bottom:20px; }
-.info-section h3 { margin-bottom:10px; color:#4b0082; border-bottom:1px solid #ddd; padding-bottom:5px;}
-.info-section table { width:100%; border-collapse: collapse; }
-.info-section table td { padding:8px; vertical-align: top; }
-input[type="text"], textarea, input[type="time"] { width:100%; padding:6px 10px; border-radius:6px; border:1px solid #ccc; }
-button { padding:6px 15px; border:none; border-radius:6px; background:#6c3483; color:#fff; cursor:pointer; }
-button:hover { background:#4b0082; }
-.status-button { padding:4px 12px; font-size:14px; border-radius:6px; font-weight:bold; border:none; cursor:default; }
-.btn-pending { background:#ff9800; color:#fff; }
-.btn-inprogress { background:#0d6efd; color:#fff; }
-.btn-done { background:#6c757d; color:#fff; }
+/* Reset */
+h2 {
+    text-align: center;
+    margin-bottom: 28px;
+    color: #005f85;
+    font-size: 26px;
+    font-weight: 700;
+}
+
+/* ===== SECTION BOX ===== */
+.info-section {
+    background: #f9fbfd;
+    border: 1px solid #d9e4ee;
+    padding: 20px 22px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+}
+
+.info-section h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #005f85;
+    margin-bottom: 15px;
+}
+
+.info-section table {
+    width: 100%;
+}
+
+.info-section table td {
+    padding: 7px 0;
+    font-size: 15px;
+    color: #333;
+}
+
+.info-section table strong {
+    color: #004d66;
+}
+
+/* ===== TABLE RESULTS ===== */
+.results-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.results-table th {
+    background: #e4f1f7;
+    padding: 10px;
+    font-weight: 700;
+    text-align: left;
+    color: #005f85;
+    border-bottom: 1px solid #c9dbe5;
+}
+
+.results-table td {
+    padding: 10px 8px;
+    border-bottom: 1px solid #e6edf2;
+    color: #333;
+}
+
+.results-table tr:hover {
+    background: #f2f7fa;
+}
+
+/* ===== STATUS BUTTONS ===== */
+.status-button {
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: none;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* màu chuẩn theo trạng thái */
+.btn-pending { background: #f0ad4e; }
+.btn-inprogress { background: #0275d8; }
+.btn-done { background: #5cb85c; }
+
+/* ===== BACK BUTTON ===== */
+.back-btn {
+    display: inline-block;
+    margin-top: 22px;
+    padding: 10px 18px;
+    background: #0275d8;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 15px;
+    transition: 0.2s;
+}
+
+.back-btn:hover {
+    background: #015fa8;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 600px) {
+    .main-container {
+        padding: 20px;
+    }
+    .info-section table td {
+        display: block;
+        width: 100%;
+    }
+}
+/* Table chỉ số */
+#resultsTable {
+    margin-top: 10px;
+}
+
+#resultsTable th {
+    padding: 10px;
+    text-align: left;
+    font-weight: 600;
+}
+
+#resultsTable td {
+    padding: 8px;
+}
+
+#resultsTable input {
+    width: 100%;
+    padding: 7px 10px;
+    border: 1px solid #bbb;
+    border-radius: 8px;
+    outline: none;
+    transition: 0.25s;
+}
+
+#resultsTable input:focus {
+    border-color: #6c5ce7;
+    box-shadow: 0 0 0 2px rgba(108,92,231,0.2);
+}
+
+/* Button thêm chỉ số */
+button {
+    background: #6c5ce7;
+    color: white;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+button:hover {
+    background: #5549d8;
+    transform: translateY(-1px);
+}
+
+/* Button xóa */
+.btn-danger {
+    background: #e74c3c !important;
+}
+
+.btn-danger:hover {
+    background: #c0392b !important;
+}
+
+/* Form dưới */
+table input[type="time"],
+textarea {
+    width: 100%;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #bbb;
+    margin-top: 6px;
+}
+
+textarea {
+    resize: vertical;
+}
+
+a {
+    display: inline-block;
+    border-radius: 8px;
+}
+
+a:hover {
+    opacity: 0.85;
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
 </style>
 </head>
 <body>
-<div class="container">
+<div class="main-container">
 <h2>Chỉnh Sửa Kết Quả Xét Nghiệm</h2>
 
 <form method="post">
