@@ -1,0 +1,112 @@
+@startuml Sequence_Diagram_TaoHoSo_DangKyKhamBenh
+
+title Sơ đồ tuần tự (Sequence Diagram)\nUsecase: Tạo hồ sơ đăng ký khám bệnh của bệnh nhân
+
+actor "Bệnh nhân" as BenhNhan
+participant "Giao diện Web\n(View)" as View
+participant "Controller\n(cBenhNhan)" as Controller
+participant "Model\n(mBenhNhan)" as Model
+database "Cơ sở dữ liệu\n(MySQL)" as Database
+
+== Truy cập trang tạo hồ sơ ==
+BenhNhan -> View: Truy cập trang tạo hồ sơ\n(/?action=taohoso)
+activate View
+View -> Controller: Lấy thông tin tài khoản người dùng
+activate Controller
+Controller -> Model: getbenhnhanbytk(email)
+activate Model
+Model -> Database: SELECT * FROM benhnhan\nWHERE email = ?
+activate Database
+Database --> Model: Trả về thông tin tài khoản
+deactivate Database
+Model --> Controller: Dữ liệu tài khoản
+deactivate Model
+Controller --> View: Thông tin người dùng
+deactivate Controller
+
+View -> Controller: Lấy danh sách tỉnh/thành phố
+activate Controller
+Controller -> Model: get_tinhthanhpho()
+activate Model
+Model -> Database: SELECT * FROM tinhthanhpho
+activate Database
+Database --> Model: Danh sách tỉnh thành
+deactivate Database
+Model --> Controller: Danh sách tỉnh thành
+deactivate Model
+Controller --> View: Dữ liệu tỉnh thành
+deactivate Controller
+
+View --> BenhNhan: Hiển thị form tạo hồ sơ
+deactivate View
+
+== Nhập thông tin hồ sơ ==
+BenhNhan -> View: Nhập thông tin cá nhân\n(Họ tên, ngày sinh, giới tính,\ndân tộc, CCCD)
+activate View
+View --> BenhNhan: Cập nhật form
+
+BenhNhan -> View: Nhập thông tin liên hệ\n(Email, số điện thoại)
+View --> BenhNhan: Cập nhật form
+
+BenhNhan -> View: Upload giấy tờ tùy thân\n(CCCD mặt trước, mặt sau)
+View --> BenhNhan: Xem trước ảnh
+
+BenhNhan -> View: Nhập tiền sử bệnh\n(Bản thân, gia đình)
+View --> BenhNhan: Cập nhật form
+
+BenhNhan -> View: Nhập địa chỉ\n(Tỉnh/thành, xã/phường, số nhà)
+View --> BenhNhan: Cập nhật form
+
+BenhNhan -> View: Xác nhận thông tin người thân
+View --> BenhNhan: Hiển thị thông tin người giám hộ
+
+== Xác thực và lưu hồ sơ ==
+BenhNhan -> View: Nhấn nút "Tạo mới"
+View -> View: Validate dữ liệu đầu vào\n(Email, SĐT, CCCD, họ tên)
+alt Dữ liệu không hợp lệ
+    View --> BenhNhan: Hiển thị thông báo lỗi\n(SweetAlert)
+else Dữ liệu hợp lệ
+    View -> View: Xử lý upload file ảnh\n(CCCD, giấy khai sinh)
+    View -> View: Mã hóa dữ liệu nhạy cảm\n(Email, SĐT, CCCD)
+    
+    View -> Controller: insertbenhnhan(\nmabenhnhan, email, hoten,\nngaysinh, sdt, dantoc, cccd,\ncccd_truoc, giaykhaisinh,\ncccd_sau, gioitinh, nghenghiep,\ntiensucuagiadinh, tiensucuabanthan,\nsonha, xa, tinh, manguoidung, quanhe)
+    activate Controller
+    
+    Controller -> Model: Tạo mã bệnh nhân\n(BN_xxxxxxxx)
+    activate Model
+    
+    Model -> Database: INSERT INTO nguoidung\n(manguoidung, hoten, ngaysinh,\ngioitinh, cccd, cccd_matruoc,\ncccd_matsau, dantoc, sdt,\nsonha, maxaphuong, email)
+    activate Database
+    Database --> Model: Trả về kết quả INSERT
+    
+    alt Thêm người dùng thành công
+        Model -> Database: INSERT INTO benhnhan\n(mabenhnhan, nghenghiep,\ntiensubenhtatcuagiadinh,\ntiensubenhtatcuabenhnhan,\ngiaykhaisinh, manguoigiamho,\nmoiquanhevoinguoithan, matrangthai)
+        Database --> Model: Trả về kết quả INSERT
+        deactivate Database
+        
+        alt Thêm bệnh nhân thành công
+            Model --> Controller: Trả về TRUE
+            deactivate Model
+            Controller --> View: Tạo hồ sơ thành công
+            deactivate Controller
+            View --> BenhNhan: Hiển thị thông báo thành công\n(SweetAlert)\nvà chuyển hướng đến trang cài đặt\n(?action=caidat)
+        else Lỗi khi thêm bệnh nhân
+            Model --> Controller: Trả về thông báo lỗi
+            deactivate Model
+            Controller --> View: Thông báo lỗi
+            deactivate Controller
+            View --> BenhNhan: Hiển thị thông báo lỗi\n(SweetAlert)
+        end
+    else Lỗi khi thêm người dùng
+        Database --> Model: Trả về lỗi
+        deactivate Database
+        Model --> Controller: Trả về thông báo lỗi
+        deactivate Model
+        Controller --> View: Thông báo lỗi
+        deactivate Controller
+        View --> BenhNhan: Hiển thị thông báo lỗi\n(SweetAlert)
+    end
+end
+deactivate View
+
+@enduml
