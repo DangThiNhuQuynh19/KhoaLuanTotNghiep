@@ -5,11 +5,27 @@
 include_once('Controllers/cphieukhambenh.php');
 include_once('Controllers/cbacsi.php');
 include_once('Controllers/chosobenhandientu.php'); // controller hồ sơ bệnh án (nếu có)
+include_once('Controllers/cthuoc.php');
+include_once('Controllers/cloaixetnghiem.php');
+include_once('Controllers/ckhunggioxetnghiem.php');
 include_once("Assets/config.php"); // cung cấp $conn nếu cần (PDO hoặc mysqli)
+
+// Include handler for complete examination
+if (isset($_POST['btnHoanTat'])) {
+    include_once('Controllers/xulyhoantatkham.php');
+}
 
 $cbacsi = new cBacSi();
 $cphieukhambenh = new cPhieuKhamBenh();
 $chsba = new cHoSoBenhAnDienTu();
+$cthuoc = new cThuoc();
+$cloaixetnghiem = new cLoaiXetNghiem();
+$ckhunggioxetnghiem = new cKhungGioXetNghiem();
+
+// Get data for form dropdowns
+$thuoc_list = $cthuoc->get_thuoc();
+$loaixetnghiem_list = $cloaixetnghiem->get_loaixetnghiem();
+$khunggioxetnghiem_list = $ckhunggioxetnghiem->get_khunggioxetnghiem();
 
 // Xử lý POST lưu hồ sơ bệnh án từ modal
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_hsba'])) {
@@ -271,15 +287,17 @@ $paged_list = $total ? array_slice($lichkham_list, $offset, $perPage) : [];
     </div>
 </div>
 
-<!-- Modal: giống form update trong chitiethosobenhan -->
+<!-- Modal: Enhanced modal with tabs for diagnosis, medications, and lab tests -->
 <div id="modalBackdrop" class="modal" role="dialog" aria-hidden="true">
-    <div class="modal-content">
+    <div class="modal-content" style="max-width: 1000px;">
         <span class="close" id="modalClose">&times;</span>
         <h3 style="margin-bottom: 20px; color: var(--primary);">Khám & Cập nhật hồ sơ bệnh án</h3>
+        
         <form id="hosobenhanForm" method="POST" action="">
-            <input type="hidden" name="save_hsba" value="1">
+            <input type="hidden" name="btnHoanTat" value="1">
             <input type="hidden" name="maphieukhambenh" id="form_maphieu">
             <input type="hidden" name="mabenhnhan" id="form_mabenhnhan">
+            <input type="hidden" name="mahoso" id="form_mahoso">
 
             <div class="form-row">
                 <div class="form-col">
@@ -292,50 +310,140 @@ $paged_list = $total ? array_slice($lichkham_list, $offset, $perPage) : [];
                 </div>
             </div>
 
-            <div class="form-row">
-                <div class="form-col" style="flex: 1 1 100%;">
-                    <label>Triệu chứng ban đầu:</label>
-                    <textarea name="trieuchung" rows="3" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;"></textarea>
+            <!-- Tabs for different sections -->
+            <div class="tabs update-tabs" style="margin-top: 20px;">
+                <div class="tab-header">
+                    <a href="#diagnosis-tab" class="update-tab-link active" onclick="openModalTab(event, 'diagnosis-tab')">Chẩn đoán</a>
+                    <a href="#medication-tab" class="update-tab-link" onclick="openModalTab(event, 'medication-tab')">Đơn thuốc</a>
+                    <a href="#labtest-tab" class="update-tab-link" onclick="openModalTab(event, 'labtest-tab')">Xét nghiệm</a>
+                </div>
+
+                <!-- Tab: Diagnosis -->
+                <div id="diagnosis-tab" class="update-tab-content active" style="padding: 15px 0;">
+                    <div class="form-row">
+                        <div class="form-col" style="flex: 1 1 100%;">
+                            <label>Triệu chứng ban đầu:</label>
+                            <textarea name="trieuchung" rows="3" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-col" style="flex: 1 1 100%;">
+                            <label>Chẩn đoán:</label>
+                            <textarea name="chandoan" rows="3" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-col" style="flex: 1 1 100%;">
+                            <label>Hướng điều trị:</label>
+                            <textarea name="huongdieutri" rows="3" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-col" style="flex: 1 1 100%;">
+                            <label>Kết luận:</label>
+                            <textarea name="ketluan" rows="2" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Medications -->
+                <div id="medication-tab" class="update-tab-content" style="padding: 15px 0; display: none;">
+                    <div class="medication-form">
+                        <h4 class="form-title" style="margin-bottom: 15px;">Thêm thuốc vào đơn</h4>
+                        <div class="form-row">
+                            <div class="form-col">
+                                <label for="tenthuoc">Tên thuốc:</label>
+                                <select id="tenthuoc" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                    <option value="">-- Chọn thuốc --</option>
+                                    <?php foreach($thuoc_list as $thuoc): ?>
+                                        <option value="<?php echo $thuoc['mathuoc']; ?>"><?php echo htmlspecialchars($thuoc['tenthuoc']); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="form-col">
+                                <label for="lieudung">Liều dùng:</label>
+                                <input type="text" id="lieudung" placeholder="Ví dụ: 3 lần/ngày" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-col">
+                                <label for="thoigianuong">Thời gian uống:</label>
+                                <input type="text" id="thoigianuong" placeholder="Ví dụ: Sau ăn" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                            </div>
+                            <div class="form-col">
+                                <label for="songayuong">Số ngày uống:</label>
+                                <input type="text" id="songayuong" placeholder="Ví dụ: 7 ngày" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                            </div>
+                        </div>
+                        <div style="text-align: right; margin-top: 10px;">
+                            <button type="button" class="btn-primary btn-small" onclick="addMedicationToList()">
+                                <i class="fas fa-plus"></i> Thêm
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="bangthuoc" style="display: none; margin-top: 20px;">
+                        <h4 style="margin-bottom: 10px;">Danh sách thuốc</h4>
+                        <table class="data-table" id="medicationTable">
+                            <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Tên thuốc</th>
+                                    <th>Liều dùng</th>
+                                    <th>Thời gian</th>
+                                    <th>Số ngày</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="medicationTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="medicationsContainer"></div>
+                </div>
+
+                <!-- Tab: Lab Tests -->
+                <div id="labtest-tab" class="update-tab-content" style="padding: 15px 0; display: none;">
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label for="test">Loại xét nghiệm:</label>
+                            <select name="test" id="test" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                <option value="">-- Chọn loại xét nghiệm --</option>
+                                <?php foreach($loaixetnghiem_list as $loai): ?>
+                                    <option value="<?php echo $loai['maloaixetnghiem']; ?>"><?php echo htmlspecialchars($loai['tenloaixetnghiem']); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label for="appointmentDate">Ngày hẹn:</label>
+                            <input type="date" name="appointmentDate" id="appointmentDate" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                        </div>
+                        <div class="form-col">
+                            <label for="appointmentTime">Giờ hẹn:</label>
+                            <select name="appointmentTime" id="appointmentTime" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                                <option value="">-- Chọn khung giờ --</option>
+                                <?php foreach($khunggioxetnghiem_list as $khunggio): ?>
+                                    <option value="<?php echo $khunggio['makhunggio']; ?>"><?php echo htmlspecialchars($khunggio['giobatdau'] . ' - ' . $khunggio['gioketthuc']); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-col" style="flex: 1 1 100%;">
+                            <label for="ghichu">Ghi chú:</label>
+                            <textarea name="ghichu" id="ghichu" rows="2" placeholder="Ghi chú thêm về xét nghiệm" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;"></textarea>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="form-row">
-                <div class="form-col" style="flex: 1 1 100%;">
-                    <label>Chẩn đoán:</label>
-                    <textarea name="chandoan" rows="3" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;"></textarea>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-col" style="flex: 1 1 100%;">
-                    <label>Hướng điều trị / Ghi chú:</label>
-                    <textarea name="huongdieutri" rows="3" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;"></textarea>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-col" style="flex: 1 1 100%;">
-                    <label>Đơn thuốc:</label>
-                    <textarea name="donthuoc" rows="3" placeholder="Ghi rõ thuốc và liều dùng" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;"></textarea>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-col">
-                    <label>Tổng tiền (VND):</label>
-                    <input type="number" name="thanhtien" min="0" step="1000" placeholder="Ví dụ: 200000" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
-                </div>
-                <div class="form-col">
-                    <label>Trạng thái:</label>
-                    <select name="trangthai" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
-                        <option value="Đã khám">Đã khám</option>
-                        <option value="Chờ thanh toán">Chờ thanh toán</option>
-                    </select>
-                </div>
-            </div>
-
-            <div style="text-align:right; margin-top:20px;">
-                <button type="button" id="modalCancelBtn" class="btn-danger btn-small">Hủy</button>
+            <div style="text-align:right; margin-top:20px; padding-top: 15px; border-top: 1px solid #ddd;">
+                <button type="button" id="modalCancelBtn" class="btn-danger btn-small"><i class="fas fa-times"></i> Hủy</button>
                 <button type="submit" class="btn-primary btn-small"><i class="fas fa-save"></i> Lưu & Hoàn tất</button>
             </div>
         </form>
@@ -343,17 +451,114 @@ $paged_list = $total ? array_slice($lichkham_list, $offset, $perPage) : [];
 </div>
 
 <script>
+// Tab switching for modal
+function openModalTab(evt, tabName) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("update-tab-content");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+        tabcontent[i].classList.remove("active");
+    }
+    tablinks = document.getElementsByClassName("update-tab-link");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].classList.remove("active");
+    }
+    document.getElementById(tabName).style.display = "block";
+    document.getElementById(tabName).classList.add("active");
+    evt.currentTarget.classList.add("active");
+    evt.preventDefault();
+}
+
+// Medication list management
+var medicationList = [];
+var medicationIndex = 0;
+
+function addMedicationToList() {
+    var mathuoc = document.getElementById('tenthuoc').value;
+    var tenthuoc = document.getElementById('tenthuoc').options[document.getElementById('tenthuoc').selectedIndex].text;
+    var lieudung = document.getElementById('lieudung').value;
+    var thoigianuong = document.getElementById('thoigianuong').value;
+    var songayuong = document.getElementById('songayuong').value;
+
+    if (!mathuoc || !lieudung || !thoigianuong || !songayuong) {
+        alert('Vui lòng điền đầy đủ thông tin thuốc');
+        return;
+    }
+
+    var medication = {
+        index: medicationIndex++,
+        mathuoc: mathuoc,
+        tenthuoc: tenthuoc,
+        lieudung: lieudung,
+        thoigianuong: thoigianuong,
+        songayuong: songayuong
+    };
+
+    medicationList.push(medication);
+    updateMedicationTable();
+    updateMedicationInputs();
+
+    // Clear form
+    document.getElementById('tenthuoc').value = '';
+    document.getElementById('lieudung').value = '';
+    document.getElementById('thoigianuong').value = '';
+    document.getElementById('songayuong').value = '';
+}
+
+function removeMedication(index) {
+    medicationList = medicationList.filter(function(med) {
+        return med.index !== index;
+    });
+    updateMedicationTable();
+    updateMedicationInputs();
+}
+
+function updateMedicationTable() {
+    var tbody = document.getElementById('medicationTableBody');
+    tbody.innerHTML = '';
+
+    if (medicationList.length > 0) {
+        document.getElementById('bangthuoc').style.display = 'block';
+        medicationList.forEach(function(med, idx) {
+            var row = tbody.insertRow();
+            row.innerHTML = '<td>' + (idx + 1) + '</td>' +
+                '<td>' + med.tenthuoc + '</td>' +
+                '<td>' + med.lieudung + '</td>' +
+                '<td>' + med.thoigianuong + '</td>' +
+                '<td>' + med.songayuong + '</td>' +
+                '<td><button type="button" class="btn-danger btn-small" onclick="removeMedication(' + med.index + ')"><i class="fas fa-trash"></i></button></td>';
+        });
+    } else {
+        document.getElementById('bangthuoc').style.display = 'none';
+    }
+}
+
+function updateMedicationInputs() {
+    var container = document.getElementById('medicationsContainer');
+    container.innerHTML = '';
+
+    medicationList.forEach(function(med, idx) {
+        container.innerHTML += '<input type="hidden" name="medications[' + idx + '][mathuoc]" value="' + med.mathuoc + '">';
+        container.innerHTML += '<input type="hidden" name="medications[' + idx + '][lieudung]" value="' + med.lieudung + '">';
+        container.innerHTML += '<input type="hidden" name="medications[' + idx + '][thoigianuong]" value="' + med.thoigianuong + '">';
+        container.innerHTML += '<input type="hidden" name="medications[' + idx + '][songayuong]" value="' + med.songayuong + '">';
+    });
+}
+
 // Mở modal khi bấm Khám
 document.querySelectorAll('.btn-kham').forEach(function(btn){
     btn.addEventListener('click', function(){
         var maphieu = btn.getAttribute('data-maphieu');
         var mabenhnhan = btn.getAttribute('data-mabenhnhan');
+        var mahoso = btn.getAttribute('data-mahoso') || '';
         var hoten = btn.getAttribute('data-hoten');
         var ngay = btn.getAttribute('data-ngay');
 
         document.getElementById('form_maphieu').value = maphieu;
         document.getElementById('form_mabenhnhan').value = mabenhnhan;
+        document.getElementById('form_mahoso').value = mahoso;
         document.getElementById('form_hoten').value = hoten;
+        
         // format ngày cho input date
         try {
             var d = new Date(ngay);
@@ -364,6 +569,23 @@ document.querySelectorAll('.btn-kham').forEach(function(btn){
         } catch(e) {
             document.getElementById('form_ngay').value = '';
         }
+
+        // Reset tabs to first tab
+        document.querySelectorAll('.update-tab-content').forEach(function(tab) {
+            tab.style.display = 'none';
+            tab.classList.remove('active');
+        });
+        document.querySelectorAll('.update-tab-link').forEach(function(link) {
+            link.classList.remove('active');
+        });
+        document.getElementById('diagnosis-tab').style.display = 'block';
+        document.getElementById('diagnosis-tab').classList.add('active');
+        document.querySelector('.update-tab-link').classList.add('active');
+
+        // Reset medication list
+        medicationList = [];
+        medicationIndex = 0;
+        updateMedicationTable();
 
         document.getElementById('modalBackdrop').style.display = 'block';
         document.getElementById('modalBackdrop').setAttribute('aria-hidden','false');
