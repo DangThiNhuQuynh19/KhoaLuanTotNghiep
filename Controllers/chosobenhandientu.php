@@ -208,6 +208,33 @@ class cHoSoBenhAnDienTu{
             }
         }
     }
+    
+    /**
+     * Lấy hồ sơ bệnh án theo chuyên khoa của người tạo và mã bệnh nhân
+     * Get medical records by specialty of creator and patient ID
+     * 
+     * @param string $mabenhnhan - Mã bệnh nhân (Patient ID)
+     * @param int $machuyenkhoa - Mã chuyên khoa (Specialty ID)
+     * @return array|int - Trả về mảng dữ liệu, 0 nếu không có kết quả, -1 nếu lỗi
+     * 
+     * Return values:
+     * - array: Mảng chứa các hồ sơ bệnh án
+     * - 0: Không tìm thấy hồ sơ nào
+     * - -1: Lỗi kết nối hoặc truy vấn
+     * 
+     * Example usage:
+     * $result = $chosobenhandientu->get_hoso_machuyenkhoa('BN_123456', 1);
+     * if (is_array($result)) {
+     *     // Có hồ sơ
+     *     foreach ($result as $hoso) {
+     *         echo $hoso['mahoso'];
+     *     }
+     * } elseif ($result === 0) {
+     *     // Không có hồ sơ
+     * } else {
+     *     // Lỗi
+     * }
+     */
     public function get_hoso_machuyenkhoa($mabenhnhan,$machuyenkhoa){
         $p = new mHoSoBenhAnDienTu();
         $tbl = $p->select_hoso_machuyenkhoa($mabenhnhan,$machuyenkhoa);

@@ -325,6 +325,20 @@
             }
         }
 
+        /**
+         * Lấy hồ sơ bệnh án theo chuyên khoa của người tạo và mã bệnh nhân
+         * Get medical records by specialty of creator and patient ID
+         * 
+         * @param string $mabenhnhan - Mã bệnh nhân (Patient ID)
+         * @param int $machuyenkhoa - Mã chuyên khoa (Specialty ID)
+         * @return mysqli_result|false - Trả về kết quả truy vấn hoặc false nếu lỗi
+         * 
+         * Hàm này lấy hồ sơ bệnh án dựa trên:
+         * - Mã bệnh nhân (mabenhnhan)
+         * - Chuyên khoa của bác sĩ tạo hồ sơ (machuyenkhoa)
+         * 
+         * Hồ sơ được lọc theo chuyên khoa của người tạo (bác sĩ) thông qua bảng chitiethoso.mabacsi
+         */
         public function select_hoso_machuyenkhoa($mabenhnhan,$machuyenkhoa){
             $p = new clsKetNoi();
             $con = $p->moketnoi();
