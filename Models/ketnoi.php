@@ -1,7 +1,7 @@
 <?php
 class clsketnoi{
     public function moKetNoi(){
-        $con = mysqli_connect("localhost", "root", "", "hanhphuc");
+        $con = mysqli_connect("localhost", "kltn", "Kltntrangquynh2025@", "hanhphuc");
         mysqli_set_charset($con,'utf8');
         return $con;
     }
