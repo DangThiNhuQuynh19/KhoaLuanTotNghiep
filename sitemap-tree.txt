@@ -181,9 +181,10 @@ index.php (Main Entry Point)
 🔧 CHI TIẾT KỸ THUẬT:
 
 URL Structure:
-    • Pattern: index.php?action={page_name}
+    • Pattern: index.php?action={page_name}[&cate={category}]
     • Example: index.php?action=trangchu
-    • With category: index.php?action=bacsi&cate=...
+    • With category: index.php?action=bacsi&cate=timach (tim mạch)
+    • Optional 'cate' parameter for filtering by specialty or category
 
 WebSocket/Chat (Real-time):
     server.php

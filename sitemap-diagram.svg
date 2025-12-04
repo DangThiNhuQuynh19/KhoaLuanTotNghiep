@@ -242,9 +242,9 @@
   
   <!-- Column 1: URL & Authentication -->
   <text x="70" y="1320" class="section-title">CẤU TRÚC URL:</text>
-  <text x="80" y="1340" class="page-text">• Pattern: index.php?action={page}</text>
+  <text x="80" y="1340" class="page-text">• Pattern: index.php?action={page}[&amp;cate={category}]</text>
   <text x="80" y="1355" class="page-text">• Ví dụ: ?action=trangchu</text>
-  <text x="80" y="1370" class="page-text">• ?action=bacsi&amp;cate=...</text>
+  <text x="80" y="1370" class="page-text">• ?action=bacsi&amp;cate=timach (tim mạch)</text>
   
   <text x="70" y="1400" class="section-title">XÁC THỰC (SESSION):</text>
   <text x="80" y="1420" class="page-text">• Bệnh nhân: $_SESSION['name'],</text>
