@@ -12,13 +12,13 @@
 
 | ID | Mô tả | Tiền điều kiện | Các bước thực hiện | Kết quả mong đợi | Trạng thái |
 |---|---|---|---|---|---|
-| TC_DK_001 | Đăng ký tài khoản thành công với đầy đủ thông tin hợp lệ (người từ 18 tuổi trở lên) | - Người dùng chưa có tài khoản<br>- Truy cập vào trang đăng ký<br>- Tuổi >= 18 | 1. Nhập họ tên: "Nguyễn Văn A"<br>2. Chọn giới tính: "Nam"<br>3. Nhập ngày sinh: "01/01/2000" (24 tuổi)<br>4. Nhập email: "nguyenvana@gmail.com"<br>5. Nhập số điện thoại: "0988365345"<br>6. Nhập số CCCD: "123456789012"<br>7. Upload ảnh CCCD mặt trước (tùy chọn)<br>8. Upload ảnh CCCD mặt sau (tùy chọn)<br>9. Chọn nghề nghiệp: "Nhân viên văn phòng"<br>10. Nhập tiền sử bệnh bản thân: "Không"<br>11. Nhập tiền sử bệnh gia đình: "Không"<br>12. Chọn Tỉnh/Thành phố<br>13. Chọn Xã/Phường<br>14. Nhập số nhà: "123 Nguyễn Văn A"<br>15. Nhập mật khẩu: "123456"<br>16. Nhập lại mật khẩu: "123456"<br>17. Click nút "Đăng ký tài khoản" | - Hiển thị thông báo "Đăng ký tài khoản thành công!"<br>- Chuyển hướng về trang đăng nhập<br>- Tài khoản được lưu vào database<br>- Mã bệnh nhân được tạo tự động (BN_xxxxxxxx) | Chưa chạy |
+| TC_DK_001 | Đăng ký tài khoản thành công với đầy đủ thông tin hợp lệ (người từ 18 tuổi trở lên) | - Người dùng chưa có tài khoản<br>- Truy cập vào trang đăng ký<br>- Tuổi >= 18 | 1. Nhập họ tên: "Nguyễn Văn A"<br>2. Chọn giới tính: "Nam"<br>3. Nhập ngày sinh: "01/01/2000" (24 tuổi)<br>4. Nhập email: "nguyenvana@gmail.com"<br>5. Nhập số điện thoại: "0988365345"<br>6. Nhập số CCCD: "123456789012"<br>7. Upload ảnh CCCD mặt trước (tùy chọn)<br>8. Upload ảnh CCCD mặt sau (tùy chọn)<br>9. Chọn nghề nghiệp: "Nhân viên văn phòng"<br>10. Nhập tiền sử bệnh bản thân: "Không"<br>11. Nhập tiền sử bệnh gia đình: "Không"<br>12. Chọn Tỉnh/Thành phố<br>13. Chọn Xã/Phường<br>14. Nhập số nhà: "123 Đường Lê Lợi"<br>15. Nhập mật khẩu: "123456"<br>16. Nhập lại mật khẩu: "123456"<br>17. Click nút "Đăng ký tài khoản" | - Hiển thị thông báo "Đăng ký tài khoản thành công!"<br>- Chuyển hướng về trang đăng nhập<br>- Tài khoản được lưu vào database<br>- Mã bệnh nhân được tạo tự động (BN_xxxxxxxx) | Chưa chạy |
 | TC_DK_002 | Đăng ký với email đã tồn tại | - Đã có tài khoản với email "test@gmail.com" trong hệ thống<br>- Truy cập vào trang đăng ký | 1. Nhập đầy đủ thông tin hợp lệ<br>2. Nhập email: "test@gmail.com" (email đã tồn tại)<br>3. Hoàn thành form và click "Đăng ký tài khoản" | - Hiển thị thông báo lỗi: "Email đã tồn tại."<br>- Form không được submit<br>- Người dùng vẫn ở trang đăng ký | Chưa chạy |
-| TC_DK_003 | Đăng ký với email không hợp lệ | - Truy cập vào trang đăng ký<br>- Tuổi >= 16 | 1. Nhập đầy đủ thông tin<br>2. Nhập email không đúng định dạng: "emailkhonghople"<br>3. Click "Đăng ký tài khoản" | - Hiển thị thông báo lỗi: "Email không hợp lệ."<br>- Form không được submit | Chưa chạy |
-| TC_DK_004 | Đăng ký với số điện thoại không hợp lệ (ít hơn 10 số) | - Truy cập vào trang đăng ký<br>- Tuổi >= 16 | 1. Nhập đầy đủ thông tin<br>2. Nhập số điện thoại: "098836534" (9 số)<br>3. Click "Đăng ký tài khoản" | - Hiển thị thông báo lỗi: "Số điện thoại không hợp lệ (10 số)."<br>- Form không được submit | Chưa chạy |
-| TC_DK_005 | Đăng ký với số điện thoại không hợp lệ (nhiều hơn 10 số) | - Truy cập vào trang đăng ký<br>- Tuổi >= 16 | 1. Nhập đầy đủ thông tin<br>2. Nhập số điện thoại: "09883653456" (11 số)<br>3. Click "Đăng ký tài khoản" | - Hiển thị thông báo lỗi: "Số điện thoại không hợp lệ (10 số)."<br>- Form không được submit | Chưa chạy |
-| TC_DK_006 | Đăng ký với số CCCD không hợp lệ (ít hơn 9 số) | - Truy cập vào trang đăng ký<br>- Tuổi >= 16 | 1. Nhập đầy đủ thông tin<br>2. Nhập số CCCD: "12345678" (8 số)<br>3. Click "Đăng ký tài khoản" | - Hiển thị thông báo lỗi: "Số CCCD không hợp lệ (9-12 số)."<br>- Form không được submit | Chưa chạy |
-| TC_DK_007 | Đăng ký với số CCCD không hợp lệ (nhiều hơn 12 số) | - Truy cập vào trang đăng ký<br>- Tuổi >= 16 | 1. Nhập đầy đủ thông tin<br>2. Nhập số CCCD: "1234567890123" (13 số)<br>3. Click "Đăng ký tài khoản" | - Hiển thị thông báo lỗi: "Số CCCD không hợp lệ (9-12 số)."<br>- Form không được submit | Chưa chạy |
+| TC_DK_003 | Đăng ký với email không hợp lệ | - Truy cập vào trang đăng ký<br>- Tuổi >= 18 | 1. Nhập đầy đủ thông tin<br>2. Nhập email không đúng định dạng: "emailkhonghople"<br>3. Click "Đăng ký tài khoản" | - Hiển thị thông báo lỗi: "Email không hợp lệ."<br>- Form không được submit | Chưa chạy |
+| TC_DK_004 | Đăng ký với số điện thoại không hợp lệ (ít hơn 10 số) | - Truy cập vào trang đăng ký<br>- Tuổi >= 18 | 1. Nhập đầy đủ thông tin<br>2. Nhập số điện thoại: "098836534" (9 số)<br>3. Click "Đăng ký tài khoản" | - Hiển thị thông báo lỗi: "Số điện thoại không hợp lệ (10 số)."<br>- Form không được submit | Chưa chạy |
+| TC_DK_005 | Đăng ký với số điện thoại không hợp lệ (nhiều hơn 10 số) | - Truy cập vào trang đăng ký<br>- Tuổi >= 18 | 1. Nhập đầy đủ thông tin<br>2. Nhập số điện thoại: "09883653456" (11 số)<br>3. Click "Đăng ký tài khoản" | - Hiển thị thông báo lỗi: "Số điện thoại không hợp lệ (10 số)."<br>- Form không được submit | Chưa chạy |
+| TC_DK_006 | Đăng ký với số CCCD không hợp lệ (ít hơn 9 số) | - Truy cập vào trang đăng ký<br>- Tuổi >= 18 | 1. Nhập đầy đủ thông tin<br>2. Nhập số CCCD: "12345678" (8 số)<br>3. Click "Đăng ký tài khoản" | - Hiển thị thông báo lỗi: "Số CCCD không hợp lệ (9-12 số)."<br>- Form không được submit | Chưa chạy |
+| TC_DK_007 | Đăng ký với số CCCD không hợp lệ (nhiều hơn 12 số) | - Truy cập vào trang đăng ký<br>- Tuổi >= 18 | 1. Nhập đầy đủ thông tin<br>2. Nhập số CCCD: "1234567890123" (13 số)<br>3. Click "Đăng ký tài khoản" | - Hiển thị thông báo lỗi: "Số CCCD không hợp lệ (9-12 số)."<br>- Form không được submit | Chưa chạy |
 | TC_DK_008 | Đăng ký với họ tên chứa ký tự đặc biệt | - Truy cập vào trang đăng ký | 1. Nhập họ tên: "Nguyễn Văn A123@"<br>2. Nhập đầy đủ thông tin khác hợp lệ<br>3. Click "Đăng ký tài khoản" | - Hiển thị thông báo lỗi: "Họ tên chỉ được chứa chữ cái và khoảng trắng."<br>- Form không được submit | Chưa chạy |
 | TC_DK_009 | Đăng ký với họ tên chứa số | - Truy cập vào trang đăng ký | 1. Nhập họ tên: "Nguyễn Văn A123"<br>2. Nhập đầy đủ thông tin khác hợp lệ<br>3. Click "Đăng ký tài khoản" | - Hiển thị thông báo lỗi: "Họ tên chỉ được chứa chữ cái và khoảng trắng."<br>- Form không được submit | Chưa chạy |
 | TC_DK_010 | Đăng ký với mật khẩu và nhập lại mật khẩu không khớp | - Truy cập vào trang đăng ký | 1. Nhập đầy đủ thông tin hợp lệ<br>2. Nhập mật khẩu: "123456"<br>3. Nhập lại mật khẩu: "654321"<br>4. Click "Đăng ký tài khoản" | - Hiển thị thông báo lỗi: "Mật khẩu nhập lại không khớp."<br>- Form không được submit | Chưa chạy |
@@ -61,14 +61,19 @@
 - Họ và tên (*)
 - Giới tính (*)
 - Ngày sinh (*)
-- Email (*) - Bắt buộc với người >= 16 tuổi
-- Số điện thoại (*) - Bắt buộc với người >= 16 tuổi
-- Số CCCD (*) - Bắt buộc với người >= 16 tuổi
+- Email (*) - Bắt buộc với người >= 18 tuổi (dựa vào validation trong code)
+- Số điện thoại (*) - Bắt buộc với người >= 18 tuổi (dựa vào validation trong code)
+- Số CCCD (*) - Bắt buộc với người >= 18 tuổi (dựa vào validation trong code)
 - Tỉnh/Thành phố (*)
 - Xã/Phường (*)
 - Số nhà, tên đường (*)
 - Mật khẩu (*)
 - Nhập lại mật khẩu (*)
+
+**Lưu ý về tuổi**: 
+- Trong code, validation email/sdt/cccd chỉ áp dụng khi tuổi >= 16 (xem dòng 49-54)
+- Tuy nhiên, yêu cầu đăng ký tài khoản phải từ 18 tuổi trở lên (xem dòng 93-98)
+- Do đó, các test case đều sử dụng tuổi >= 18 là điều kiện tiên quyết
 
 ### Các trường không bắt buộc (Optional):
 - CCCD mặt trước
@@ -105,9 +110,10 @@
 
 ## Kết luận
 Tổng số test case: **40**
-- Test case chức năng: 25
-- Test case validation: 10
-- Test case bảo mật: 3
-- Test case UI/UX: 2
+
+### Phân loại theo chức năng:
+- **Test case chức năng (Functional)**: TC_DK_001, TC_DK_021, TC_DK_023, TC_DK_024, TC_DK_025, TC_DK_026, TC_DK_027, TC_DK_030, TC_DK_032, TC_DK_035, TC_DK_036, TC_DK_037 (12 test cases)
+- **Test case validation (Validation)**: TC_DK_002, TC_DK_003, TC_DK_004, TC_DK_005, TC_DK_006, TC_DK_007, TC_DK_008, TC_DK_009, TC_DK_010, TC_DK_011, TC_DK_012, TC_DK_013, TC_DK_014, TC_DK_015, TC_DK_016, TC_DK_017, TC_DK_018, TC_DK_019, TC_DK_020, TC_DK_022, TC_DK_028, TC_DK_031, TC_DK_033, TC_DK_034 (24 test cases)
+- **Test case bảo mật (Security)**: TC_DK_029, TC_DK_038, TC_DK_039, TC_DK_040 (4 test cases)
 
 Cần chạy tất cả các test case trước khi release tính năng đăng ký.
