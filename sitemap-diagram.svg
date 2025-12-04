@@ -48,7 +48,7 @@
   <text x="80" y="310" class="page-text">• Hồ sơ bệnh án điện tử</text>
   <text x="80" y="325" class="page-text">• Tạo/Sửa/Xóa hồ sơ</text>
   
-  <text x="70" y="350" class="section-title">Đặt lịch & Quản lý:</text>
+  <text x="70" y="350" class="section-title">Đặt lịch &amp; Quản lý:</text>
   <text x="80" y="365" class="page-text">• Đặt lịch khám</text>
   <text x="80" y="380" class="page-text">• Lịch hẹn, Lịch khám</text>
   <text x="80" y="395" class="page-text">• Lịch khám chuyên gia</text>
@@ -102,7 +102,7 @@
   <text x="400" y="480" class="page-text">• Kết quả xét nghiệm</text>
   <text x="400" y="495" class="page-text">• Đặt lịch xét nghiệm</text>
   
-  <text x="390" y="520" class="section-title">Đơn thuốc & Khác:</text>
+  <text x="390" y="520" class="section-title">Đơn thuốc &amp; Khác:</text>
   <text x="400" y="535" class="page-text">• Tạo đơn thuốc</text>
   <text x="400" y="550" class="page-text">• Tin nhắn</text>
   
@@ -240,7 +240,7 @@
   <rect x="50" y="1250" width="1500" height="520" rx="5" style="fill: #f8f9fa; stroke: #dee2e6; stroke-width: 2;"/>
   <text x="800" y="1285" text-anchor="middle" style="font: bold 20px sans-serif; fill: #212529;">CHI TIẾT KỸ THUẬT</text>
   
-  <!-- Column 1: URL & Authentication -->
+  <!-- Column 1: URL &amp; Authentication -->
   <text x="70" y="1320" class="section-title">CẤU TRÚC URL:</text>
   <text x="80" y="1340" class="page-text">• Pattern: index.php?action={page}[&amp;cate={category}]</text>
   <text x="80" y="1355" class="page-text">• Ví dụ: ?action=trangchu</text>
