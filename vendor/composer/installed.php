@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => '__root__',
-        'pretty_version' => 'dev-main',
-        'version' => 'dev-main',
-        'reference' => 'c6f6f708fea2bcfa527da7f6972614c7d5a837c4',
+        'pretty_version' => 'dev-copilot/add-registration-testcase',
+        'version' => 'dev-copilot/add-registration-testcase',
+        'reference' => '9fa658d1f062fe9bc186783d8271e55eeee1a11c',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         '__root__' => array(
-            'pretty_version' => 'dev-main',
-            'version' => 'dev-main',
-            'reference' => 'c6f6f708fea2bcfa527da7f6972614c7d5a837c4',
+            'pretty_version' => 'dev-copilot/add-registration-testcase',
+            'version' => 'dev-copilot/add-registration-testcase',
+            'reference' => '9fa658d1f062fe9bc186783d8271e55eeee1a11c',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
