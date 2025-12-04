@@ -147,9 +147,10 @@ Use case này cho phép bác sĩ hoặc chuyên gia y tế tạo đơn thuốc �
 **Điều kiện**: `mathuoc` không tồn tại trong bảng `thuoc`
 
 **Xử lý**:
-1. Database constraint hoặc foreign key violation
-2. Hệ thống bỏ qua thuốc đó hoặc hiển thị lỗi
+1. Database constraint hoặc foreign key violation xảy ra
+2. Hệ thống hiển thị thông báo lỗi cho bác sĩ
 3. Thông báo: "Thuốc không hợp lệ, vui lòng chọn lại"
+4. Toàn bộ đơn thuốc không được lưu (rollback nếu có)
 
 ### 5.4. Luồng A4: Thêm thuốc trùng lặp
 **Điều kiện**: Bác sĩ thêm cùng một loại thuốc nhiều lần
@@ -194,7 +195,8 @@ Use case này cho phép bác sĩ hoặc chuyên gia y tế tạo đơn thuốc �
 **Xử lý**:
 1. Nếu tạo `donthuoc` thành công nhưng tạo `chitietdonthuoc` thất bại
 2. Cần rollback để đảm bảo tính toàn vẹn dữ liệu
-3. (Lưu ý: Code hiện tại chưa implement transaction)
+
+**Hạn chế hiện tại**: Code hiện tại chưa implement transaction, dẫn đến nguy cơ dữ liệu không nhất quán. Xem mục 15.1 "Cải tiến đề xuất" để biết thêm chi tiết.
 
 ---
 
@@ -211,7 +213,7 @@ Use case này cho phép bác sĩ hoặc chuyên gia y tế tạo đơn thuốc �
 | lieudung | varchar(200) | Có | Liều dùng thuốc | "3 lần/ngày, mỗi lần 2 viên" |
 | thoigianuong | varchar(200) | Có | Thời gian uống | "Sau ăn 30 phút" |
 | songayuong | int | Có | Số ngày cần uống | 7 |
-| soluong | int | Không | Số lượng thuốc | 21 |
+| soluong | int | Có | Số lượng thuốc (hiển thị trong UI nhưng không lưu vào DB) | 21 |
 
 ### 7.3. Format dữ liệu POST
 ```php
@@ -533,7 +535,8 @@ chitietdonthuoc (N) ←→ (1) thuoc
 
 ## 15. Cải tiến đề xuất (Future Enhancements)
 
-### 15.1. Validation nâng cao
+### 15.1. Validation nâng cao và Transaction Management
+- **Transaction Support**: Implement database transactions để đảm bảo tính toàn vẹn dữ liệu khi tạo đơn thuốc. Nếu bất kỳ bước nào thất bại (tạo donthuoc hoặc chitietdonthuoc), toàn bộ thao tác sẽ được rollback.
 - Kiểm tra tương tác thuốc (drug interaction)
 - Cảnh báo khi kê thuốc bệnh nhân đã dị ứng
 - Kiểm tra liều dùng theo độ tuổi và cân nặng
@@ -577,7 +580,7 @@ chitietdonthuoc (N) ←→ (1) thuoc
 ### 16.3. Lịch sử thay đổi
 | Phiên bản | Ngày | Người thực hiện | Nội dung thay đổi |
 |-----------|------|-----------------|-------------------|
-| 1.0 | 2025-12-04 | System | Tạo tài liệu use case ban đầu |
+| 1.0 | 2024-12-04 | System | Tạo tài liệu use case ban đầu |
 
 ---
 

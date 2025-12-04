@@ -146,8 +146,30 @@ php -S localhost:8000
 
 - Mã hóa mật khẩu
 - Session management
-- SQL injection prevention (cần cải thiện - sử dụng prepared statements)
 - Phân quyền truy cập theo vai trò
+
+### Vấn đề bảo mật cần khắc phục
+
+⚠️ **Quan trọng**: Hệ thống hiện tại có một số vấn đề bảo mật cần được khắc phục trước khi triển khai production:
+
+1. **SQL Injection**: Code hiện tại sử dụng string concatenation để tạo SQL queries thay vì prepared statements. Cần refactor để sử dụng PDO prepared statements hoặc mysqli prepared statements.
+   
+   Ví dụ code hiện tại (KHÔNG AN TOÀN):
+   ```php
+   $str = "select * from thuoc where mathuoc='$mathuoc'";
+   ```
+   
+   Nên sửa thành:
+   ```php
+   $stmt = $con->prepare("select * from thuoc where mathuoc=?");
+   $stmt->bind_param("i", $mathuoc);
+   ```
+
+2. **XSS Prevention**: Cần validate và escape tất cả user input trước khi hiển thị.
+
+3. **CSRF Protection**: Cần implement CSRF tokens cho các form quan trọng.
+
+Xem file `SECURITY.md` (sẽ được tạo) để biết chi tiết về các vấn đề bảo mật và kế hoạch khắc phục.
 
 ## Đóng góp
 
