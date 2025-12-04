@@ -39,9 +39,9 @@
 
 ```
 
-## Tài liệu Use Case
+## Tài liệu Use Case và Sequence Diagram
 
-Dự án bao gồm các tài liệu use case chi tiết cho các chức năng chính:
+Dự án bao gồm các tài liệu use case và sequence diagram chi tiết cho các chức năng chính:
 
 ### 📋 [Use Case: Tạo Đơn Thuốc](USE_CASE_TAO_DON_THUOC.md)
 Tài liệu mô tả chi tiết quy trình tạo đơn thuốc điện tử cho bệnh nhân, bao gồm:
@@ -51,6 +51,15 @@ Tài liệu mô tả chi tiết quy trình tạo đơn thuốc điện tử cho 
 - Cấu trúc database liên quan
 - Test cases
 - Các cải tiến đề xuất
+
+### 🔄 [Sequence Diagram: Đặt Lịch Xét Nghiệm](SEQUENCE_DIAGRAM_DAT_LICH_XET_NGHIEM.md)
+Sơ đồ sequence UML mô tả quy trình đặt lịch xét nghiệm cho bệnh nhân, bao gồm:
+- Sơ đồ sequence đầy đủ với ~60 bước tương tác
+- Mô tả chi tiết từng giai đoạn (khởi tạo, nhập liệu, xử lý, xác nhận)
+- Tích hợp QR Code generation
+- Cấu trúc database và quan hệ giữa các bảng
+- Quy tắc nghiệp vụ và xử lý ngoại lệ
+- Code PlantUML để render sơ đồ
 
 ## Chức năng chính
 
