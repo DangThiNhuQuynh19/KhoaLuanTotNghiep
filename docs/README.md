@@ -8,9 +8,11 @@ Thư mục này chứa tất cả các tài liệu kỹ thuật, đặc tả yê
 
 ```
 docs/
-├── README.md                        # File này - hướng dẫn về tài liệu
-├── UseCase_TaoDonThuoc.md          # Đặc tả use case: Tạo đơn thuốc
-├── UseCaseDiagram_TaoDonThuoc.md   # Sơ đồ use case: Tạo đơn thuốc
+├── README.md                           # File này - hướng dẫn về tài liệu
+├── UseCase_TaoDonThuoc.md             # Đặc tả use case: Tạo đơn thuốc (Chi tiết)
+├── UseCaseDiagram_TaoDonThuoc.md      # Sơ đồ use case: Tạo đơn thuốc
+├── UseCase_TaoDonThuoc_Summary.md     # Tóm tắt đặc tả use case
+├── UseCase_TaoDonThuoc_QuickGuide.md  # Hướng dẫn nhanh cho developers
 └── (các tài liệu khác sẽ được bổ sung)
 ```
 
@@ -34,6 +36,22 @@ docs/
 **Mô tả:** Sơ đồ minh họa các actor, use case và mối quan hệ trong quy trình tạo đơn thuốc  
 **Trạng thái:** ✅ Hoàn thành  
 **Phiên bản:** 1.0  
+**Ngày cập nhật:** 04/12/2024
+
+### 3. Tài liệu hỗ trợ
+
+#### UseCase_TaoDonThuoc_Summary.md
+**Tên:** Tóm tắt Use Case - Tạo Đơn Thuốc  
+**Mô tả:** Bản tóm tắt nhanh các thông tin chính của use case, dễ đọc và tra cứu  
+**Trạng thái:** ✅ Hoàn thành  
+**Đối tượng:** Project Manager, Tester, Business Analyst  
+**Ngày cập nhật:** 04/12/2024
+
+#### UseCase_TaoDonThuoc_QuickGuide.md
+**Tên:** Hướng dẫn nhanh cho Developers  
+**Mô tả:** Hướng dẫn triển khai với code examples, checklist, và troubleshooting  
+**Trạng thái:** ✅ Hoàn thành  
+**Đối tượng:** Developers, Technical Lead  
 **Ngày cập nhật:** 04/12/2024
 
 ## Quy ước viết tài liệu

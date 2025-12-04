@@ -216,7 +216,7 @@ Cảnh báo dị ứng ──<<extend>>──> Tạo đơn thuốc
 
 ### 6.1. Ràng buộc thời gian
 - Thời gian tìm kiếm thuốc: < 2 giây
-- Thời gian lưu đơn thuốc: < 3 giành
+- Thời gian lưu đơn thuốc: < 3 giây
 
 ### 6.2. Ràng buộc dữ liệu
 - Mỗi đơn thuốc phải có ít nhất 1 loại thuốc
