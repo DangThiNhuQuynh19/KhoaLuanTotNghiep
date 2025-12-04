@@ -1,4 +1,11 @@
 @startuml KhoaLuanTotNghiep_ClassDiagram
+skinparam linetype ortho
+skinparam classBackgroundColor white
+skinparam classBorderColor black
+skinparam classArrowColor black
+skinparam defaultFontColor black
+skinparam classAttributeIconSize 0
+skinparam rectangleStyle plain
 
 ' Định nghĩa đầy đủ tất cả các lớp trong hệ thống quản lý bệnh viện
 
@@ -419,94 +426,94 @@ class cLichHen {
 ' ============ Quan hệ giữa các lớp ============
 
 ' Kế thừa từ Người dùng
-mNguoiDung <|-- mBenhNhan : extends
-mNguoiDung <|-- mBacSi : extends
-mNguoiDung <|-- mChuyenGia : extends
+mNguoiDung <|-- mBenhNhan : kế thừa
+mNguoiDung <|-- mBacSi : kế thừa
+mNguoiDung <|-- mChuyenGia : kế thừa
 
 ' Sử dụng kết nối database
-mTaiKhoan --> clsKetNoi : uses
-mBenhNhan --> clsKetNoi : uses
-mBacSi --> clsKetNoi : uses
-mChuyenGia --> clsKetNoi : uses
-mPhieuKhamBenh --> clsKetNoi : uses
-mHoSoBenhAnDienTu --> clsKetNoi : uses
-mLichHen --> clsKetNoi : uses
-mLichKham --> clsKetNoi : uses
-mLichLamViec --> clsKetNoi : uses
-mLichXetNghiem --> clsKetNoi : uses
-mDonThuoc --> clsKetNoi : uses
-mChiTietDonThuoc --> clsKetNoi : uses
-mCaLamViec --> clsKetNoi : uses
-mKhungGioKhamBenh --> clsKetNoi : uses
-mKhungGioXetNghiem --> clsKetNoi : uses
-mLoaiXetNghiem --> clsKetNoi : uses
-mThuoc --> clsKetNoi : uses
-mLinhVuc --> clsKetNoi : uses
-mTinhThanhPho --> clsKetNoi : uses
-mXaPhuong --> clsKetNoi : uses
-mVaiTro --> clsKetNoi : uses
-mChiTietBacSi --> clsKetNoi : uses
-mChiTietChuyenKhoa --> clsKetNoi : uses
-mNhanVien --> clsKetNoi : uses
-mNguoiKham --> clsKetNoi : uses
-mEmailThanhToan --> clsKetNoi : uses
-ChatUserModel --> clsKetNoi : uses
+mTaiKhoan --> clsKetNoi : sử dụng
+mBenhNhan --> clsKetNoi : sử dụng
+mBacSi --> clsKetNoi : sử dụng
+mChuyenGia --> clsKetNoi : sử dụng
+mPhieuKhamBenh --> clsKetNoi : sử dụng
+mHoSoBenhAnDienTu --> clsKetNoi : sử dụng
+mLichHen --> clsKetNoi : sử dụng
+mLichKham --> clsKetNoi : sử dụng
+mLichLamViec --> clsKetNoi : sử dụng
+mLichXetNghiem --> clsKetNoi : sử dụng
+mDonThuoc --> clsKetNoi : sử dụng
+mChiTietDonThuoc --> clsKetNoi : sử dụng
+mCaLamViec --> clsKetNoi : sử dụng
+mKhungGioKhamBenh --> clsKetNoi : sử dụng
+mKhungGioXetNghiem --> clsKetNoi : sử dụng
+mLoaiXetNghiem --> clsKetNoi : sử dụng
+mThuoc --> clsKetNoi : sử dụng
+mLinhVuc --> clsKetNoi : sử dụng
+mTinhThanhPho --> clsKetNoi : sử dụng
+mXaPhuong --> clsKetNoi : sử dụng
+mVaiTro --> clsKetNoi : sử dụng
+mChiTietBacSi --> clsKetNoi : sử dụng
+mChiTietChuyenKhoa --> clsKetNoi : sử dụng
+mNhanVien --> clsKetNoi : sử dụng
+mNguoiKham --> clsKetNoi : sử dụng
+mEmailThanhToan --> clsKetNoi : sử dụng
+ChatUserModel --> clsKetNoi : sử dụng
 
 ' Quan hệ giữa các Models
-mTaiKhoan "1" -- "1" mNguoiDung : manages
-mBacSi "1" -- "1" mChuyenKhoa : belongs to
-mChuyenGia "1" -- "1" mLinhVuc : belongs to
-mNguoiDung "1" -- "1" mXaPhuong : lives in
-mXaPhuong "n" -- "1" mTinhThanhPho : belongs to
+mTaiKhoan "1" -- "1" mNguoiDung : quản lý
+mBacSi "1" -- "1" mChuyenKhoa : thuộc về
+mChuyenGia "1" -- "1" mLinhVuc : thuộc về
+mNguoiDung "1" -- "1" mXaPhuong : sống tại
+mXaPhuong "n" -- "1" mTinhThanhPho : thuộc về
 
-mPhieuKhamBenh "n" -- "1" mBenhNhan : has
-mPhieuKhamBenh "n" -- "1" mBacSi : assigned to
-mPhieuKhamBenh "n" -- "1" mChuyenGia : assigned to
-mPhieuKhamBenh "1" -- "1" mKhungGioKhamBenh : scheduled at
-mPhieuKhamBenh "1" -- "1" mTrangThai : has
+mPhieuKhamBenh "n" -- "1" mBenhNhan : có
+mPhieuKhamBenh "n" -- "1" mBacSi : được phân cho
+mPhieuKhamBenh "n" -- "1" mChuyenGia : được phân cho
+mPhieuKhamBenh "1" -- "1" mKhungGioKhamBenh : được xếp lịch tại
+mPhieuKhamBenh "1" -- "1" mTrangThai : có trạng thái
 
-mHoSoBenhAnDienTu "n" -- "1" mBenhNhan : belongs to
-mHoSoBenhAnDienTu "1" -- "n" mChiTietHoSo : contains
-mChiTietHoSo "1" -- "1" mBacSi : diagnosed by
-mChiTietHoSo "1" -- "1" mChuyenGia : diagnosed by
-mChiTietHoSo "1" -- "0..1" mDonThuoc : has
+mHoSoBenhAnDienTu "n" -- "1" mBenhNhan : thuộc về
+mHoSoBenhAnDienTu "1" -- "n" mChiTietHoSo : chứa
+mChiTietHoSo "1" -- "1" mBacSi : được chẩn đoán bởi
+mChiTietHoSo "1" -- "1" mChuyenGia : được chẩn đoán bởi
+mChiTietHoSo "1" -- "0..1" mDonThuoc : có
 
-mDonThuoc "1" -- "n" mChiTietDonThuoc : contains
-mChiTietDonThuoc "n" -- "1" mThuoc : uses
+mDonThuoc "1" -- "n" mChiTietDonThuoc : chứa
+mChiTietDonThuoc "n" -- "1" mThuoc : sử dụng
 
-mLichXetNghiem "n" -- "1" mHoSoBenhAnDienTu : belongs to
-mLichXetNghiem "1" -- "1" mLoaiXetNghiem : type of
-mLichXetNghiem "1" -- "1" mKetQuaXetNghiem : has result
-mLichXetNghiem "1" -- "1" mTrangThai : has
-mLichXetNghiem "1" -- "1" mKhungGioXetNghiem : scheduled at
+mLichXetNghiem "n" -- "1" mHoSoBenhAnDienTu : thuộc về
+mLichXetNghiem "1" -- "1" mLoaiXetNghiem : loại
+mLichXetNghiem "1" -- "1" mKetQuaXetNghiem : có kết quả
+mLichXetNghiem "1" -- "1" mTrangThai : có trạng thái
+mLichXetNghiem "1" -- "1" mKhungGioXetNghiem : được xếp lịch tại
 
-mLichLamViec "n" -- "1" mBacSi : scheduled for
-mLichLamViec "n" -- "1" mChuyenGia : scheduled for
-mLichLamViec "n" -- "1" mCaLamViec : at shift
-mLichLamViec "n" -- "0..1" mPhong : at room
+mLichLamViec "n" -- "1" mBacSi : được xếp lịch cho
+mLichLamViec "n" -- "1" mChuyenGia : được xếp lịch cho
+mLichLamViec "n" -- "1" mCaLamViec : tại ca
+mLichLamViec "n" -- "0..1" mPhong : tại phòng
 
-mKhungGioKhamBenh "n" -- "1" mCaLamViec : belongs to
-mKhungGioXetNghiem "n" -- "1" mCaLamViec : belongs to
+mKhungGioKhamBenh "n" -- "1" mCaLamViec : thuộc về
+mKhungGioXetNghiem "n" -- "1" mCaLamViec : thuộc về
 
-mTaiKhoan "1" -- "1" mVaiTro : has role
-mTaiKhoan "1" -- "1" mTrangThai : has status
+mTaiKhoan "1" -- "1" mVaiTro : có vai trò
+mTaiKhoan "1" -- "1" mTrangThai : có trạng thái
 
-mLichKham "n" -- "1" mBacSi : for doctor
-mLichKham "n" -- "1" mChuyenGia : for expert
-mLichKham "n" -- "1" mBenhNhan : for patient
+mLichKham "n" -- "1" mBacSi : cho bác sĩ
+mLichKham "n" -- "1" mChuyenGia : cho chuyên gia
+mLichKham "n" -- "1" mBenhNhan : cho bệnh nhân
 
-mChiTietBacSi "1" -- "1" mBacSi : details of
-mChiTietChuyenKhoa "1" -- "1" mChuyenKhoa : details of
+mChiTietBacSi "1" -- "1" mBacSi : chi tiết của
+mChiTietChuyenKhoa "1" -- "1" mChuyenKhoa : chi tiết của
 
-mEmailThanhToan "n" -- "1" mPhieuKhamBenh : payment for
+mEmailThanhToan "n" -- "1" mPhieuKhamBenh : thanh toán cho
 
 ' Controllers sử dụng Models
-cBenhNhan --> mBenhNhan : uses
-cBacSi --> mBacSi : uses
-cChuyenGia --> mChuyenGia : uses
-cTaiKhoan --> mTaiKhoan : uses
-cPhieuKhamBenh --> mPhieuKhamBenh : uses
-cHoSoBenhAnDienTu --> mHoSoBenhAnDienTu : uses
-cLichHen --> mLichHen : uses
+cBenhNhan --> mBenhNhan : sử dụng
+cBacSi --> mBacSi : sử dụng
+cChuyenGia --> mChuyenGia : sử dụng
+cTaiKhoan --> mTaiKhoan : sử dụng
+cPhieuKhamBenh --> mPhieuKhamBenh : sử dụng
+cHoSoBenhAnDienTu --> mHoSoBenhAnDienTu : sử dụng
+cLichHen --> mLichHen : sử dụng
 
 @enduml
