@@ -93,7 +93,7 @@ tests/
 
 **Độ ưu tiên:** Cao (Bảo mật)
 
-**Lưu ý:** MD5 không còn được khuyến nghị cho mục đích bảo mật. Nên xem xét nâng cấp lên `password_hash()` với bcrypt hoặc argon2.
+**⚠️ QUAN TRỌNG:** MD5 không còn được khuyến nghị cho mục đích bảo mật vì đã bị phá vỡ về mặt mã hóa. Test này chỉ xác nhận implementation hiện tại. **NÊN nâng cấp** lên `password_hash()` với bcrypt hoặc argon2 để tăng cường bảo mật.
 
 ---
 

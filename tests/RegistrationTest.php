@@ -394,7 +394,7 @@ class RegistrationTest {
 }
 
 // Run tests if this file is executed directly
-if (basename(__FILE__) == basename($_SERVER['PHP_SELF'])) {
+if (!debug_backtrace()) {
     echo "\nĐang chạy test cases cho chức năng đăng ký...\n";
     
     $test = new RegistrationTest();

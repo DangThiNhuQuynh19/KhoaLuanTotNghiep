@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Script để chạy test cases cho chức năng đăng ký
 
 echo "=========================================="
