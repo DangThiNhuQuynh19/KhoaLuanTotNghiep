@@ -154,52 +154,55 @@ Hệ thống quản lý bệnh viện với 7 vai trò người dùng khác nhau
 
 ---
 
-## 6. QUẢN LÝ (Manager) - Vai trò: Đăng nhập = 7
+## 6. ADMIN (Administrator) - Vai trò: Đăng nhập = 6
 
 ### 6.1. Trang Chính
 - **Trang chủ** (`trangchu`)
 - **Đăng xuất** (`dangxuat`)
 
-### 6.2. Quản Lý Nhân Viên
-- **Nhân viên** (`nhanvien`)
-  - Chi tiết nhân viên (`chitietnhanvien`)
-
-### 6.3. Quản Lý Bác Sĩ
-- **Thêm bác sĩ** (`thembacsi`)
-- **Sửa bác sĩ** (`suabacsi`)
-- **Chi tiết bác sĩ** (`chitietbacsi`)
-
-### 6.4. Quản Lý Chuyên Gia
-- **Thêm chuyên gia** (`themchuyengia`)
-- **Sửa chuyên gia** (`suachuyengia`)
-- **Chi tiết chuyên gia** (`chitietchuyengia`)
-
-### 6.5. Quản Lý Lịch Làm Việc
-- **Lịch làm việc** (`lichlamviec`)
-- **Xếp lịch** (`xeplich`)
-
----
-
-## 7. ADMIN (Administrator) - Vai trò: Đăng nhập = 6
-
-### 7.1. Trang Chính
-- **Trang chủ** (`trangchu`)
-- **Đăng xuất** (`dangxuat`)
-
-### 7.2. Quản Lý Hệ Thống
+### 6.2. Quản Lý Hệ Thống
 - **Quản lý nhân sự** (`quanlynhansu`)
 - **Quản lý bài viết** (`quanlybaiviet`)
 - **Phân quyền** (`phanquyen`)
 
 ---
 
+## 7. QUẢN LÝ (Manager) - Vai trò: Đăng nhập = 7
+
+### 7.1. Trang Chính
+- **Trang chủ** (`trangchu`)
+- **Đăng xuất** (`dangxuat`)
+
+### 7.2. Quản Lý Nhân Viên
+- **Nhân viên** (`nhanvien`)
+  - Chi tiết nhân viên (`chitietnhanvien`)
+
+### 7.3. Quản Lý Bác Sĩ
+- **Thêm bác sĩ** (`thembacsi`)
+- **Sửa bác sĩ** (`suabacsi`)
+- **Chi tiết bác sĩ** (`chitietbacsi`)
+
+### 7.4. Quản Lý Chuyên Gia
+- **Thêm chuyên gia** (`themchuyengia`)
+- **Sửa chuyên gia** (`suachuyengia`)
+- **Chi tiết chuyên gia** (`chitietchuyengia`)
+
+### 7.5. Quản Lý Lịch Làm Việc
+- **Lịch làm việc** (`lichlamviec`)
+- **Xếp lịch** (`xeplich`)
+
+---
+
 ## Cấu Trúc URL
 Hệ thống sử dụng query string để điều hướng:
-- **URL Pattern**: `index.php?action={page_name}`
+- **URL Pattern**: `index.php?action={page_name}[&cate={category}]`
 - **Ví dụ**: 
   - `index.php?action=trangchu` - Trang chủ
   - `index.php?action=bacsi` - Danh sách bác sĩ
+  - `index.php?action=bacsi&cate=timach` - Bác sĩ chuyên khoa tim mạch
   - `index.php?action=datlichkham` - Đặt lịch khám
+
+**Lưu ý**: Tham số `cate` (category) là tùy chọn và được sử dụng để lọc theo chuyên khoa hoặc phân loại cụ thể.
 
 ---
 
