@@ -1,74 +1,95 @@
 # Test Cases - Kiểm thử chức năng đăng ký
 
-## Mô tả
-File này chứa các test case để kiểm thử chức năng đăng ký tài khoản trong hệ thống.
+## 📋 Mô tả
+Bộ test cases này kiểm thử toàn diện chức năng đăng ký tài khoản bệnh nhân trong hệ thống.
 
-## Các test case được triển khai
+## 🎯 Tổng quan
+- **Tổng số test cases**: 7
+- **File test**: `RegistrationTest.php`
+- **Chức năng kiểm thử**: Đăng ký tài khoản (`dangkytk`)
 
-### 1. Test đăng ký thành công
-- **Mục đích**: Kiểm tra đăng ký với thông tin hợp lệ
-- **Dữ liệu test**: Thông tin đầy đủ và hợp lệ
-- **Kết quả mong đợi**: Trả về `true`
+## 📝 Các test case được triển khai
 
-### 2. Test email đã tồn tại
-- **Mục đích**: Kiểm tra hệ thống phát hiện email trùng lặp
-- **Dữ liệu test**: Đăng ký 2 lần với cùng email
-- **Kết quả mong đợi**: Lần 2 trả về `"email_ton_tai"`
+### 1. ✓ Test đăng ký thành công
+Kiểm tra đăng ký với thông tin hợp lệ, đảm bảo dữ liệu được lưu vào 3 bảng (taikhoan, nguoidung, benhnhan)
 
-### 3. Test họ tên trống
-- **Mục đích**: Kiểm tra validation cho trường họ tên bắt buộc
-- **Dữ liệu test**: Họ tên để trống
-- **Kết quả mong đợi**: Xử lý lỗi hoặc exception
+### 2. ✓ Test email đã tồn tại
+Kiểm tra hệ thống phát hiện và ngăn chặn email trùng lặp
 
-### 4. Test mã hóa mật khẩu
-- **Mục đích**: Xác nhận mật khẩu được mã hóa MD5
-- **Dữ liệu test**: Mật khẩu mẫu
-- **Kết quả mong đợi**: Mật khẩu được hash bằng MD5
+### 3. ✓ Test họ tên trống
+Kiểm tra validation cho trường họ tên bắt buộc
 
-### 5. Test tuổi hợp lệ
-- **Mục đích**: Kiểm tra người dùng >= 18 tuổi được đăng ký
-- **Dữ liệu test**: Ngày sinh của người 18 tuổi
-- **Kết quả mong đợi**: Đăng ký thành công
+### 4. ✓ Test mã hóa mật khẩu
+Xác nhận mật khẩu được hash bằng MD5 (lưu ý: nên nâng cấp lên bcrypt)
 
-### 6. Test lưu thông tin bệnh nhân
-- **Mục đích**: Kiểm tra tất cả thông tin bệnh nhân được lưu đầy đủ
-- **Dữ liệu test**: Thông tin đầy đủ bao gồm tiền sử bệnh, nghề nghiệp...
-- **Kết quả mong đợi**: Đăng ký thành công với đầy đủ thông tin
+### 5. ✓ Test tuổi hợp lệ (>= 18)
+Kiểm tra quy định người dùng phải từ 18 tuổi trở lên
 
-### 7. Test CCCD images optional
-- **Mục đích**: Kiểm tra ảnh CCCD không bắt buộc
-- **Dữ liệu test**: Đăng ký không có ảnh CCCD
-- **Kết quả mong đợi**: Đăng ký thành công
+### 6. ✓ Test lưu thông tin bệnh nhân
+Kiểm tra tất cả thông tin (tiền sử bệnh, nghề nghiệp...) được lưu đầy đủ
 
-## Cách chạy test
+### 7. ✓ Test CCCD images optional
+Kiểm tra ảnh CCCD không bắt buộc khi đăng ký
 
-### Chạy trực tiếp bằng PHP CLI:
+## 🚀 Cách chạy test
+
+### Cách 1: Chạy trực tiếp
 ```bash
+cd /path/to/KhoaLuanTotNghiep
 php tests/RegistrationTest.php
 ```
 
-### Yêu cầu:
-- PHP >= 8.0
-- Database MySQL đã được cấu hình đúng trong `config.php`
-- Các bảng cần thiết: `taikhoan`, `nguoidung`, `benhnhan`
-- Extension PHP cần thiết: mysqli
+### Cách 2: Sử dụng script
+```bash
+cd /path/to/KhoaLuanTotNghiep
+./tests/run_tests.sh
+```
 
-## Kết quả test
+## ⚙️ Yêu cầu
+- **PHP**: >= 8.0
+- **Database**: MySQL/MariaDB
+- **Extensions**: mysqli, openssl
+- **Tables**: taikhoan, nguoidung, benhnhan
 
-Test sẽ hiển thị:
-- ✓ PASSED: Test thành công
-- ✗ FAILED: Test thất bại
-- ⚠ WARNING: Cảnh báo (vẫn pass nhưng cần lưu ý)
+## 📊 Kết quả test
 
-## Báo cáo test
-Sau khi chạy, test sẽ hiển thị:
+### Status Codes:
+- ✓ **PASSED**: Test thành công
+- ✗ **FAILED**: Test thất bại
+- ⚠ **WARNING**: Cảnh báo (pass nhưng cần lưu ý)
+
+### Báo cáo:
+Sau khi chạy, test hiển thị:
 - Tổng số test cases
-- Số test passed
-- Số test failed
-- Số warning
-- Chi tiết từng test case
+- Số test passed/failed/warning
+- Chi tiết từng test case với lý do (nếu failed)
+- Thời gian thực thi
 
-## Lưu ý
-- Test sử dụng dữ liệu mẫu với prefix "BN_TEST_" và email có timestamp để tránh trùng lặp
-- Test có thể tạo dữ liệu trong database thực, nên chạy trên môi trường test/development
-- Database cần có kết nối đúng theo cấu hình trong `config.php`
+## 📚 Tài liệu
+
+Xem thêm chi tiết tại:
+- **DOCUMENTATION.md**: Tài liệu chi tiết từng test case, troubleshooting, best practices
+- **run_tests.sh**: Script tự động chạy test
+
+## 🔍 Lưu ý quan trọng
+
+### ⚠️ Môi trường test:
+- **KHÔNG** chạy trên production database
+- Test tạo dữ liệu mẫu với prefix "BN_TEST_"
+- Email sử dụng timestamp để tránh trùng lặp
+
+### 🔐 Bảo mật:
+- Mật khẩu hiện dùng MD5 (cần nâng cấp lên bcrypt/argon2)
+- Email, SĐT, CCCD được mã hóa AES-256-CBC
+- Kiểm tra email trùng lặp trước khi tạo
+
+### 🐛 Troubleshooting:
+- **"No such file or directory"**: Kiểm tra MySQL service và connection
+- **"Class not found"**: Chạy từ thư mục root của project
+- **"Undefined function"**: Kiểm tra Assets/config.php được load
+
+## 📞 Hỗ trợ
+Gặp vấn đề? Tham khảo:
+1. File DOCUMENTATION.md (chi tiết đầy đủ)
+2. Kiểm tra requirements và troubleshooting
+3. Liên hệ team phát triển
