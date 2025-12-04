@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sơ Đồ Sitemap - Hệ Thống Quản Lý Bệnh Viện</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .description {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .svg-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .svg-container svg {
+            width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+        }
+        .links {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .links a {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .links a:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sơ Đồ Sitemap - Hệ Thống Quản Lý Bệnh Viện</h1>
+        <p class="description">
+            Healthcare Management System - Khóa Luận Tốt Nghiệp<br>
+            <strong>91 trang</strong> trên <strong>7 vai trò người dùng</strong>
+        </p>
+        
+        <div class="svg-container">
+            <object data="sitemap-diagram.svg" type="image/svg+xml" width="100%" height="1900">
+                <img src="sitemap-diagram.svg" alt="Sitemap Diagram">
+            </object>
+        </div>
+        
+        <div class="links">
+            <a href="SITEMAP.md">📄 Xem tài liệu chi tiết (SITEMAP.md)</a>
+            <a href="sitemap-tree.txt">🌲 Xem cấu trúc cây (sitemap-tree.txt)</a>
+            <a href="sitemap-diagram.svg" download>⬇️ Tải SVG Diagram</a>
+        </div>
+        
+        <div style="margin-top: 40px; padding: 20px; background-color: #f8f9fa; border-left: 4px solid #3498db;">
+            <h3>Thông tin tóm tắt:</h3>
+            <ul>
+                <li><strong>Bệnh nhân:</strong> 31 trang (Khách/Đã đăng nhập)</li>
+                <li><strong>Bác sĩ:</strong> 16 trang (Role: 2)</li>
+                <li><strong>Chuyên gia:</strong> 13 trang (Role: 3)</li>
+                <li><strong>Nhân viên tiếp tân:</strong> 11 trang (Role: 4)</li>
+                <li><strong>Nhân viên xét nghiệm:</strong> 3 trang (Role: 5)</li>
+                <li><strong>Admin:</strong> 5 trang (Role: 6)</li>
+                <li><strong>Quản lý:</strong> 12 trang (Role: 7)</li>
+            </ul>
+            
+            <h3>Công nghệ:</h3>
+            <ul>
+                <li>PHP MVC Architecture</li>
+                <li>WebSocket (Ratchet) - Real-time chat</li>
+                <li>VNPay Payment Integration</li>
+                <li>Google OAuth Login</li>
+                <li>MySQL Database</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
