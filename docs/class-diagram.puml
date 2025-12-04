@@ -1,0 +1,363 @@
+@startuml KhoaLuanTotNghiep_ClassDiagram
+
+' Định nghĩa các lớp chính trong hệ thống quản lý bệnh viện
+
+' ============ Lớp kết nối database ============
+class clsKetNoi {
+  + moKetNoi(): mysqli
+  + dongKetNoi(con: mysqli): void
+}
+
+' ============ Lớp Model chính ============
+
+class mTaiKhoan {
+  - conn: mysqli
+  + __construct()
+  + dangkytk(mabenhnhan, email, hoten, ngaysinh, sdt, cccd, ...): bool|string
+  + select_01_taikhoan(tentk, matkhau): result
+  + taikhoanbacsi(tentk): result
+  + taikhoanbenhnhan(id): result
+  + select_taikhoan(): result
+}
+
+class mNguoiDung {
+  + manguoidung: string
+  + hoten: string
+  + ngaysinh: date
+  + gioitinh: string
+  + cccd: string
+  + cccd_matruoc: string
+  + cccd_matsau: string
+  + dantoc: string
+  + sdt: string
+  + emailcanhan: string
+  + sonha: string
+  + maxaphuong: int
+  + email: string
+}
+
+class mBenhNhan {
+  - conn: mysqli
+  + __construct()
+  + getBenhNhanByTenTK(email): result
+  + getBenhNhanByID(id): result
+  + getBenhNhan(): result
+  + capnhatbenhnhan(mabenhnhan, hoten, ...): bool
+  + insertbenhnhan(mabenhnhan, email, ...): bool|string
+  + deletebenhnhan(id): result
+  + select_benhnhan_mabacsi(mabacsi): result
+  + select_benhnhan_machuyengia(machuyengia): result
+  + select_benhnhan_id(id): result
+  + select_benhnhan_homnay(mabacsi): result
+  + select_benhnhan_mabenhnhan(mabenhnhan): result
+  + timkiem_benhnhan_tukhoa(tukhoa, mabacsi): result
+  + update_vitien_id(id, tongtien): result
+}
+
+class mBacSi {
+  + mabacsi: string
+  + motabs: string
+  + gioithieubs: string
+  + ngaybatdau: date
+  + ngayketthuc: date
+  + imgbs: string
+  + giakham: int
+  + machuyenkhoa: int
+  + capbac: string
+  + dsbacsi(): result
+  + dsbacsi1(): result
+  + chitietbacsi(id): result
+  + bacsitheoten(name): result
+  + bacsitheokhoa(id): result
+  + xembacsitheotentk(tentk): result
+  + updateBacSi(mabacsi, data): bool
+  + luuNguoiDungVaBacSi(data, files): bool
+  + xemlichlambacsi(tentk): result
+}
+
+class mChuyenGia {
+  + machuyengia: string
+  + motacg: string
+  + gioithieucg: string
+  + ngaybatdau: date
+  + ngayketthuc: date
+  + imgcg: string
+  + giatuvan: int
+  + malinhvuc: int
+  + capbac: string
+  + matrangthai: int
+  + dschuyengia(): result
+  + dschuyengia1(): result
+  + chitietchuyengia(id): result
+  + chuyengiatheotenandlinhvuc(name, id): result
+  + chuyengiatheoten(name): result
+  + chuyengiatheolinhvuc(id): result
+  + xemchuyengiatheotentk(tentk): result
+  + updateChuyenGia(machuyengia, data): bool
+  + xemlichlamchuyengia(tentk): result
+}
+
+class mChuyenKhoa {
+  + machuyenkhoa: int
+  + tenchuyenkhoa: string
+  + motachuyenkhoa: string
+  + imgchuyenkhoa: string
+}
+
+class mLinhVuc {
+  + malinhvuc: int
+  + tenlinhvuc: string
+  + motalinhvuc: string
+  + imglinhvuc: string
+}
+
+class mPhieuKhamBenh {
+  + maphieukhambenh: string
+  + ngaykham: date
+  + makhunggiokb: int
+  + mabacsi: string
+  + mabenhnhan: string
+  + matrangthai: int
+  + insertphieukham(...): result
+  + phieukhambenhcuabn(idbn): result
+  + kiemTraTrungLich(mabenhnhan, ngaykham, makhunggiokhambenh): result
+  + phieukhambenhcuataikhoan(tentk, status, ngay): result
+  + huyPhieuKhamBenh(maphieukb, tk, tongtien): result
+  + updatePhieuKhamBenh(maphieukb): result
+  + select_lichkhamonl_mabacsi(mabacsi): result
+  + select_lichkhamoff_mabacsi(mabacsi): result
+  + select_phieukhamonl_homnay(manguoidung, ngay): result
+  + select_phieukhamoff_homnay(manguoidung, ngay): result
+  + timkiem_phieukhamonl(tukhoa, trangthai, ngay, mabacsi): result
+  + timkiem_phieukhamoff(tukhoa, trangthai, ngay, mabacsi): result
+  + updateTrangThaiPhieu(maphieukhambenh, trangthai): result
+}
+
+class mHoSoBenhAnDienTu {
+  + mahoso: int
+  + mabenhnhan: string
+  + ngaytao: date
+  + ngaycapnhat: date
+  + gethosotheotentk(tentk): result
+  + getchitiethosotheotentk(id): result
+  + getchitiethosotheohoso(id): result
+  + getdonthuoctheohoso(id): result
+  + getxetnghiemtheohoso(id): result
+  + select_hsba_mabenhnhan(mabenhnhan): result
+  + select_hsba_mabenhnhan1(mabenhnhan): result
+  + select_hsba(): result
+  + insert_hosobenhandientu_mabenhnhan(mabenhnhan): result
+  + select_hsba_new(mabenhnhan): result
+  + select_benhnhan_mahoso(mahoso): result
+  + select_hoso_mahoso(mahoso): result
+  + select_hoso_machuyenkhoa(mabenhnhan, machuyenkhoa): result
+  + select_hoso_malinhvuc(mabenhnhan, machuyenkhoa): result
+}
+
+class mChiTietHoSo {
+  + machitiethoso: int
+  + mahoso: int
+  + mabacsi: string
+  + ngaykham: date
+  + chandoan: string
+  + trieuchungbandau: string
+  + huongdieutri: string
+  + ketluan: string
+  + madonthuoc: int
+}
+
+class mDonThuoc {
+  + madonthuoc: int
+  + ngayke: date
+  + ghichu: string
+}
+
+class mChiTietDonThuoc {
+  + machitietdonthuoc: int
+  + madonthuoc: int
+  + mathuoc: int
+  + soluong: int
+  + lieuluong: string
+  + cachdung: string
+}
+
+class mThuoc {
+  + mathuoc: int
+  + tenthuoc: string
+  + donvitinh: string
+  + dongia: int
+  + mota: string
+}
+
+class mLichHen {
+  + lichhen(ngay, loaikham, hinhthuclamviec, tenbenhnhan): array
+}
+
+class mLichLamViec {
+  + malichlamviec: int
+  + manguoidung: string
+  + macalamviec: int
+  + ngaylam: date
+  + maphong: int
+  + hinhthuclamviec: string
+}
+
+class mCaLamViec {
+  + macalamviec: int
+  + tenca: string
+  + giobatdau: time
+  + gioketthuc: time
+}
+
+class mKhungGioKhamBenh {
+  + makhunggiokb: int
+  + macalamviec: int
+  + giobatdau: time
+  + gioketthuc: time
+}
+
+class mLichXetNghiem {
+  + malichxetnghiem: int
+  + mahoso: int
+  + ngayxetnghiem: date
+  + makhunggio: int
+  + maloaixetnghiem: int
+  + matrangthai: int
+}
+
+class mLoaiXetNghiem {
+  + maloaixetnghiem: int
+  + tenloaixetnghiem: string
+  + dongia: int
+  + mota: string
+}
+
+class mKetQuaXetNghiem {
+  + maketqua: int
+  + malichxetnghiem: int
+  + ketqua: string
+  + ghichu: string
+  + ngaytraketqua: date
+}
+
+class mTrangThai {
+  + matrangthai: int
+  + tentrangthai: string
+}
+
+class mVaiTro {
+  + mavaitro: int
+  + tenvaitro: string
+}
+
+class mTinhThanhPho {
+  + matinhthanhpho: int
+  + tentinhthanhpho: string
+}
+
+class mXaPhuong {
+  + maxaphuong: int
+  + tenxaphuong: string
+  + matinhthanhpho: int
+}
+
+class mPhong {
+  + maphong: int
+  + tentoa: string
+  + tang: int
+  + sophong: int
+}
+
+' ============ Lớp Controller ============
+
+class cBenhNhan {
+  + xulyBenhNhan(): void
+}
+
+class cBacSi {
+  + xulyBacSi(): void
+}
+
+class cChuyenGia {
+  + xulyChuyenGia(): void
+}
+
+class cTaiKhoan {
+  + xulyTaiKhoan(): void
+}
+
+class cPhieuKhamBenh {
+  + xulyPhieuKhamBenh(): void
+}
+
+class cHoSoBenhAnDienTu {
+  + xulyHoSoBenhAn(): void
+}
+
+class cLichHen {
+  + xulyLichHen(): void
+}
+
+' ============ Quan hệ giữa các lớp ============
+
+' Kế thừa từ Người dùng
+mNguoiDung <|-- mBenhNhan : extends
+mNguoiDung <|-- mBacSi : extends
+mNguoiDung <|-- mChuyenGia : extends
+
+' Sử dụng kết nối database
+mTaiKhoan --> clsKetNoi : uses
+mBenhNhan --> clsKetNoi : uses
+mBacSi --> clsKetNoi : uses
+mChuyenGia --> clsKetNoi : uses
+mPhieuKhamBenh --> clsKetNoi : uses
+mHoSoBenhAnDienTu --> clsKetNoi : uses
+mLichHen --> clsKetNoi : uses
+
+' Quan hệ giữa các Models
+mTaiKhoan "1" -- "1" mNguoiDung : manages
+mBacSi "1" -- "1" mChuyenKhoa : belongs to
+mChuyenGia "1" -- "1" mLinhVuc : belongs to
+mNguoiDung "1" -- "1" mXaPhuong : lives in
+mXaPhuong "n" -- "1" mTinhThanhPho : belongs to
+
+mPhieuKhamBenh "n" -- "1" mBenhNhan : has
+mPhieuKhamBenh "n" -- "1" mBacSi : assigned to
+mPhieuKhamBenh "n" -- "1" mChuyenGia : assigned to
+mPhieuKhamBenh "1" -- "1" mKhungGioKhamBenh : scheduled at
+mPhieuKhamBenh "1" -- "1" mTrangThai : has
+
+mHoSoBenhAnDienTu "n" -- "1" mBenhNhan : belongs to
+mHoSoBenhAnDienTu "1" -- "n" mChiTietHoSo : contains
+mChiTietHoSo "1" -- "1" mBacSi : diagnosed by
+mChiTietHoSo "1" -- "1" mChuyenGia : diagnosed by
+mChiTietHoSo "1" -- "0..1" mDonThuoc : has
+
+mDonThuoc "1" -- "n" mChiTietDonThuoc : contains
+mChiTietDonThuoc "n" -- "1" mThuoc : uses
+
+mLichXetNghiem "n" -- "1" mHoSoBenhAnDienTu : belongs to
+mLichXetNghiem "1" -- "1" mLoaiXetNghiem : type of
+mLichXetNghiem "1" -- "1" mKetQuaXetNghiem : has result
+mLichXetNghiem "1" -- "1" mTrangThai : has
+
+mLichLamViec "n" -- "1" mBacSi : scheduled for
+mLichLamViec "n" -- "1" mChuyenGia : scheduled for
+mLichLamViec "n" -- "1" mCaLamViec : at shift
+mLichLamViec "n" -- "0..1" mPhong : at room
+
+mKhungGioKhamBenh "n" -- "1" mCaLamViec : belongs to
+
+mTaiKhoan "1" -- "1" mVaiTro : has role
+mTaiKhoan "1" -- "1" mTrangThai : has status
+
+' Controllers sử dụng Models
+cBenhNhan --> mBenhNhan : uses
+cBacSi --> mBacSi : uses
+cChuyenGia --> mChuyenGia : uses
+cTaiKhoan --> mTaiKhoan : uses
+cPhieuKhamBenh --> mPhieuKhamBenh : uses
+cHoSoBenhAnDienTu --> mHoSoBenhAnDienTu : uses
+cLichHen --> mLichHen : uses
+
+@enduml
