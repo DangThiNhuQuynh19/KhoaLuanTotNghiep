@@ -1,6 +1,6 @@
 @startuml KhoaLuanTotNghiep_ClassDiagram
 
-' Định nghĩa các lớp chính trong hệ thống quản lý bệnh viện
+' Định nghĩa đầy đủ tất cả các lớp trong hệ thống quản lý bệnh viện
 
 ' ============ Lớp kết nối database ============
 class clsKetNoi {
@@ -34,23 +34,29 @@ class mNguoiDung {
   + sonha: string
   + maxaphuong: int
   + email: string
+  + select_xaphuong_mathanhpho(mathanhpho): result
 }
 
 class mBenhNhan {
   - conn: mysqli
   + __construct()
   + getBenhNhanByTenTK(email): result
+  + select_benhnhan_manguoigiamho(manguoigiamho): result
+  + select_benhnhan_manguoigiamhodl(manguoigiamho): result
+  + select_benhnhan_manguoigiamho1(manguoigiamho): result
+  + getBenhNhanChinhByTenTK(tentk): result
   + getBenhNhanByID(id): result
   + getBenhNhan(): result
+  - keepOld(newValue, oldValue): mixed
   + capnhatbenhnhan(mabenhnhan, hoten, ...): bool
-  + insertbenhnhan(mabenhnhan, email, ...): bool|string
-  + deletebenhnhan(id): result
   + select_benhnhan_mabacsi(mabacsi): result
   + select_benhnhan_machuyengia(machuyengia): result
   + select_benhnhan_id(id): result
   + select_benhnhan_homnay(mabacsi): result
-  + select_benhnhan_mabenhnhan(mabenhnhan): result
+  + insertbenhnhan(mabenhnhan, email, ...): bool|string
+  + deletebenhnhan(id): result
   + timkiem_benhnhan_tukhoa(tukhoa, mabacsi): result
+  + select_benhnhan_mabenhnhan(mabenhnhan): result
   + update_vitien_id(id, tongtien): result
 }
 
@@ -69,10 +75,11 @@ class mBacSi {
   + chitietbacsi(id): result
   + bacsitheoten(name): result
   + bacsitheokhoa(id): result
+  + bacsitheotenandkhoa(name, id): result
   + xembacsitheotentk(tentk): result
   + updateBacSi(mabacsi, data): bool
-  + luuNguoiDungVaBacSi(data, files): bool
   + xemlichlambacsi(tentk): result
+  + luuNguoiDungVaBacSi(data, files): bool
 }
 
 class mChuyenGia {
@@ -86,12 +93,12 @@ class mChuyenGia {
   + malinhvuc: int
   + capbac: string
   + matrangthai: int
-  + dschuyengia(): result
   + dschuyengia1(): result
-  + chitietchuyengia(id): result
+  + dschuyengia(): result
+  + chuyengiatheolinhvuc(id): result
   + chuyengiatheotenandlinhvuc(name, id): result
   + chuyengiatheoten(name): result
-  + chuyengiatheolinhvuc(id): result
+  + chitietchuyengia(id): result
   + xemchuyengiatheotentk(tentk): result
   + updateChuyenGia(machuyengia, data): bool
   + xemlichlamchuyengia(tentk): result
@@ -109,6 +116,9 @@ class mLinhVuc {
   + tenlinhvuc: string
   + motalinhvuc: string
   + imglinhvuc: string
+  + dslinhvuc(): result
+  + select_linhvuc_notmabenhnhan(mabenhnhan): result
+  + select_linhvuc_machuyengia(mabacsi): result
 }
 
 class mPhieuKhamBenh {
@@ -118,19 +128,28 @@ class mPhieuKhamBenh {
   + mabacsi: string
   + mabenhnhan: string
   + matrangthai: int
-  + insertphieukham(...): result
+  + insertphieukham(maphieukb, ngaykham, makhunggiokb, mabacsi, mabenhnhan, matrangthai): result
   + phieukhambenhcuabn(idbn): result
   + kiemTraTrungLich(mabenhnhan, ngaykham, makhunggiokhambenh): result
   + phieukhambenhcuataikhoan(tentk, status, ngay): result
   + huyPhieuKhamBenh(maphieukb, tk, tongtien): result
   + updatePhieuKhamBenh(maphieukb): result
+  + phieukhamtheoidpk(maphieukb): result
   + select_lichkhamonl_mabacsi(mabacsi): result
+  + select_lichkhamonl_machuyengia(machuyengia): result
   + select_lichkhamoff_mabacsi(mabacsi): result
+  + select_lichkhamoff_machuyengia(machuyengia): result
+  + updateTrangThaiPhieu(maphieukhambenh, trangthai): result
   + select_phieukhamonl_homnay(manguoidung, ngay): result
   + select_phieukhamoff_homnay(manguoidung, ngay): result
+  + select_phieukham_homqua(mabacsi): result
   + timkiem_phieukhamonl(tukhoa, trangthai, ngay, mabacsi): result
   + timkiem_phieukhamoff(tukhoa, trangthai, ngay, mabacsi): result
-  + updateTrangThaiPhieu(maphieukhambenh, trangthai): result
+  + timkiem_phieukhamonlcg(tukhoa, trangthai, ngay, mabacsi): result
+  + timkiem_phieukhamoffcg(tukhoa, trangthai, ngay, mabacsi): result
+  + select_phieukham_trongtuan(mabacsi): result
+  + select_lickham_sapden(mabacsi): result
+  + select_phieukhambenh(): result
 }
 
 class mHoSoBenhAnDienTu {
@@ -150,6 +169,7 @@ class mHoSoBenhAnDienTu {
   + select_hsba_new(mabenhnhan): result
   + select_benhnhan_mahoso(mahoso): result
   + select_hoso_mahoso(mahoso): result
+  + select_hoso_mahoso1(mahoso): result
   + select_hoso_machuyenkhoa(mabenhnhan, machuyenkhoa): result
   + select_hoso_malinhvuc(mabenhnhan, machuyenkhoa): result
 }
@@ -170,6 +190,11 @@ class mDonThuoc {
   + madonthuoc: int
   + ngayke: date
   + ghichu: string
+  + select_donthuoc_mabenhnhan(mabenhnhan): result
+  + select_chitietdonthuoc_madonthuoc(madonthuoc): result
+  + insert_donthuoc(): result
+  + select_donthuoc_new(): result
+  + select_donthuoc_mahoso(mahoso): result
 }
 
 class mChiTietDonThuoc {
@@ -179,6 +204,8 @@ class mChiTietDonThuoc {
   + soluong: int
   + lieuluong: string
   + cachdung: string
+  + insert_chitietdonthuoc(madonthuoc, mathuoc, lieudung, thoigianuong, songayuong): result
+  + select_chitietdonthuoc_madonthuoc(madonthuoc): result
 }
 
 class mThuoc {
@@ -187,10 +214,24 @@ class mThuoc {
   + donvitinh: string
   + dongia: int
   + mota: string
+  + select_thuoc(): result
 }
 
 class mLichHen {
   + lichhen(ngay, loaikham, hinhthuclamviec, tenbenhnhan): array
+}
+
+class mLichKham {
+  + lichkhamcg(ngay, id, gioHienTai): result
+  + lichkhambs(ngay, id, gioHienTai): result
+  + xemlich(idca, ngay, idbs): result
+  + kiemtragiohen(nguoiPhuTrach, bn): result
+  + lichhen(): result
+  + getLichBacSiTheoNgay(ngay, mabacsi): result
+  + getLichChuyenGiaTheoNgay(ngay, machuyengia): result
+  + getTatCaLichKhamTheoNgay(ngay): result
+  + getLichTrongTheoNguoi(manguoi, ngayChon): result
+  + select_lichkham_mabacsi(mabacsi): result
 }
 
 class mLichLamViec {
@@ -200,6 +241,10 @@ class mLichLamViec {
   + ngaylam: date
   + maphong: int
   + hinhthuclamviec: string
+  + updatelichlamviecday(malichlamviec): result
+  + updatelichlamviectrong(malichlamviec): result
+  + laymalichlamviec(mabacsi, ngaylam, macalamviec): result
+  + lichlamviec(ngay): result
 }
 
 class mCaLamViec {
@@ -207,6 +252,8 @@ class mCaLamViec {
   + tenca: string
   + giobatdau: time
   + gioketthuc: time
+  + select_calam(): result
+  + phanCaTheoThoiHan(macalam, hinhthuc, manv_list): result
 }
 
 class mKhungGioKhamBenh {
@@ -214,6 +261,17 @@ class mKhungGioKhamBenh {
   + macalamviec: int
   + giobatdau: time
   + gioketthuc: time
+  + allkhunggio(): result
+  + selectgio(id): result
+}
+
+class mKhungGioXetNghiem {
+  + makhunggioxetnghiem: int
+  + macalamviec: int
+  + giobatdau: time
+  + gioketthuc: time
+  + select_khunggioxetnghiem(): result
+  + select_khunggioxetnghiem_makhunggio(makhunggio): result
 }
 
 class mLichXetNghiem {
@@ -223,6 +281,17 @@ class mLichXetNghiem {
   + makhunggio: int
   + maloaixetnghiem: int
   + matrangthai: int
+  + select_lichxetnghiem_mabacsi(mabacsi): result
+  + select_lichxetnghiem_mabenhnhan(mabenhnhan): result
+  + timkiem_lichxetnghiem(tukhoa, machuyenkhoa, trangthai, mabacsi): result
+  + select_lichxetnghiem_malichxetnghiem(mabacsi, malichxetnghiem): result
+  + lichxetnghiemtheotentk(tentk, ngay): result
+  + select_lichxetnghiemchitiet_mabenhnhan(mabenhnhan): result
+  + select_lichxetnghiem(): result
+  + insert_lichxetnghiem(mabenhnhan, maloaixetnghiem, ngayhen, makhunggio, trangthailichxetnghiem, mahoso, img): result
+  + select_lichxetnghiem_mahoso(mahoso): result
+  + selectall_lichxetnghiem(ngay, matrangthai): result
+  + chitietlichxetnghiem(id): result
 }
 
 class mLoaiXetNghiem {
@@ -230,6 +299,10 @@ class mLoaiXetNghiem {
   + tenloaixetnghiem: string
   + dongia: int
   + mota: string
+  + select_danhmucxetnghiem(): result
+  + select_chitietdanhmuc_madanhmuc(madanhmuc): result
+  + select_loaixetnghiem(): result
+  + select_loaixetnghiem_maloaixetnghiem(maloaixetnghiem): result
 }
 
 class mKetQuaXetNghiem {
@@ -248,17 +321,21 @@ class mTrangThai {
 class mVaiTro {
   + mavaitro: int
   + tenvaitro: string
+  + select_vaitro(): result
 }
 
 class mTinhThanhPho {
   + matinhthanhpho: int
   + tentinhthanhpho: string
+  + select_tinhthanhpho(): result
 }
 
 class mXaPhuong {
   + maxaphuong: int
   + tenxaphuong: string
   + matinhthanhpho: int
+  + select_xaphuong_mathanhpho(mathanhpho): result
+  + select_xaphuong(): result
 }
 
 class mPhong {
@@ -266,6 +343,47 @@ class mPhong {
   + tentoa: string
   + tang: int
   + sophong: int
+}
+
+class mChiTietBacSi {
+  + chitietbacsi(id): result
+  + lichlamvieccuabacsi(id): result
+}
+
+class mChiTietChuyenKhoa {
+  + chitietchuyenkhoa(id): result
+}
+
+class mNhanVien {
+  + xemnhanvientheotentk(tentk): result
+  + getAllNhanVien(): result
+  + getNhanVienByName(name): result
+  + chitietnhanvien(id): result
+}
+
+class mNguoiKham {
+  + allnguoikham(): result
+}
+
+class mEmailThanhToan {
+  + insert_emailyeucauthanhtoan(ma_lich_hen, email_benh_nhan, thoi_gian_gui, thoi_gian_het_han): result
+}
+
+class ChatUserModel {
+  - tentk_gui: string
+  - tentk_nhan: string
+  - noidung: string
+  - matinnhan: int
+  - connect: mysqli
+  + __construct()
+  + setSender(tentk_gui): void
+  + setReceiver(tentk_nhan): void
+  + setMessage(noidung): void
+  + setIdMessage(matinnhan): void
+  + saveMessage(): result
+  + getMessageTime(matinnhan): result
+  + getMessages(user1, user2): array
+  + close(): void
 }
 
 ' ============ Lớp Controller ============
@@ -313,6 +431,26 @@ mChuyenGia --> clsKetNoi : uses
 mPhieuKhamBenh --> clsKetNoi : uses
 mHoSoBenhAnDienTu --> clsKetNoi : uses
 mLichHen --> clsKetNoi : uses
+mLichKham --> clsKetNoi : uses
+mLichLamViec --> clsKetNoi : uses
+mLichXetNghiem --> clsKetNoi : uses
+mDonThuoc --> clsKetNoi : uses
+mChiTietDonThuoc --> clsKetNoi : uses
+mCaLamViec --> clsKetNoi : uses
+mKhungGioKhamBenh --> clsKetNoi : uses
+mKhungGioXetNghiem --> clsKetNoi : uses
+mLoaiXetNghiem --> clsKetNoi : uses
+mThuoc --> clsKetNoi : uses
+mLinhVuc --> clsKetNoi : uses
+mTinhThanhPho --> clsKetNoi : uses
+mXaPhuong --> clsKetNoi : uses
+mVaiTro --> clsKetNoi : uses
+mChiTietBacSi --> clsKetNoi : uses
+mChiTietChuyenKhoa --> clsKetNoi : uses
+mNhanVien --> clsKetNoi : uses
+mNguoiKham --> clsKetNoi : uses
+mEmailThanhToan --> clsKetNoi : uses
+ChatUserModel --> clsKetNoi : uses
 
 ' Quan hệ giữa các Models
 mTaiKhoan "1" -- "1" mNguoiDung : manages
@@ -340,6 +478,7 @@ mLichXetNghiem "n" -- "1" mHoSoBenhAnDienTu : belongs to
 mLichXetNghiem "1" -- "1" mLoaiXetNghiem : type of
 mLichXetNghiem "1" -- "1" mKetQuaXetNghiem : has result
 mLichXetNghiem "1" -- "1" mTrangThai : has
+mLichXetNghiem "1" -- "1" mKhungGioXetNghiem : scheduled at
 
 mLichLamViec "n" -- "1" mBacSi : scheduled for
 mLichLamViec "n" -- "1" mChuyenGia : scheduled for
@@ -347,9 +486,19 @@ mLichLamViec "n" -- "1" mCaLamViec : at shift
 mLichLamViec "n" -- "0..1" mPhong : at room
 
 mKhungGioKhamBenh "n" -- "1" mCaLamViec : belongs to
+mKhungGioXetNghiem "n" -- "1" mCaLamViec : belongs to
 
 mTaiKhoan "1" -- "1" mVaiTro : has role
 mTaiKhoan "1" -- "1" mTrangThai : has status
+
+mLichKham "n" -- "1" mBacSi : for doctor
+mLichKham "n" -- "1" mChuyenGia : for expert
+mLichKham "n" -- "1" mBenhNhan : for patient
+
+mChiTietBacSi "1" -- "1" mBacSi : details of
+mChiTietChuyenKhoa "1" -- "1" mChuyenKhoa : details of
+
+mEmailThanhToan "n" -- "1" mPhieuKhamBenh : payment for
 
 ' Controllers sử dụng Models
 cBenhNhan --> mBenhNhan : uses

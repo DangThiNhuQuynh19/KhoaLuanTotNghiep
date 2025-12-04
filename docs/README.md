@@ -2,13 +2,21 @@
 
 ## Tổng Quan
 
-Đây là sơ đồ lớp UML (Unified Modeling Language) mô tả kiến trúc hệ thống quản lý bệnh viện. Sơ đồ này được tạo ra để giúp hiểu rõ cấu trúc, mối quan hệ giữa các lớp và luồng dữ liệu trong hệ thống.
+Đây là sơ đồ lớp UML (Unified Modeling Language) đầy đủ mô tả kiến trúc hệ thống quản lý bệnh viện. Sơ đồ này bao gồm **tất cả 32+ lớp Model** với **đầy đủ các phương thức** của từng lớp.
 
 ## Các File Trong Thư Mục
 
-- **class-diagram.puml**: File nguồn PlantUML chứa định nghĩa sơ đồ lớp
-- **KhoaLuanTotNghiep_ClassDiagram.png**: Hình ảnh sơ đồ lớp định dạng PNG (độ phân giải cao)
-- **KhoaLuanTotNghiep_ClassDiagram.svg**: Hình ảnh sơ đồ lớp định dạng SVG (vector, có thể phóng to không mất chất lượng)
+- **class-diagram.puml**: File nguồn PlantUML chứa định nghĩa sơ đồ lớp (đã cập nhật đầy đủ)
+- **KhoaLuanTotNghiep_ClassDiagram.png**: Hình ảnh sơ đồ lớp định dạng PNG (832KB, độ phân giải cao)
+- **KhoaLuanTotNghiep_ClassDiagram.svg**: Hình ảnh sơ đồ lớp định dạng SVG (184KB, vector)
+
+## Phiên Bản Cập Nhật
+
+**Phiên bản 2.0** - Đã bổ sung:
+- ✅ Tất cả 32 lớp Model trong hệ thống
+- ✅ Đầy đủ tất cả các phương thức (public/private) của mỗi lớp
+- ✅ Các lớp bổ sung: mLichKham, mKhungGioXetNghiem, mChiTietBacSi, mChiTietChuyenKhoa, mNhanVien, mNguoiKham, mEmailThanhToan, ChatUserModel
+- ✅ Tất cả phương thức đầy đủ cho mBenhNhan (19 phương thức), mPhieuKhamBenh (22 phương thức), mLichXetNghiem (11 phương thức), v.v.
 
 ## Xem Sơ Đồ
 
@@ -45,7 +53,7 @@ java -jar plantuml.jar -tsvg class-diagram.puml
   - `moKetNoi()`: Mở kết nối đến database
   - `dongKetNoi(con)`: Đóng kết nối database
 
-### 2. Lớp Model (Tầng Dữ Liệu)
+### 2. Lớp Model (Tầng Dữ Liệu) - 32 Lớp Đầy Đủ
 
 #### Các lớp người dùng
 
@@ -112,20 +120,31 @@ java -jar plantuml.jar -tsvg class-diagram.puml
 ##### mThuoc
 - **Mô tả**: Lớp quản lý thông tin thuốc
 - **Thuộc tính**: tenthuoc, donvitinh, dongia, mota
+- **Phương thức**: select_thuoc()
 
 #### Các lớp quản lý xét nghiệm
 
 ##### mLichXetNghiem
-- **Mô tả**: Lớp quản lý lịch xét nghiệm
+- **Mô tả**: Lớp quản lý lịch xét nghiệm với 11 phương thức đầy đủ
 - **Quan hệ**: Thuộc về một hồ sơ bệnh án
+- **Phương thức chính**:
+  - select_lichxetnghiem_mabacsi(), select_lichxetnghiem_mabenhnhan()
+  - timkiem_lichxetnghiem(), insert_lichxetnghiem()
+  - lichxetnghiemtheotentk(), selectall_lichxetnghiem()
+  - chitietlichxetnghiem()
 
 ##### mLoaiXetNghiem
 - **Mô tả**: Lớp quản lý các loại xét nghiệm
 - **Thuộc tính**: tenloaixetnghiem, dongia, mota
+- **Phương thức**: select_danhmucxetnghiem(), select_loaixetnghiem(), select_loaixetnghiem_maloaixetnghiem()
 
 ##### mKetQuaXetNghiem
 - **Mô tả**: Lớp lưu trữ kết quả xét nghiệm
 - **Thuộc tính**: ketqua, ghichu, ngaytraketqua
+
+##### mKhungGioXetNghiem
+- **Mô tả**: Quản lý khung giờ xét nghiệm
+- **Phương thức**: select_khunggioxetnghiem(), select_khunggioxetnghiem_makhunggio()
 
 #### Các lớp hỗ trợ
 
@@ -137,30 +156,70 @@ java -jar plantuml.jar -tsvg class-diagram.puml
 
 ##### mChuyenKhoa & mLinhVuc
 - **Mô tả**: Quản lý chuyên khoa của bác sĩ và lĩnh vực của chuyên gia
+- **mLinhVuc phương thức**: dslinhvuc(), select_linhvuc_notmabenhnhan(), select_linhvuc_machuyengia()
+
+##### mLichKham (Mới)
+- **Mô tả**: Quản lý lịch khám chi tiết với 10 phương thức
+- **Phương thức chính**: 
+  - lichkhamcg(), lichkhambs(), xemlich()
+  - getLichBacSiTheoNgay(), getLichChuyenGiaTheoNgay()
+  - getTatCaLichKhamTheoNgay(), getLichTrongTheoNguoi()
 
 ##### mLichLamViec
 - **Mô tả**: Quản lý lịch làm việc của bác sĩ/chuyên gia
 - **Quan hệ**: Liên kết với ca làm việc và phòng khám
+- **Phương thức**: updatelichlamviecday(), updatelichlamviectrong(), laymalichlamviec(), lichlamviec()
 
 ##### mCaLamViec
 - **Mô tả**: Định nghĩa các ca làm việc
 - **Thuộc tính**: tenca, giobatdau, gioketthuc
+- **Phương thức**: select_calam(), phanCaTheoThoiHan()
 
 ##### mKhungGioKhamBenh
 - **Mô tả**: Khung giờ khám trong mỗi ca
+- **Phương thức**: allkhunggio(), selectgio()
 
 ##### mTrangThai
 - **Mô tả**: Quản lý các trạng thái (phiếu khám, tài khoản, xét nghiệm)
 
 ##### mVaiTro
 - **Mô tả**: Định nghĩa các vai trò trong hệ thống (admin, bác sĩ, bệnh nhân, chuyên gia)
+- **Phương thức**: select_vaitro()
 
 ##### mTinhThanhPho & mXaPhuong
 - **Mô tả**: Quản lý thông tin địa chỉ hành chính
+- **mTinhThanhPho phương thức**: select_tinhthanhpho()
+- **mXaPhuong phương thức**: select_xaphuong_mathanhpho(), select_xaphuong()
 
 ##### mPhong
 - **Mô tả**: Quản lý thông tin phòng khám
 - **Thuộc tính**: tentoa, tang, sophong
+
+#### Các lớp bổ sung mới
+
+##### mChiTietBacSi (Mới)
+- **Mô tả**: Quản lý chi tiết thông tin bác sĩ
+- **Phương thức**: chitietbacsi(), lichlamvieccuabacsi()
+
+##### mChiTietChuyenKhoa (Mới)
+- **Mô tả**: Quản lý chi tiết chuyên khoa
+- **Phương thức**: chitietchuyenkhoa()
+
+##### mNhanVien (Mới)
+- **Mô tả**: Quản lý thông tin nhân viên
+- **Phương thức**: xemnhanvientheotentk(), getAllNhanVien(), getNhanVienByName(), chitietnhanvien()
+
+##### mNguoiKham (Mới)
+- **Mô tả**: Quản lý người khám
+- **Phương thức**: allnguoikham()
+
+##### mEmailThanhToan (Mới)
+- **Mô tả**: Quản lý email thanh toán
+- **Phương thức**: insert_emailyeucauthanhtoan()
+
+##### ChatUserModel (Mới)
+- **Mô tả**: Quản lý tin nhắn chat giữa người dùng
+- **Phương thức**: setSender(), setReceiver(), setMessage(), saveMessage(), getMessages(), getMessageTime()
 
 ### 3. Lớp Controller (Tầng Điều Khiển)
 
@@ -223,12 +282,25 @@ Bác sĩ → cHoSoBenhAnDienTu → mHoSoBenhAnDienTu → Database
 - **Cơ sở dữ liệu**: MySQL
 - **Kiến trúc**: MVC (Model-View-Controller)
 - **Mô hình hóa**: PlantUML
+- **Tổng số lớp Model**: 32+ lớp
+- **Tổng số phương thức**: 200+ phương thức
 
 ## Cập Nhật
 
 - **Ngày tạo**: 04/12/2025
-- **Phiên bản**: 1.0
+- **Phiên bản**: 2.0 (Đã bổ sung đầy đủ tất cả các lớp và phương thức)
+- **Cập nhật lần cuối**: 04/12/2025
 - **Người tạo**: GitHub Copilot
+
+**Thay đổi trong phiên bản 2.0:**
+- ✅ Bổ sung 8 lớp mới: mLichKham, mKhungGioXetNghiem, mChiTietBacSi, mChiTietChuyenKhoa, mNhanVien, mNguoiKham, mEmailThanhToan, ChatUserModel
+- ✅ Bổ sung đầy đủ tất cả phương thức cho mọi lớp:
+  - mBenhNhan: 19 phương thức (thêm 12 phương thức)
+  - mPhieuKhamBenh: 22 phương thức (thêm 14 phương thức)
+  - mLichXetNghiem: 11 phương thức (hoàn toàn mới)
+  - mHoSoBenhAnDienTu: 14 phương thức (thêm 2 phương thức)
+  - Và tất cả các lớp khác với đầy đủ phương thức
+- ✅ Cập nhật sơ đồ PNG (832KB) và SVG (184KB)
 
 ## Hướng Dẫn Sử Dụng Sơ Đồ
 
@@ -236,6 +308,7 @@ Bác sĩ → cHoSoBenhAnDienTu → mHoSoBenhAnDienTu → Database
 2. **Theo dõi mối quan hệ**: Xem các mũi tên để hiểu cách các lớp tương tác
 3. **Nghiên cứu Controller**: Hiểu cách Controller điều phối giữa View và Model
 4. **Ánh xạ với code**: Đối chiếu với code thực tế trong thư mục Models/ và Controllers/
+5. **Xem chi tiết phương thức**: Tất cả phương thức public và private đã được liệt kê đầy đủ
 
 ## Liên Hệ
 
