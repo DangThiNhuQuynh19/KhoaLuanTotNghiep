@@ -1,0 +1,355 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 2800">
+  <defs>
+    <style>
+      .title { font: bold 24px sans-serif; fill: #1a1a1a; }
+      .role-title { font: bold 18px sans-serif; fill: #fff; }
+      .section-title { font: bold 14px sans-serif; fill: #2c3e50; }
+      .page-text { font: 12px sans-serif; fill: #34495e; }
+      .role-box { fill: #3498db; stroke: #2980b9; stroke-width: 2; }
+      .section-box { fill: #ecf0f1; stroke: #bdc3c7; stroke-width: 1; }
+      .page-box { fill: #fff; stroke: #95a5a6; stroke-width: 1; }
+      .line { stroke: #7f8c8d; stroke-width: 1; fill: none; }
+    </style>
+  </defs>
+  
+  <!-- Title -->
+  <text x="800" y="40" text-anchor="middle" class="title">SƠ ĐỒ SITEMAP - HỆ THỐNG QUẢN LÝ BỆNH VIỆN</text>
+  
+  <!-- Main Home Page -->
+  <rect x="700" y="60" width="200" height="40" rx="5" class="role-box"/>
+  <text x="800" y="85" text-anchor="middle" class="role-title">Trang Chủ Chính</text>
+  <text x="800" y="100" text-anchor="middle" style="font: 10px sans-serif; fill: #fff;">index.php</text>
+  
+  <!-- Connection lines from main to roles -->
+  <line x1="800" y1="100" x2="800" y2="140" class="line"/>
+  <line x1="200" y1="140" x2="1400" y2="140" class="line"/>
+  
+  <!-- Vertical lines to each role -->
+  <line x1="200" y1="140" x2="200" y2="170" class="line"/>
+  <line x1="400" y1="140" x2="400" y2="170" class="line"/>
+  <line x1="600" y1="140" x2="600" y2="170" class="line"/>
+  <line x1="800" y1="140" x2="800" y2="170" class="line"/>
+  <line x1="1000" y1="140" x2="1000" y2="170" class="line"/>
+  <line x1="1200" y1="140" x2="1200" y2="170" class="line"/>
+  <line x1="1400" y1="140" x2="1400" y2="170" class="line"/>
+  
+  <!-- 1. BỆNH NHÂN (Patient) -->
+  <rect x="50" y="170" width="300" height="600" rx="5" class="role-box"/>
+  <text x="200" y="195" text-anchor="middle" class="role-title">1. BỆNH NHÂN</text>
+  <text x="200" y="210" text-anchor="middle" style="font: 10px sans-serif; fill: #fff;">(Patient - Khách/Đăng nhập)</text>
+  
+  <rect x="60" y="220" width="280" height="540" rx="3" class="section-box"/>
+  
+  <text x="70" y="240" class="section-title">Xác thực:</text>
+  <text x="80" y="255" class="page-text">• Đăng nhập, Đăng ký, Đăng xuất</text>
+  <text x="80" y="270" class="page-text">• Login Google</text>
+  
+  <text x="70" y="295" class="section-title">Quản lý hồ sơ:</text>
+  <text x="80" y="310" class="page-text">• Hồ sơ bệnh án điện tử</text>
+  <text x="80" y="325" class="page-text">• Tạo/Sửa/Xóa hồ sơ</text>
+  
+  <text x="70" y="350" class="section-title">Đặt lịch & Quản lý:</text>
+  <text x="80" y="365" class="page-text">• Đặt lịch khám</text>
+  <text x="80" y="380" class="page-text">• Lịch hẹn, Lịch khám</text>
+  <text x="80" y="395" class="page-text">• Lịch khám chuyên gia</text>
+  <text x="80" y="410" class="page-text">• Lịch xét nghiệm</text>
+  
+  <text x="70" y="435" class="section-title">Tìm kiếm:</text>
+  <text x="80" y="450" class="page-text">• Chuyên khoa</text>
+  <text x="80" y="465" class="page-text">• Bác sĩ</text>
+  <text x="80" y="480" class="page-text">• Chuyên gia</text>
+  
+  <text x="70" y="505" class="section-title">Thanh toán:</text>
+  <text x="80" y="520" class="page-text">• Thanh toán (VNPay)</text>
+  <text x="80" y="535" class="page-text">• Kết quả thanh toán</text>
+  
+  <text x="70" y="560" class="section-title">Khác:</text>
+  <text x="80" y="575" class="page-text">• Tin nhắn</text>
+  <text x="80" y="590" class="page-text">• Cài đặt</text>
+  <text x="80" y="605" class="page-text">• Blog, Về chúng tôi</text>
+  <text x="80" y="620" class="page-text">• Liên hệ</text>
+  
+  <text x="70" y="645" class="section-title">Tổng số trang:</text>
+  <text x="80" y="660" style="font: bold 14px sans-serif; fill: #e74c3c;">31 trang</text>
+  <text x="80" y="680" class="page-text">URL: index.php?action=...</text>
+  <text x="80" y="695" class="page-text">Session: name, email</text>
+  <text x="80" y="710" class="page-text">hoặc không đăng nhập</text>
+  
+  <!-- 2. BÁC SĨ (Doctor) -->
+  <rect x="370" y="170" width="260" height="480" rx="5" class="role-box"/>
+  <text x="500" y="195" text-anchor="middle" class="role-title">2. BÁC SĨ</text>
+  <text x="500" y="210" text-anchor="middle" style="font: 10px sans-serif; fill: #fff;">(Doctor - Role: 2)</text>
+  
+  <rect x="380" y="220" width="240" height="420" rx="3" class="section-box"/>
+  
+  <text x="390" y="240" class="section-title">Quản lý bệnh nhân:</text>
+  <text x="400" y="255" class="page-text">• Bệnh nhân</text>
+  <text x="400" y="270" class="page-text">• Chi tiết bệnh nhân</text>
+  
+  <text x="390" y="295" class="section-title">Hồ sơ bệnh án:</text>
+  <text x="400" y="310" class="page-text">• Hồ sơ, Chi tiết hồ sơ</text>
+  <text x="400" y="325" class="page-text">• Tạo hồ sơ</text>
+  <text x="400" y="340" class="page-text">• Cập nhật phiếu khám</text>
+  
+  <text x="390" y="365" class="section-title">Quản lý lịch:</text>
+  <text x="400" y="380" class="page-text">• Lịch hẹn trực tiếp</text>
+  <text x="400" y="395" class="page-text">• Lịch hẹn trực tuyến</text>
+  <text x="400" y="410" class="page-text">• Xem lịch làm việc</text>
+  <text x="400" y="425" class="page-text">• Đặt lịch</text>
+  
+  <text x="390" y="450" class="section-title">Xét nghiệm:</text>
+  <text x="400" y="465" class="page-text">• Xét nghiệm</text>
+  <text x="400" y="480" class="page-text">• Kết quả xét nghiệm</text>
+  <text x="400" y="495" class="page-text">• Đặt lịch xét nghiệm</text>
+  
+  <text x="390" y="520" class="section-title">Đơn thuốc & Khác:</text>
+  <text x="400" y="535" class="page-text">• Tạo đơn thuốc</text>
+  <text x="400" y="550" class="page-text">• Tin nhắn</text>
+  
+  <text x="390" y="575" class="section-title">Tổng số trang:</text>
+  <text x="400" y="590" style="font: bold 14px sans-serif; fill: #e74c3c;">16 trang</text>
+  <text x="400" y="610" class="page-text">Session: dangnhap = 2</text>
+  
+  <!-- 3. CHUYÊN GIA (Expert) -->
+  <rect x="650" y="170" width="260" height="400" rx="5" class="role-box"/>
+  <text x="780" y="195" text-anchor="middle" class="role-title">3. CHUYÊN GIA</text>
+  <text x="780" y="210" text-anchor="middle" style="font: 10px sans-serif; fill: #fff;">(Expert - Role: 3)</text>
+  
+  <rect x="660" y="220" width="240" height="340" rx="3" class="section-box"/>
+  
+  <text x="670" y="240" class="section-title">Quản lý bệnh nhân:</text>
+  <text x="680" y="255" class="page-text">• Bệnh nhân</text>
+  <text x="680" y="270" class="page-text">• Chi tiết bệnh nhân</text>
+  
+  <text x="670" y="295" class="section-title">Hồ sơ:</text>
+  <text x="680" y="310" class="page-text">• Hồ sơ, Chi tiết hồ sơ</text>
+  <text x="680" y="325" class="page-text">• Tạo hồ sơ</text>
+  <text x="680" y="340" class="page-text">• Cập nhật phiếu khám</text>
+  
+  <text x="670" y="365" class="section-title">Quản lý lịch hẹn:</text>
+  <text x="680" y="380" class="page-text">• Lịch hẹn trực tiếp</text>
+  <text x="680" y="395" class="page-text">• Lịch hẹn trực tuyến</text>
+  <text x="680" y="410" class="page-text">• Chi tiết lịch hẹn</text>
+  <text x="680" y="425" class="page-text">• Đặt lịch chuyên gia</text>
+  <text x="680" y="440" class="page-text">• Xem lịch làm việc</text>
+  
+  <text x="670" y="465" class="section-title">Giao tiếp:</text>
+  <text x="680" y="480" class="page-text">• Tin nhắn</text>
+  
+  <text x="670" y="505" class="section-title">Tổng số trang:</text>
+  <text x="680" y="520" style="font: bold 14px sans-serif; fill: #e74c3c;">13 trang</text>
+  <text x="680" y="540" class="page-text">Session: dangnhap = 3</text>
+  
+  <!-- 4. NHÂN VIÊN TIẾP TÂN (Reception) -->
+  <rect x="930" y="170" width="260" height="380" rx="5" class="role-box"/>
+  <text x="1060" y="195" text-anchor="middle" class="role-title">4. NV TIẾP TÂN</text>
+  <text x="1060" y="210" text-anchor="middle" style="font: 10px sans-serif; fill: #fff;">(Reception - Role: 4)</text>
+  
+  <rect x="940" y="220" width="240" height="320" rx="3" class="section-box"/>
+  
+  <text x="950" y="240" class="section-title">Thông tin cá nhân:</text>
+  <text x="960" y="255" class="page-text">• Thông tin</text>
+  <text x="960" y="270" class="page-text">• Sửa thông tin</text>
+  
+  <text x="950" y="295" class="section-title">Quản lý lịch hẹn:</text>
+  <text x="960" y="310" class="page-text">• Lịch hẹn</text>
+  <text x="960" y="325" class="page-text">• Hủy lịch hẹn</text>
+  <text x="960" y="340" class="page-text">• Sửa lịch hẹn</text>
+  <text x="960" y="355" class="page-text">• Lịch cá nhân</text>
+  <text x="960" y="370" class="page-text">• Đặt lịch khám</text>
+  
+  <text x="950" y="395" class="section-title">Quản lý nhân sự:</text>
+  <text x="960" y="410" class="page-text">• Nhân viên</text>
+  <text x="960" y="425" class="page-text">• Chuyên gia</text>
+  <text x="960" y="440" class="page-text">• Chi tiết chuyên gia</text>
+  <text x="960" y="455" class="page-text">• Chi tiết bác sĩ</text>
+  
+  <text x="950" y="480" class="section-title">Tổng số trang:</text>
+  <text x="960" y="495" style="font: bold 14px sans-serif; fill: #e74c3c;">11 trang</text>
+  <text x="960" y="515" class="page-text">Session: dangnhap = 4</text>
+  
+  <!-- 5. NHÂN VIÊN XÉT NGHIỆM (Lab Staff) -->
+  <rect x="1210" y="170" width="180" height="200" rx="5" class="role-box"/>
+  <text x="1300" y="195" text-anchor="middle" class="role-title">5. NV XN</text>
+  <text x="1300" y="210" text-anchor="middle" style="font: 10px sans-serif; fill: #fff;">(Lab - Role: 5)</text>
+  
+  <rect x="1220" y="220" width="160" height="140" rx="3" class="section-box"/>
+  
+  <text x="1230" y="240" class="section-title">Xét nghiệm:</text>
+  <text x="1240" y="255" class="page-text">• Xem chi tiết</text>
+  <text x="1240" y="270" class="page-text">• Chỉnh sửa</text>
+  
+  <text x="1230" y="295" class="section-title">Tổng số:</text>
+  <text x="1240" y="310" style="font: bold 14px sans-serif; fill: #e74c3c;">3 trang</text>
+  <text x="1240" y="330" class="page-text">Session:</text>
+  <text x="1240" y="345" class="page-text">dangnhap = 5</text>
+  
+  <!-- Row 2 - Roles 6 and 7 -->
+  
+  <!-- 6. ADMIN -->
+  <rect x="370" y="800" width="260" height="280" rx="5" class="role-box"/>
+  <text x="500" y="825" text-anchor="middle" class="role-title">6. ADMIN</text>
+  <text x="500" y="840" text-anchor="middle" style="font: 10px sans-serif; fill: #fff;">(Administrator - Role: 6)</text>
+  
+  <rect x="380" y="850" width="240" height="220" rx="3" class="section-box"/>
+  
+  <text x="390" y="870" class="section-title">Quản lý hệ thống:</text>
+  <text x="400" y="885" class="page-text">• Quản lý nhân sự</text>
+  <text x="400" y="900" class="page-text">• Quản lý bài viết</text>
+  <text x="400" y="915" class="page-text">• Phân quyền</text>
+  
+  <text x="390" y="940" class="section-title">Trang khác:</text>
+  <text x="400" y="955" class="page-text">• Trang chủ</text>
+  <text x="400" y="970" class="page-text">• Đăng xuất</text>
+  
+  <text x="390" y="995" class="section-title">Tổng số trang:</text>
+  <text x="400" y="1010" style="font: bold 14px sans-serif; fill: #e74c3c;">5 trang</text>
+  <text x="400" y="1030" class="page-text">Session: dangnhap = 6</text>
+  <text x="400" y="1050" class="page-text">Có sidebar riêng</text>
+  
+  <!-- 7. QUẢN LÝ (Manager) -->
+  <rect x="650" y="800" width="260" height="400" rx="5" class="role-box"/>
+  <text x="780" y="825" text-anchor="middle" class="role-title">7. QUẢN LÝ</text>
+  <text x="780" y="840" text-anchor="middle" style="font: 10px sans-serif; fill: #fff;">(Manager - Role: 7)</text>
+  
+  <rect x="660" y="850" width="240" height="340" rx="3" class="section-box"/>
+  
+  <text x="670" y="870" class="section-title">Quản lý nhân viên:</text>
+  <text x="680" y="885" class="page-text">• Nhân viên</text>
+  <text x="680" y="900" class="page-text">• Chi tiết nhân viên</text>
+  
+  <text x="670" y="925" class="section-title">Quản lý bác sĩ:</text>
+  <text x="680" y="940" class="page-text">• Thêm bác sĩ</text>
+  <text x="680" y="955" class="page-text">• Sửa bác sĩ</text>
+  <text x="680" y="970" class="page-text">• Chi tiết bác sĩ</text>
+  
+  <text x="670" y="995" class="section-title">Quản lý chuyên gia:</text>
+  <text x="680" y="1010" class="page-text">• Thêm chuyên gia</text>
+  <text x="680" y="1025" class="page-text">• Sửa chuyên gia</text>
+  <text x="680" y="1040" class="page-text">• Chi tiết chuyên gia</text>
+  
+  <text x="670" y="1065" class="section-title">Quản lý lịch làm việc:</text>
+  <text x="680" y="1080" class="page-text">• Lịch làm việc</text>
+  <text x="680" y="1095" class="page-text">• Xếp lịch</text>
+  
+  <text x="670" y="1120" class="section-title">Tổng số trang:</text>
+  <text x="680" y="1135" style="font: bold 14px sans-serif; fill: #e74c3c;">12 trang</text>
+  <text x="680" y="1155" class="page-text">Session: dangnhap = 7</text>
+  
+  <!-- Technical Details Section -->
+  <rect x="50" y="1250" width="1500" height="520" rx="5" style="fill: #f8f9fa; stroke: #dee2e6; stroke-width: 2;"/>
+  <text x="800" y="1285" text-anchor="middle" style="font: bold 20px sans-serif; fill: #212529;">CHI TIẾT KỸ THUẬT</text>
+  
+  <!-- Column 1: URL & Authentication -->
+  <text x="70" y="1320" class="section-title">CẤU TRÚC URL:</text>
+  <text x="80" y="1340" class="page-text">• Pattern: index.php?action={page}</text>
+  <text x="80" y="1355" class="page-text">• Ví dụ: ?action=trangchu</text>
+  <text x="80" y="1370" class="page-text">• ?action=bacsi&amp;cate=...</text>
+  
+  <text x="70" y="1400" class="section-title">XÁC THỰC (SESSION):</text>
+  <text x="80" y="1420" class="page-text">• Bệnh nhân: $_SESSION['name'],</text>
+  <text x="90" y="1435" class="page-text">$_SESSION['email']</text>
+  <text x="80" y="1450" class="page-text">• Bác sĩ: $_SESSION['dangnhap'] = 2</text>
+  <text x="80" y="1465" class="page-text">• Chuyên gia: dangnhap = 3</text>
+  <text x="80" y="1480" class="page-text">• NV Tiếp tân: dangnhap = 4</text>
+  <text x="80" y="1495" class="page-text">• NV Xét nghiệm: dangnhap = 5</text>
+  <text x="80" y="1510" class="page-text">• Admin: dangnhap = 6</text>
+  <text x="80" y="1525" class="page-text">• Quản lý: dangnhap = 7</text>
+  
+  <!-- Column 2: Features -->
+  <text x="450" y="1320" class="section-title">TÍNH NĂNG ĐẶC BIỆT:</text>
+  
+  <text x="460" y="1345" style="font: bold 12px sans-serif; fill: #2980b9;">WebSocket/Chat:</text>
+  <text x="470" y="1360" class="page-text">• Server: server.php (Ratchet)</text>
+  <text x="470" y="1375" class="page-text">• Client: Chat.php, Chta.php</text>
+  <text x="470" y="1390" class="page-text">• Real-time messaging</text>
+  
+  <text x="460" y="1415" style="font: bold 12px sans-serif; fill: #2980b9;">AJAX Endpoints:</text>
+  <text x="470" y="1430" class="page-text">• Ajax/getnhanvien.php</text>
+  <text x="470" y="1445" class="page-text">• Ajax/getphong.php</text>
+  <text x="470" y="1460" class="page-text">• Ajax/phancanhanvien.php</text>
+  <text x="470" y="1475" class="page-text">• Ajax/getlichhen.php</text>
+  
+  <text x="460" y="1500" style="font: bold 12px sans-serif; fill: #2980b9;">Thanh toán:</text>
+  <text x="470" y="1515" class="page-text">• Tích hợp VNPay</text>
+  <text x="470" y="1530" class="page-text">• Email tự động (PHPMailer)</text>
+  
+  <text x="460" y="1555" style="font: bold 12px sans-serif; fill: #2980b9;">Xác thực OAuth:</text>
+  <text x="470" y="1570" class="page-text">• Google Login (Google API)</text>
+  <text x="470" y="1585" class="page-text">• QR Code (Endroid)</text>
+  
+  <!-- Column 3: Technology Stack -->
+  <text x="850" y="1320" class="section-title">CÔNG NGHỆ:</text>
+  
+  <text x="860" y="1345" style="font: bold 12px sans-serif; fill: #27ae60;">Backend:</text>
+  <text x="870" y="1360" class="page-text">• PHP (MVC Architecture)</text>
+  <text x="870" y="1375" class="page-text">• Controllers/ - Business Logic</text>
+  <text x="870" y="1390" class="page-text">• Models/ - Database Layer</text>
+  <text x="870" y="1405" class="page-text">• Views/ - UI Templates</text>
+  
+  <text x="860" y="1430" style="font: bold 12px sans-serif; fill: #27ae60;">Packages (Composer):</text>
+  <text x="870" y="1445" class="page-text">• cboden/ratchet ^0.4.4</text>
+  <text x="870" y="1460" class="page-text">• endroid/qr-code ^6.0</text>
+  <text x="870" y="1475" class="page-text">• guzzlehttp/guzzle 7.7</text>
+  <text x="870" y="1490" class="page-text">• google/apiclient 2.15</text>
+  <text x="870" y="1505" class="page-text">• phpmailer/phpmailer ^6.10</text>
+  
+  <text x="860" y="1530" style="font: bold 12px sans-serif; fill: #27ae60;">Database:</text>
+  <text x="870" y="1545" class="page-text">• MySQL</text>
+  <text x="870" y="1560" class="page-text">• File: hanhphuc.sql</text>
+  
+  <!-- Column 4: Statistics -->
+  <text x="1230" y="1320" class="section-title">THỐNG KÊ:</text>
+  
+  <rect x="1240" y="1335" width="280" height="230" rx="3" style="fill: #fff; stroke: #3498db; stroke-width: 2;"/>
+  
+  <text x="1380" y="1360" text-anchor="middle" style="font: bold 16px sans-serif; fill: #e74c3c;">TỔNG SỐ TRANG</text>
+  
+  <text x="1260" y="1390" style="font: 12px sans-serif; fill: #2c3e50;">• Bệnh nhân:</text>
+  <text x="1430" y="1390" text-anchor="end" style="font: bold 12px sans-serif; fill: #3498db;">31 trang</text>
+  
+  <text x="1260" y="1410" style="font: 12px sans-serif; fill: #2c3e50;">• Bác sĩ:</text>
+  <text x="1430" y="1410" text-anchor="end" style="font: bold 12px sans-serif; fill: #3498db;">16 trang</text>
+  
+  <text x="1260" y="1430" style="font: 12px sans-serif; fill: #2c3e50;">• Chuyên gia:</text>
+  <text x="1430" y="1430" text-anchor="end" style="font: bold 12px sans-serif; fill: #3498db;">13 trang</text>
+  
+  <text x="1260" y="1450" style="font: 12px sans-serif; fill: #2c3e50;">• NV Tiếp tân:</text>
+  <text x="1430" y="1450" text-anchor="end" style="font: bold 12px sans-serif; fill: #3498db;">11 trang</text>
+  
+  <text x="1260" y="1470" style="font: 12px sans-serif; fill: #2c3e50;">• NV Xét nghiệm:</text>
+  <text x="1430" y="1470" text-anchor="end" style="font: bold 12px sans-serif; fill: #3498db;">3 trang</text>
+  
+  <text x="1260" y="1490" style="font: 12px sans-serif; fill: #2c3e50;">• Admin:</text>
+  <text x="1430" y="1490" text-anchor="end" style="font: bold 12px sans-serif; fill: #3498db;">5 trang</text>
+  
+  <text x="1260" y="1510" style="font: 12px sans-serif; fill: #2c3e50;">• Quản lý:</text>
+  <text x="1430" y="1510" text-anchor="end" style="font: bold 12px sans-serif; fill: #3498db;">12 trang</text>
+  
+  <line x1="1260" y1="1520" x2="1500" y2="1520" style="stroke: #34495e; stroke-width: 2;"/>
+  
+  <text x="1260" y="1545" style="font: bold 14px sans-serif; fill: #2c3e50;">TỔNG CỘNG:</text>
+  <text x="1430" y="1545" text-anchor="end" style="font: bold 16px sans-serif; fill: #e74c3c;">91 TRANG</text>
+  
+  <!-- Additional Info -->
+  <text x="1240" y="1590" class="section-title">Số vai trò: 7</text>
+  <text x="1240" y="1610" class="section-title">AJAX endpoints: 4</text>
+  <text x="1240" y="1630" class="section-title">WebSocket: Có</text>
+  <text x="1240" y="1650" class="section-title">Payment: VNPay</text>
+  <text x="1240" y="1670" class="section-title">OAuth: Google</text>
+  
+  <!-- Architecture Notes -->
+  <text x="70" y="1620" class="section-title">KIẾN TRÚC HỆ THỐNG:</text>
+  <text x="80" y="1640" class="page-text">• Hệ thống MVC với PHP thuần</text>
+  <text x="80" y="1655" class="page-text">• Thư mục app/ chứa Laravel (song song)</text>
+  <text x="80" y="1670" class="page-text">• Session-based authentication</text>
+  <text x="80" y="1685" class="page-text">• Role-based access control (7 levels)</text>
+  <text x="80" y="1700" class="page-text">• Real-time features với WebSocket</text>
+  <text x="80" y="1715" class="page-text">• Upload files (uploads/)</text>
+  <text x="80" y="1730" class="page-text">• Static assets (Assets/)</text>
+  
+  <!-- Footer -->
+  <rect x="50" y="1790" width="1500" height="60" rx="5" style="fill: #34495e; stroke: #2c3e50; stroke-width: 2;"/>
+  <text x="800" y="1820" text-anchor="middle" style="font: bold 16px sans-serif; fill: #ecf0f1;">Hệ thống Quản lý Bệnh viện - Healthcare Management System</text>
+  <text x="800" y="1840" text-anchor="middle" style="font: 12px sans-serif; fill: #bdc3c7;">Khóa Luận Tốt Nghiệp - Graduation Thesis Project</text>
+</svg>

@@ -1,0 +1,253 @@
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                    SƠ ĐỒ SITEMAP - HỆ THỐNG QUẢN LÝ BỆNH VIỆN                 ║
+║                      Healthcare Management System Sitemap                      ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+
+index.php (Main Entry Point)
+│
+├── SESSION['name'] & SESSION['email'] → BỆNH NHÂN (Patient) - 31 trang
+│   ├── Xác thực
+│   │   ├── dangnhap (Đăng nhập)
+│   │   ├── logingoogle (Login with Google)
+│   │   ├── dangky (Đăng ký)
+│   │   └── dangxuat (Đăng xuất)
+│   │
+│   ├── Trang chính
+│   │   ├── trangchu (Trang chủ)
+│   │   ├── vechungtoi (Về chúng tôi)
+│   │   ├── lienhe (Liên hệ)
+│   │   └── blog (Blog)
+│   │
+│   ├── Quản lý hồ sơ
+│   │   ├── hosobenhandientu (Hồ sơ bệnh án điện tử)
+│   │   ├── chitiethosobenhandientu (Chi tiết hồ sơ)
+│   │   ├── taohoso (Tạo hồ sơ)
+│   │   ├── suahoso (Sửa hồ sơ)
+│   │   └── xoahoso (Xóa hồ sơ)
+│   │
+│   ├── Đặt lịch & Lịch hẹn
+│   │   ├── datlichkham (Đặt lịch khám)
+│   │   ├── lichhen (Lịch hẹn)
+│   │   ├── lichkham (Lịch khám)
+│   │   ├── lichkhamchuyengia (Lịch khám chuyên gia)
+│   │   └── lichxetnghiem (Lịch xét nghiệm)
+│   │
+│   ├── Tìm kiếm & Thông tin
+│   │   ├── chuyenkhoa (Chuyên khoa)
+│   │   ├── chitietchuyenkhoa (Chi tiết chuyên khoa)
+│   │   ├── bacsi (Bác sĩ)
+│   │   ├── chitietbacsi (Chi tiết bác sĩ)
+│   │   ├── chuyengia (Chuyên gia)
+│   │   └── chitietchuyengia (Chi tiết chuyên gia)
+│   │
+│   ├── Thanh toán
+│   │   ├── thanhtoan (Thanh toán)
+│   │   ├── vnpay (VNPay Gateway)
+│   │   └── paymentresult (Kết quả thanh toán)
+│   │
+│   └── Khác
+│       ├── tinnhan (Tin nhắn)
+│       └── caidat (Cài đặt)
+│
+├── SESSION['dangnhap'] = 2 → BÁC SĨ (Doctor) - 16 trang
+│   ├── trangchu (Trang chủ)
+│   ├── dangxuat (Đăng xuất)
+│   │
+│   ├── Quản lý bệnh nhân
+│   │   ├── benhnhan (Danh sách bệnh nhân)
+│   │   └── chitietbenhnhan (Chi tiết bệnh nhân)
+│   │
+│   ├── Quản lý hồ sơ bệnh án
+│   │   ├── hoso (Hồ sơ)
+│   │   ├── chitiethoso (Chi tiết hồ sơ)
+│   │   ├── taohoso (Tạo hồ sơ)
+│   │   └── update_phieukhambenh (Cập nhật phiếu khám bệnh)
+│   │
+│   ├── Quản lý lịch hẹn
+│   │   ├── lichhentructiep (Lịch hẹn trực tiếp)
+│   │   ├── lichhentructuyen (Lịch hẹn trực tuyến)
+│   │   ├── xemlichlamviec (Xem lịch làm việc)
+│   │   └── datlich (Đặt lịch)
+│   │
+│   ├── Xét nghiệm
+│   │   ├── xetnghiem (Xét nghiệm)
+│   │   ├── ketquaxetnghiem (Kết quả xét nghiệm)
+│   │   └── datlichxetnghiem (Đặt lịch xét nghiệm)
+│   │
+│   └── Khác
+│       ├── taodonthuoc (Tạo đơn thuốc)
+│       └── tinnhan (Tin nhắn)
+│
+├── SESSION['dangnhap'] = 3 → CHUYÊN GIA (Expert) - 13 trang
+│   ├── trangchu (Trang chủ)
+│   ├── dangxuat (Đăng xuất)
+│   │
+│   ├── Quản lý bệnh nhân
+│   │   ├── benhnhan (Danh sách bệnh nhân)
+│   │   └── chitietbenhnhan (Chi tiết bệnh nhân)
+│   │
+│   ├── Quản lý hồ sơ
+│   │   ├── hoso (Hồ sơ)
+│   │   ├── chitiethoso (Chi tiết hồ sơ)
+│   │   ├── taohoso (Tạo hồ sơ)
+│   │   └── update_phieukhambenh (Cập nhật phiếu khám bệnh)
+│   │
+│   ├── Quản lý lịch hẹn
+│   │   ├── lichhentructiep (Lịch hẹn trực tiếp)
+│   │   ├── lichhentructuyen (Lịch hẹn trực tuyến)
+│   │   ├── chitietlichhen (Chi tiết lịch hẹn)
+│   │   ├── datlichcg (Đặt lịch chuyên gia)
+│   │   └── xemlichlamviec (Xem lịch làm việc)
+│   │
+│   └── Giao tiếp
+│       └── tinnhan (Tin nhắn)
+│
+├── SESSION['dangnhap'] = 4 → NHÂN VIÊN TIẾP TÂN (Reception Staff) - 11 trang
+│   ├── trangchu (Trang chủ)
+│   ├── dangxuat (Đăng xuất)
+│   │
+│   ├── Thông tin cá nhân
+│   │   ├── thongtin (Thông tin)
+│   │   └── suathongtin (Sửa thông tin)
+│   │
+│   ├── Quản lý lịch hẹn
+│   │   ├── lichhen (Lịch hẹn)
+│   │   ├── huylichhen (Hủy lịch hẹn)
+│   │   ├── sualichhen (Sửa lịch hẹn)
+│   │   ├── lichcanhan (Lịch cá nhân)
+│   │   └── datlichkham (Đặt lịch khám)
+│   │
+│   └── Quản lý nhân sự
+│       ├── nhanvien (Nhân viên)
+│       ├── chuyengia (Chuyên gia)
+│       ├── chitietchuyengia (Chi tiết chuyên gia)
+│       └── chitietbacsi (Chi tiết bác sĩ)
+│
+├── SESSION['dangnhap'] = 5 → NHÂN VIÊN XÉT NGHIỆM (Lab Staff) - 3 trang
+│   ├── trangchu (Trang chủ)
+│   ├── dangxuat (Đăng xuất)
+│   ├── xemchitiet (Xem chi tiết)
+│   └── chinhsua (Chỉnh sửa)
+│
+├── SESSION['dangnhap'] = 6 → ADMIN (Administrator) - 5 trang
+│   ├── trangchu (Trang chủ)
+│   ├── dangxuat (Đăng xuất)
+│   ├── quanlynhansu (Quản lý nhân sự)
+│   ├── quanlybaiviet (Quản lý bài viết)
+│   └── phanquyen (Phân quyền)
+│
+└── SESSION['dangnhap'] = 7 → QUẢN LÝ (Manager) - 12 trang
+    ├── trangchu (Trang chủ)
+    ├── dangxuat (Đăng xuất)
+    │
+    ├── Quản lý nhân viên
+    │   ├── nhanvien (Nhân viên)
+    │   └── chitietnhanvien (Chi tiết nhân viên)
+    │
+    ├── Quản lý bác sĩ
+    │   ├── thembacsi (Thêm bác sĩ)
+    │   ├── suabacsi (Sửa bác sĩ)
+    │   └── chitietbacsi (Chi tiết bác sĩ)
+    │
+    ├── Quản lý chuyên gia
+    │   ├── themchuyengia (Thêm chuyên gia)
+    │   ├── suachuyengia (Sửa chuyên gia)
+    │   └── chitietchuyengia (Chi tiết chuyên gia)
+    │
+    └── Quản lý lịch làm việc
+        ├── lichlamviec (Lịch làm việc)
+        └── xeplich (Xếp lịch)
+
+═══════════════════════════════════════════════════════════════════════════════
+
+📊 TỔNG QUAN THỐNG KÊ:
+
+┌─────────────────────────────────────────────────────────────────────┐
+│ Vai trò              │ Số trang │ Session Value                      │
+├──────────────────────┼──────────┼────────────────────────────────────┤
+│ 1. Bệnh nhân         │    31    │ name, email (hoặc không đăng nhập) │
+│ 2. Bác sĩ            │    16    │ dangnhap = 2                       │
+│ 3. Chuyên gia        │    13    │ dangnhap = 3                       │
+│ 4. NV Tiếp tân       │    11    │ dangnhap = 4                       │
+│ 5. NV Xét nghiệm     │     3    │ dangnhap = 5                       │
+│ 6. Admin             │     5    │ dangnhap = 6                       │
+│ 7. Quản lý           │    12    │ dangnhap = 7                       │
+├──────────────────────┼──────────┼────────────────────────────────────┤
+│ TỔNG CỘNG            │    91    │ 7 vai trò                          │
+└─────────────────────────────────────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🔧 CHI TIẾT KỸ THUẬT:
+
+URL Structure:
+    • Pattern: index.php?action={page_name}
+    • Example: index.php?action=trangchu
+    • With category: index.php?action=bacsi&cate=...
+
+WebSocket/Chat (Real-time):
+    server.php
+    ├── Ratchet WebSocket Server (cboden/ratchet)
+    ├── Chat.php (Client implementation)
+    └── Chta.php (Alternative client)
+
+AJAX Endpoints:
+    Ajax/
+    ├── getnhanvien.php (Get employee data)
+    ├── getphong.php (Get room data)
+    ├── phancanhanvien.php (Assign employee shifts)
+    └── getlichhen.php (Get appointment schedule)
+
+Backend Architecture:
+    ├── Controllers/ (Business logic)
+    ├── Models/ (Database layer)
+    ├── Views/ (UI templates)
+    │   ├── admin/
+    │   ├── bacsi/
+    │   ├── benhnhan/
+    │   ├── chuyengia/
+    │   ├── nhanvientieptan/
+    │   ├── nhanvienxetnghiem/
+    │   └── quanly/
+    ├── Assets/ (Static files)
+    ├── uploads/ (User uploads)
+    └── app/ (Laravel application - parallel)
+
+Composer Packages:
+    ├── cboden/ratchet ^0.4.4 (WebSocket)
+    ├── endroid/qr-code ^6.0 (QR Code generation)
+    ├── guzzlehttp/guzzle 7.7 (HTTP client)
+    ├── google/apiclient 2.15 (Google OAuth)
+    ├── google/auth 1.28 (Google authentication)
+    └── phpmailer/phpmailer ^6.10 (Email)
+
+Features:
+    ✓ Multi-role authentication (7 levels)
+    ✓ Real-time chat (WebSocket)
+    ✓ Appointment booking system
+    ✓ Electronic health records
+    ✓ Lab test management
+    ✓ Online payment (VNPay)
+    ✓ Google OAuth login
+    ✓ Email notifications
+    ✓ QR Code generation
+    ✓ File uploads
+
+Database:
+    • MySQL database
+    • Schema file: hanhphuc.sql
+    • Configuration: config.php
+
+═══════════════════════════════════════════════════════════════════════════════
+
+📝 GHI CHÚ:
+    • Hệ thống sử dụng session-based authentication
+    • Mỗi vai trò có giao diện và quyền hạn riêng
+    • Admin có sidebar riêng biệt
+    • Bệnh nhân có thể truy cập không cần đăng nhập (chế độ xem)
+    • URL routing dựa trên query string 'action'
+    • File index.php là entry point chính cho toàn bộ hệ thống
+
+═══════════════════════════════════════════════════════════════════════════════
+Created: December 2024 | Khóa Luận Tốt Nghiệp - Graduation Thesis Project
+═══════════════════════════════════════════════════════════════════════════════
