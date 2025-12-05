@@ -154,6 +154,5 @@ java -jar plantuml-1.2024.3.jar -tsvg diagrams/activity_capnhat_ketqua_xetnghiem
 
 ---
 
-**Tạo bởi:** GitHub Copilot  
 **Ngày tạo:** 2025-12-05  
 **Phiên bản:** 1.0
