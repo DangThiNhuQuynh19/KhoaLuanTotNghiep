@@ -1,0 +1,165 @@
+@startuml activity_capnhat_ketqua_xetnghiem
+
+title Sơ Đồ Activity: Cập Nhật Kết Quả Xét Nghiệm - Nhân Viên Xét Nghiệm
+
+|Nhân Viên Xét Nghiệm|
+start
+
+:Đăng nhập vào hệ thống;
+note right
+    Kiểm tra session:
+    - $_SESSION["dangnhap"]
+    - $_SESSION["user"]
+end note
+
+:Truy cập trang danh sách
+lịch xét nghiệm;
+
+:Chọn ngày và trạng thái
+"Đang thực hiện" (status 11);
+
+|Hệ Thống|
+:Hiển thị danh sách lịch
+xét nghiệm theo bộ lọc;
+
+|Nhân Viên Xét Nghiệm|
+if (Có lịch xét nghiệm?) then (Có)
+    :Chọn lịch xét nghiệm
+    cần cập nhật kết quả;
+    
+    :Nhấn nút "Chỉnh sửa" (✏️);
+    
+    |Hệ Thống|
+    :Lấy ID lịch xét nghiệm
+    từ URL (GET);
+    
+    :Truy vấn thông tin chi tiết
+    lịch xét nghiệm;
+    note right
+        - Thông tin bác sĩ
+        - Thông tin bệnh nhân
+        - Thông tin xét nghiệm
+        - Kết quả cũ (nếu có)
+    end note
+    
+    :Hiển thị form nhập
+    kết quả xét nghiệm;
+    
+    |Nhân Viên Xét Nghiệm|
+    :Nhập thông tin kết quả;
+    note right
+        Cho mỗi chỉ số xét nghiệm:
+        - Tên chỉ số
+        - Giá trị kết quả
+        - Đơn vị
+        - Khoảng tham chiếu
+        ---
+        Thông tin chung:
+        - Giờ lấy mẫu
+        - Nhận xét
+    end note
+    
+    while (Cần thêm chỉ số xét nghiệm?) is (Có)
+        :Nhấn "➕ Thêm chỉ số";
+        :Nhập thông tin chỉ số;
+    endwhile (Không)
+    
+    :Nhấn nút "💾 Lưu Cập Nhật";
+    
+    |Hệ Thống|
+    :Nhận dữ liệu POST từ form;
+    
+    if (Kiểm tra ID lịch trong URL?) then (Có)
+        :Lấy ID lịch từ GET['id'];
+        
+        :Lấy dữ liệu từ POST;
+        note right
+            - tenchisoArr[]
+            - giatriArr[]
+            - donviArr[]
+            - khoangArr[]
+            - gioLay
+            - nhanxet
+        end note
+        
+        if (Validate dữ liệu?) then (Hợp lệ)
+            :Kết nối database;
+            
+            :Xóa kết quả cũ
+            của lịch này;
+            note right
+                DELETE FROM ketquaxetnghiem
+                WHERE malichxetnghiem = $malich
+            end note
+            
+            while (Còn chỉ số để thêm?) is (Có)
+                :Thêm chỉ số vào database;
+                note right
+                    INSERT INTO ketquaxetnghiem
+                    VALUES (malichxetnghiem,
+                    tenchisoxetnghiem,
+                    giatriketqua, donviketqua,
+                    khoangthamchieu,
+                    ngaygiotraketqua,
+                    giolaymau, nhanxet)
+                end note
+            endwhile (Không)
+            
+            :Cập nhật trạng thái lịch
+            thành 12 (Đã có kết quả);
+            note right
+                UPDATE lichxetnghiem
+                SET matrangthai = 12
+                WHERE malichxetnghiem = $malich
+            end note
+            
+            :Đóng kết nối database;
+            
+            :Hiển thị thông báo
+            "Cập nhật thành công!";
+            
+            :Chuyển về trang chủ;
+            
+        else (Không hợp lệ)
+            :Hiển thị thông báo lỗi;
+            note right
+                - Thiếu thông tin bắt buộc
+                - Định dạng không đúng
+            end note
+            stop
+        endif
+        
+    else (Không)
+        :Hiển thị "Thiếu ID lịch
+        xét nghiệm";
+        stop
+    endif
+    
+else (Không có)
+    :Hiển thị "Không có lịch
+    xét nghiệm";
+    stop
+endif
+
+|Nhân Viên Xét Nghiệm|
+:Xem danh sách đã cập nhật;
+
+if (Muốn xem chi tiết?) then (Có)
+    :Nhấn nút "Xem chi tiết" (👁️);
+    
+    |Hệ Thống|
+    :Hiển thị chi tiết lịch
+    xét nghiệm và kết quả;
+    note right
+        - Thông tin bác sĩ
+        - Thông tin bệnh nhân
+        - Thông tin xét nghiệm
+        - Bảng kết quả chi tiết
+        - Trạng thái: "Đã có kết quả"
+    end note
+else (Không)
+endif
+
+stop
+
+@enduml
