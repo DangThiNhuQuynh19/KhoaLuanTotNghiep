@@ -154,7 +154,7 @@ $paged_list = $total ? array_slice($lichkham_list, $offset, $perPage) : [];
                            <td><span class="status-badge <?php echo $statusClass; ?>"><?php echo htmlspecialchars($i['tentrangthai']); ?></span></td>
                            <td>
                             <?php
-                                $hosobenhnhan = get_mahoso_by_benhnhan_nguoikham($i['mabenhnhan'], $bacsi['machuyenkhoa']);
+                                $hosobenhnhan = $chsba->get_mahoso_by_benhnhan_nguoikham($i['mabenhnhan'], $bacsi['machuyenkhoa']);
                             ?>
                                <?php if($tentrangthai === 'Chưa khám'): ?>
                                 
