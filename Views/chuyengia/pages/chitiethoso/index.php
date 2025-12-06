@@ -46,7 +46,7 @@ $linhvuc = $cchuyengia->getLichLamViecChuyengia($bacsi['machuyengia'] ?? null);
 $hoso = ensure_array($chosobenhandientu->get_hoso_mahoso1($mahoso));
 $chitiethoso_mahoso = ensure_array($cchitiethoso->get_chitiethoso_mahoso_chuyengia($mahoso));
 echo $mahoso;
-echo $linhvuc['tenlinhvuc'];
+echo $linhvuc[0]['tenlinhvuc'];
 echo $chitiethoso_mahoso ['tenlinhvuc'];
 $message = "";
 
