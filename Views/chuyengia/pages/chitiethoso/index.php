@@ -45,6 +45,7 @@ $chuyengia = $cchuyengia->getChuyenGiaByTenTK($_SESSION['user']['tentk']);
 $linhvuc = $cchuyengia->getLichLamViecChuyengia($bacsi['machuyengia'] ?? null);
 $hoso = ensure_array($chosobenhandientu->get_hoso_mahoso1($mahoso));
 $chitiethoso_mahoso = ensure_array($cchitiethoso->get_chitiethoso_mahoso_chuyengia($mahoso));
+echo json_encode($chitiethoso_mahoso);
 
 $message = "";
 
