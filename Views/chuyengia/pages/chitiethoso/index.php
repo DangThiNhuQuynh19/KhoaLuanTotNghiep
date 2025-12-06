@@ -388,6 +388,7 @@ if (isset($_POST['btnupdate'])) {
 <script>
 function openUpdateRecordModal() { document.getElementById("modalcapnhathoso").style.display = "block"; }
 function closeUpdateRecordModal() { document.getElementById("modalcapnhathoso").style.display = "none"; }
+
 </script>
 </body>
 </html>
