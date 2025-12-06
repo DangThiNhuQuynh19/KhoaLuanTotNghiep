@@ -341,8 +341,6 @@ if (isset($_POST['btnupdate'])) {
         <form action="" method="post" id="prescriptionForm">
             <div class="tabs update-tabs">
                 <div class="tab-header">
-                    <a href="#update-prescription" class="update-tab-link active" onclick="openUpdateTab(event, 'update-prescription')">Thêm đơn thuốc</a>
-                    <a href="#update-test" class="update-tab-link" onclick="openUpdateTab(event, 'update-test')">Thêm lịch xét nghiệm</a>
                     <a href="#update-diagnosis" class="update-tab-link" onclick="openUpdateTab(event, 'update-diagnosis')">Thêm chẩn đoán</a>
                     <div style="display: flex; justify-content: flex-end; margin-top: 20px; gap: 10px; margin-bottom: 20px; margin-left: 150px;">
                         <button type="submit" name="btnupdate" class="btn-small btn-primary">
