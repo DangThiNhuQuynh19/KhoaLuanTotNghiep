@@ -78,6 +78,7 @@ $paged_list = $total ? array_slice($lichkham_list, $offset, $perPage) : [];
        </div>
        <div class="card-body">
            <form class="search-form" method="GET">
+               <input type="hidden" name="action" value ="lichhentructuyen">
                <div class="search-grid">
                    <div class="search-input">
                        <i class="fas fa-search"></i>
