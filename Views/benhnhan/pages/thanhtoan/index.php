@@ -72,7 +72,7 @@ body{background:#f8f6fc;color:#333;}
 <?php
 include_once('Controllers/cbacsi.php');
 include_once('Controllers/cchuyengia.php');
-include_once('Controllers/cBenhNhan.php');
+include_once('Controllers/cbenhnhan.php');
 include_once('Controllers/clichkham.php');
 include_once('Controllers/cphieukhambenh.php');
 

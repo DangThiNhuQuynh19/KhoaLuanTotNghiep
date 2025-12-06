@@ -22,6 +22,8 @@
 
     .login-wrapper .container {
         display: flex;
+	margin: 0;
+	padding: 0;
         width: 100%;
         max-width: 1200px;
         background: white;

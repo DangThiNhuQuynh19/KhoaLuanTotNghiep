@@ -128,9 +128,11 @@ class cHoSoBenhAnDienTu{
         }
     }
 
-    public function create_hosobenhan_mabenhnhan($mabenhnhan, $nguoitao = null){
+
+   
+    public function create_hosobenhandientu_mabenhnhan($mabenhnhan, $nguoitao=null){
         $p = new mHoSoBenhAnDienTu();
-        $tbl = $p->insert_hosobenhandientu_mabenhnhan($mabenhnhan, $nguoitao);;
+        $tbl = $p->insert_hosobenhandientu_mabenhnhan($mabenhnhan, $nguoitao);
         if(!$tbl){
             return -1;
         }else{

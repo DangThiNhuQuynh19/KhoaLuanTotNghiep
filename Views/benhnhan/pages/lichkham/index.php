@@ -222,7 +222,7 @@ $lichkham = $cLichKham->getLichKhamOfBacSiByNgay($ngay, $mabacsi, $gioHienTai);
 
     <!-- Form chọn ngày và giờ -->
     <form method="get" id="form-ngay" class="date-picker">
-        <input type="hidden" name="action" value="chitietbacsi">
+        <input type="hidden" name="action" value="lichkham">
         <input type="hidden" name="id" value="<?php echo $mabacsi; ?>">
         <input type="hidden" name="giohientai" id="giohientai" value="">
 
@@ -351,3 +351,4 @@ $lichkham = $cLichKham->getLichKhamOfBacSiByNgay($ngay, $mabacsi, $gioHienTai);
     }
     <?php endif; ?>
 </script>
+

@@ -5,6 +5,7 @@ class mKetQuaXetNghiem{
         $p = new clsKetNoi();
         $con = $p->moketnoi();
         $con->set_charset('utf8');
+$con->query("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
         if($con){
             $str = "select * from lichxetnghiem l
             join  benhnhan bn on bn.mabenhnhan = l.mabenhnhan
@@ -43,6 +44,7 @@ class mKetQuaXetNghiem{
         $p = new clsKetNoi();
         $con = $p->moketnoi();
         $con->set_charset('utf8');
+	$con->query("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
         if($con){
             $str = "select * from ketquaxetnghiem as kq
             join lichxetnghiem as l on kq.malichxetnghiem=l.malichxetnghiem
@@ -79,7 +81,7 @@ class mKetQuaXetNghiem{
         }
     }
 
-    function select_ketquaxetnghiem_gannhat($mabacsi){
+     function select_ketquaxetnghiem_gannhat($mabacsi){
         $p = new clsKetNoi();
         $con = $p->moketnoi();
         $con->set_charset('utf8');

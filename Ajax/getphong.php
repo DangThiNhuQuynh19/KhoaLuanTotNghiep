@@ -5,7 +5,7 @@ error_reporting(E_ALL);
 
 header('Content-Type: application/json');
 
-$conn = new mysqli("localhost", "root", "", "hanhphuc");
+$conn = new mysqli("localhost", "kltn", "Kltntrangquynh2025@", "hanhphuc");
 $conn->set_charset("utf8");
 
 if ($conn->connect_error) {

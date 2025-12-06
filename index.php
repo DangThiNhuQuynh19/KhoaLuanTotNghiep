@@ -1,12 +1,10 @@
 <?php
 //error_reporting(0);
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
+//ini_set('display_errors', 1);
+//ini_set('display_startup_errors', 1);
+//error_reporting(E_ALL);
 ob_start();
 session_start();
-
 // Xác định action (page)
 $page = isset($_GET["action"]) ? $_GET["action"] : 'trangchu';
 $cate = isset($_GET["cate"]) ? $_GET["cate"] : null;

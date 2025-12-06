@@ -207,7 +207,7 @@ $lichkham = $cLichKham->getLichKhamOfChuyenGiaByNgay($ngay, $machuyengia, $gioHi
 
     <!-- Form chọn ngày và giờ -->
     <form method="get" id="form-ngay" class="date-picker">
-        <input type="hidden" name="action" value="chitietchuyengia">
+        <input type="hidden" name="action" value="lichkhamchuyengia">
         <input type="hidden" name="idcg" value="<?php echo $machuyengia; ?>">
         <input type="hidden" name="giohientai" id="giohientai" value="">
 
@@ -340,3 +340,6 @@ $lichkham = $cLichKham->getLichKhamOfChuyenGiaByNgay($ngay, $machuyengia, $gioHi
     }
     <?php endif; ?>
 </script>
+
+</script>
+

@@ -30,6 +30,8 @@ if (!empty($_GET['name']) && !empty($_GET['linhvuc'])) {
     <title>Danh sách chuyên gia</title>
     <style>
         body{
+	    padding-top: 100px;
+	    margin: auto;
             margin-top: 100px;
             font-family: Arial, sans-serif;
             background: white;
@@ -176,7 +178,7 @@ if (!empty($_GET['name']) && !empty($_GET['linhvuc'])) {
 <div class="search-forms" style="margin-top: 10px;">
  
     <form method="GET" action="index.php">
-        <input type="hidden" name="action" value="chuyengiatuvan">
+        <input type="hidden" name="action" value="chuyengia">
         <input class="textsearch" type="text" name="name" placeholder=" Nhập tên chuyên gia..." 
             value="<?php echo isset($_GET['name']) ? htmlspecialchars($_GET['name']) : '' ?>">
         <select name="linhvuc" class="textsearch">
