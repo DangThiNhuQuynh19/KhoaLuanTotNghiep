@@ -387,6 +387,9 @@ if (isset($_POST['btnupdate'])) {
 .alert-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
 .alert-warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
 </style>
-
+<script>
+function openUpdateRecordModal() { document.getElementById("modalcapnhathoso").style.display = "block"; }
+function closeUpdateRecordModal() { document.getElementById("modalcapnhathoso").style.display = "none"; }
+</script>
 </body>
 </html>
