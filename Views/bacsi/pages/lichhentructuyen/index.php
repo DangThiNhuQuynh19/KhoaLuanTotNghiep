@@ -334,7 +334,7 @@ $paged_list = $total ? array_slice($lichkham_list, $offset, $perPage) : [];
                            <select name="appointmentTime" id="appointmentTime" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
                                <option value="">-- Chọn khung giờ --</option>
                                <?php foreach($khunggioxetnghiem_list as $khunggio): ?>
-                                   <option value="<?php echo htmlspecialchars($khunggio['makhunggio']); ?>"><?php echo htmlspecialchars($khunggio['giobatdau'] . ' - ' . $khunggio['gioketthuc']); ?></option>
+                                   <option value="<?php echo htmlspecialchars($khunggio['makhunggioxetnghiem']); ?>"><?php echo htmlspecialchars($khunggio['giobatdau'] . ' - ' . $khunggio['gioketthuc']); ?></option>
                                <?php endforeach; ?>
                            </select>
                        </div>
