@@ -392,14 +392,23 @@
                 LEFT JOIN chuyenkhoa ck ON ck.machuyenkhoa = bs.machuyenkhoa
                 LEFT JOIN chuyengia cg ON cg.machuyengia = ct.mabacsi
                 LEFT JOIN linhvuc lv ON lv.malinhvuc = cg.malinhvuc
-                WHERE hs.mabenhnhan = '$mabenhnhan' 
-                AND ct.mabacsi = '$manguoikham'
+                WHERE hs.mabenhnhan = ? 
+                AND ct.mabacsi = ?
                 ORDER BY hs.mahoso DESC
                 LIMIT 1";
                 
-                $tbl = $con->query($str);
-                $p->dongketnoi($con);
-                return $tbl;
+                $stmt = $con->prepare($str);
+                if ($stmt) {
+                    $stmt->bind_param("ss", $mabenhnhan, $manguoikham);
+                    $stmt->execute();
+                    $tbl = $stmt->get_result();
+                    $stmt->close();
+                    $p->dongketnoi($con);
+                    return $tbl;
+                } else {
+                    $p->dongketnoi($con);
+                    return false;
+                }
             }else{
                 return false; 
             }
@@ -417,13 +426,22 @@
                 JOIN chitiethoso ct ON hs.mahoso = ct.mahoso
                 JOIN bacsi bs ON bs.mabacsi = ct.mabacsi
                 JOIN chuyenkhoa ck ON ck.machuyenkhoa = bs.machuyenkhoa
-                WHERE hs.mabenhnhan = '$mabenhnhan' 
-                AND bs.machuyenkhoa = (SELECT machuyenkhoa FROM bacsi WHERE mabacsi = '$mabacsi')
+                WHERE hs.mabenhnhan = ? 
+                AND bs.machuyenkhoa = (SELECT machuyenkhoa FROM bacsi WHERE mabacsi = ?)
                 ORDER BY hs.mahoso DESC";
                 
-                $tbl = $con->query($str);
-                $p->dongketnoi($con);
-                return $tbl;
+                $stmt = $con->prepare($str);
+                if ($stmt) {
+                    $stmt->bind_param("ss", $mabenhnhan, $mabacsi);
+                    $stmt->execute();
+                    $tbl = $stmt->get_result();
+                    $stmt->close();
+                    $p->dongketnoi($con);
+                    return $tbl;
+                } else {
+                    $p->dongketnoi($con);
+                    return false;
+                }
             }else{
                 return false; 
             }
@@ -441,13 +459,22 @@
                 JOIN chitiethoso ct ON hs.mahoso = ct.mahoso
                 JOIN chuyengia cg ON cg.machuyengia = ct.mabacsi
                 JOIN linhvuc lv ON lv.malinhvuc = cg.malinhvuc
-                WHERE hs.mabenhnhan = '$mabenhnhan' 
-                AND cg.malinhvuc = (SELECT malinhvuc FROM chuyengia WHERE machuyengia = '$machuyengia')
+                WHERE hs.mabenhnhan = ? 
+                AND cg.malinhvuc = (SELECT malinhvuc FROM chuyengia WHERE machuyengia = ?)
                 ORDER BY hs.mahoso DESC";
                 
-                $tbl = $con->query($str);
-                $p->dongketnoi($con);
-                return $tbl;
+                $stmt = $con->prepare($str);
+                if ($stmt) {
+                    $stmt->bind_param("ss", $mabenhnhan, $machuyengia);
+                    $stmt->execute();
+                    $tbl = $stmt->get_result();
+                    $stmt->close();
+                    $p->dongketnoi($con);
+                    return $tbl;
+                } else {
+                    $p->dongketnoi($con);
+                    return false;
+                }
             }else{
                 return false; 
             }
