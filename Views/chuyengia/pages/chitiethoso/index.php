@@ -13,7 +13,7 @@ include_once('Controllers/cchuyengia.php');
 $cchuyengia = new cChuyenGia();
 $chosobenhandientu = new cHoSoBenhAnDienTu();
 $cbenhnhan = new cBenhnhan();
-$cchuyenkhoa = new cLinhVuc();
+$clinhvuc = new cLinhVuc();
 $cchitiethoso = new cChiTietHoSo();
 $mahoso = $_GET['mahoso'] ?? null;
 
@@ -42,7 +42,7 @@ function esc($s) {
 $benhnhan = ensure_array($chosobenhandientu->get_benhnhan_mahoso($mahoso));
 $chitiethoso = ensure_array($chosobenhandientu->getDonThuocByIDHS($mahoso));
 $chuyengia = $cchuyengia->getChuyenGiaByTenTK($_SESSION['user']['tentk']);
-$linhvuc = $cchuyengia->getLichLamViecChuyengia($chuyengia['machuyengia'] ?? null);
+$linhvuc = $clinhvuc->get_linhvuc_machuyengia($chuyengia['machuyengia'] ?? null);
 $hoso = ensure_array($chosobenhandientu->get_hoso_mahoso1($mahoso));
 $chitiethoso_mahoso = ensure_array($cchitiethoso->get_chitiethoso_mahoso_chuyengia($mahoso));
 $message = "";
