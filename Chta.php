@@ -9,6 +9,10 @@ if (!isset($_SESSION['user']) || !isset($_SESSION['user']['tentk'])) {
 
 $tentk = $_SESSION['user']['tentk'];
 $vaitro = $_SESSION['user']['vaitro']; // 0 = bác sĩ, 1 = bệnh nhân
+
+// Load WebSocket configuration
+require_once('Assets/websocket-config.php');
+$websocketUrl = getWebSocketUrl();
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -63,7 +67,7 @@ $vaitro = $_SESSION['user']['vaitro']; // 0 = bác sĩ, 1 = bệnh nhân
 
 <script>
 const tentk = "<?php echo $tentk; ?>";
-const ws = new WebSocket("ws://localhost:8080");
+const ws = new WebSocket("<?php echo $websocketUrl; ?>");
 const receiverInput = document.getElementById('receiver');
 let currentReceiver = null;
 

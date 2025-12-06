@@ -4,6 +4,10 @@ if (!isset($_SESSION['user']['tentk'])) {
     exit();
 }
 $tentk = $_SESSION['user']['tentk'];
+
+// Load WebSocket configuration
+require_once('Assets/websocket-config.php');
+$websocketUrl = getWebSocketUrl();
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -168,7 +172,7 @@ let messages = {}; // lưu lịch sử theo từng bác sĩ
 
 // 📡 Kết nối WebSocket
 function connectWebSocket() {
-    socket = new WebSocket('ws://localhost:8080');
+    socket = new WebSocket('<?php echo $websocketUrl; ?>');
 
     socket.onopen = () => {
         console.log("✅ WebSocket connected");
