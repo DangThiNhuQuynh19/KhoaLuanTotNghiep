@@ -46,7 +46,7 @@ $message = "";
 $just_created = false;
 
 if (isset($_POST['submit'])) {
-    if ($chosobenhandientu->create_hosobenhan_mabenhnhan($mabenhnhan)) {
+    if ($chosobenhandientu->create_hosobenhan_mabenhnhan($mabenhnhan,$bacsi['mabacsi'])) {
         $just_created = true; // đánh dấu vừa tạo
         $hosonew = $chosobenhandientu->get_hsba_new($mabenhnhan);
 

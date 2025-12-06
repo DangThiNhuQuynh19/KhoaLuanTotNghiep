@@ -1,6 +1,6 @@
 <?php
-include_once("Controllers/cbacsi.php");
-include_once("Controllers/clichkham.php");
+
+// Kiểm tra đăng nhập
 if (!isset($_SESSION['dangnhap']) || $_SESSION['dangnhap'] != 1) {
     // Lưu URL hiện tại để quay lại sau khi đăng nhập
     $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
@@ -8,6 +8,10 @@ if (!isset($_SESSION['dangnhap']) || $_SESSION['dangnhap'] != 1) {
     header("Location: index.php?action=dangnhap");
     exit;
 }
+
+
+include_once("Controllers/cbacsi.php");
+include_once("Controllers/clichkham.php");
 
 // Kiểm tra id bác sĩ
 if (!isset($_GET['id'])) {
@@ -37,33 +41,15 @@ $lichkham = $cLichKham->getLichKhamOfBacSiByNgay($ngay, $mabacsi, $gioHienTai);
 ?>
 
 <style>
-/* Page padding and footer styling requested */
-html, body {
-    height: 100%;
-}
-body {
-    /* thêm padding 20px quanh trang */
-    padding: 20px;
-    padding-top:50px;
-    margin: 0;
-    background: #f7f7fb;
-    font-family: Arial, Helvetica, sans-serif;
-    color: #222;
-    box-sizing: border-box;
-}
-
-/* Giữ container căn giữa nhưng không quá cao do padding thêm */
-.container1 {
+.container {
     max-width: 1000px;
-    margin: 0 auto;
+    margin: auto;
     background: #fff;
     border-radius: 12px;
     padding: 30px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    margin-top: 60px; /* giảm 1 chút vì body đã có padding */
+    margin-top: 100px;
 }
-
-/* Thông tin bác sĩ */
 .doctor-header {
     display: flex;
     gap: 30px;
@@ -89,8 +75,6 @@ body {
     color: #444;
     line-height: 1.6;
 }
-
-/* Date picker */
 .date-picker {
     margin-top: 20px;
 }
@@ -99,8 +83,6 @@ body {
     border-radius: 8px;
     border: 1px solid #ccc;
 }
-
-/* Shift list */
 .shift-list {
     margin-top: 20px;
 }
@@ -121,31 +103,30 @@ body {
     text-decoration: none;
     border-radius: 8px;
     font-weight: bold;
-    transition: background 0.3s, transform 0.12s;
-}
-.site-footer {
-    padding: 20px;
-    text-align: center;
-    color: #666;
-    font-size: 14px;
-    background: transparent;
-    margin-top: 24px;
+    transition: background 0.3s;
 }
 .shift-buttons a:hover {
     background: #6b409c;
-    transform: translateY(-2px);
 }
 .shift-group{
     margin-top: 20px;
 }
 .shift-group h4 {
     font-size: 18px;
-    font-weight: normal;
-    color: #000;
-    margin-bottom: 15px;
+    font-weight: normal; /* chữ đen bình thường */
+    color: #000; /* màu đen */
+    margin-bottom: 15px; /* cách xa khung giờ */
 }
-
-/* Toggle description button */
+@media (max-width: 768px) {
+    .doctor-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    .doctor-info {
+        text-align: center;
+    }
+}
 #toggle-mota-button {
     background: none;
     border: none;
@@ -159,9 +140,24 @@ body {
 }
 #toggle-mota-button:hover {
     color: #4a148c;
+    text-decoration: underline;
+}
+.shift-buttons a {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #3c1561;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: background 0.3s;
+    cursor: pointer;
+}
+.shift-buttons a:hover {
+    background: #6b409c;
 }
 
-/* Popup đăng nhập */
+/* popup */
 #login-popup {
     display: none;
     position: fixed;
@@ -179,7 +175,7 @@ body {
     padding: 20px;
     border-radius: 12px;
     text-align: center;
-    max-width: 320px;
+    max-width: 300px;
 }
 #login-popup button {
     margin-top: 10px;
@@ -190,163 +186,122 @@ body {
     border-radius: 6px;
     cursor: pointer;
 }
-
-/* Responsive */
-@media (max-width: 768px) {
-    .doctor-header {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-    }
-    .doctor-info {
-        text-align: center;
-    }
-}
-
-/* Footer: luôn có khoảng padding 20px và chiều cao tối thiểu */
-.site-footer {
-    padding: 20px;
-    height: auto;
-    min-height: 20px;
-    text-align: center;
-    color: #666;
-    font-size: 14px;
-    margin-top: 24px;
-}
-
-/* Ensure the layout allows footer to be visible even with short content */
-.page-wrapper {
-    min-height: calc(100vh - 40px); /* account for body padding top+bottom = 40px */
-    display: flex;
-    flex-direction: column;
-}
-.content-wrap {
-    flex: 1;
-}
 </style>
 
-<div class="page-wrapper">
-    <div class="content-wrap">
-        <div class="container1">
-            <!-- Thông tin bác sĩ -->
-            <div class="doctor-header">
-                <img src="Assets/img/<?php echo htmlspecialchars($row['imgbs']); ?>" alt="Ảnh bác sĩ">
-                <div class="doctor-info">
-                    <h2><?php echo htmlspecialchars($row['capbac']) . ' ' . htmlspecialchars($row['hoten']); ?></h2>
-                    <p><strong>Chuyên khoa:</strong> <?php echo htmlspecialchars($row['tenchuyenkhoa']); ?></p>
-                    <p><strong>Thông tin mô tả:</strong></p>
+<div class="container">
+    <!-- Thông tin bác sĩ -->
+    <div class="doctor-header">
+        <img src="Assets/img/<?php echo htmlspecialchars($row['imgbs']); ?>" alt="Ảnh bác sĩ">
+        <div class="doctor-info">
+            <h2><?php echo htmlspecialchars($row['capbac']) . ' ' . htmlspecialchars($row['hoten']); ?></h2>
+            <p><strong>Chuyên khoa:</strong> <?php echo htmlspecialchars($row['tenchuyenkhoa']); ?></p>
+            <p><strong>Thông tin mô tả:</strong></p>
 
-                    <!-- Nội dung mô tả thu gọn -->
-                    <div id="short-description">
-                        <?php
-                            $motangan = mb_substr(strip_tags($row['motabs']), 0, 800); // Lấy 800 ký tự đầu
-                            echo nl2br(htmlspecialchars($motangan)) . '...';
-                        ?>
-                    </div>
-
-                    <!-- Nội dung mô tả đầy đủ -->
-                    <div id="full-description" style="display: none;">
-                        <?php
-                            echo nl2br(htmlspecialchars($row['motabs']));
-                            echo '<br><br>';
-                            echo nl2br(htmlspecialchars($row['gioithieubs']));
-                        ?>
-                    </div>
-
-                    <!-- Nút xem thêm -->
-                    <button id="toggle-mota-button">Xem thêm</button>
-                </div>
-            </div>
-
-            <!-- Form chọn ngày và giờ -->
-            <form method="get" id="form-ngay" class="date-picker">
-                <input type="hidden" name="action" value="lichkham">
-                <input type="hidden" name="id" value="<?php echo $mabacsi; ?>">
-                <input type="hidden" name="giohientai" id="giohientai" value="">
-
-                <label for="ngay">Chọn ngày khám:</label>
-                <input type="date" name="ngay" id="ngay" value="<?php echo $ngay; ?>" min="<?php echo date('Y-m-d'); ?>" onchange="updateTimeAndSubmit();">
-            </form>
-
-            <script>
-                function updateTimeAndSubmit() {
-                    var now = new Date();
-                    var gio = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0') + ':00';
-                    document.getElementById('giohientai').value = gio;
-                    document.getElementById('form-ngay').submit();
-                }
-            </script>
-
-            <div class="shift-list">
-                <h3>Danh sách ca làm việc:</h3>
+            <!-- Nội dung mô tả thu gọn -->
+            <div id="short-description">
                 <?php
-                if ($lichkham === false || $lichkham->num_rows === 0) {
-                    echo "<p>Không có ca làm trong ngày này.</p>";
-                } else {
-                    $caOnline = [];
-                    $caOffline = [];
-
-                    while ($rowCa = $lichkham->fetch_assoc()) {
-                        $makhunggiokb = $rowCa['makhunggiokb'];
-                        $giobatdau = date('H:i', strtotime($rowCa['giobatdau']));
-                        $gioketthuc = date('H:i', strtotime($rowCa['gioketthuc']));
-                        $hinhthuc = $rowCa['hinhthuclamviec']; // "online" hoặc "offline"
-
-                        $link = "";
-                        if ($ngay == $ngayHienTai) {
-                            if ($giobatdau >= $gioHienTai) {
-                                $link = '<a href="index.php?action=datlichkham&idbs=' . $mabacsi . '&ngay=' . $ngay . '&makhunggiokb=' . $makhunggiokb . '">' . $giobatdau . ' - ' . $gioketthuc . '</a>';
-                            } else {
-                                $link = "<p>Ca này đã qua.</p>";
-                            }
-                        } else {
-                            $link = '<a href="index.php?action=datlichkham&idbs=' . $mabacsi . '&ngay=' . $ngay . '&makhunggiokb=' . $makhunggiokb . '">' . $giobatdau . ' - ' . $gioketthuc . '</a>';
-                        }
-
-                        // Phân loại
-                        if (strtolower($hinhthuc) == "online") {
-                            $caOnline[] = $link;
-                        } else {
-                            $caOffline[] = $link;
-                        }
-                    }
-
-                    // Hiển thị Online
-                    echo "<div class='shift-group'>";
-                    echo "<h4>Khám Online</h4>";
-                    echo '<div class="shift-buttons">';
-                    if (empty($caOnline)) {
-                        echo "<p>Không có ca online.</p>";
-                    } else {
-                        foreach ($caOnline as $ca) {
-                            echo $ca;
-                        }
-                    }
-                    echo "</div></div>";
-
-                    // Hiển thị Offline
-                    echo "<div class='shift-group'>";
-                    echo "<h4>Khám tại Bệnh viện</h4>";
-                    echo '<div class="shift-buttons">';
-                    if (empty($caOffline)) {
-                        echo "<p>Không có ca offline.</p>";
-                    } else {
-                        foreach ($caOffline as $ca) {
-                            echo $ca;
-                        }
-                    }
-                    echo "</div></div>";
-                }
+                    $motangan = mb_substr(strip_tags($row['motabs']), 0, 800); // Lấy 200 ký tự đầu
+                    echo nl2br(htmlspecialchars($motangan)) . '...';
                 ?>
             </div>
+
+            <!-- Nội dung mô tả đầy đủ -->
+            <div id="full-description" style="display: none;">
+                <?php
+                    echo nl2br(htmlspecialchars($row['motabs']));
+                    echo '<br><br>';
+                    echo nl2br(htmlspecialchars($row['gioithieubs']));
+                ?>
+            </div>
+
+            <!-- Nút xem thêm -->
+            <button id="toggle-mota-button">Xem thêm</button>
         </div>
+
     </div>
 
-    <!-- Footer -->
-    <footer class="site-footer">
-    </footer>
-</div>
+    <!-- Form chọn ngày và giờ -->
+    <form method="get" id="form-ngay" class="date-picker">
+        <input type="hidden" name="action" value="lichkham">
+        <input type="hidden" name="id" value="<?php echo $mabacsi; ?>">
+        <input type="hidden" name="giohientai" id="giohientai" value="">
 
+        <label for="ngay">Chọn ngày khám:</label>
+        <input type="date" name="ngay" id="ngay" value="<?php echo $ngay; ?>" min="<?php echo date('Y-m-d'); ?>" onchange="updateTimeAndSubmit();">
+    </form>
+
+    <script>
+        function updateTimeAndSubmit() {
+            var now = new Date();
+            var gio = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0') + ':00';
+            document.getElementById('giohientai').value = gio;
+            document.getElementById('form-ngay').submit();
+        }
+    </script>
+
+<div class="shift-list">
+    <h3>Danh sách ca làm việc:</h3>
+    <?php
+    if ($lichkham === false || $lichkham->num_rows === 0) {
+        echo "<p>Không có ca làm trong ngày này.</p>";
+    } else {
+        $caOnline = [];
+        $caOffline = [];
+
+        while ($rowCa = $lichkham->fetch_assoc()) {
+            $makhunggiokb = $rowCa['makhunggiokb'];
+            $giobatdau = date('H:i', strtotime($rowCa['giobatdau']));
+            $gioketthuc = date('H:i', strtotime($rowCa['gioketthuc']));
+            $hinhthuc = $rowCa['hinhthuclamviec']; // "online" hoặc "offline"
+            
+            $link = "";
+            if ($ngay == $ngayHienTai) {
+                if ($giobatdau >= $gioHienTai) {
+                    $link = '<a href="index.php?action=datlichkham&idbs=' . $mabacsi . '&ngay=' . $ngay . '&makhunggiokb=' . $makhunggiokb . '">' . $giobatdau . ' - ' . $gioketthuc . '</a>';
+                } else {
+                    $link = "<p>Ca này đã qua.</p>";
+                }
+            } else {
+                $link = '<a href="index.php?action=datlichkham&idbs=' . $mabacsi . '&ngay=' . $ngay . '&makhunggiokb=' . $makhunggiokb . '">' . $giobatdau . ' - ' . $gioketthuc . '</a>';
+            }
+            
+            // Phân loại
+            if ($hinhthuc == "Online") {
+                $caOnline[] = $link;
+            } else {
+                $caOffline[] = $link;
+            }
+        }
+
+        // Hiển thị Online
+        echo "<div class='shift-group'>";
+        echo "<h4>Khám Online</h4>";
+        echo '<div class="shift-buttons">';
+        if (empty($caOnline)) {
+            echo "<p>Không có ca online.</p>";
+        } else {
+            foreach ($caOnline as $ca) {
+                echo $ca;
+            }
+        }
+        echo "</div></div>";
+
+        // Hiển thị Offline
+        echo "<div class='shift-group'>";
+        echo "<h4>Khám tại Bệnh viện</h4>";
+        echo '<div class="shift-buttons">';
+        if (empty($caOffline)) {
+            echo "<p>Không có ca offline.</p>";
+        } else {
+            foreach ($caOffline as $ca) {
+                echo $ca;
+            }
+        }
+        echo "</div></div>";
+    }
+    ?>
+</div>
+</div>
 <!-- popup đăng nhập -->
 <div id="login-popup">
     <div class="popup-content">
@@ -396,3 +351,4 @@ body {
     }
     <?php endif; ?>
 </script>
+

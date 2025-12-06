@@ -199,6 +199,15 @@ class cBenhNhan{
             return false;
         }
     }
+    public function  update_vitien_id($id, $tongtien){
+        $p = new mBenhNhan();
+        $kq = $p ->  update_vitien_id($id, $tongtien);
+        if($kq){
+            return $kq;
+        }else{
+            return false;
+        }
+    }
     public function get_benhnhan_homnay($mabacsi){
         $p = new mBenhNhan();
         $kq = $p -> select_benhnhan_homnay($mabacsi);

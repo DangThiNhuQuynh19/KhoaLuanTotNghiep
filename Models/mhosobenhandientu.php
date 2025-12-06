@@ -1,4 +1,4 @@
-<?php
+w<?php
  include_once('ketnoi.php');
  include_once('Assets/config.php');
  class mHoSoBenhAnDienTu{
@@ -187,6 +187,7 @@
             $p = new clsKetNoi();
             $con = $p->moketnoi();
             $con->set_charset('utf8');
+$con->query("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
             if($con){
                 $str = "select * from hosobenhan hs 
                 join benhnhan bn on hs.mabenhnhan=bn.mabenhnhan 
@@ -209,15 +210,14 @@
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if($con){
-                $str = "select * from hosobenhan hs 
+                $str = "select distinct ct.mahoso, bn.*, nd_bn.*, ct.*, nd_bs.*, ck.*, hs.* from hosobenhan hs 
                 join benhnhan bn on hs.mabenhnhan=bn.mabenhnhan 
                 join nguoidung nd_bn on nd_bn.manguoidung = bn.mabenhnhan
                 join chitiethoso ct on hs.mahoso = ct.mahoso 
                 join chuyengia bs on ct.mabacsi = bs.machuyengia
                 join nguoidung nd_bs on nd_bs.manguoidung = bs.machuyengia
                 join linhvuc ck on bs.malinhvuc = ck.malinhvuc
-                where hs.mabenhnhan= '$mabenhnhan'
-                group by ct.mahoso";
+                where hs.mabenhnhan= '$mabenhnhan'";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;
@@ -239,13 +239,19 @@
             }
         }
 
-        public function insert_hosobenhandientu_mabenhnhan($mabenhnhan){
+        public function insert_hosobenhandientu_mabenhnhan($mabenhnhan, $nguoitao = null){
             $p = new clsKetNoi();
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if($con){
-                $str = "insert into hosobenhan(mabenhnhan,ngaytao,ngaycapnhat) 
-                values('$mabenhnhan',CURDATE(),CURDATE());";
+                // Nếu có nguoitao thì insert cả nguoitao, nếu không thì bỏ qua
+                if ($nguoitao !== null) {
+                    $str = "insert into hosobenhan(mabenhnhan, nguoitao, ngaytao, ngaycapnhat) 
+                    values('$mabenhnhan', '$nguoitao', CURDATE(), CURDATE());";
+                } else {
+                    $str = "insert into hosobenhan(mabenhnhan, ngaytao, ngaycapnhat) 
+                    values('$mabenhnhan', CURDATE(), CURDATE());";
+                }
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;

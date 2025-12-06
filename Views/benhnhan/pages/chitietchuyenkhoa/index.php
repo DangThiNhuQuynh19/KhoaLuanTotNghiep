@@ -21,6 +21,7 @@ $chuyenKhoa = $ds->fetch_assoc();
     <style>
         body {
             margin: 0;
+            padding-top:50px;
             font-family: 'Segoe UI', sans-serif;
             background-color: #f8f6fc;
             color: #333;

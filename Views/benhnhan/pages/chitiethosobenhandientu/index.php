@@ -152,10 +152,7 @@ $tests = $p->getXetNghiemByIDHS($mahoso);
     <div class="alert alert-info">Không tìm thấy đơn thuốc cho hồ sơ này.</div>
 <?php else : ?>
     <div class="info-group">
-        <label>Ngày tạo đơn thuốc:</label> <?= htmlspecialchars($firstRow['ngaytaodonthuoc']) ?>
-    </div>
-    <div class="info-group">
-        <label>Ghi chú đơn thuốc:</label> <?= htmlspecialchars($firstRow['ghichudonthuoc']) ?>
+        <label>Ngày tạo đơn thuốc:</label> <?= htmlspecialchars($prescriptions[0]['ngaytaodonthuoc']) ?>
     </div>
     <div class="table-responsive">
         <table class="table table-bordered prescription-table">

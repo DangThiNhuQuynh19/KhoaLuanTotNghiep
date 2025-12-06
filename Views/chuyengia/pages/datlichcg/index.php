@@ -10,7 +10,7 @@
     include_once('Controllers/cchuyengia.php');
     include_once('Controllers/chosobenhandientu.php');
     include_once('Controllers/clichkham.php');
-    include_once('Controllers/cPhieuKhambenh.php');
+    include_once('Controllers/cphieukhambenh.php');
     include_once('Controllers/ckhunggio.php');
 
     // Khởi tạo các đối tượng controller
@@ -625,6 +625,7 @@
                     lh.ngaylam === ngay_chon && !khungDaDat.includes(lh.makhunggiokb)
                 );
             }
+            
             if (khungTrong.length === 0) {
                 Swal.fire({
                     icon: 'warning',

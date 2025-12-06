@@ -46,10 +46,9 @@
                             cg.machuyengia,
                             cg.imgcg AS avatar_chuyengia,
                     
-
                             clv.tenca,
-                            kgkb.giobatdau,
-                            kgkb.gioketthuc,
+                            clv.giobatdau,
+                            clv.gioketthuc,
 
                             p.tentoa,
                             p.tang,
@@ -69,14 +68,11 @@
                         JOIN calamviec clv 
                             ON llv.macalamviec = clv.macalamviec
 
-                        JOIN khunggiokhambenh kgkb 
-                            ON kgkb.macalamviec = clv.macalamviec
-
                         LEFT JOIN phong p 
                             ON p.maphong = llv.maphong
 
                         WHERE llv.ngaylam = '$ngay'
-                        ORDER BY nd.hoten ASC, kgkb.giobatdau ASC;
+                        ORDER BY nd.hoten ASC;
 
                     ";
                 $tbl = $con->query($str);

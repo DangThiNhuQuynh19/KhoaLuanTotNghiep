@@ -10,94 +10,17 @@ $controller = new cLichLamViec();
 $dataLich = $controller->getlichlamviec($ngay);   
 ?>
 
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lịch làm việc nhân sự</title>
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
 <style>
 :root {
-    --main: #4b3fa8;
-    --main-light: #6a5bd7;
-    --bg: #f6f6fb;
-}
-
-/* BODY */
-body {
-    font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
-    margin: 0;
-    background-color: var(--bg-light);
-    }
-
-.sidebar {
-    width: 230px;
-    height: 100vh;
-    position: fixed;
-    top: 56px;
-    left: 0;
-    display: flex;
-    flex-direction: column;
-    padding: 20px 0;
-    background: #fff;
-    border-right: 1px solid #e5e5ef;
-    box-shadow: 2px 0 6px rgba(0, 0, 0, 0.04);
-    }
-
-    .sidebar h2 {
-    color: var(--main-color);
-    text-align: center;
-    font-size: 16px;
-    margin-bottom: 18px;
-    font-weight: 600;
-    }
-
-    .sidebar ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    }
-
-    .sidebar ul li {
-    margin: 6px 0;
-    }
-
-    .sidebar ul li a {
-    display: flex;
-    align-items: center;
-    padding: 10px 18px;
-    text-decoration: none;
-    color: var(--main-color);
-    font-size: 13px;
-    transition: var(--transition);
-    border-radius: 8px;
-    }
-
-    .sidebar ul li a i {
-    margin-right: 8px;
-    font-size: 14px;
-    }
-
-    .sidebar ul li a:hover,
-    .sidebar ul li a.active {
-    background-color: var(--hover-color);
-    color: #fff;
-    }
-
-/* MAIN */
-.main-content {
-    margin-left: 260px;
-    padding: 40px 30px;
+    --main: #3498db;
+    --main-light: #3498db;
 }
 
 .title-page {
     font-size: 26px;
     font-weight: 700;
     color: var(--main);
+    margin-bottom: 24px;
 }
 
 /* AVATAR */
@@ -112,10 +35,13 @@ body {
 
 /* CARD */
 .card {
-    border-radius: 18px !important;
+    border-radius: 18px;
     border: none;
     transition: all 0.35s ease;
     background: #ffffff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    padding: 24px;
+    margin-bottom: 16px;
 }
 
 .card:hover {
@@ -128,17 +54,25 @@ body {
 
 /* TAG */
 .tag-online {
+    display: inline-block;
     background: #27c4a8;
     padding: 4px 10px;
     border-radius: 6px;
     color: white;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 12px;
 }
 
 .tag-offline {
+    display: inline-block;
     background: #ff7b54;
     padding: 4px 10px;
     border-radius: 6px;
     color: white;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 12px;
 }
 
 /* CA LÀM VIỆC */
@@ -167,6 +101,7 @@ body {
     font-size: 13px;
     color: #6a6a6a;
 }
+
 /* Khung giờ gọn gàng */
 .ca-line {
     display: flex;
@@ -177,6 +112,7 @@ body {
     border-radius: 10px;
     box-shadow: 0px 2px 8px rgba(75,63,168,0.06);
     transition: 0.25s ease;
+    margin-bottom: 8px;
 }
 
 .ca-line:hover {
@@ -196,37 +132,194 @@ body {
     color: #777;
 }
 
+/* FORM STYLES */
+.filter-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+@media (max-width: 768px) {
+    .filter-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: #333;
+}
+
+.form-control {
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--main);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.filter-button {
+    align-self: flex-end;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.btn-primary {
+    background: var(--main);
+    color: white;
+    width: 100%;
+}
+
+.btn-primary:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+
+/* ALERT */
+.alert {
+    padding: 16px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.alert-danger {
+    background: #fadbd8;
+    color: #c0392b;
+    border: 1px solid #f5b7b1;
+}
+
+.alert-warning {
+    background: #fef5e7;
+    color: #9a7d0a;
+    border: 1px solid #f9e79f;
+}
+
+/* GRID */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+    .grid-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* FLEX */
+.flex-center {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.flex-space-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.hr {
+    border: none;
+    border-top: 1px solid #eee;
+    margin: 16px 0;
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.badge-info {
+    background: #d6eaf8;
+    color: #0c5aa0;
+}
+
+.text-primary {
+    color: var(--main);
+}
+
+.text-muted {
+    color: #999;
+}
+
+.mb-2 {
+    margin-bottom: 8px;
+}
+
+.mb-3 {
+    margin-bottom: 12px;
+}
+
+.mt-2 {
+    margin-top: 8px;
+}
+
+.fw-bold {
+    font-weight: 700;
+}
+
+.me-1 {
+    margin-right: 4px;
+}
+
 </style>
 </head>
 
 <body>
-
-<!-- SIDEBAR -->
-<div class="sidebar">
-    <h2>Quản lý lịch</h2>
-    <ul>
-        <li><a href="?action=lichlamviec"><i class="fas fa-user-clock me-2"></i> Phân ca</a></li>
-        <li><a href="?action=xeplich" class="active"><i class="fas fa-calendar-check me-2"></i> Xếp lịch</a></li>
-    </ul>
-</div>
-
 <!-- MAIN CONTENT -->
-<div class="main-content">
+<div class="main-container">
 
-<h1 class="title-page">Lịch làm việc của nhân sự</h1>
-
-<div class="table-container mt-3">
+    <h1 class="title-page">Lịch làm việc của nhân sự</h1>
 
     <!-- FILTER -->
-    <form method="GET" class="row g-3 mb-4">
+    <form method="GET" class="filter-container">
         <input type="hidden" name="action" value="xeplich">
-        <div class="col-md-3">
-            <label class="form-label fw-bold">Chọn ngày</label>
+        <div class="form-group">
+            <label class="form-label">Chọn ngày</label>
             <input type="date" name="ngay" value="<?= $ngay ?>" class="form-control">
         </div>
-        <div class="col-md-2 d-flex align-items-end">
-            <button class="btn btn-primary w-100">
-                <i class="fas fa-filter me-2"></i>Lọc
+        <div class="form-group filter-button">
+            <button type="submit" class="btn btn-primary">
+                <span>🔍</span> Lọc
             </button>
         </div>
     </form>
@@ -282,58 +375,55 @@ body {
     }
     ?>
 
-    <div class="row">
+    <div class="grid-container">
     <?php foreach ($grouped as $nguoidung): ?>
-        <div class="col-md-6 mb-4">
-            <div class="card p-4 shadow-sm">
+        <div class="card">
 
-                <!-- Avatar + tên + vai trò -->
-                <div class="d-flex align-items-center mb-3">
-                    <img src="Assets/img/<?= $nguoidung['avatar'] ?>" class="avatar1 me-3">
-                    <div>
-                        <h4 class="text-primary fw-bold mb-1"><?= $nguoidung['ten'] ?></h4>
-                        <span class="badge bg-info"><?= $nguoidung['vaitro'] ?></span>
-                    </div>
+            <!-- Avatar + tên + vai trò -->
+            <div class="flex-center mb-3">
+                <img src="Assets/img/<?= $nguoidung['avatar'] ?>" class="avatar1">
+                <div>
+                    <h4 class="text-primary fw-bold mb-2"><?= $nguoidung['ten'] ?></h4>
+                    <span class="badge badge-info"><?= $nguoidung['vaitro'] ?></span>
                 </div>
-
-                <!-- Hình thức -->
-                <?php if ($nguoidung['hinhthuclamviec'] == "online"): ?>
-                    <span class="tag-online mb-2">Khám trực tuyến (Online)</span>
-                <?php else: ?>
-                    <span class="tag-offline mb-2">Làm tại bệnh viện (Offline)</span>
-                <?php endif; ?>
-
-                <!-- Phòng -->
-                <?php if (!empty($nguoidung['phong'])): ?>
-                <p class="text-muted mt-2">
-                    <i class="fa-solid fa-building me-1"></i>
-                    <?= $nguoidung['phong'] ?>
-                </p>
-                <?php endif; ?>
-
-                <hr>
-
-                <!-- Danh sách ca -->
-                <h6 class="fw-bold mb-2">Ca làm việc:</h6>
-
-                <?php foreach ($nguoidung['lich'] as $ca): ?>
-                  <div class="ca-line mb-2">
-                      <div class="ca-title"><?= $ca['tenca'] ?></div>
-                      <div class="ca-clock">
-                          <i class="fa-solid fa-clock me-1"></i><?= $ca['time'] ?>
-                      </div>
-                  </div>
-
-                <?php endforeach; ?>
-
             </div>
+
+            <!-- Hình thức -->
+            <?php if ($nguoidung['hinhthuclamviec'] == "online"): ?>
+                <span class="tag-online">Khám trực tuyến (Online)</span>
+            <?php else: ?>
+                <span class="tag-offline">Làm tại bệnh viện (Offline)</span>
+            <?php endif; ?>
+
+            <!-- Phòng -->
+            <?php if (!empty($nguoidung['phong'])): ?>
+            <p class="text-muted mt-2">
+                <span class="me-1">🏢</span>
+                <?= $nguoidung['phong'] ?>
+            </p>
+            <?php endif; ?>
+
+            <div class="hr"></div>
+
+            <!-- Danh sách ca -->
+            <h6 class="fw-bold mb-2">Ca làm việc:</h6>
+
+            <?php foreach ($nguoidung['lich'] as $ca): ?>
+              <div class="ca-line">
+                  <div class="ca-title"><?= $ca['tenca'] ?></div>
+                  <div class="ca-clock">
+                      <span class="me-1">🕐</span><?= $ca['time'] ?>
+                  </div>
+              </div>
+
+            <?php endforeach; ?>
+
         </div>
     <?php endforeach; ?>
     </div>
 
     <?php endif; ?>
 
-</div>
 </div>
 
 </body>

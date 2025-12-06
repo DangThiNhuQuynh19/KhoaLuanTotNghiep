@@ -1,123 +1,147 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-  <meta charset="UTF-8">
-  <title>Trang quản lý nhân viên</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-  <style>
-    .sidebar {
-      background-color: #f8f9fa;
-      min-height: 100vh;
-      padding: 15px;
-    }
-    .sidebar a {
-      display: block;
-      padding: 10px;
-      margin-bottom: 5px;
-      color: #333;
-      text-decoration: none;
-      border-radius: 5px;
-    }
-    .sidebar a.active, 
-    .sidebar a:hover {
-      background-color: #0d6efd;
-      color: white;
-    }
+<div class="main-container p-4">
 
-    /* Logo riêng, không bị highlight */
-    .sidebar a.logo-link {
-      padding: 0;
-      margin: 0;
-      background: none !important;
-      border-radius: 0;
-    }
-    .sidebar a.logo-link:hover {
-      background: none !important;
-      color: inherit !important;
-    }
+    <style>
+        /* --- RESET NHẸ --- */
+        .content {
+            background: #f5f8fa;
+            min-height: 100vh;
+        }
 
-    .logo {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .logo img {
-      max-width: 100%;
-      height: 100px;
-      object-fit: contain;
-    }
-  </style>
-</head>
-<body>
-<div class="container-fluid">
-  <div class="row">
-    <!-- Sidebar -->
-    <div class="col-md-3 col-lg-2 sidebar">
-    
+        /* --- TITLE --- */
+        .dashboard-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0f4c75;
+            margin-bottom: 25px;
+            letter-spacing: 0.3px;
+        }
 
-      <a href="index.php?action=lichhen" 
-         class="<?= ($_GET['action'] ?? '') === 'lichhen' ? 'active' : '' ?>">
-         <i class="bi bi-calendar-event"></i> Lịch hẹn
-      </a>
+        /* --- CARD TỔNG QUAN --- */
+        .overview-card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 22px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e3edf4;
+            transition: 0.25s ease;
+        }
 
-      <a href="index.php?action=chuyengia" 
-         class="<?= ($_GET['action'] ?? '') === 'chuyengia' ? 'active' : '' ?>">
-         <i class="bi bi-people"></i> Danh sách chuyên gia
-      </a>
+        .overview-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 24px rgba(0,0,0,0.10);
+        }
 
-      <a href="index.php?action=bacsi" 
-         class="<?= ($_GET['action'] ?? '') === 'bacsi' ? 'active' : '' ?>">
-         <i class="bi bi-people"></i> Danh sách bác sĩ
-      </a>
+        .overview-card h5 {
+            font-size: 17px;
+            font-weight: 600;
+            color: #0f4c75;
+            margin-bottom: 10px;
+        }
 
-      <a href="index.php?action=lichcanhan" 
-         class="<?= ($_GET['action'] ?? '') === 'lichcanhan' ? 'active' : '' ?>">
-         <i class="bi bi-clock-history"></i> Lịch làm việc cá nhân
-      </a>
+        .overview-card p {
+            color: #4a4a4a;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
 
-      <a href="index.php?action=thongtin" 
-         class="<?= ($_GET['action'] ?? '') === 'thongtin' ? 'active' : '' ?>">
-         <i class="bi bi-person-circle"></i> Thông tin cá nhân
-      </a>
-    </div>
+        /* --- GRID LAYOUT --- */
+        .overview-grid {
+            display: grid;
+            gap: 24px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            margin-top: 10px;
+        }
 
-    <!-- Nội dung chính -->
-    <div class="col-md-9 col-lg-10 content p-4">
-      <?php
-      $action = $_GET['action'] ?? '';
+        /* --- NÚT --- */
+        .btn-his {
+            background: #3282b8;
+            border: none;
+            padding: 10px 20px;
+            font-size: 15px;
+            font-weight: 500;
+            border-radius: 8px;
+            color: #fff;
+            transition: 0.2s ease;
+        }
 
-      switch ($action) {
-          case 'lichhen':
-              include_once __DIR__ . '/../lichhen/lichhen.php';
-              break;
+        .btn-his:hover {
+            background: #256b96;
+            color: #fff;
+        }
 
-          case 'bacsi':
-              include_once __DIR__ . '/../bacsi/danhsach.php';
-              break;
+        /* ICON đẹp hơn */
+        .his-icon {
+            font-size: 20px;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+    </style>
 
-          case 'chuyengia':
-              include_once __DIR__ . '/../chuyengia/danhsach.php';
-              break;
+    <div class="row">
 
-          default: ?>
-              <h4 class="mb-4">📋 Tổng quan</h4>
-            
-              <div class="card">
-            <div class="card-header">📝 Đặt lịch</div>
-            <div class="card-body">
-                <p style="font-size: 14px;">Nhấn nút bên dưới để đặt lịch khám cho bệnh nhân:</p>
-                <a href="index.php?action=datlichkham" class="btn btn-primary">
-                    <i class="bi bi-plus-circle"></i> Đặt lịch khám
-                </a>
+        <div class="col-md-9 col-lg-10 content">
+
+            <?php
+            $action = $_GET['action'] ?? '';
+
+            switch ($action) {
+
+                case 'lichhen':
+                    include_once __DIR__ . '/../lichhen/lichhen.php';
+                    break;
+
+                case 'bacsi':
+                    include_once __DIR__ . '/../bacsi/danhsach.php';
+                    break;
+
+                case 'chuyengia':
+                    include_once __DIR__ . '/../chuyengia/danhsach.php';
+                    break;
+
+                default:
+            ?>
+
+            <!-- TIÊU ĐỀ -->
+            <h4 class="dashboard-title">Tổng quan hệ thống</h4>
+
+            <!-- GRID CARD -->
+            <div class="overview-grid">
+
+                <!-- Card 1 -->
+                <div class="overview-card">
+                    <h5><i class="bi bi-calendar-plus his-icon"></i>Đặt lịch khám</h5>
+                    <p>Tạo lịch khám bệnh nhanh chóng cho bệnh nhân.</p>
+                    <a href="index.php?action=datlichkham" class="btn btn-his">
+                        <i class="bi bi-plus-circle"></i> Tạo lịch mới
+                    </a>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="overview-card">
+                    <h5><i class="bi bi-heart-pulse his-icon"></i>Danh sách bác sĩ</h5>
+                    <p>Xem thông tin bác sĩ, chuyên khoa, lịch làm việc.</p>
+                    <a href="index.php?action=bacsi" class="btn btn-his">
+                        <i class="bi bi-person-badge"></i> Xem bác sĩ
+                    </a>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="overview-card">
+                    <h5><i class="bi bi-people his-icon"></i>Chuyên gia</h5>
+                    <p>Quản lý các chuyên gia đầu ngành & hồ sơ chi tiết.</p>
+                    <a href="index.php?action=chuyengia" class="btn btn-his">
+                        <i class="bi bi-people-fill"></i> Xem chuyên gia
+                    </a>
+                </div>
+
             </div>
-        </div>
 
-          <?php
-              break;
-      }
-      ?>
+            <?php
+                break;
+            }
+            ?>
+
+        </div>
     </div>
-  </div>
+
 </div>
-</body>
-</html>

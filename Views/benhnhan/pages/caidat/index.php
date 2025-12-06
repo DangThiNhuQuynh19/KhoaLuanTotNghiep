@@ -1,5 +1,5 @@
 <?php
-include_once('Controllers/cBenhNhan.php');
+include_once('Controllers/cbenhnhan.php');
 include_once("Assets/config.php");
 
 if (!isset($_SESSION['user']) || !isset($_SESSION['user']['tentk'])) {

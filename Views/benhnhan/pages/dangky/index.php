@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng ký tài khoản - Bệnh viện Hạnh Phúc</title>
-    <link rel="stylesheet" href="Views/benhnhan/pages/dangky/style.css">
+    <link rel="stylesheet" href="Views/benhnhan/pages/dangky/css.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
@@ -142,8 +142,19 @@ function getAge($dob) {
     return floor(($today - $dobTimestamp) / (365.25*24*60*60));
 }
 ?>
+<style>
+    .container1 {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    overflow: hidden;
+    margin-top: 100px;
+}
+</style>
 <body>
-    <div class="container">
+    <div class="container1">
         <div class="form-container">
             <?php if($message != ""): ?>
                 <script>

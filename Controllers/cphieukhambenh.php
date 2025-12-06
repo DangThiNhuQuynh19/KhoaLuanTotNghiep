@@ -63,9 +63,9 @@ class cPhieuKhamBenh {
         
     }
 
-    public function cancelPhieuKhamBenh($maphieukb) {
+    public function cancelPhieuKhamBenh($maphieukb,$tk,$tongtien) {
         $p = new mPhieuKhamBenh();
-        $result = $p->huyPhieuKhamBenh($maphieukb); 
+        $result = $p->huyPhieuKhamBenh($maphieukb,$tk,$tongtien); 
         return $result;
     }
     public function getPhieuKhamBenhOfIDPK($id){

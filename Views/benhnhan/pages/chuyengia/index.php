@@ -30,7 +30,12 @@ if (!empty($_GET['name']) && !empty($_GET['linhvuc'])) {
     <title>Danh sách chuyên gia</title>
     <style>
         body{
-            margin-top:100px;
+	    padding-top: 100px;
+	    margin: auto;
+            margin-top: 100px;
+            font-family: Arial, sans-serif;
+            background: white;
+            color: #222;
         }
         .textsearch{
             border-radius: 15px; 
@@ -149,6 +154,23 @@ if (!empty($_GET['name']) && !empty($_GET['linhvuc'])) {
         .search-forms{
             padding-left: 30%;
         }
+        .btn-schedule {
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #fff;
+            display: inline-block;
+            transition: transform .08s ease, box-shadow .12s ease;
+            border: none;
+        }
+        .btn-schedule {
+            background: linear-gradient(90deg,#0288d1,#0177b6);
+            box-shadow: 0 4px 12px rgba(1,87,155,0.12);
+        }
+        .btn-schedule:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(1,87,155,0.12); }
+
     </style>
 </head>
 <body>
@@ -156,7 +178,7 @@ if (!empty($_GET['name']) && !empty($_GET['linhvuc'])) {
 <div class="search-forms" style="margin-top: 10px;">
  
     <form method="GET" action="index.php">
-        <input type="hidden" name="action" value="chuyengiatuvan">
+        <input type="hidden" name="action" value="chuyengia">
         <input class="textsearch" type="text" name="name" placeholder=" Nhập tên chuyên gia..." 
             value="<?php echo isset($_GET['name']) ? htmlspecialchars($_GET['name']) : '' ?>">
         <select name="linhvuc" class="textsearch">
@@ -201,6 +223,7 @@ if (!empty($_GET['name']) && !empty($_GET['linhvuc'])) {
             </p>
             <div class="doctor-buttons" >
                 <a href="?action=chitietchuyengia&idcg=<?php echo $row['machuyengia']; ?>" class="btn-secondary">XEM CHI TIẾT</a>
+                <a href="?action=lichkhamchuyengia&idcg=<?php echo $row['machuyengia']; ?>" class="btn-schedule" aria-label="Xem lịch khám bác sĩ <?php echo $hoten; ?>">XEM LỊCH KHÁM</a>
             </div>
         </div>
     </div>

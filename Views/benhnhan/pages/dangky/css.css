@@ -11,15 +11,6 @@ body {
     padding: 20px 0;
 }
 
-.container {
-    max-width: 800px;
-    margin: 0 auto;
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-    overflow: hidden;
-    margin-top: 100px;
-}
 .form-container {
     padding: 40px;
 }

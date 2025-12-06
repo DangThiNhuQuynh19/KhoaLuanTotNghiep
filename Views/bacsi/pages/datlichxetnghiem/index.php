@@ -55,6 +55,8 @@
             $ket_qua_qr = $builder->build();
             file_put_contents($duong_dan_luu, $ket_qua_qr->getString());
             
+            
+
             if(isset($hosobenhnhan)){
                 if ($clichxetnghiem->create_lichxetnghiem($_POST['ma_benh_nhan'],$_POST['loai_xet_nghiem'],$_POST['ngay_hen'],$_POST['gio_hen'],'10',$hosobenhnhan[0]['mahoso'], $ten_file_qr)) {  
                       $xu_ly_email = new XuLyEmail();

@@ -4,6 +4,7 @@ date_default_timezone_set('Asia/Ho_Chi_Minh');
 
 $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
 $vnp_Returnurl = "https://hanhphuc.site?action=paymentresult";
+$vnp_Returnurl = "http://localhost/HanhPhuc/index.php?action=paymentresult";
 $vnp_TmnCode = "QG2JUNF3";
 $vnp_HashSecret = "08QNEGVZXSFGER8MD7Y0MAGK24DAT6KW";
 

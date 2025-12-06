@@ -1,4 +1,8 @@
 <?php
+//error_reporting(0);
+//ini_set('display_errors', 1);
+//ini_set('display_startup_errors', 1);
+//error_reporting(E_ALL);
 ob_start();
 session_start();
 // Xác định action (page)
@@ -62,8 +66,10 @@ if (isset($_SESSION['dangnhap']) && ($_SESSION['dangnhap'] == 2)){
  elseif (isset($_SESSION['name']) && isset($_SESSION['email'])) {
     // Bệnh nhân đã đăng nhập
     if (file_exists("Views/benhnhan/pages/$page/index.php")) {
-        require("Views/benhnhan/layout/header.php");
+       require("Views/benhnhan/layout/header.php");
         include("Views/benhnhan/pages/$page/index.php");
+        require("Views/benhnhan/layout/footer.php");
+
     } else {
         include("Views/benhnhan/pages/404/index.php");
     }
@@ -73,6 +79,7 @@ if (isset($_SESSION['dangnhap']) && ($_SESSION['dangnhap'] == 2)){
     if (file_exists("Views/benhnhan/pages/$page/index.php")) {
        require("Views/benhnhan/layout/header.php");
         include("Views/benhnhan/pages/$page/index.php");
+        require("Views/benhnhan/layout/footer.php");
     } else {
         include("Views/benhnhan/pages/404/index.php");
     }

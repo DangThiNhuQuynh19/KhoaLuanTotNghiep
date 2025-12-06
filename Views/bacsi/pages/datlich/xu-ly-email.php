@@ -38,7 +38,7 @@ class XuLyEmail {
             
             // Tạo link thanh toán có mã hóa
             $ma_bao_mat = $this->tao_ma_bao_mat($ma_lich_hen);
-            $link_thanh_toan = "http://localhost/thanh-toan.php?ma=" . urlencode($ma_bao_mat) . "&lich=" . $ma_lich_hen;
+            $link_thanh_toan = "https://hanhphuc.site?action=thanhtoan&ma=" . urlencode($ma_bao_mat) . "&maphieukhambenh=" . $ma_lich_hen;
             
             // Nội dung email
             $mail->isHTML(true);

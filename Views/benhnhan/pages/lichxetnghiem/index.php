@@ -54,6 +54,33 @@ if (!empty($ngay)) {
         return isset($lichxetnghiem['ngayhen']) && $lichxetnghiem['ngayhen'] === $ngay;
     });
 }
+
+// --- Pagination settings: 10 items / page ---
+$perPage = 10;
+$totalRows = count($filerlich);
+$totalPages = ($totalRows > 0) ? intval(ceil($totalRows / $perPage)) : 1;
+$page = isset($_GET['page']) && is_numeric($_GET['page']) && intval($_GET['page']) > 0 ? intval($_GET['page']) : 1;
+if ($page > $totalPages) $page = $totalPages;
+$offset = ($page - 1) * $perPage;
+
+// Reindex filtered array and slice for current page
+$filerlich_values = array_values($filerlich);
+$pagedData = array_slice($filerlich_values, $offset, $perPage);
+
+// Helper to build base query preserving action, tab, filter, ngay
+function build_base_query($overrides = []) {
+    $params = array_merge([
+        'action' => 'lichxetnghiem',
+        'tab' => isset($_GET['tab']) ? $_GET['tab'] : null,
+        'filter' => isset($_GET['filter']) ? $_GET['filter'] : null,
+        'ngay' => isset($_GET['ngay']) ? $_GET['ngay'] : null,
+    ], $overrides);
+    // remove nulls
+    foreach ($params as $k => $v) {
+        if ($v === null || $v === '') unset($params[$k]);
+    }
+    return '?' . http_build_query($params);
+}
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -63,7 +90,7 @@ if (!empty($ngay)) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        
+
         :root {
             --custom-purple: rgb(85, 45, 125);
             --custom-purple-dark: rgb(70, 35, 110);
@@ -75,6 +102,7 @@ if (!empty($ngay)) {
             background-color: #fff;
             margin: 0;
             padding-top: 100px;
+            padding-bottom: 20px; /* footer spacing requested */
         }
 
         h2 {
@@ -141,6 +169,7 @@ if (!empty($ngay)) {
             padding: 14px 16px;
             text-align: center;
             border-bottom: 1px solid #eee;
+            vertical-align: middle;
         }
 
         th {
@@ -217,16 +246,31 @@ if (!empty($ngay)) {
             border-color: #9187a5;
         }
 
-        /* Responsive: xếp dọc khi màn hình nhỏ */
-        @media (max-width: 480px) {
-            .date-filter-form {
-                flex-direction: column;
-                gap: 10px;
-                align-items: flex-start;
-            }
-            .date-filter-form label {
-                margin-left: 5px;
-            }
+        /* pagination styling */
+        .pagination { margin-top: 18px; }
+        .app-footer { height: 20px; min-height: 20px; }
+
+        /* QR modal */
+        #qrModal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+        }
+        #qrModalImg { max-width: 90%; max-height: 90%; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            table { width: 95%; font-size: 11px; }
+            th, td { padding: 8px 6px; }
+            .tab-button { padding: 8px 12px; font-size: 12px; }
+            .date-filter-form { padding: 10px; }
         }
 
     </style>
@@ -238,17 +282,16 @@ if (!empty($ngay)) {
     <form method="get" class="date-filter-form d-flex justify-content-center align-items-center gap-2 mb-4 flex-wrap">
         <input type="hidden" name="action" value="lichxetnghiem">
         <input type="hidden" name="tab" value="<?= htmlspecialchars($currentTab) ?>">
-        
+
         <label for="ngay" class="me-2 mb-0">Chọn ngày:</label>
         <input type="date" id="ngay" name="ngay" value="<?= htmlspecialchars($ngay) ?>" class="date-input">
-        
+
         <button type="submit" class="btn btn-primary btn-sm">Lọc</button>
-        
+
         <?php if($ngay): ?>
             <a href="?action=lichxetnghiem&tab=<?= $currentTab ?>" class="btn btn-secondary btn-sm">Bỏ lọc</a>
         <?php endif; ?>
     </form>
-
 
     <?php if ($result === -1): ?>
         <p class="message text-danger">Lỗi kết nối cơ sở dữ liệu.</p>
@@ -270,6 +313,7 @@ if (!empty($ngay)) {
            Hoàn thành <span class="tab-count"><?= count(array_filter($data, function($lichxetnghiem) { return isset($lichxetnghiem['tentrangthai']) && $lichxetnghiem['tentrangthai'] === 'Đã có kết quả'; })) ?></span>
         </a>
     </div>
+
     <table class="custom-table">
         <thead>
             <tr>
@@ -282,12 +326,8 @@ if (!empty($ngay)) {
             </tr>
         </thead>
         <tbody>
-                <!-- Modal hiện ảnh lớn -->
-            <div id="qrModal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; background-color:rgba(0,0,0,0.8); justify-content:center; align-items:center;">
-                <img id="qrModalImg" src="/placeholder.svg" style="max-width:90%; max-height:90%;">
-            </div>
-            <?php if($filerlich):?>
-                <?php foreach ($filerlich as $row): ?>
+            <?php if (!empty($pagedData)): ?>
+                <?php foreach ($pagedData as $row): ?>
                     <tr>
                         <td><?= htmlspecialchars($row['ngayhen']) ?></td>
                         <td><?= htmlspecialchars($row['giobatdau']) . ' - ' . htmlspecialchars($row['gioketthuc']) ?></td>
@@ -295,23 +335,72 @@ if (!empty($ngay)) {
                         <td><?= htmlspecialchars($row['tenchuyenkhoa']) ?></td>
                         <td><?= htmlspecialchars($row['tentrangthai']) ?></td>
                         <td>
-                            <img src="Assets/img/<?= htmlspecialchars($row['qr']) ?>" alt="QR Code" width="100"
-                                style="cursor: pointer;"
-                                onclick="showLargeQR(this.src)">
+                            <?php if (!empty($row['qr'])): ?>
+                                <img src="Assets/img/<?= htmlspecialchars($row['qr']) ?>" alt="QR Code" width="100"
+                                     style="cursor: pointer;"
+                                     onclick="showLargeQR(this.src)">
+                            <?php else: ?>
+                                -
+                            <?php endif; ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>
-            <?php else:?>
-                    <tr>
-                        <td colspan="7">Chưa có lịch</td>
-                    </tr>
-            <?php endif?>
+            <?php else: ?>
+                <tr>
+                    <td colspan="6">Chưa có lịch</td>
+                </tr>
+            <?php endif; ?>
         </tbody>
     </table>
+
+    <!-- Pagination controls -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <!-- Previous -->
+            <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
+                <a class="page-link" href="<?= ($page > 1) ? build_base_query(['page' => $page - 1]) : '#' ?>" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+
+            <?php
+            // Determine range of pages to show (simple window)
+            $start = 1;
+            $end = $totalPages;
+            if ($totalPages > 7) {
+                $start = max(1, $page - 3);
+                $end = min($totalPages, $page + 3);
+                if ($start === 1) $end = 7;
+                if ($end === $totalPages) $start = max(1, $totalPages - 6);
+            }
+            for ($p = $start; $p <= $end; $p++): ?>
+                <li class="page-item <?= ($p == $page) ? 'active' : '' ?>">
+                    <a class="page-link" href="<?= build_base_query(['page' => $p]) ?>"><?= $p ?></a>
+                </li>
+            <?php endfor; ?>
+
+            <!-- Next -->
+            <li class="page-item <?= ($page >= $totalPages) ? 'disabled' : '' ?>">
+                <a class="page-link" href="<?= ($page < $totalPages) ? build_base_query(['page' => $page + 1]) : '#' ?>" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
 <?php endif; ?>
+
+<!-- QR Modal (moved outside table) -->
+<div id="qrModal">
+    <img id="qrModalImg" src="/placeholder.svg" alt="QR lớn">
+</div>
+
+<!-- Footer spacer -->
+<footer class="app-footer"></footer>
 
 </body>
 </html>
+
 <script>
     // Bắt sự kiện click ảnh nhỏ
     function showLargeQR(src) {
@@ -322,7 +411,10 @@ if (!empty($ngay)) {
     }
 
     // Đóng modal khi click ra ngoài ảnh
-    document.getElementById("qrModal").addEventListener("click", function () {
+    document.getElementById("qrModal").addEventListener("click", function (e) {
+        // nếu click vào chính ảnh thì không đóng, click vào nền thì đóng
+        const img = document.getElementById("qrModalImg");
+        if (e.target === img) return;
         this.style.display = "none";
     });
 </script>
