@@ -46,7 +46,7 @@ $linhvuc = $clinhvuc->get_linhvuc_machuyengia($chuyengia['machuyengia'] ?? null)
 $hoso = ensure_array($chosobenhandientu->get_hoso_mahoso1($mahoso));
 $chitiethoso_mahoso = ensure_array($cchitiethoso->get_chitiethoso_mahoso_chuyengia($mahoso));
 $message = "";
-echo $chitiethoso_mahoso[0]['mabacsi'];
+echo json_encode($chitiethoso_mahoso);
 /* Handle form submit */
 if (isset($_POST['btnupdate'])) {
     $madonthuoc = null;
