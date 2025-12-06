@@ -238,7 +238,7 @@ if (isset($_POST['btnupdate'])) {
                                     foreach ($chitiethoso_mahoso as $cd):
                                         $chitiet = ensure_array($cchitiethoso->get_chitiethoso_machitiethoso($cd['machitiethoso']));
                                         if (!empty($chitiet) && isset($chitiet[0]['mabacsi'])) {
-                                            $result = $cbacsi->getBacSiById($chitiet[0]['mabacsi']);
+                                            $result = $cchuyengia->getChuyenGiaById($chitiet[0]['mabacsi']);
                                             if (is_object($result) && get_class($result) === 'mysqli_result') {
                                                 $bacsi_info = $result->fetch_assoc();
                                             } else {
