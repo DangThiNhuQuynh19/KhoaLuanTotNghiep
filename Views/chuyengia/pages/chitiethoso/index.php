@@ -14,6 +14,7 @@ $cchuyengia = new cChuyenGia();
 $chosobenhandientu = new cHoSoBenhAnDienTu();
 $cbenhnhan = new cBenhnhan();
 $cchuyenkhoa = new cLinhVuc();
+$cchitiethoso = new cChiTietHoSo();
 $mahoso = $_GET['mahoso'] ?? null;
 
 /**
