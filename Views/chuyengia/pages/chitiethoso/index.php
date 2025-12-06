@@ -10,7 +10,6 @@ include_once('Controllers/chosobenhandientu.php');
 include_once('Controllers/cchitiethoso.php');
 include_once('Controllers/cchuyengia.php');
 
-$ckhunggioxetnghiem = new cKhungGioXetNghiem();
 $cbacsi = new cChuyenGia();
 $chosobenhandientu = new cHoSoBenhAnDienTu();
 $cbenhnhan = new cBenhnhan();
