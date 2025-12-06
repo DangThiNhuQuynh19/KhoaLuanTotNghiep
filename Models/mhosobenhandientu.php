@@ -367,5 +367,90 @@
                 return false; 
             }
         }
+
+        // Hàm lấy mahoso dựa vào mã bệnh nhân và mã người khám (bác sĩ hoặc chuyên gia)
+        public function get_mahoso_by_benhnhan_nguoikham($mabenhnhan, $manguoikham){
+            $p = new clsKetNoi();
+            $con = $p->moketnoi();
+            $con->set_charset('utf8');
+            if($con){
+                // Truy vấn kiểm tra xem manguoikham là bác sĩ hay chuyên gia và lấy mã chuyên khoa/lĩnh vực
+                $str = "SELECT 
+                    hs.mahoso,
+                    hs.mabenhnhan,
+                    ct.mabacsi,
+                    CASE 
+                        WHEN bs.mabacsi IS NOT NULL THEN 'bacsi'
+                        WHEN cg.machuyengia IS NOT NULL THEN 'chuyengia'
+                        ELSE NULL
+                    END AS loai_nguoikham,
+                    bs.machuyenkhoa,
+                    cg.malinhvuc
+                FROM hosobenhan hs
+                JOIN chitiethoso ct ON hs.mahoso = ct.mahoso
+                LEFT JOIN bacsi bs ON bs.mabacsi = ct.mabacsi
+                LEFT JOIN chuyenkhoa ck ON ck.machuyenkhoa = bs.machuyenkhoa
+                LEFT JOIN chuyengia cg ON cg.machuyengia = ct.mabacsi
+                LEFT JOIN linhvuc lv ON lv.malinhvuc = cg.malinhvuc
+                WHERE hs.mabenhnhan = '$mabenhnhan' 
+                AND ct.mabacsi = '$manguoikham'
+                ORDER BY hs.mahoso DESC
+                LIMIT 1";
+                
+                $tbl = $con->query($str);
+                $p->dongketnoi($con);
+                return $tbl;
+            }else{
+                return false; 
+            }
+        }
+
+        // Hàm lấy mahoso dựa vào mã bệnh nhân và mã chuyên khoa của bác sĩ đang đăng nhập
+        public function get_mahoso_by_benhnhan_mabacsi($mabenhnhan, $mabacsi){
+            $p = new clsKetNoi();
+            $con = $p->moketnoi();
+            $con->set_charset('utf8');
+            if($con){
+                // Lấy mã chuyên khoa của bác sĩ, sau đó tìm hồ sơ của bệnh nhân thuộc chuyên khoa đó
+                $str = "SELECT DISTINCT hs.mahoso, hs.mabenhnhan, bs.machuyenkhoa, ck.tenchuyenkhoa
+                FROM hosobenhan hs
+                JOIN chitiethoso ct ON hs.mahoso = ct.mahoso
+                JOIN bacsi bs ON bs.mabacsi = ct.mabacsi
+                JOIN chuyenkhoa ck ON ck.machuyenkhoa = bs.machuyenkhoa
+                WHERE hs.mabenhnhan = '$mabenhnhan' 
+                AND bs.machuyenkhoa = (SELECT machuyenkhoa FROM bacsi WHERE mabacsi = '$mabacsi')
+                ORDER BY hs.mahoso DESC";
+                
+                $tbl = $con->query($str);
+                $p->dongketnoi($con);
+                return $tbl;
+            }else{
+                return false; 
+            }
+        }
+
+        // Hàm lấy mahoso dựa vào mã bệnh nhân và mã lĩnh vực của chuyên gia đang đăng nhập
+        public function get_mahoso_by_benhnhan_machuyengia($mabenhnhan, $machuyengia){
+            $p = new clsKetNoi();
+            $con = $p->moketnoi();
+            $con->set_charset('utf8');
+            if($con){
+                // Lấy mã lĩnh vực của chuyên gia, sau đó tìm hồ sơ của bệnh nhân thuộc lĩnh vực đó
+                $str = "SELECT DISTINCT hs.mahoso, hs.mabenhnhan, cg.malinhvuc, lv.tenlinhvuc
+                FROM hosobenhan hs
+                JOIN chitiethoso ct ON hs.mahoso = ct.mahoso
+                JOIN chuyengia cg ON cg.machuyengia = ct.mabacsi
+                JOIN linhvuc lv ON lv.malinhvuc = cg.malinhvuc
+                WHERE hs.mabenhnhan = '$mabenhnhan' 
+                AND cg.malinhvuc = (SELECT malinhvuc FROM chuyengia WHERE machuyengia = '$machuyengia')
+                ORDER BY hs.mahoso DESC";
+                
+                $tbl = $con->query($str);
+                $p->dongketnoi($con);
+                return $tbl;
+            }else{
+                return false; 
+            }
+        }
     }
 ?>

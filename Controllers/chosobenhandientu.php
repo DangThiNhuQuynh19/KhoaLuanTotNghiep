@@ -244,5 +244,58 @@ class cHoSoBenhAnDienTu{
         }
 
     }
+
+    // Hàm lấy mahoso dựa vào mã bệnh nhân và mã người khám (bác sĩ hoặc chuyên gia)
+    public function get_mahoso_by_benhnhan_nguoikham($mabenhnhan, $manguoikham){
+        $p = new mHoSoBenhAnDienTu();
+        $tbl = $p->get_mahoso_by_benhnhan_nguoikham($mabenhnhan, $manguoikham);
+        if (!$tbl) {
+            return -1; 
+        } else {
+            if ($tbl->num_rows > 0) {
+                return $tbl->fetch_assoc();
+            } else {
+                return 0; 
+            }
+        }
+    }
+
+    // Hàm lấy mahoso dựa vào mã bệnh nhân và mã bác sĩ đang đăng nhập
+    public function get_mahoso_by_benhnhan_mabacsi($mabenhnhan, $mabacsi){
+        $p = new mHoSoBenhAnDienTu();
+        $tbl = $p->get_mahoso_by_benhnhan_mabacsi($mabenhnhan, $mabacsi);
+        if (!$tbl) {
+            return -1; 
+        } else {
+            if ($tbl->num_rows > 0) {
+                $data = [];
+                while ($row = $tbl->fetch_assoc()) {
+                    $data[] = $row;
+                }
+                return $data;
+            } else {
+                return 0; 
+            }
+        }
+    }
+
+    // Hàm lấy mahoso dựa vào mã bệnh nhân và mã chuyên gia đang đăng nhập
+    public function get_mahoso_by_benhnhan_machuyengia($mabenhnhan, $machuyengia){
+        $p = new mHoSoBenhAnDienTu();
+        $tbl = $p->get_mahoso_by_benhnhan_machuyengia($mabenhnhan, $machuyengia);
+        if (!$tbl) {
+            return -1; 
+        } else {
+            if ($tbl->num_rows > 0) {
+                $data = [];
+                while ($row = $tbl->fetch_assoc()) {
+                    $data[] = $row;
+                }
+                return $data;
+            } else {
+                return 0; 
+            }
+        }
+    }
 }
 ?>
