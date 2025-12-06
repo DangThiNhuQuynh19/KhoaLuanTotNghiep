@@ -4,6 +4,11 @@
  * Automatically determines WebSocket URL based on environment
  */
 
+// Allow configuration via environment variables (optional)
+$wsHost = getenv('WEBSOCKET_HOST') ?: null;
+$wsPort = getenv('WEBSOCKET_PORT') ?: 8080;
+$wsPath = getenv('WEBSOCKET_PATH') ?: ''; // e.g., '/ws' if using reverse proxy
+
 // Detect if we're on production or local
 $isProduction = (
     isset($_SERVER['HTTP_HOST']) && 
@@ -22,12 +27,19 @@ $isSecure = (
 if ($isProduction) {
     // Production environment
     $wsProtocol = $isSecure ? 'wss' : 'ws';
-    $wsHost = $_SERVER['HTTP_HOST'];
-    $wsPort = 8080; // Your WebSocket server port
     
-    // For production, you might want to proxy WebSocket through a subdomain or path
-    // Example: wss://ws.hanhphuc.site or wss://hanhphuc.site:8080
-    define('WEBSOCKET_URL', "{$wsProtocol}://{$wsHost}:{$wsPort}");
+    // Use environment variable if set, otherwise use current host
+    if (!$wsHost) {
+        $wsHost = $_SERVER['HTTP_HOST'];
+    }
+    
+    // Build WebSocket URL
+    // If using reverse proxy (wsPath set), don't include port
+    if ($wsPath) {
+        define('WEBSOCKET_URL', "{$wsProtocol}://{$wsHost}{$wsPath}");
+    } else {
+        define('WEBSOCKET_URL', "{$wsProtocol}://{$wsHost}:{$wsPort}");
+    }
 } else {
     // Local development environment
     define('WEBSOCKET_URL', 'ws://localhost:8080');
