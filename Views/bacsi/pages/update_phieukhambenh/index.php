@@ -33,7 +33,7 @@ if(!isset($_GET['maphieukhambenh'])){
     exit;
 }
 
-$maphieukhambenh = $_GET['maphieukhambenh'];
+$maphieukhambenh = htmlspecialchars($_GET['maphieukhambenh'], ENT_QUOTES, 'UTF-8');
 $phieukham = $cphieukhambenh->getPhieuKhamBenhOfIDPK($maphieukhambenh);
 
 if(!$phieukham || $phieukham == 0){
@@ -287,22 +287,22 @@ if(isset($_POST['tao_xet_nghiem'])){
             
             <div class="form-group">
                 <label for="trieuchung">Triệu chứng ban đầu</label>
-                <textarea name="trieuchung" id="trieuchung" placeholder="Nhập triệu chứng của bệnh nhân..."><?php echo $_POST['trieuchung'] ?? ''; ?></textarea>
+                <textarea name="trieuchung" id="trieuchung" placeholder="Nhập triệu chứng của bệnh nhân..."><?php echo htmlspecialchars($_POST['trieuchung'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
             </div>
 
             <div class="form-group">
                 <label for="chuandoan">Chẩn đoán</label>
-                <textarea name="chuandoan" id="chuandoan" placeholder="Nhập chẩn đoán..."><?php echo $_POST['chuandoan'] ?? ''; ?></textarea>
+                <textarea name="chuandoan" id="chuandoan" placeholder="Nhập chẩn đoán..."><?php echo htmlspecialchars($_POST['chuandoan'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
             </div>
 
             <div class="form-group">
                 <label for="huongdieutri">Hướng điều trị</label>
-                <textarea name="huongdieutri" id="huongdieutri" placeholder="Nhập hướng điều trị..."><?php echo $_POST['huongdieutri'] ?? ''; ?></textarea>
+                <textarea name="huongdieutri" id="huongdieutri" placeholder="Nhập hướng điều trị..."><?php echo htmlspecialchars($_POST['huongdieutri'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
             </div>
 
             <div class="form-group">
                 <label for="ketluan">Kết luận</label>
-                <textarea name="ketluan" id="ketluan" placeholder="Nhập kết luận..."><?php echo $_POST['ketluan'] ?? ''; ?></textarea>
+                <textarea name="ketluan" id="ketluan" placeholder="Nhập kết luận..."><?php echo htmlspecialchars($_POST['ketluan'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
             </div>
 
             <div class="btn-group">
