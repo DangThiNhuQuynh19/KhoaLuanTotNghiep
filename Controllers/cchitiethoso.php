@@ -31,7 +31,7 @@
 
         public function get_chitiethoso_mahoso_chuyengia($mahoso){
             $p = new mChiTietHoSo();
-            $tbl = $p->select_chitiethoso_mahoso($mahoso);
+            $tbl = $p->select_chitiethoso_mahoso_chuyengia($mahoso);
             $list=array();
             if (!$tbl) {
                 return -1;

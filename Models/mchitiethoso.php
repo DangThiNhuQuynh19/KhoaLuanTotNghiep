@@ -42,9 +42,9 @@
             $con->set_charset('utf8');
             if($con){
                 $str = "select * from chitiethoso as ct
-                join bacsi as bs on ct.mabacsi=bs.mabacsi
-                join nguoidung nd on nd.manguoidung=bs.mabacsi
-                join chuyenkhoa as ck on ck.machuyenkhoa=bs.machuyenkhoa
+                join chuyengia as cg on ct.mabacsi=cg.machuyengia
+                join nguoidung nd on nd.manguoidung=cg.machuyengia
+                join linhvuc as lv on lv.malinhvuc=cg.malinhvuc
                 where ct.mahoso='$mahoso'";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
