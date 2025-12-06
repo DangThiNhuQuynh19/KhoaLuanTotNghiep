@@ -367,7 +367,7 @@
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if ($con) {
-                $sql = "SELECT * 
+                $sql = "SELECT distinct b.*, nd.*, p.*
                         FROM benhnhan AS b  
                         JOIN nguoidung nd ON nd.manguoidung =b.mabenhnhan
                         JOIN phieukhambenh AS p ON b.mabenhnhan = p.mabenhnhan
@@ -378,8 +378,7 @@
                                 OR nd.hoten LIKE '%$tukhoa%') ";
                 }
         
-                $sql .= " GROUP BY b.mabenhnhan 
-                          ORDER BY b.mabenhnhan DESC";
+                $sql .= "  ORDER BY b.mabenhnhan DESC";
         
                 $result = $con->query($sql);
                 $p->dongketnoi($con);
