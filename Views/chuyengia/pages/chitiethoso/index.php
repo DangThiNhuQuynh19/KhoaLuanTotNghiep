@@ -46,7 +46,7 @@ $linhvuc = $clinhvuc->get_linhvuc_machuyengia($chuyengia['machuyengia'] ?? null)
 $hoso = ensure_array($chosobenhandientu->get_hoso_mahoso1($mahoso));
 $chitiethoso_mahoso = ensure_array($cchitiethoso->get_chitiethoso_mahoso_chuyengia($mahoso));
 $message = "";
-
+echo json_encode($chitiethoso_mahoso);
 /* Handle form submit */
 if (isset($_POST['btnupdate'])) {
     $madonthuoc = null;
@@ -217,8 +217,6 @@ if (isset($_POST['btnupdate'])) {
             <div class="tab-header">
                 <a href="#diagnosis" class="tab-link active" onclick="openTab(event, 'diagnosis')">Chẩn đoán & Hướng điều trị</a>
             </div>
-
-
             <div id="diagnosis" class="tab-content active">
                 <div class="card">
                     <div class="card-body no-padding">
