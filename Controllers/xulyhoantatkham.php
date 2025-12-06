@@ -1,14 +1,32 @@
 <?php
 // Handler để xử lý form từ modal "Hoàn tất khám" / cập nhật phiếu khám
-// File này được include từ lichhentructuyen/index.php và sử dụng các controller đã khởi tạo
+// Gắn vào nơi đang xử lý ?action=update_phieukhambenh (hoặc include/require file này từ controller tương ứng)
 
-// Không cần require lại các file đã được include trong file gọi
-// Chỉ cần sử dụng các biến đã có sẵn
+require_once 'Assets/config.php'; // để có $conn (nếu dự án của bạn dùng biến kết nối này)
+require_once 'vendor/autoload.php';
 
-// Import QR Code library nếu cần
-if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
-    require_once __DIR__ . '/../vendor/autoload.php';
-}
+include_once 'Controllers/cphieukhambenh.php';
+include_once 'Controllers/cchitiethoso.php';
+include_once 'Controllers/cdonthuoc.php';
+include_once 'Controllers/cchitietdonthuoc.php';
+include_once 'Controllers/clichxetnghiem.php';
+include_once 'Controllers/ckhunggioxetnghiem.php';
+include_once 'Controllers/cloaixetnghiem.php';
+include_once 'Controllers/cbenhnhan.php';
+include_once 'Controllers/cbacsi.php';
+
+use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Writer\PngWriter;
+
+$cphieukhambenh = new cPhieuKhamBenh();
+$cchitiethoso = new cChiTietHoSo();
+$cdonthuoc = new cDonThuoc();
+$cchitietdongthuoc = new cChiTietDonThuoc();
+$clichxetnghiem = new cLichXetNghiem();
+$ckhunggioxetnghiem = new cKhungGioXetNghiem();
+$cloaixetnghiem = new cLoaiXetNghiem();
+$cbenhnhan = new cBenhnhan();
+$cbacsi = new cBacSi();
 
 // Kiểm tra form gửi từ modal "Hoàn tất khám"
 if (isset($_POST['btnHoanTat'])) {
@@ -37,9 +55,8 @@ if (isset($_POST['btnHoanTat'])) {
     $success = false;
 
     // Bắt đầu transaction nếu có kết nối mysqli
-    $usingTransaction = false;
-    if (isset($conn) && $conn instanceof mysqli) {
-        $usingTransaction = true;
+    $usingTransaction = (isset($conn) && $conn instanceof mysqli);
+    if ($usingTransaction) {
         $conn->begin_transaction();
     }
 
@@ -88,40 +105,30 @@ if (isset($_POST['btnHoanTat'])) {
             $loai = $cloaixetnghiem->get_loaixetnghiem_maloaixetnghiem($test);
             $bn_info = $cbenhnhan->getbenhnhanbyid($mabenhnhan);
 
-            // Tạo QR data với thông tin cơ bản (không bao gồm SDT để bảo mật)
             $qrData = "Mã BN: " . ($mabenhnhan) . "\n" .
+                      "SĐT: " . (!empty($bn_info[0]['sdt']) ? decryptData($bn_info[0]['sdt']) : '') . "\n" .
                       "Tên xét nghiệm: " . (!empty($loai[0]['tenloaixetnghiem']) ? $loai[0]['tenloaixetnghiem'] : '') . "\n" .
                       "Ngày: " . $appointmentDate . "\n" .
                       "Giờ: " . (!empty($kg[0]['giobatdau']) ? $kg[0]['giobatdau'] : '') . "\n";
 
-            // Tạo QR code nếu library có sẵn
-            if (class_exists('\Endroid\QrCode\Builder\Builder')) {
-                $builder = new \Endroid\QrCode\Builder\Builder(
-                    writer: new \Endroid\QrCode\Writer\PngWriter(),
-                    data: $qrData
-                );
-                $result = $builder->build();
-                // Lưu file
-                file_put_contents($savePath, $result->getString());
-            } else {
-                // Nếu không có library, tạo file placeholder
-                $filename = 'qr_placeholder_' . time() . '.txt';
-                $savePath = __DIR__ . '/../Assets/img/' . $filename;
-                file_put_contents($savePath, $qrData);
-            }
+            $builder = new Builder(
+                writer: new PngWriter(),
+                data: $qrData
+            );
+            $result = $builder->build();
+            // Lưu file
+            file_put_contents($savePath, $result->getString());
 
             // Tạo lịch xét nghiệm (trạng thái 'Đã đặt lịch')
             $clichxetnghiem->create_lichxetnghiem($mabenhnhan, $test, $appointmentDate, $appointmentTime, 'Đã đặt lịch', $mahoso, $filename);
         }
 
         // 3) Tạo chi tiết hồ sơ
-        // Lưu ý: cần có $bacsi['mabacsi'] — lấy từ context đã có
+        // Lưu ý: cần có $bacsi['mabacsi'] — nếu không có, hãy lấy từ session hoặc context hiện tại
         $bacsiMabacsi = null;
-        if (isset($_SESSION['user']['tentk']) && isset($cbacsi)) {
-            $bacsiInfo = $cbacsi->getBacSiByTenTK($_SESSION['user']['tentk']);
-            $bacsiMabacsi = $bacsiInfo['mabacsi'] ?? null;
-        } elseif (isset($_SESSION['user']['mabacsi'])) {
-            $bacsiMabacsi = $_SESSION['user']['mabacsi'];
+        if (isset($_SESSION['user']['tentk'])) {
+            $bacsi = $cbacsi->getBacSiByTenTK($_SESSION['user']['tentk']);
+            $bacsiMabacsi = $bacsi['mabacsi'] ?? null;
         }
 
         if (empty($mahoso)) {
@@ -172,12 +179,11 @@ if (isset($_POST['btnHoanTat'])) {
             $message = "Hoàn tất: lưu chi tiết hồ sơ và cập nhật trạng thái lịch hẹn thành 'Đã khám' thành công.";
             $success = true;
 
-            // Redirect về trang chi tiết hồ sơ hoặc danh sách lịch hẹn
-            if (!empty($mahoso)) {
-                header("Location: ?action=chitiethoso&mahoso=" . urlencode($mahoso));
-            } else {
-                header("Location: ?action=lichhentructuyen&success=1");
-            }
+            // Redirect về trang chi tiết hồ sơ hoặc danh sách lịch hẹn tùy ý
+            echo '<script>
+                    alert("Thành công! ' . addslashes($message) . '");
+                    window.location.href = "?action=chitiethoso&mahoso=' . urlencode($mahoso) . '";
+                  </script>';
             exit();
         } else {
             // Tạo chi tiết hồ sơ thất bại => rollback
@@ -185,16 +191,19 @@ if (isset($_POST['btnHoanTat'])) {
             $message = "Lưu chi tiết hồ sơ thất bại.";
             $success = false;
 
-            // Redirect với thông báo lỗi
-            header("Location: ?action=lichhentructuyen&error=save_failed");
+            echo '<script>
+                    alert("Thất bại! ' . addslashes($message) . '");
+                    window.history.back();
+                  </script>';
             exit();
         }
     } catch (Exception $ex) {
         if ($usingTransaction) $conn->rollback();
         error_log("Lỗi xử lý hoàn tất khám: " . $ex->getMessage());
-        
-        // Redirect với thông báo lỗi
-        header("Location: ?action=lichhentructuyen&error=exception&msg=" . urlencode($ex->getMessage()));
+        echo '<script>
+                alert("Đã xảy ra lỗi trong quá trình xử lý. Vui lòng thử lại hoặc liên hệ admin.");
+                window.history.back();
+              </script>';
         exit();
     }
 }

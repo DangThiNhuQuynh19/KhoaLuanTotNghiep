@@ -85,6 +85,7 @@ $con->query("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY
         $p = new clsKetNoi();
         $con = $p->moketnoi();
         $con->set_charset('utf8');
+        $con->query("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
         if($con){
             $str = "select distinct kq.*, l.*, ct .*, bs.*, bn.*, nd.*, ck.* from ketquaxetnghiem as kq
             join lichxetnghiem as l on kq.malichxetnghiem=l.malichxetnghiem
