@@ -40,7 +40,7 @@ function esc($s) {
 
 $benhnhan = ensure_array($chosobenhandientu->get_benhnhan_mahoso($mahoso));
 $chitiethoso = ensure_array($chosobenhandientu->getDonThuocByIDHS($mahoso));
-$chuyengia = $cbacsi->getChuyenGiaByTenTK($_SESSION['user']['tentk']);
+$chuyengia = $cchuyengia->getChuyenGiaByTenTK($_SESSION['user']['tentk']);
 $linhvuc = $clinhvuc->getLichLamViecChuyengia($bacsi['machuyengia'] ?? null);
 $hoso = ensure_array($chosobenhandientu->get_hoso_mahoso1($mahoso));
 $chitiethoso_mahoso = ensure_array($cchitiethoso->get_chitiethoso_mahoso_chuyengia($mahoso));
