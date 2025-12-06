@@ -389,6 +389,101 @@ if (isset($_POST['btnupdate'])) {
 function openUpdateRecordModal() { document.getElementById("modalcapnhathoso").style.display = "block"; }
 function closeUpdateRecordModal() { document.getElementById("modalcapnhathoso").style.display = "none"; }
 
+        // Mở modal chi tiết chẩn đoán
+function openChuanDoanPopup(chitiet) {
+    console.log("Chi tiết chẩn đoán:", chitiet); // Debug
+    
+    // Hiển thị modal
+    document.getElementById("modalchuandoan").style.display = "block";
+    
+    // Cập nhật thông tin cơ bản
+    document.getElementById("cd-ngaykham").textContent = chitiet[0].ngaykham;
+    document.getElementById("cd-bacsi").textContent = chitiet[0].hoten|| "-";
+    document.getElementById("cd-trieuchung").textContent = chitiet[0].trieuchungbandau|| "-";
+    document.getElementById("cd-chandoan").textContent = chitiet[0].chandoan || "-";
+    document.getElementById("cd-kehoachdieutri").textContent = chitiet[0].huongdieutri || "-";
+    document.getElementById("cd-ketluan").textContent = chitiet[0].ketluan;
+}
+
+// Đóng modal chi tiết chẩn đoán
+function closeChuanDoanPopup() {
+    document.getElementById("modalchuandoan").style.display = "none";
+}
+
+// In chi tiết chẩn đoán
+function printChuanDoan() {
+    const ngaykham = document.getElementById("cd-ngaykham").textContent;
+    const bacsi = document.getElementById("cd-bacsi").textContent;
+    const trieuchung = document.getElementById("cd-trieuchung").textContent;
+    const chandoan = document.getElementById("cd-chandoan").textContent;
+    const kehoachdieutri = document.getElementById("cd-kehoachdieutri").textContent;
+    const ketluan = document.getElementById("cd-ketluan").textContent;
+    
+    const originalContents = document.body.innerHTML;
+    
+    document.body.innerHTML = `
+        <div style="padding: 20px;">
+            <h1 style="text-align: center; margin-bottom: 20px;">Chi Tiết Chẩn Đoán và Hướng Điều Trị</h1>
+            
+            <div style="margin-bottom: 10px;">
+                <div style="font-weight: bold;">Ngày khám:</div>
+                <div>${ngaykham}</div>
+            </div>
+            <div style="margin-bottom: 10px;">
+                <div style="font-weight: bold;">Bác sĩ:</div>
+                <div>${bacsi}</div>
+            </div>
+            <div style="margin-bottom: 10px;">
+                <div style="font-weight: bold;">Triệu chứng ban đầu:</div>
+                <div>${trieuchung}</div>
+            </div>
+            <div style="margin-bottom: 10px;">
+                <div style="font-weight: bold;">Chẩn đoán:</div>
+                <div>${chandoan}</div>
+            </div>
+            <div style="margin-bottom: 10px;">
+                <div style="font-weight: bold;">Hướng điều trị:</div>
+                <div>${kehoachdieutri}</div>
+            </div>
+            <div style="margin-bottom: 10px;">
+                <div style="font-weight: bold;">Kết luận:</div>
+                <div>${ketluan}</div>
+            </div>
+        </div>
+    `;
+    
+    window.print();
+    document.body.innerHTML = originalContents;
+    
+    // Khôi phục lại các event listener sau khi in
+    setTimeout(function() {
+        // Khởi tạo lại các event listener
+        document.querySelectorAll('.tab-link').forEach(function(tab) {
+            tab.addEventListener('click', function(event) {
+                const tabId = this.getAttribute('href').substring(1);
+                openTab(event, tabId);
+            });
+        });
+        
+        // Đóng modal khi click bên ngoài
+        window.onclick = function(event) {
+            const modal = document.getElementById("modalxetnghiem");
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+            
+            const modalDonThuoc = document.getElementById("modalchitietdonthuoc");
+            if (event.target === modalDonThuoc) {
+                modalDonThuoc.style.display = "none";
+            }
+            
+            const modalChuanDoan = document.getElementById("modalchuandoan");
+            if (event.target === modalChuanDoan) {
+                modalChuanDoan.style.display = "none";
+            }
+        };
+    }, 100);
+}
 </script>
 </body>
 </html>
