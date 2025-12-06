@@ -1,8 +1,6 @@
 <?php
-// Handler để xử lý form từ modal "Hoàn tất khám" / cập nhật phiếu khám
-// Gắn vào nơi đang xử lý ?action=update_phieukhambenh (hoặc include/require file này từ controller tương ứng)
 
-require_once 'Assets/config.php'; // để có $conn (nếu dự án của bạn dùng biến kết nối này)
+require_once 'Assets/config.php'; 
 require_once 'vendor/autoload.php';
 
 include_once 'Controllers/cphieukhambenh.php';
@@ -132,9 +130,7 @@ if (isset($_POST['btnHoanTat'])) {
         }
 
         if (empty($mahoso)) {
-            // Nếu không có mahoso, cố gắng lấy mahoso từ phiếu khám nếu lưu sẵn
-            // (tùy cấu trúc DB - nếu không có, bạn có thể bỏ qua)
-            // $mahoso = $cphieukhambenh->get_mahoso_by_maphieu($maphieukhambenh);
+            echo "chưa có mã hồ sơ";
         }
 
         // Gọi tạo chi tiết hồ sơ

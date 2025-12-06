@@ -1,8 +1,4 @@
 <?php
-/**
-* Trang quản lý lịch hẹn trực tuyến
-* Xử lý hiển thị danh sách lịch hẹn và modal khám bệnh
-*/
 
 include_once('Controllers/cphieukhambenh.php');
 include_once('Controllers/cbacsi.php');
@@ -12,7 +8,6 @@ include_once('Controllers/cloaixetnghiem.php');
 include_once('Controllers/ckhunggioxetnghiem.php');
 include_once("Assets/config.php");
 
-// Include handler for complete examination
 if (isset($_POST['btnHoanTat'])) {
    include_once('Controllers/xulyhoantatkham.php');
 }
@@ -30,8 +25,6 @@ $thuoc_list = $cthuoc->get_thuoc();
 $loaixetnghiem_list = $cloaixetnghiem->get_loaixetnghiem();
 $khunggioxetnghiem_list = $ckhunggioxetnghiem->get_khunggioxetnghiem();
 
-// ------------------- PHẦN HIỂN THỊ -------------------
-// Lấy thông tin bác sĩ hiện tại
 $bacsi = $cbacsi->getBacSiByTenTK($_SESSION['user']['tentk']);
 
 // Lấy dữ liệu tìm kiếm (sử dụng GET để hỗ trợ phân trang)
@@ -158,13 +151,18 @@ $paged_list = $total ? array_slice($lichkham_list, $offset, $perPage) : [];
                            <td><?php echo number_format($i['giakham'],0,',','.'); ?> VND</td>
                            <td><span class="status-badge <?php echo $statusClass; ?>"><?php echo htmlspecialchars($i['tentrangthai']); ?></span></td>
                            <td>
+                            <?php
+                                $hosobenhnhan = get_mahoso_by_benhnhan_nguoikham($i['mabenhnhan'], $bacsi['machuyenkhoa']);
+                            ?>
                                <?php if($tentrangthai === 'Chưa khám'): ?>
+                                
                                    <a class="btn-primary btn-small" href="?action=tinnhan&id=<?php echo urlencode($i['mabenhnhan']); ?>"><i class="fas fa-comment-medical"></i> Nhắn tin</a>
                                    <button type="button" class="btn-success btn-small btn-kham" 
                                        data-maphieu="<?php echo htmlspecialchars($i['maphieukhambenh']); ?>"
                                        data-mabenhnhan="<?php echo htmlspecialchars($i['mabenhnhan']); ?>"
                                        data-hoten="<?php echo htmlspecialchars($i['hoten']); ?>"
                                        data-ngay="<?php echo htmlspecialchars($i['ngaykham']); ?>"
+                                       data-mahoso = "<?php echo htmlspecialchars ($hosobenhnhan['mahoso'])?>"
                                        ><i class="fas fa-stethoscope"></i> Khám</button>
                                <?php endif; ?>
                            </td>
@@ -504,7 +502,7 @@ document.querySelectorAll('.btn-kham').forEach(function(btn){
    btn.addEventListener('click', function(){
        var maphieu = btn.getAttribute('data-maphieu');
        var mabenhnhan = btn.getAttribute('data-mabenhnhan');
-       var mahoso = btn.getAttribute('data-mahoso') || '';
+       var mahoso = btn.getAttribute('data-mahoso');
        var hoten = btn.getAttribute('data-hoten');
        var ngay = btn.getAttribute('data-ngay');
 
