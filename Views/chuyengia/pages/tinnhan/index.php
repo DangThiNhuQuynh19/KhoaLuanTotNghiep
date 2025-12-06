@@ -4,10 +4,6 @@ if (!isset($_SESSION['user']['tentk']) || $_SESSION['user']['mavaitro'] != 3) {
     exit();
 }
 $tentk = $_SESSION['user']['tentk'];
-
-// Load WebSocket configuration
-require_once(__DIR__ . '/../../../../Assets/websocket-config.php');
-$websocketUrl = getWebSocketUrl();
 ?>
 <style>
     body { background-color: #f0f2f5; font-family: Arial, sans-serif; }
@@ -145,7 +141,7 @@ let currentPatient = null;
 let messages = {};
 
 function connectWebSocket() {
-    socket = new WebSocket('<?php echo $websocketUrl; ?>');
+    socket = new WebSocket('ws://localhost:8080');
     socket.onopen = () => {
         console.log("WebSocket connected!");
         socket.send(JSON.stringify({ action: 'register', username: user.tentk, role: user.vaitro }));
