@@ -109,6 +109,7 @@ $paged_list = $total ? array_slice($lichkham_list, $offset, $perPage) : [];
 
    <!-- Checkbox Hôm nay -->
    <form method="GET" style="display:flex; justify-content:flex-end; margin-bottom:10px;">
+       <input type="hidden" name="action" value="lichhentructuyen">
        <input type="hidden" name="tukhoa" value="<?php echo htmlspecialchars($tukhoa); ?>">
        <input type="hidden" name="trangthai" value="<?php echo htmlspecialchars($trangthai); ?>">
        <input type="hidden" name="ngay" value="<?php echo htmlspecialchars($ngay); ?>">
