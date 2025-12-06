@@ -296,7 +296,7 @@
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if($con){
-                $str = "SELECT nd_bs.hoten as hotenbacsi, tt.tentrangthai, pk.*, kg.*, bn.*, ck.tenchuyenkhoa, nd_bn.*
+                $str = "SELECT distinct nd_bs.hoten as hotenbacsi, tt.tentrangthai, pk.*, kg.*, bn.*, ck.tenchuyenkhoa, nd_bn.*
                 FROM phieukhambenh AS pk
                 JOIN trangthai AS tt ON tt.matrangthai = pk.matrangthai
                 JOIN khunggiokhambenh AS kg ON kg.makhunggiokb = pk.makhunggiokb
@@ -305,7 +305,7 @@
                 JOIN chuyenkhoa ck ON ck.machuyenkhoa=bs.machuyenkhoa
                 JOIN benhnhan AS bn ON bn.mabenhnhan = pk.mabenhnhan
                 JOIN nguoidung AS nd_bn ON nd_bn.manguoidung = bn.mabenhnhan
-                WHERE bs.mabacsi = '$mabacsi' AND  pk.ngaykham = CURDATE() GROUP BY bn.mabenhnhan";
+                WHERE bs.mabacsi = '$mabacsi' AND  pk.ngaykham = CURDATE()";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;
