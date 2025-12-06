@@ -107,6 +107,12 @@ export WEBSOCKET_PORT=9090
 export WEBSOCKET_PATH=/ws
 ```
 
+### Bảo mật
+- Hệ thống sử dụng whitelist cho phép các domain production được phép
+- Tự động kiểm tra và xác thực hostname
+- Hỗ trợ HTTPS/WSS để bảo vệ kết nối
+- Để thêm domain mới, cập nhật whitelist trong `Assets/websocket-config.php`
+
 ## Tài liệu tham khảo
 - Xem `WEBSOCKET_DEPLOYMENT.md` để biết chi tiết đầy đủ về:
   - Cấu hình systemd để tự động khởi động

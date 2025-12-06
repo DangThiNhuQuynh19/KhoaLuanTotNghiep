@@ -5,16 +5,25 @@
  */
 
 // Allow configuration via environment variables (optional)
-$wsHost = getenv('WEBSOCKET_HOST') ?: null;
-$wsPort = getenv('WEBSOCKET_PORT') ?: 8080;
-$wsPath = getenv('WEBSOCKET_PATH') ?: ''; // e.g., '/ws' if using reverse proxy
+$wsHost = getenv('WEBSOCKET_HOST');
+$wsHost = ($wsHost === false) ? null : $wsHost; // Normalize false to null
+$wsPort = getenv('WEBSOCKET_PORT');
+$wsPort = ($wsPort === false) ? 8080 : (int)$wsPort; // Default to 8080, cast to int
+$wsPath = getenv('WEBSOCKET_PATH');
+$wsPath = ($wsPath === false) ? '' : $wsPath; // Normalize false to empty string
+
+// Define allowed production hosts (whitelist for security)
+$allowedProductionHosts = [
+    'hanhphuc.site',
+    'www.hanhphuc.site'
+];
 
 // Detect if we're on production or local
-$isProduction = (
-    isset($_SERVER['HTTP_HOST']) && 
-    (strpos($_SERVER['HTTP_HOST'], 'hanhphuc.site') !== false || 
-     strpos($_SERVER['HTTP_HOST'], 'www.hanhphuc.site') !== false)
-);
+$currentHost = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost';
+// Remove port from host if present
+$currentHostWithoutPort = preg_replace('/:\d+$/', '', $currentHost);
+
+$isProduction = in_array($currentHostWithoutPort, $allowedProductionHosts, true);
 
 // Detect if connection is secure (HTTPS)
 $isSecure = (
@@ -28,9 +37,10 @@ if ($isProduction) {
     // Production environment
     $wsProtocol = $isSecure ? 'wss' : 'ws';
     
-    // Use environment variable if set, otherwise use current host
+    // Use environment variable if set, otherwise use validated current host
     if (!$wsHost) {
-        $wsHost = $_SERVER['HTTP_HOST'];
+        // Use the current host but ensure it's in our whitelist
+        $wsHost = $currentHostWithoutPort;
     }
     
     // Build WebSocket URL
