@@ -280,7 +280,7 @@ if(isset($_POST['btnupdate'])) {
                                         <td><?php echo $i['tenloaixetnghiem']; ?></td>
                                         <td><?php echo $i['tentrangthai']; ?></td>
                                         <td>
-                                            <?php if ($i['tentrangthai'] == "Hoàn thành"): 
+                                            <?php if ($i['tentrangthai'] == "Đã có kết quả"): 
                                                 $ketqua = $cketquaxetnghiem->get_ketquaxetnghiem($i['malichxetnghiem']);
                                                 $ketquaJson = json_encode($ketqua);
                                             ?>
