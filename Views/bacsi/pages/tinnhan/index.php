@@ -6,7 +6,7 @@ if (!isset($_SESSION['user']['tentk'])) {
 $tentk = $_SESSION['user']['tentk'];
 
 // Load WebSocket configuration
-require_once('Assets/websocket-config.php');
+require_once(__DIR__ . '/../../../../Assets/websocket-config.php');
 $websocketUrl = getWebSocketUrl();
 ?>
 <!DOCTYPE html>

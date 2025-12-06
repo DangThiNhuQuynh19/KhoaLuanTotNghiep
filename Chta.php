@@ -11,7 +11,7 @@ $tentk = $_SESSION['user']['tentk'];
 $vaitro = $_SESSION['user']['vaitro']; // 0 = bác sĩ, 1 = bệnh nhân
 
 // Load WebSocket configuration
-require_once('Assets/websocket-config.php');
+require_once(__DIR__ . '/Assets/websocket-config.php');
 $websocketUrl = getWebSocketUrl();
 ?>
 <!DOCTYPE html>
