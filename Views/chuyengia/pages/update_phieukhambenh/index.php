@@ -91,9 +91,14 @@ if(isset($_POST['hoantat_kham'])){
 // Handle form submission for creating test appointment
 if(isset($_POST['tao_xet_nghiem'])){
     if($mahoso && !empty($_POST['loai_xet_nghiem']) && !empty($_POST['ngay_hen']) && !empty($_POST['gio_hen'])){
-        // Create QR code
-        $ten_file_qr = 'qr_' . time() . '.png';
+        // Create QR code with unique filename
+        $ten_file_qr = 'qr_' . uniqid() . '_' . time() . '.png';
         $duong_dan_luu = 'Assets/img/' . $ten_file_qr;
+        
+        // Ensure directory exists
+        if(!is_dir('Assets/img')){
+            mkdir('Assets/img', 0755, true);
+        }
         
         $khung_gio = $ckhunggioxetnghiem->get_khunggioxetnghiem_makhunggio($_POST['gio_hen']);
         $loai_xn = $cloaixetnghiem->get_loaixetnghiem_maloaixetnghiem($_POST['loai_xet_nghiem']);
@@ -108,13 +113,18 @@ if(isset($_POST['tao_xet_nghiem'])){
                 "Chuyên gia: " . $chuyengia['hoten']
         );
         $ket_qua_qr = $builder->build();
-        file_put_contents($duong_dan_luu, $ket_qua_qr->getString());
         
-        if($clichxetnghiem->create_lichxetnghiem($mabenhnhan, $_POST['loai_xet_nghiem'], $_POST['ngay_hen'], $_POST['gio_hen'], '10', $mahoso, $ten_file_qr)){
-            $message = "Đã tạo lịch xét nghiệm thành công!";
-            $messageType = "success";
+        if(file_put_contents($duong_dan_luu, $ket_qua_qr->getString()) !== false){
+            // Status '10' = Pending/Chưa thực hiện
+            if($clichxetnghiem->create_lichxetnghiem($mabenhnhan, $_POST['loai_xet_nghiem'], $_POST['ngay_hen'], $_POST['gio_hen'], '10', $mahoso, $ten_file_qr)){
+                $message = "Đã tạo lịch xét nghiệm thành công!";
+                $messageType = "success";
+            } else {
+                $message = "Có lỗi khi tạo lịch xét nghiệm!";
+                $messageType = "error";
+            }
         } else {
-            $message = "Có lỗi khi tạo lịch xét nghiệm!";
+            $message = "Không thể lưu mã QR! Vui lòng kiểm tra quyền ghi thư mục.";
             $messageType = "error";
         }
     } else {
