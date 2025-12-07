@@ -18,7 +18,7 @@ if ($file['type'] !== 'application/pdf') {
 }
 
 // Thư mục uploads
-$uploadDir = 'D:/';
+$uploadDir = '/var/www/html/KhoaLuanTotNghiep/uploads/';
 if(!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
 
 // Tên file an toàn
