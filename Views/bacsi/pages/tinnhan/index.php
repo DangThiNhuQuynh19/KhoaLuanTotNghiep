@@ -1,7 +1,7 @@
 <?php
-// Fixed chat UI for bác sĩ/patient view
+// Fixed chat UI for bác sĩ/patient view with initials fallback when avatar missing
 // - Start session safely to avoid repeated session_start() warnings
-// - Improved layout, LifeCare theme colors, avatar, patient list, message bubbles, file card display
+// - If patient has no avatar, show initial letter (from last name) in avatar circle
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -33,7 +33,7 @@ $tentk = $_SESSION['user']['tentk'];
   --header-h: 90px;
   --input-h: 80px;
   --bubble-radius: 12px;
-  --max-w: 100%px;
+  --max-w: 100%;
 }
 
 *{box-sizing:border-box}
@@ -123,6 +123,21 @@ body{background:#f2f4f8;color:var(--text);}
 }
 .u-avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
 
+/* initial avatar when no image */
+.u-initial {
+  width:100%; height:100%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px; font-weight:700; color:#fff;
+  background: linear-gradient(180deg, var(--primary), #3c50c8);
+  text-transform:uppercase;
+}
+
+/* header avatar container supports img or initial */
+.h-avatar{ width:54px;height:54px;border-radius:50%;overflow:hidden;border:1px solid #eef2f7; display:flex; align-items:center; justify-content:center; background:#fff; }
+.h-avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
+.h-avatar .avatar-initial{ width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:700; color:#fff; background: linear-gradient(180deg, var(--primary), #3c50c8); text-transform:uppercase; }
+
+/* text */
 .u-info{min-width:0;}
 .u-name{font-size:14px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .u-sub{font-size:12px;color:var(--muted);margin-top:4px}
@@ -141,8 +156,6 @@ body{background:#f2f4f8;color:var(--text);}
   position:sticky;
   top:0; z-index:4;
 }
-.h-avatar{ width:54px;height:54px;border-radius:50%;overflow:hidden;border:1px solid #eef2f7; }
-.h-avatar img{ width:100%;height:100%;object-fit:cover;display:block; }
 .h-info{flex:1; min-width:0}
 .h-title{ font-size:16px;font-weight:700;color:var(--text) }
 .h-sub{ font-size:13px;color:var(--muted); margin-top:4px }
@@ -227,7 +240,7 @@ body{background:#f2f4f8;color:var(--text);}
   bottom:0; z-index:5;
 }
 .input-inner {
-  flex:1; display:flex; gap:8px; align-items:center; background:#fff; border:1px solid #e9eef9; border-radius:12px;
+  flex:1; display:flex; gap:8px; align-items:center; background:#fff; border:1px solid #e9eef9; border-radius:12px; padding:8px;
 }
 .textarea {
   width:100%; min-height:44px; max-height:140px; border:none; outline:none; resize:none; font-size:14px; color:var(--text); background:transparent;
@@ -275,17 +288,42 @@ body{background:#f2f4f8;color:var(--text);}
             $tbl = $ctk->gettkbenhnhan($mabacsi);
             if ($tbl && $tbl->num_rows > 0) {
                 while ($row = $tbl->fetch_assoc()) {
-                    $hoten = htmlspecialchars($row['hoten'] ?: 'Bệnh nhân', ENT_QUOTES, 'UTF-8');
-                    $tentk_row = htmlspecialchars($row['tentk'], ENT_QUOTES, 'UTF-8');
-                    // If avatar exists on row, use it; fallback to default
-                    $avatar = (isset($row['avatar']) && $row['avatar']) ? htmlspecialchars($row['avatar'], ENT_QUOTES, 'UTF-8') : 'Assets/img/default.png';
-                    echo "<div class='user' data-tentk='{$tentk_row}' data-name='{$hoten}'>
-                            <div class='u-avatar'><img src='{$avatar}' alt='avatar'></div>
-                            <div class='u-info'>
-                              <div class='u-name'>{$hoten}</div>
-                              <div class='u-sub'>Bệnh nhân</div>
-                            </div>
-                          </div>";
+                    // sanitize and fallback
+                    $hoten_raw = $row['hoten'] ?? '';
+                    $hoten = htmlspecialchars(trim($hoten_raw) ?: 'Bệnh nhân', ENT_QUOTES, 'UTF-8');
+                    $tentk_row = htmlspecialchars($row['tentk'] ?? '', ENT_QUOTES, 'UTF-8');
+
+                    // compute initial from last word of name (Vietnamese style), uppercase multibyte-safe
+                    $initial = '';
+                    $name_parts = preg_split('/\s+/', trim($hoten_raw));
+                    if ($name_parts && count($name_parts) > 0) {
+                        $last = end($name_parts);
+                        // mb_substr for multibyte characters
+                        $initial = mb_strtoupper(mb_substr($last, 0, 1, 'UTF-8'), 'UTF-8');
+                        $initial = htmlspecialchars($initial, ENT_QUOTES, 'UTF-8');
+                    }
+
+                    // avatar field present and non-empty -> show image; else show initial
+                    $avatar_field = isset($row['avatar']) ? trim($row['avatar']) : '';
+                    if ($avatar_field) {
+                        $avatar_safe = htmlspecialchars($avatar_field, ENT_QUOTES, 'UTF-8');
+                        echo "<div class='user' data-tentk='{$tentk_row}' data-name='{$hoten}'>
+                                <div class='u-avatar'><img src='{$avatar_safe}' alt='avatar'></div>
+                                <div class='u-info'>
+                                  <div class='u-name'>{$hoten}</div>
+                                  <div class='u-sub'>Bệnh nhân</div>
+                                </div>
+                              </div>";
+                    } else {
+                        // render initial avatar
+                        echo "<div class='user' data-tentk='{$tentk_row}' data-name='{$hoten}'>
+                                <div class='u-avatar'><div class='u-initial'>{$initial}</div></div>
+                                <div class='u-info'>
+                                  <div class='u-name'>{$hoten}</div>
+                                  <div class='u-sub'>Bệnh nhân</div>
+                                </div>
+                              </div>";
+                    }
                 }
             } else {
                 echo "<p style='padding:12px;color:#666;margin:0'>Không có bệnh nhân nào.</p>";
@@ -299,7 +337,11 @@ body{background:#f2f4f8;color:var(--text);}
 
     <section class="area">
       <header class="header" id="chatHeader">
-        <div class="h-avatar"><img id="headerAvatar" src="Assets/img/default.png" alt="avatar"></div>
+        <!-- headerAvatar container can receive an <img> or an initial div -->
+        <div class="h-avatar" id="headerAvatar">
+          <!-- default: show initial from logged-in doctor if available, else a simple placeholder image -->
+          <img src="Assets/img/default.png" alt="avatar" id="headerAvatarImg" />
+        </div>
         <div class="h-info">
           <div class="h-title" id="headerText">Chọn bệnh nhân để bắt chuyện</div>
           <div class="h-sub" id="headerSub">Sẵn sàng để tư vấn</div>
@@ -475,9 +517,25 @@ function selectUser(tentk, name){
 
     currentPatient = { tentk, name };
     $('#headerText').text('Đang trò chuyện với ' + name);
-    // attempt to use the avatar from list
-    const avatarEl = $(`.user[data-tentk="${tentk}"] .u-avatar img`);
-    if(avatarEl.length) $('#headerAvatar').attr('src', avatarEl.attr('src'));
+
+    // set header avatar: prefer <img>, else use initial element text
+    const avatarImg = $(`.user[data-tentk="${tentk}"] .u-avatar img`);
+    const avatarInitial = $(`.user[data-tentk="${tentk}"] .u-avatar .u-initial`);
+    const headerAvatar = $('#headerAvatar');
+    headerAvatar.empty();
+    if (avatarImg.length) {
+        const src = avatarImg.attr('src');
+        const img = $('<img>').attr('src', src).attr('alt', 'avatar');
+        headerAvatar.append(img);
+    } else if (avatarInitial.length) {
+        const letter = avatarInitial.text().trim().charAt(0).toUpperCase();
+        const div = $('<div>').addClass('avatar-initial').text(letter);
+        headerAvatar.append(div);
+    } else {
+        // fallback default image
+        headerAvatar.append($('<img>').attr('src','Assets/img/default.png').attr('alt','avatar'));
+    }
+
     $('#messageInput').prop('disabled', false).focus();
     $('#sendButton').prop('disabled', false);
 
@@ -486,7 +544,7 @@ function selectUser(tentk, name){
     if(!messages[tentk]) messages[tentk] = [];
     renderMessages(messages[tentk]);
 
-    try{ socket.send(JSON.stringify({ command:'load_messages', tentk: user.tentk, receiver_tentk: tentk })); }catch(e){ console.warn(e) }
+    try{ socket.send(JSON.stringify({ command:'load_messages', tentk: user.tentk, receiver_tentk: tentk })); }catch(e){console.warn(e)}
 }
 
 function renderMessages(arr){
