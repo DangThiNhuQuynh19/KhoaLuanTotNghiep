@@ -73,7 +73,7 @@ function connectWebSocket() {
     socket = new WebSocket('wss://hanhphuc.site/ws');
     socket.onopen = () => {
         console.log("WebSocket connected!");
-        socket.send(JSON.stringify({action:'register', username:user.tentk, role:user.vaitro}));
+        socket.send(JSON.stringify({command:'register', username:user.tentk, role:user.vaitro}));
     };
 
     socket.onmessage = (event) => {
@@ -94,6 +94,20 @@ function connectWebSocket() {
             messages[sender].push(data);
             if(currentPatient && currentPatient.tentk === sender){
                 data.command === 'receive' ? displayMessage(data) : displayFileMessage(data);
+            }
+        }
+
+        // Xác nhận tin nhắn đã gửi thành công
+        if(data.command === 'sent'){
+            const receiver = data.receiver;
+            if(!messages[receiver]) messages[receiver] = [];
+            messages[receiver].push({
+                sender: user.tentk,
+                message: data.message,
+                time: data.time
+            });
+            if(currentPatient && currentPatient.tentk === receiver){
+                displayMessage({sender: user.tentk, message: data.message});
             }
         }
 
@@ -162,9 +176,6 @@ $('#sendButton').click(() => {
     const msg = {command:'send', sender:user.tentk, receiver:currentPatient.tentk, message:text};
     if(socket && socket.readyState === WebSocket.OPEN){
         socket.send(JSON.stringify(msg));
-        if(!messages[currentPatient.tentk]) messages[currentPatient.tentk] = [];
-        messages[currentPatient.tentk].push(msg);
-        displayMessage(msg);
         $('#messageInput').val('');
     }
 });
