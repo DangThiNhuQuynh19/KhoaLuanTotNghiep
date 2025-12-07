@@ -36,6 +36,8 @@ $tentk = $_SESSION['user']['tentk'];
             box-shadow: 0 8px 30px rgba(0,0,0,0.08);
             background: white;
             display: flex;
+            margin-top: calc(var(--site-header-height) + var(--chat-gutter));
+            margin-bottom: calc(var(--site-footer-height) + var(--chat-gutter));
         }
 
         /* Sidebar */
@@ -144,78 +146,6 @@ $tentk = $_SESSION['user']['tentk'];
             /* reduce big paddings on small screens */
             #chatHeader, #chatMessages, .input-container { padding: 18px; }
             .message { max-width: 90%; }
-        }
-                :root{
-        /* adjust if your site header/footer heights differ */
-        --site-header-height: 90px;
-        --site-footer-height: 80px;
-        --chat-gutter: 18px;
-        --input-area-height: 84px; /* approximate height of .input-container (padding + controls) */
-        }
-
-        /* Keep the chat wrapper inside the visible viewport (between header & footer) */
-        .chat-wrapper {
-        max-width: 1200px;
-        margin: calc(var(--chat-gutter)) auto;
-        /* leave space for top header and bottom footer */
-        height: calc(100vh - var(--site-header-height) - var(--site-footer-height) - (var(--chat-gutter) * 2));
-        /* optional: make it visually placed under the global header */
-        margin-top: calc(var(--site-header-height) + var(--chat-gutter));
-        margin-bottom: calc(var(--site-footer-height) + var(--chat-gutter));
-        display: flex;
-        position: relative;
-        }
-
-        /* Keep header of chat sticky at top inside the chat column */
-        #chatHeader {
-        position: sticky;
-        top: 0;
-        z-index: 5; /* on top of messages */
-        background: linear-gradient(90deg,#fff,#fbfdff);
-        }
-
-        /* Messages area: make sure it scrolls and never gets hidden under the input */
-        #chatMessages {
-        flex: 1;
-        overflow-y: auto;
-        padding: 50px;
-        /* ensure last messages are not hidden behind the input/footer - allow some extra space */
-        padding-bottom: calc(var(--input-area-height) + 32px);
-        min-height: 0; /* important for flex children to allow scrolling */
-        background: linear-gradient(#f6f7fb,#f6f7fb);
-        }
-
-        /* Pin the input area to the bottom of the chat column (inside .chat-wrapper) */
-        .input-container {
-        position: sticky;
-        bottom: 0; /* stick to bottom of .chat-wrapper */
-        z-index: 6;
-        background: #fff;
-        box-shadow: 0 -6px 24px rgba(2,6,23,0.03);
-        /* keep the same internal layout */
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 18px 50px; /* reduce if you want smaller input height */
-        }
-
-        /* Make sure the inner textarea area remains visible when keyboard/mobile open */
-        .input-inner { z-index: 6; }
-
-        /* Small-screen tuning */
-        @media (max-width: 900px) {
-        :root {
-            --site-header-height: 64px;
-            --site-footer-height: 64px;
-            --input-area-height: 66px;
-        }
-        .chat-wrapper {
-            height: calc(100vh - var(--site-header-height) - var(--site-footer-height));
-            margin-top: var(--site-header-height);
-            margin-bottom: var(--site-footer-height);
-        }
-        #chatMessages { padding: 18px; padding-bottom: calc(var(--input-area-height) + 18px); }
-        .input-container { padding: 12px 18px; }
         }
     </style>
 </head>
