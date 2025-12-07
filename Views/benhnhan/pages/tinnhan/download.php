@@ -3,7 +3,7 @@
 $filename = $_GET['file'] ?? '';
 
 // Đường dẫn đến thư mục uploads
-$uploadDir = __DIR__ . '/uploads/';
+$uploadDir = 'https://hanhphuc.site/uploads/';
 $filepath = $uploadDir . basename($filename);
 
 // Kiểm tra file có tồn tại không
