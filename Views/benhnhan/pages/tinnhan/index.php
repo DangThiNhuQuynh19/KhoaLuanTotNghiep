@@ -23,7 +23,7 @@ $tentk = $_SESSION['user']['tentk'];
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html, body { height: 100%; }
         body {
-            padding-top: 100px;
+            padding-top: 200px;
             font-family: 'Poppins', sans-serif;
             background: #f0f2f5;
             -webkit-font-smoothing: antialiased;
@@ -36,7 +36,7 @@ $tentk = $_SESSION['user']['tentk'];
         .chat-wrapper {
             max-width: 1200px;
             margin: 18px auto;
-            height: calc(60vh - 36px);
+            height: calc(100vh - 36px);
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 8px 30px rgba(0,0,0,0.08);
