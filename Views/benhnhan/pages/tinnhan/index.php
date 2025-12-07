@@ -14,20 +14,7 @@ $tentk = $_SESSION['user']['tentk'];
     <link href="https://fonts.googleapis.com/css2? family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            font-family: 'Inter', sans-serif;
-            padding-top: 90px;
-            height: 100vh;
-        }
-        
+    <style>        
         .chat-layout {
             display: flex;
             height: calc(100vh - 110px);
@@ -64,7 +51,7 @@ $tentk = $_SESSION['user']['tentk'];
             font-size: 22px;
         }
         
-        . user {
+        .user {
             padding: 15px 20px;
             border-bottom: 1px solid rgba(255,255,255,0.05);
             cursor: pointer;
@@ -549,8 +536,8 @@ function selectUser(tentk, name, vaitro){
         return;
     }
 
-    $('. user').removeClass('active');
-    $('. user'). filter(function() {
+    $('.user').removeClass('active');
+    $('.user'). filter(function() {
         return $(this).data('tentk') === tentk;
     }).addClass('active');
     
