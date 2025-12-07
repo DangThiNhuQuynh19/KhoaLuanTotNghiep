@@ -220,6 +220,7 @@ $tentk = $_SESSION['user']['tentk'];
     </div>
 </div>
 
+<!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 /* Globals */
@@ -299,6 +300,27 @@ function deriveFilenameFromUrl(url) {
     }
 }
 
+/* DOM helpers */
+function appendMessage(sender, text, thoigiangui, url) {
+    // Normalize shape similar to displayMessage
+    const msg = {
+        sender: sender,
+        message: text,
+        filename: null,
+        url: url,
+        thoigiangui: thoigiangui
+    };
+    if (url) {
+        msg.filename = deriveFilenameFromUrl(url) || 'Tập tin';
+    }
+    // push and display if current partner matches
+    if (!messages[sender]) messages[sender] = [];
+    messages[sender].push(msg);
+    if (currentDoctor && currentDoctor.tentk === sender) {
+        displayMessage(msg);
+    }
+}
+
 /* WebSocket connect */
 function connectWebSocket() {
     $('#connectionStatus').text('Đang kết nối').show();
@@ -324,7 +346,13 @@ function connectWebSocket() {
 
     socket.onmessage = function(event) {
         let data;
-        try { data = JSON.parse(event.data); } catch(e){ console.warn('Invalid WS message', event.data); return; }
+        try {
+            data = JSON.parse(event.data);
+        } catch (e) {
+            console.warn('Invalid WS message', event.data);
+            return;
+        }
+
         // handle messages payload
         if (data.command === 'messages') {
             const partner = data.receiver_tentk || data.partner;
@@ -361,7 +389,7 @@ function connectWebSocket() {
             });
             messages[partner] = normalized;
             if (currentDoctor && currentDoctor.tentk === partner) renderMessages(messages[partner]);
-        } else if (data.command === 'receive') {
+        } else if (data.command === 'receive' || data.command === 'message') {
             const sender = data.sender || data.from;
             if (!messages[sender]) messages[sender] = [];
             const msgObj = {
@@ -397,6 +425,9 @@ function connectWebSocket() {
             }
             messages[sender].push(msgObj);
             if (currentDoctor && currentDoctor.tentk === sender) displayMessage(msgObj);
+        } else if (data.command === 'status') {
+            // optional: handle status changes
+            console.log('status', data);
         }
     };
 
@@ -507,7 +538,6 @@ function displayMessage(msg) {
 
 function scrollToBottom() {
     const box = $('#chatMessages');
-    // ensure layout finished before scrolling
     requestAnimationFrame(function(){
         try { box.scrollTop(box[0].scrollHeight); } catch(e){}
     });
@@ -558,12 +588,22 @@ $('#fileInput').change(function(){
 
     if(file.type !== "application/pdf"){
         alert("Chỉ chấp nhận file PDF!");
+        $(this).val('');
+        return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+        alert("File quá lớn (max 10MB)!");
+        $(this).val('');
         return;
     }
 
     const formData = new FormData();
     formData.append('file', file);
     formData.append('receiver', currentDoctor.tentk);
+
+    const origHtml = $('#attachBtn').html();
+    $('#attachBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
 
     $.ajax({
         url: 'Views/benhnhan/pages/tinnhan/uploadFile.php',
@@ -573,28 +613,44 @@ $('#fileInput').change(function(){
         processData: false,
         dataType: 'json',
         success: function(res){
-            if(res.success){
-                const msg = {
+            if(res && res.success){
+                const filename = res.filename || res.saved_name || file.name;
+                const url = res.url || res.fileUrl || null;
+                const ts = new Date().toISOString();
+
+                // store mapping locally so reloads can show original filename
+                if (url) addFileMapEntry(user.tentk, currentDoctor.tentk, ts, filename, url);
+
+                // send message metadata over WS
+                const payload = {
                     command: 'send',
                     sender: user.tentk,
                     receiver: currentDoctor.tentk,
                     message: '[FILE]',
-                    filename: res.filename,
-                    url: res.url
+                    filename: filename,
+                    url: url,
+                    thoigiangui: ts
                 };
-                if(socket && socket.readyState === WebSocket.OPEN){
-                    socket.send(JSON.stringify(msg));
-                }
+                try { if(socket && socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify(payload)); } catch(e){ console.warn('WS send file meta failed', e); }
+
+                // locally display
+                const localMsg = { sender: user.tentk, message: '[FILE]', filename: filename, url: url, thoigiangui: ts };
+                if (!messages[currentDoctor.tentk]) messages[currentDoctor.tentk] = [];
+                messages[currentDoctor.tentk].push(localMsg);
+                displayMessage(localMsg);
             } else {
-                alert("Upload thất bại: " + res.error);
+                alert("Upload thất bại: " + (res && res.error ? res.error : 'Không rõ lỗi'));
             }
         },
-        error: function(){
+        error: function(xhr, st, err){
+            console.error('Upload error', err, xhr.responseText);
             alert("Upload thất bại!");
+        },
+        complete: function(){
+            $('#attachBtn').prop('disabled', false).html(origHtml);
+            $('#fileInput').val('');
         }
     });
-
-    $(this).val('');
 });
 
 /* Events */
