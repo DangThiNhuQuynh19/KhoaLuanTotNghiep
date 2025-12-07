@@ -272,14 +272,6 @@
                             </div>
                         </div>
 
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label for="ma_ho_so">Hồ sơ bệnh nhân</label>
-                                <select name="ma_ho_so" id="ma_ho_so" required>
-                                    <option value="">-- Chọn hồ sơ --</option>
-                                </select>
-                            </div>
-                        </div>
 
                         <div class="form-col">
                             <div class="form-group">
