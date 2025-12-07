@@ -85,7 +85,7 @@ if (move_uploaded_file($file['tmp_name'], $targetPath)) {
     $serverName = $_SERVER['SERVER_NAME'] ?? ($_SERVER['HTTP_HOST'] ?? 'localhost');
     // Handle non-standard ports
     $defaultPort = ($scheme === 'https') ? '443' : '80';
-    $port = $_SERVER['SERVER_PORT'] ?? $defaultPort;
+    $port = (string)($_SERVER['SERVER_PORT'] ?? $defaultPort);
     $portSuffix = '';
     if (($scheme === 'https' && $port !== '443') || ($scheme === 'http' && $port !== '80')) {
         $portSuffix = ':' . $port;
