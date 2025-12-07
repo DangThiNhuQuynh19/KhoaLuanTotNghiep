@@ -35,7 +35,6 @@ $lichkham = $cLichKham->getLichKhamOfBacSiByNgay($ngay, $mabacsi, $gioHienTai);
 html, body { height: 100%; }
 body {
     /* padding 20px total around page, include footer spacing at bottom */
-    padding: 20px;
     padding-top: 50px;
     padding-bottom: 20px; /* ensure footer spacing requested */
     margin: 0;
@@ -207,7 +206,9 @@ body {
     font-size: 14px;
     background: transparent;
     margin-top: 24px;
-}
+}    
+
+
 </style>
 </head>
 <body>

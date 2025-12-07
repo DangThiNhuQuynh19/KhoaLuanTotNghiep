@@ -70,7 +70,7 @@ let messages = {}; // lưu tin nhắn theo bệnh nhân
 
 // Kết nối WebSocket
 function connectWebSocket() {
-    socket = new WebSocket('ws://localhost:8080');
+    var socket = new WebSocket("wss://hanhphuc.site/ws");
     socket.onopen = () => {
         console.log("WebSocket connected!");
         socket.send(JSON.stringify({action:'register', username:user.tentk, role:user.vaitro}));
