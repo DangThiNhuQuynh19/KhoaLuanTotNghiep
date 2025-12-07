@@ -68,13 +68,21 @@ let currentPatient = null;
 let messages = {};
 
 function connectWebSocket() {
-    var socket = new WebSocket("wss://hanhphuc.site/ws");
+    socket = new WebSocket("wss://hanhphuc.site/ws"); // ✅ Gán vào biến GLOBAL
+    
     socket.onopen = () => {
-        console.log("WebSocket connected!");
-        socket.send(JSON.stringify({ action: 'register', username: user.tentk, role: user.vaitro }));
+        console.log("✅ WebSocket connected!");
+        socket.send(JSON.stringify({ 
+            action: 'register', 
+            username: user.tentk, 
+            role: user.vaitro 
+        }));
     };
+    
     socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
+        console.log("📩 Received:", data);
+        
         if (data.command === 'messages') {
             const patientID = data.receiver_tentk;
             messages[patientID] = data.messages;
@@ -82,20 +90,32 @@ function connectWebSocket() {
                 renderMessages(messages[patientID]);
             }
         } else if (data.command === 'receive') {
-            if (!messages[data.sender]) messages[data.sender] = [];
-            messages[data.sender].push(data);
+            if (!messages[data. sender]) messages[data.sender] = [];
+            messages[data. sender].push(data);
             if (currentPatient && currentPatient.tentk === data.sender) {
                 displayMessage(data);
             }
         }
     };
-    socket.onclose = () => {
-        console.warn("WebSocket closed. Attempting to reconnect...");
+    
+    socket. onerror = (error) => {
+        console.error("❌ WebSocket error:", error);
+    };
+    
+    socket.onclose = (event) => {
+        console. warn("⚠️ WebSocket closed:", event. reason);
         setTimeout(connectWebSocket, 3000);
     };
 }
 
 function selectUser(tentk, name) {
+    // Kiểm tra WebSocket trước khi xử lý
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
+        console.warn("⏳ WebSocket chưa sẵn sàng.  Đang chờ...");
+        setTimeout(() => selectUser(tentk, name), 1000);
+        return;
+    }
+    
     currentPatient = { tentk, name };
     $('#chatHeader').text('Đang trò chuyện với bệnh nhân ' + name);
     $('#messageInput').prop('disabled', false);
@@ -105,34 +125,35 @@ function selectUser(tentk, name) {
     if (!messages[tentk]) messages[tentk] = [];
     renderMessages(messages[tentk]);
 
-    if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify({
-            command: "load_messages",
-            tentk: user.tentk,
-            receiver_tentk: tentk
-        }));
-    } else {
-        console.warn("WebSocket is not ready. Retrying...");
-        setTimeout(() => selectUser(tentk, name), 2000);
-    }
+    console.log("📤 Requesting messages for:", tentk);
+    socket.send(JSON.stringify({
+        command: "load_messages",
+        tentk: user.tentk,
+        receiver_tentk: tentk
+    }));
 }
 
 function renderMessages(msgArray) {
-    $('#chatMessages').html('');
-    msgArray.forEach(m => displayMessage(m));
+    $('#chatMessages'). html('');
+    msgArray. forEach(m => displayMessage(m));
 }
 
 function displayMessage(msg) {
     const msgDiv = $('<div class="message"></div>');
-    msgDiv.text(msg.message);
+    msgDiv. text(msg.message);
     msgDiv.addClass(msg.sender === user.tentk ? 'doctor' : 'patient');
     $('#chatMessages').append(msgDiv);
-    $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
+    $('#chatMessages'). scrollTop($('#chatMessages')[0].scrollHeight);
 }
 
 $('#sendButton').click(() => {
     const text = $('#messageInput').val().trim();
     if (!text || !currentPatient) return;
+
+    if (! socket || socket.readyState !== WebSocket.OPEN) {
+        alert("❌ Kết nối WebSocket bị gián đoạn. Vui lòng thử lại!");
+        return;
+    }
 
     const msg = {
         command: 'send',
@@ -141,17 +162,15 @@ $('#sendButton').click(() => {
         message: text
     };
 
-    if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify(msg));
-        if (!messages[currentPatient.tentk]) messages[currentPatient.tentk] = [];
-        messages[currentPatient.tentk].push(msg);
-        displayMessage(msg);
-        $('#messageInput').val('');
-    } else {
-        console.warn("WebSocket is not ready.");
-    }
+    socket.send(JSON.stringify(msg));
+    
+    if (!messages[currentPatient.tentk]) messages[currentPatient.tentk] = [];
+    messages[currentPatient.tentk].push(msg);
+    displayMessage(msg);
+    $('#messageInput').val('');
 });
 
+// Khởi tạo kết nối khi trang load
 connectWebSocket();
 </script>
 </body>
