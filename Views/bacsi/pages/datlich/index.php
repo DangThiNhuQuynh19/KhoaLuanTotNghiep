@@ -10,7 +10,7 @@
     include_once('Controllers/cbacsi.php');
     include_once('Controllers/chosobenhandientu.php');
     include_once('Controllers/clichkham.php');
-    include_once('Controllers/cphieukhambenh.php');
+    include_once('Controllers/cphp');
     include_once('Controllers/ckhunggio.php');
 
     // Khởi tạo các đối tượng controller
@@ -635,7 +635,7 @@
                 khungGioKham.style.display = 'none';
                 return;
             }
-
+            console.log(khungTrong);
             // Nhóm khung giờ theo hình thức và ca
             khungTrong.forEach(kg => {
                 const id_target = `${kg.hinhthuclamviec}_${kg.macalamviec === '4' ? 'ca_sang' : kg.macalamviec === '5' ? 'ca_chieu' : 'ca_toi'}`;
