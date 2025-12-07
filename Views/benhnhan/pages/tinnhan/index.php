@@ -157,7 +157,7 @@ $tentk = $_SESSION['user']['tentk'];
 
         .chat-wrapper {
         position: relative;
-        max-width: 1200px;
+        max-width: 100%;
         margin-left: auto;
         margin-right: auto;
         margin-top: calc(var(--chat-gap)); 
