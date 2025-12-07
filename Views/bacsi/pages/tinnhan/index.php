@@ -33,7 +33,7 @@ $tentk = $_SESSION['user']['tentk'];
   --header-h: 90px;
   --input-h: 80px;
   --bubble-radius: 12px;
-  --max-w: 1200px;
+  --max-w: 100%px;
 }
 
 *{box-sizing:border-box}
@@ -217,7 +217,7 @@ body{background:#f2f4f8;color:var(--text);}
 
 /* Input area */
 .input {
-  padding:14px 18px;
+  padding:8px 10px;
   background:#fff;
   border-top:1px solid #eef2f7;
   display:flex;
@@ -227,7 +227,7 @@ body{background:#f2f4f8;color:var(--text);}
   bottom:0; z-index:5;
 }
 .input-inner {
-  flex:1; display:flex; gap:8px; align-items:center; background:#fff; border:1px solid #e9eef9; padding:8px 12px; border-radius:12px;
+  flex:1; display:flex; gap:8px; align-items:center; background:#fff; border:1px solid #e9eef9; border-radius:12px;
 }
 .textarea {
   width:100%; min-height:44px; max-height:140px; border:none; outline:none; resize:none; font-size:14px; color:var(--text); background:transparent;
@@ -313,7 +313,7 @@ body{background:#f2f4f8;color:var(--text);}
 
       <div class="input" id="chatInput">
         <div class="input-inner">
-          <button id="attachBtn" class="btn attach" title="Gửi file (PDF)">📎</button>
+          <button id="attachBtn" class="btn attach" title="Gửi file (PDF)"><i class="fas fa-paperclip"></i></button>
           <textarea id="messageInput" class="textarea" placeholder="Nhập tin nhắn..." rows="1" disabled></textarea>
           <input type="file" id="fileInput" accept="application/pdf" style="display:none" />
         </div>
