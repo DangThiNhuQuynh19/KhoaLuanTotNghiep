@@ -64,7 +64,7 @@ if (!file_exists($uploadDir)) {
 $originalName = pathinfo($file['name'], PATHINFO_FILENAME);
 $safeName = preg_replace('/[^a-zA-Z0-9_-]/', '', $originalName);
 $safeName = substr($safeName, 0, 50); // Giới hạn độ dài
-$filename = time() . '_' . uniqid() . '_' . ($safeName ?: 'file') . '. pdf';
+$filename = time() . '_' . uniqid() . '_' .($safeName ?:'file') . '.pdf';
 $filepath = $uploadDir . $filename;
 
 // ✅ Di chuyển file
