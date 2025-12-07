@@ -452,6 +452,19 @@ function selectUser(tentk, name, vaitro) {
     try { socket.send(JSON.stringify({ command: 'load_messages', tentk: user.tentk, receiver_tentk: tentk })); } catch(e){ console.warn(e); }
 }
 
+/* Render messages using simple text-style blocks (patient/doctor) */
+function renderMessages(arr) {
+    const container = $('#chatMessages');
+    container.html('');
+    if (!arr || arr.length === 0) {
+        container.html('<div class="message-day">Chưa có tin nhắn</div>');
+        scrollToBottom();
+        return;
+    }
+    arr.forEach(m => displayTextMessage(m));
+    scrollToBottom();
+}
+
 /* Display a single message as text block (keeps UI consistent but simple) */
 function displayTextMessage(msg) {
     const container = $('#chatMessages');
@@ -466,7 +479,7 @@ function displayTextMessage(msg) {
             if (after) url = after;
         }
         url = toAbsoluteUrl(url);
-        let filename = msg.filename;
+        let filename = msg.filename || deriveFilenameFromUrl(url) || 'Tập tin';
         // fuzzy map
         if ((!msg.filename || msg.filename === 'Tập tin') && msg.thoigiangui) {
             const ent = findFileMapEntryFuzzy(msg.sender, currentDoctor ? currentDoctor.tentk : null, msg.thoigiangui);
