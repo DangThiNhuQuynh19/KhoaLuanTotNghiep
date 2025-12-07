@@ -1,11 +1,5 @@
 <?php
-// Views/bacsi/pages/tinnhan/index.php
-// NOTE: ensure this file is placed in the correct repository path.
-// Start session only if not already started to avoid session_start() warnings.
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
+session_start();
 if (!isset($_SESSION['user']['tentk'])) {
     header("Location: index.php");
     exit();
@@ -18,376 +12,169 @@ $tentk = $_SESSION['user']['tentk'];
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chat Bác sĩ – Bệnh nhân</title>
-
-<!-- LifeCare Theme fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
 <style>
 :root{
-  --primary: #4A60D7;      /* LifeCare primary */
-  --secondary: #E8EEFF;    /* LifeCare soft secondary */
-  --muted: #f4f6fb;
-  --text: #2A2A2A;
-  --sidebar-width: 260px;
-  --header-height: 90px;
-  --input-height: 72px;
+  --site-header-height: 90px; /* chỉnh nếu header cao/thấp hơn */
+  --site-footer-height: 0px;
   --chat-gap: 18px;
-  --max-width: 1200px;
-  --bubble-radius: 12px;
+  --input-area-height: 84px;
+  --max-chat-width: 1200px;
 }
 
-/* Reset & base */
-* { box-sizing: border-box; }
-html,body { height:100%; }
-body {
-  margin:0;
-  font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  background: #f2f4f8;
-  color: var(--text);
-  -webkit-font-smoothing:antialiased;
-}
+*{box-sizing:border-box}
+body { background-color: #f0f2f5; font-family: Arial, sans-serif; margin:0; padding:0; }
 
-/* Outer layout */
-.container {
-  max-width: var(--max-width);
-  margin: var(--chat-gap) auto;
-  height: calc(100vh - var(--header-height) - (var(--chat-gap) * 2));
-  background: transparent;
-}
-
-/* Chat panel */
+/* Container keeps chat area within viewport between site header/footer */
 .chat-layout {
   display: flex;
-  height:100%;
+  width: 100%;
+  max-width: var(--max-chat-width);
+  margin: var(--chat-gap) auto;
+  height: calc(100vh - var(--site-header-height) - var(--site-footer-height) - (var(--chat-gap) * 2));
   background: #fff;
-  border-radius: 12px;
+  border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 6px 22px rgba(10,20,40,0.06);
+  box-shadow: 0 0 18px rgba(0,0,0,0.06);
 }
 
-/* Sidebar: patient list */
-#userList {
-  width: var(--sidebar-width);
-  min-width: var(--sidebar-width);
-  background: #ffffff;
-  border-right: 1px solid #e7e9ee;
-  overflow-y: auto;
-  padding-bottom: 12px;
-}
-
-#userList h3 {
-  margin: 0;
-  padding: 18px 16px;
-  font-size: 15px;
-  font-weight: 600;
-  background: linear-gradient(90deg, rgba(74,96,215,0.06), rgba(232,238,255,0.02));
-  color: var(--text);
-  border-bottom: 1px solid rgba(0,0,0,0.03);
-}
-
-/* Each user row */
-.user {
-  display:flex;
-  gap:12px;
-  align-items:center;
-  padding: 10px 14px;
-  cursor:pointer;
-  transition: background .16s, padding-left .16s;
-  border-left: 4px solid transparent;
-}
-
-.user:hover {
-  background: #F4F7FF; /* subtle hover matching spec */
-  padding-left: 12px;
-}
-
-.user.active {
-  background: linear-gradient(90deg, rgba(74,96,215,0.06), rgba(232,238,255,0.02));
-  border-left-color: var(--primary);
-}
-
-/* Avatar in list */
-.user-avatar {
-  width:44px;
-  height:44px;
-  border-radius:50%;
-  object-fit:cover;
-  background: #f3f4f7;
-  flex-shrink:0;
-  border:1px solid #eef2f8;
-}
-
-/* Name and meta */
-.user-info {
-  display:flex;
-  flex-direction:column;
-  min-width:0;
-}
-.user-name {
-  font-weight:600;
-  font-size:14px;
-  color:var(--text);
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-.user-sub {
-  font-size:12px;
-  color:#7b8794;
-  margin-top:2px;
-}
+/* Sidebar */
+#userList { width: 320px; background: #fff; border-right: 1px solid #eee; overflow-y: auto; padding-bottom: 8px; }
+#userList h3 { background: #2c3e50; color: white; padding: 16px; margin: 0; font-size:16px; }
+.user { padding: 12px 18px; border-bottom: 1px solid #f6f6f6; cursor: pointer; display: flex; align-items: center; gap:12px; transition: background .15s; }
+.user:hover { background: #fafafa; }
+.user.active { background: #eef6ff; }
 
 /* Chat column */
-#chatContainer { flex:1; display:flex; flex-direction:column; min-width:0; background: linear-gradient(180deg, #fbfdff, #fbfdff); }
+#chatContainer { flex: 1; display: flex; flex-direction: column; min-width:0; }
 
-/* Header */
+/* Header inside chat column should stay visible */
 #chatHeader {
+  padding: 18px 28px;
+  background: linear-gradient(90deg,#fff,#fbfdff);
+  border-bottom: 1px solid #f3f6f9;
   display:flex;
   align-items:center;
   gap:12px;
-  padding: 18px 20px;
-  border-bottom:1px solid #f0f2f6;
-  background: #ffffff;
   position: sticky;
-  top:0;
+  top: 0;
   z-index: 3;
 }
-.header-avatar {
-  width:48px; height:48px; border-radius:50%; overflow:hidden; flex-shrink:0;
-  border:1px solid #eef2f8;
-}
+.header-avatar { width:48px; height:48px; border-radius:50%; overflow:hidden; flex-shrink:0; }
 .header-avatar img { width:100%; height:100%; object-fit:cover; display:block; }
-.header-info { flex:1; min-width:0; }
-#headerText { font-weight:700; font-size:16px; color:var(--text); }
-#headerSub { color:#7b8794; font-size:13px; margin-top:4px; }
+.header-info { flex:1; }
+#headerText { font-weight:700; font-size:18px; color:#0f1724; }
+#headerSub { color:#6b7280; font-size:13px; margin-top:4px; }
 
-/* Messages area */
+/* Messages area should scroll independently */
 #chatMessages {
-  flex:1;
-  min-height:0;
-  overflow-y:auto;
-  padding: 28px;
-  padding-bottom: calc(var(--input-height) + 28px);
-  background: linear-gradient(180deg, #f8f9ff 0%, #f8f9ff 100%);
+  flex: 1;
+  min-height: 0; /* important: allows flex child to scroll */
+  overflow-y: auto;
+  padding: 40px;
+  padding-bottom: calc(var(--input-area-height) + 24px); /* ensure messages not hidden under input */
+  background: linear-gradient(#f6f7fb,#f6f7fb);
 }
 
-/* Message bubbles */
-.message-row { display:flex; margin-bottom:12px; align-items:flex-end; gap:12px; clear:both; }
-.message-row.right { justify-content:flex-end; }
-.message-row.left { justify-content:flex-start; }
+/* Message block styles (simple, consistent) */
+.message { display:block; max-width:68%; padding:10px 14px; margin-bottom:12px; border-radius:18px; font-size:14px; line-height:1.35; box-shadow: 0 4px 10px rgba(2,6,23,0.03); word-wrap:break-word; }
+.doctor { background: linear-gradient(135deg, #eef8ff, #e6f3ff); color:#06344a; float:right; border-bottom-right-radius:6px; }
+.patient { background:#ffffff; color:#0f1724; float:left; border-bottom-left-radius:6px; }
+.message a { color: inherit; text-decoration:none; display:inline-flex; gap:10px; align-items:center; }
+.fa-file-pdf { color:#c53030; font-size:20px; margin-right:8px; }
 
-.message {
-  display:inline-block;
-  max-width:68%;
-  padding:10px 14px;
-  border-radius: var(--bubble-radius);
-  font-size:14px;
-  line-height:1.35;
-  box-shadow: 0 1px 3px rgba(10,20,40,0.04);
-  word-wrap:break-word;
-  position:relative;
-}
+/* Meta time */
+.message-meta { display:block; font-size:11px; color: rgba(15,23,36,0.45); margin-top:8px; text-align:right; }
+.patient .message-meta { text-align:left; color:#6b7280; }
 
-/* Patient (left) = sent by patient, should be primary colored with white text */
-.patient {
-  background: var(--primary);
-  color: #fff;
-  border-bottom-left-radius: 6px;
-}
-
-/* Doctor (right) = current user (doctor) */
-.doctor {
-  background: var(--secondary);
-  color: var(--text);
-  border-bottom-right-radius: 6px;
-}
-
-/* Message metadata (time) */
-.message-meta {
-  display:block;
-  font-size:12px;
-  color: rgba(15,23,36,0.45);
-  margin-top:8px;
-  text-align:right;
-}
-.patient .message-meta { color: rgba(255,255,255,0.75); text-align:left; font-size:12px; }
-
-/* File card style */
-.file-card {
-  display:flex;
-  align-items:center;
-  gap:10px;
-  background:#fff;
-  border:1px solid #e6e6e6;
-  padding:8px 12px;
-  border-radius:10px;
-  max-width: 250px;
-  box-shadow:none;
-}
-.file-icon {
-  width:36px; height:36px; flex-shrink:0; display:flex; align-items:center; justify-content:center;
-  background: linear-gradient(180deg, #fff 0%, #fff 100%);
-  border-radius:8px;
-  color: #d23a3a;
-  font-weight:700;
-  font-size:16px;
-}
-.file-meta { min-width:0; display:flex; flex-direction:column; gap:4px; }
-.file-name {
-  font-size:13px;
-  color:var(--text);
-  overflow:hidden;
-  white-space:nowrap;
-  text-overflow:ellipsis;
-  max-width: 200px;
-}
-.file-time { font-size:12px; color:#7b8794; }
-
-/* make the whole file card a link */
-.file-link { text-decoration:none; color:inherit; display:flex; align-items:center; gap:10px; }
-
-/* Input area pinned to bottom */
+/* Input area pinned to bottom of chat column */
 .input-container {
   position: sticky;
-  bottom:0;
-  z-index:4;
-  background:#fff;
-  border-top:1px solid #e8e8ee;
-  padding: 14px 18px;
+  bottom: 0;
+  z-index: 4;
+  background: #fff;
+  border-top: 1px solid #eef2f7;
+  padding: 18px 28px;
   display:flex;
-  gap:12px;
+  gap:10px;
   align-items:center;
-  height: var(--input-height);
 }
+.input-inner { display:flex; align-items:center; gap:10px; flex:1; background:#f4f6fb; padding:10px 14px; border-radius:999px; border:1px solid #e6e9ee; }
+.input-inner textarea { border:none; background:transparent; outline:none; resize:none; width:100%; min-height:42px; max-height:120px; font-size:14px; color:#0f1724; }
 
-/* Input inner */
-.input-inner {
-  display:flex;
-  align-items:center;
-  gap:12px;
-  flex:1;
-  background:#f7f9ff;
-  padding:10px 14px;
-  border-radius:12px;
-  border:1px solid rgba(74,96,215,0.06);
-}
+/* Attach & send buttons */
+.icon-btn { background:transparent; border:none; cursor:pointer; color:#55607a; font-size:18px; padding:6px; border-radius:8px; }
+.send-btn { background:#1677ff; color:#fff; border:none; padding:10px 16px; border-radius:999px; cursor:pointer; font-weight:600; box-shadow:0 6px 18px rgba(22,119,255,0.12); }
+.send-btn:disabled { opacity:.5; cursor:not-allowed; box-shadow:none; }
 
-.input-inner textarea {
-  border:none;
-  background:transparent;
-  outline:none;
-  resize:none;
-  width:100%;
-  min-height:42px;
-  max-height:120px;
-  font-size:14px;
-  color:var(--text);
-}
-
-/* Attach & send */
-.icon-btn {
-  background:transparent;
-  border:none;
-  cursor:pointer;
-  color:#55607a;
-  font-size:18px;
-  padding:6px;
-  border-radius:8px;
-}
-.attach-icon {
-  width:22px; height:22px; display:inline-flex; align-items:center; justify-content:center; font-size:16px;
-}
-.send-btn {
-  background: var(--primary);
-  color:#fff;
-  border:none;
-  padding:10px 16px;
-  border-radius:10px;
-  cursor:pointer;
-  font-weight:600;
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  box-shadow: 0 8px 18px rgba(74,96,215,0.12);
-}
-.send-btn:disabled { opacity:.6; cursor:not-allowed; box-shadow:none; }
-
-/* Responsive tweaks */
+/* Small screens */
 @media (max-width:900px){
-  .container { margin:0; height:calc(100vh - var(--header-height)); }
-  #userList { position:absolute; left:0; top:0; bottom:0; transform:translateX(-100%); transition:transform .22s; z-index:20; box-shadow:0 12px 40px rgba(2,6,23,0.12); }
-  #userList.show { transform:translateX(0); }
-  #userList { width: 320px; min-width:320px; }
-  .message { max-width:90%; }
+  .chat-layout{ margin:0; height:calc(100vh - var(--site-header-height)); border-radius:0; }
+  #userList{ width:100%; position:absolute; left:0; top:0; bottom:0; transform:translateX(-100%); transition:transform .22s; z-index:20; }
+  #userList.show { transform:translateX(0); box-shadow: 0 12px 40px rgba(2,6,23,0.1); }
+  #chatMessages{ padding:18px; padding-bottom: calc(var(--input-area-height) + 18px); }
+  .input-container{ padding:12px 16px; }
+  .message{ max-width:90%; }
 }
 </style>
 </head>
 <body>
 
-<div class="container">
-  <div class="chat-layout">
-    <div id="userList" aria-label="Danh sách bệnh nhân">
-      <h3>Bệnh nhân</h3>
-      <?php
-      include_once("Controllers/ctaikhoan.php");
-      include_once("Controllers/cbacsi.php");
-      $cbacsi = new cBacSi();
-      $bacsi = $cbacsi->getBacSiByTenTK($tentk);
-      $ctk = new cTaiKhoan();
-      if (is_array($bacsi) && isset($bacsi['mabacsi'])) {
-          $mabacsi = $bacsi['mabacsi'];
-          $tbl = $ctk->gettkbenhnhan($mabacsi);
-          if ($tbl && $tbl->num_rows > 0) {
-              while ($row = $tbl->fetch_assoc()) {
-                  $hoten = htmlspecialchars($row['hoten'], ENT_QUOTES, 'UTF-8');
-                  $tentk_row = htmlspecialchars($row['tentk'], ENT_QUOTES, 'UTF-8');
-                  // try to include avatar url if available in row; fallback to default image
-                  $avatar = isset($row['avatar']) && $row['avatar'] ? htmlspecialchars($row['avatar'], ENT_QUOTES, 'UTF-8') : 'Assets/img/default.png';
-                  echo "<div class='user' data-tentk='{$tentk_row}' data-name='{$hoten}'>
-                          <img class='user-avatar' src='{$avatar}' alt='avatar'>
-                          <div class='user-info'>
-                            <div class='user-name'>{$hoten}</div>
-                            <div class='user-sub'>Bệnh nhân</div>
-                          </div>
-                        </div>";
-              }
-          } else {
-              echo "<p style='padding:12px;color:#666;margin:0'>Không có bệnh nhân nào.</p>";
-          }
-      } else {
-          echo "<p style='padding:12px;color:#c0392b;margin:0'>Không tìm thấy thông tin bác sĩ từ tài khoản đăng nhập.</p>";
-      }
-      ?>
+<div class="chat-layout">
+    <div id="userList">
+        <h3>Bệnh nhân</h3>
+        <?php
+        include_once("Controllers/ctaikhoan.php");
+        include_once("Controllers/cbacsi.php");
+        $cbacsi = new cBacSi();
+        $bacsi = $cbacsi->getBacSiByTenTK($tentk);
+        $ctk = new cTaiKhoan();
+        if (is_array($bacsi) && isset($bacsi['mabacsi'])) {
+            $mabacsi = $bacsi['mabacsi'];
+            $tbl = $ctk->gettkbenhnhan($mabacsi);
+            if ($tbl && $tbl->num_rows > 0) {
+                while ($row = $tbl->fetch_assoc()) {
+                    $hoten = htmlspecialchars($row['hoten'], ENT_QUOTES, 'UTF-8');
+                    $tentk_row = htmlspecialchars($row['tentk'], ENT_QUOTES, 'UTF-8');
+                    echo "<div class='user' data-tentk='{$tentk_row}' data-name='{$hoten}'><div style='width:44px;height:44px;border-radius:50%;background:#f0f0f0;margin-right:10px;flex-shrink:0;'></div><div><strong>{$hoten}</strong></div></div>";
+                }
+            } else {
+                echo "<p style='padding:12px;color:#666;margin:0'>Không có bệnh nhân nào.</p>";
+            }
+        } else {
+            echo "<p style='padding:12px;color:#c0392b;margin:0'>Không tìm thấy thông tin bác sĩ từ tài khoản đăng nhập.</p>";
+        }
+        ?>
     </div>
 
     <div id="chatContainer">
-      <div id="chatHeader">
-        <div class="header-avatar"><img id="headerAvatar" src="Assets/img/default.png" alt="avatar"></div>
-        <div class="header-info">
-          <div id="headerText">Chọn bệnh nhân để bắt chuyện</div>
-          <div id="headerSub">Sẵn sàng để tư vấn</div>
+        <div id="chatHeader">
+            <div class="header-avatar"><img id="headerAvatar" src="Assets/img/default.png" alt="avatar"></div>
+            <div class="header-info">
+                <div id="headerText">Chọn bệnh nhân để bắt chuyện</div>
+                <div id="headerSub">Sẵn sàng để tư vấn</div>
+            </div>
+            <div id="connectionStatus" style="font-size:13px;color:#6b7280;display:none">Đang kết nối</div>
         </div>
-        <div id="connectionStatus" style="font-size:13px;color:#7b8794;display:none">Đang kết nối</div>
-      </div>
 
-      <div id="chatMessages" role="log" aria-live="polite">
-        <div class="message-day" style="text-align:center;color:#9aa3b2;">Chưa có cuộc trò chuyện</div>
-      </div>
-
-      <div class="input-container" role="region" aria-label="Gửi tin nhắn">
-        <div class="input-inner">
-          <button id="attachBtn" class="icon-btn" title="Gửi file (PDF)"><span class="attach-icon">📎</span></button>
-          <textarea id="messageInput" placeholder="Nhập tin nhắn..." rows="1" disabled></textarea>
-          <input type="file" id="fileInput" accept="application/pdf" style="display:none;">
+        <div id="chatMessages">
+            <div class="message-day" style="text-align:center;color:#9aa3b2;">Chưa có cuộc trò chuyện</div>
         </div>
-        <button id="sendButton" class="send-btn" disabled><span style="transform:translateY(1px)">✈️</span> <span>Gửi</span></button>
-      </div>
+
+        <div class="input-container">
+            <div class="input-inner">
+                <button id="attachBtn" class="icon-btn" title="Gửi file (PDF)"><i class="fas fa-paperclip"></i></button>
+                <textarea id="messageInput" placeholder="Nhập tin nhắn..." rows="1" disabled></textarea>
+                <input type="file" id="fileInput" accept="application/pdf" style="display:none;">
+            </div>
+            <button id="sendButton" class="send-btn" disabled><i class="fas fa-paper-plane" style="margin-right:8px;"></i>Gửi</button>
+        </div>
     </div>
-  </div>
 </div>
 
-<!-- Font Awesome lightweight usage is not required; use emojis/icons for reliability -->
+<!-- Font Awesome + jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" defer></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script>
 /* Globals */
 let socket = null;
@@ -395,7 +182,7 @@ let user = { tentk: "<?php echo htmlspecialchars($tentk, ENT_QUOTES, 'UTF-8'); ?
 let currentPatient = null;
 let messages = {}; // messages keyed by patient tentk
 
-/* Local file map */
+/* Local map so file names persist across reloads if server metadata missing */
 const FILE_MAP_KEY = 'chat_file_map_v1';
 function loadFileMap(){ try{ const r = localStorage.getItem(FILE_MAP_KEY); return r?JSON.parse(r):[] }catch(e){return[]} }
 function saveFileMap(m){ try{ localStorage.setItem(FILE_MAP_KEY, JSON.stringify(m)); }catch(e){console.warn(e)} }
@@ -574,7 +361,6 @@ function renderMessages(arr){
         container.html('<div style="text-align:center;color:#9aa3b2">Chưa có tin nhắn</div>');
         return;
     }
-    // Render sequentially; avoid grouping duplicates by timestamp heuristic
     arr.forEach(m => displayMessage(m));
     scrollToBottom();
 }
@@ -588,7 +374,6 @@ function displayMessage(msg){
     }
 
     const isDoctor = msg.sender === user.tentk;
-    const row = $('<div>').addClass('message-row').addClass(isDoctor ? 'right' : 'left');
     const msgDiv = $('<div>').addClass('message').addClass(isDoctor ? 'doctor' : 'patient');
 
     const isFile = (msg.message && msg.message.toString().startsWith('[FILE]')) || msg.filename || msg.url;
@@ -600,7 +385,7 @@ function displayMessage(msg){
             if(after) url = after;
         }
         url = toAbsoluteUrl(url);
-        let filename = msg.filename || deriveFilenameFromUrl(url) || 'Tập tin.pdf';
+        let filename = msg.filename || deriveFilenameFromUrl(url) || null;
 
         if(!filename && !url){
             // avoid showing undefined placeholder
@@ -608,31 +393,18 @@ function displayMessage(msg){
             return;
         }
 
-        // build file card
-        const link = $('<a>')
-            .addClass('file-link')
-            .attr('href', url || '#')
-            .attr('target','_blank')
-            .attr('rel','noopener noreferrer');
-
-        const card = $('<div>').addClass('file-card');
-        const icon = $('<div>').addClass('file-icon').text('PDF');
-        const meta = $('<div>').addClass('file-meta');
-        const nameEl = $('<div>').addClass('file-name').text(filename);
-        const timeEl = $('<div>').addClass('file-time').text(formatTime(msg.thoigiangui || new Date().toISOString()));
-        meta.append(nameEl).append(timeEl);
-        card.append(icon).append(meta);
-        link.append(card);
-        msgDiv.append(link);
-
+        const a = $('<a target="_blank" rel="noopener noreferrer"></a>').attr('href', url || '#');
+        a.append($('<i>').addClass('fa fa-file-pdf'));
+        a.append($('<span>').text(' ' + (filename || 'Tập tin')));
+        msgDiv.append(a);
     } else {
         msgDiv.text(msg.message || '');
-        const meta = $('<div>').addClass('message-meta').text(formatTime(msg.thoigiangui || new Date().toISOString()));
-        msgDiv.append(meta);
     }
 
-    row.append(msgDiv);
-    $('#chatMessages').append(row);
+    const meta = $('<div>').addClass('message-meta').text(formatTime(msg.thoigiangui || new Date().toISOString()));
+    msgDiv.append(meta);
+
+    $('#chatMessages').append(msgDiv);
     scrollToBottom();
 }
 
@@ -685,10 +457,10 @@ $('#fileInput').on('change', function(){
     formData.append('receiver', currentPatient.tentk);
 
     const origHtml = $('#attachBtn').html();
-    $('#attachBtn').prop('disabled', true).html('<span class="attach-icon">⏳</span>');
+    $('#attachBtn').prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i>');
 
     $.ajax({
-        url: 'Views/benhnhan/pages/tinnhan/uploadFile.php', // upload endpoint
+        url: 'Views/bacsi/pages/tinnhan/upload.php', 
         type: 'POST',
         data: formData,
         contentType: false,
@@ -737,6 +509,7 @@ $(document).on('click', '.user', function(){ selectUserFromElement(this); });
 /* Init */
 $(function(){
     connectWebSocket();
+    // make sure header/status displays
     $('#connectionStatus').hide();
 });
 </script>
