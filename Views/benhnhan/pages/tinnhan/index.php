@@ -1,5 +1,5 @@
 <?php
-if (! isset($_SESSION['user']['tentk'])){
+if (!isset($_SESSION['user']['tentk'])) {
     header("Location: action=dangnhap");
     exit();
 }
@@ -11,154 +11,387 @@ $tentk = $_SESSION['user']['tentk'];
     <meta charset="UTF-8">
     <title>Trò chuyện với Bác sĩ</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   
+    <link href="https://fonts.googleapis.com/css2? family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        body {
-            background-color: #f0f2f5;
-            padding-top: 90px;
-            font-family: Arial, sans-serif;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', sans-serif;
+            padding-top: 90px;
+            height: 100vh;
+        }
+        
         .chat-layout {
             display: flex;
-            height: calc(100vh - 100px);
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        #userList {
-            width: 300px;
+            height: calc(100vh - 110px);
+            max-width: 1400px;
+            margin: 0 auto;
             background: white;
-            border-right: 1px solid #ddd;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        #userList {
+            width: 350px;
+            background: linear-gradient(180deg, #3C1561 0%, #2d1049 100%);
             overflow-y: auto;
+            border-right: 1px solid rgba(255,255,255,0.1);
         }
+        
         #userList h3 {
-            background: #3C1561;
+            background: rgba(0,0,0,0.2);
             color: white;
-            padding: 15px;
-            margin: 0;
+            padding: 20px;
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
-        .user {
-            padding: 12px 20px;
-            border-bottom: 1px solid #f0f0f0;
+        
+        #userList h3 i {
+            font-size: 22px;
+        }
+        
+        . user {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
             cursor: pointer;
             display: flex;
             align-items: center;
-            transition: background 0.3s;
+            gap: 12px;
+            transition: all 0.3s;
+            color: white;
         }
+        
         .user:hover {
-            background: #f8f8f8;
+            background: rgba(255,255,255,0.1);
+            padding-left: 25px;
         }
+        
         .user.active {
-            background: #e8d5f5;
+            background: rgba(142, 68, 173, 0.4);
+            border-left: 4px solid #8e44ad;
         }
+        
         .user img {
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             object-fit: cover;
-            margin-right: 10px;
+            border: 3px solid rgba(255,255,255,0.2);
+            transition: all 0.3s;
         }
+        
+        .user:hover img {
+            border-color: #8e44ad;
+            transform: scale(1.05);
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-info strong {
+            display: block;
+            font-size: 15px;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+        
+        .user-info small {
+            color: rgba(255,255,255,0.7);
+            font-size: 13px;
+        }
+        
         #chatContainer {
             flex: 1;
-            padding: 20px;
             display: flex;
             flex-direction: column;
-            background: white;
-        }
-        #chatHeader {
-            font-weight: bold;
-            margin-bottom: 10px;
-            padding: 10px;
             background: #f8f9fa;
-            border-radius: 5px;
         }
+        
+        #chatHeader {
+            background: white;
+            padding: 20px 25px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        #headerText {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        . connection-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .connection-status::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .status-connecting {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-connecting::before {
+            background: #ffc107;
+            animation: pulse 1. 5s infinite;
+        }
+        
+        . status-connected {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-connected::before {
+            background: #28a745;
+        }
+        
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-error::before {
+            background: #dc3545;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
         #chatMessages {
             flex: 1;
             overflow-y: auto;
-            background: #e9ebee;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 10px;
+            padding: 20px;
+            background: #f8f9fa;
         }
-        .message {
-            max-width: 70%;
-            padding: 10px 15px;
-            margin-bottom: 12px;
-            border-radius: 20px;
-            font-size: 15px;
-            line-height: 1.4;
-            clear: both;
+        
+        #chatMessages::-webkit-scrollbar {
+            width: 8px;
         }
-        .patient {
-            background: #d4edda;
-            float: right;
-            border-bottom-right-radius: 5px;
+        
+        #chatMessages::-webkit-scrollbar-track {
+            background: #f1f1f1;
         }
-        .doctor {
+        
+        #chatMessages::-webkit-scrollbar-thumb {
             background: #8e44ad;
+            border-radius: 4px;
+        }
+        
+        . message {
+            max-width: 65%;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            border-radius: 18px;
+            font-size: 15px;
+            line-height: 1.5;
+            clear: both;
+            word-wrap: break-word;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .patient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+            float: right;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+        }
+        
+        .doctor {
+            background: white;
+            color: #2c3e50;
             float: left;
-            border-bottom-left-radius: 5px;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0. 1);
         }
+        
+        .message a {
+            color: inherit;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .message a:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateX(3px);
+        }
+        
+        .message a i. fa-file-pdf {
+            font-size: 24px;
+        }
+        
+        .doctor a {
+            background: rgba(142, 68, 173, 0.1);
+        }
+        
+        .doctor a:hover {
+            background: rgba(142, 68, 173, 0.2);
+        }
+        
+        .doctor a i.fa-file-pdf {
+            color: #e74c3c;
+        }
+        
+        .patient a i.fa-file-pdf {
+            color: #fff;
+        }
+        
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 40px;
+        }
+        
+        .empty-state i {
+            font-size: 60px;
+            color: #ddd;
+            margin-bottom: 15px;
+        }
+        
+        .input-container {
+            background: white;
+            padding: 20px 25px;
+            border-top: 1px solid #e0e0e0;
+        }
+        
         #messageInput {
-            padding: 10px;
             width: 100%;
-            border: 1px solid #ccc;
-            border-radius: 25px;
-            margin-bottom: 10px;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            margin-bottom: 12px;
             resize: none;
-            font-family: Arial, sans-serif;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            transition: all 0.3s;
         }
+        
+        #messageInput:focus {
+            outline: none;
+            border-color: #8e44ad;
+            box-shadow: 0 0 0 3px rgba(142, 68, 173, 0.1);
+        }
+        
+        #messageInput:disabled {
+            background: #f5f5f5;
+            cursor: not-allowed;
+        }
+        
         . button-group {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             justify-content: flex-end;
         }
+        
         #sendButton, #fileButton {
-            background: #8e44ad;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 25px;
+            padding: 12px 24px;
+            border-radius: 12px;
             cursor: pointer;
-            transition: background 0.3s;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
+        
         #sendButton:hover, #fileButton:hover {
-            background: #6c3483;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
         }
+        
+        #sendButton:active, #fileButton:active {
+            transform: translateY(0);
+        }
+        
         #sendButton:disabled, #fileButton:disabled {
             background: #ccc;
             cursor: not-allowed;
+            transform: none;
         }
-        . message a {
-            color: inherit;
-            text-decoration: underline;
-            word-break: break-all;
+        
+        #fileButton {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         }
-        .connection-status {
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 12px;
-            display: inline-block;
-            margin-left: 10px;
+        
+        #fileButton:hover {
+            box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
         }
-        .status-connecting {
-            background: #ffc107;
-            color: #000;
-        }
-        .status-connected {
-            background: #28a745;
-            color: white;
-        }
-        . status-error {
-            background: #dc3545;
-            color: white;
+        
+        @media (max-width: 768px) {
+            .chat-layout {
+                border-radius: 0;
+                height: 100vh;
+            }
+            
+            #userList {
+                width: 280px;
+            }
+            
+            . message {
+                max-width: 80%;
+            }
         }
     </style>
 </head>
 <body>
 <div class="chat-layout">
     <div id="userList">
-        <h3>Bác Sĩ / Chuyên Gia</h3>
-        <?php
+        <h3><i class="fas fa-user-md"></i> Bác Sĩ / Chuyên Gia</h3>
+        <? php
         include_once("Controllers/ctaikhoan.php");
         $p = new ctaiKhoan();
         $tentk1 = $_SESSION['user']['tentk'];
@@ -175,31 +408,44 @@ $tentk = $_SESSION['user']['tentk'];
                 
                 echo "<div class='user' data-tentk='{$tentk_safe}' data-name='{$hoten_safe}' data-vaitro='{$vaitro_safe}'>
                         <img src='Assets/img/{$img}' alt='Ảnh' onerror=\"this.src='Assets/img/default.png'\">
-                        <div>
-                            <strong>{$row['hoten']}</strong><br>
-                            <small>{$roleLabel}</small>
+                        <div class='user-info'>
+                            <strong>{$row['hoten']}</strong>
+                            <small><i class='fas fa-stethoscope'></i> {$roleLabel}</small>
                         </div>
                     </div>";
             }
         } else {
-            echo "<p class='p-3' style='text-align:center;color:#999;'>Không có bác sĩ hoặc chuyên gia nào.</p>";
+            echo "<div class='empty-state'><i class='fas fa-inbox'></i><p>Không có bác sĩ nào</p></div>";
         }
         ?>
     </div>
 
     <div id="chatContainer">
         <div id="chatHeader">
-            <span id="headerText">⏳ Đang kết nối... </span>
+            <span id="headerText"><i class="fas fa-comments"></i> Chọn bác sĩ để trò chuyện</span>
             <span id="connectionStatus" class="connection-status status-connecting">Đang kết nối</span>
         </div>
-        <div id="chatMessages"></div>
-        <textarea id="messageInput" placeholder="Nhập tin nhắn..." disabled rows="2"></textarea>
         
-        <input type="file" id="fileInput" style="display:none;" accept="application/pdf">
+        <div id="chatMessages">
+            <div class="empty-state">
+                <i class="fas fa-comment-dots"></i>
+                <p>Chọn bác sĩ để bắt đầu trò chuyện</p>
+            </div>
+        </div>
         
-        <div class="button-group">
-            <button id="fileButton" disabled>📎 Gửi file PDF</button>
-            <button id="sendButton" disabled>Gửi tin nhắn</button>
+        <div class="input-container">
+            <textarea id="messageInput" placeholder="Nhập tin nhắn của bạn..." disabled rows="2"></textarea>
+            
+            <input type="file" id="fileInput" style="display:none;" accept="application/pdf">
+            
+            <div class="button-group">
+                <button id="fileButton" disabled>
+                    <i class="fas fa-paperclip"></i> Gửi PDF
+                </button>
+                <button id="sendButton" disabled>
+                    <i class="fas fa-paper-plane"></i> Gửi
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -215,13 +461,13 @@ let currentDoctor = null;
 let messages = {};
 
 function connectWebSocket() {
-    updateConnectionStatus('connecting', '⏳ Đang kết nối...');
+    updateConnectionStatus('connecting', 'Đang kết nối');
     
     socket = new WebSocket("wss://hanhphuc.site/ws");
     
     socket.onopen = () => {
         console.log("✅ WebSocket connected!");
-        updateConnectionStatus('connected', '✅ Đã kết nối');
+        updateConnectionStatus('connected', 'Đã kết nối');
         
         socket.send(JSON.stringify({ 
             command: 'register', 
@@ -229,7 +475,7 @@ function connectWebSocket() {
             role: user.vaitro 
         }));
 
-        $('#headerText').text('Chọn bác sĩ/chuyên gia để trò chuyện');
+        $('#headerText').html('<i class="fas fa-comments"></i> Chọn bác sĩ để trò chuyện');
 
         const savedDoctor = localStorage.getItem('selectedDoctor');
         const savedDoctorName = localStorage.getItem('selectedDoctorName');
@@ -260,26 +506,23 @@ function connectWebSocket() {
                     message: data.message,
                     filename: data.filename || null,
                     url: data.url || null,
-                    thoigiangui: new Date().toISOString()
+                    thoigiangui: new Date(). toISOString()
                 });
                 if(currentDoctor && currentDoctor.tentk === data.sender){
                     displayMessage(messages[data.sender][messages[data.sender].length-1]);
                 }
-                break;
-
-            case 'sent':
                 break;
         }
     };
 
     socket.onerror = (error) => {
         console.error("❌ WebSocket error:", error);
-        updateConnectionStatus('error', '❌ Lỗi kết nối');
+        updateConnectionStatus('error', 'Lỗi kết nối');
     };
 
     socket.onclose = (event) => {
-        console. warn("⚠️ WebSocket closed:", event. code, event.reason);
-        updateConnectionStatus('connecting', '⚠️ Mất kết nối, đang thử lại...');
+        console. warn("⚠️ WebSocket closed:", event. code);
+        updateConnectionStatus('connecting', 'Đang kết nối lại');
         setTimeout(connectWebSocket, 3000);
     };
 }
@@ -292,39 +535,24 @@ function updateConnectionStatus(status, text) {
 }
 
 function selectUser(tentk, name, vaitro){
-    console.log("=== selectUser START ===");
-    console.log("📥 Tham số:", {tentk, name, vaitro});
-    console.log("🔌 Socket state:", socket?. readyState);
-    
     if(! tentk || !name){
-        console.error("❌ Thiếu tham số");
-        alert("Lỗi: Không thể chọn bác sĩ.  Vui lòng thử lại!");
+        alert("Lỗi: Không thể chọn bác sĩ!");
         return;
     }
     
-    if(! socket){
-        console.error("❌ Socket chưa được khởi tạo");
-        alert("Đang kết nối...  Vui lòng đợi và thử lại!");
-        return;
-    }
-    
-    if(socket.readyState === WebSocket.CONNECTING){
-        console.warn("⏳ Socket đang kết nối...  retry");
-        setTimeout(() => selectUser(tentk, name, vaitro), 1000);
-        return;
-    }
-    
-    if(socket. readyState !== WebSocket.OPEN){
-        console.error("❌ Socket không OPEN:", socket.readyState);
+    if(! socket || socket.readyState !== WebSocket. OPEN){
+        if(socket && socket.readyState === WebSocket.CONNECTING){
+            setTimeout(() => selectUser(tentk, name, vaitro), 1000);
+            return;
+        }
         alert("Kết nối bị gián đoạn. Vui lòng tải lại trang!");
         return;
     }
 
-    console.log("✅ Bắt đầu chọn bác sĩ");
-    
-    // ✅ SỬA LỖI: Bỏ dấu cách trong selector
-    $('.user').removeClass('active');
-    $('.user[data-tentk="' + tentk + '"]').addClass('active');
+    $('. user').removeClass('active');
+    $('. user'). filter(function() {
+        return $(this).data('tentk') === tentk;
+    }).addClass('active');
     
     currentDoctor = { tentk, name, vaitro };
     localStorage.setItem('selectedDoctor', tentk);
@@ -332,27 +560,24 @@ function selectUser(tentk, name, vaitro){
     localStorage.setItem('selectedVaitro', vaitro);
 
     const roleLabel = (vaitro === 'bacsi') ? 'Bác sĩ' : 'Chuyên gia';
-    $('#headerText').text('Đang trò chuyện với ' + roleLabel + ' ' + name);
+    const icon = (vaitro === 'bacsi') ? 'fa-user-md' : 'fa-user-tie';
+    $('#headerText'). html(`<i class="fas ${icon}"></i> ${roleLabel} ${name}`);
     
     $('#messageInput').prop('disabled', false);
     $('#sendButton').prop('disabled', false);
     $('#fileButton').prop('disabled', false);
 
-    $('#chatMessages').html('<p style="text-align:center;color:#777;">Đang tải tin nhắn...</p>');
+    $('#chatMessages').html('<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Đang tải tin nhắn...</p></div>');
 
     if(messages[tentk] && messages[tentk].length > 0){
         renderMessages(messages[tentk]);
     }
 
-    const loadMsg = {
+    socket.send(JSON.stringify({
         command: "load_messages",
         tentk: user.tentk,
         receiver_tentk: tentk
-    };
-    
-    console.log("📤 Gửi load_messages:", loadMsg);
-    socket.send(JSON.stringify(loadMsg));
-    console.log("=== selectUser END ===");
+    }));
 }
 
 function renderMessages(msgArray){
@@ -360,7 +585,7 @@ function renderMessages(msgArray){
     if(msgArray && msgArray.length > 0){
         msgArray.forEach(m => displayMessage(m));
     } else {
-        $('#chatMessages'). html('<p style="text-align:center;color:#999;">Chưa có tin nhắn nào</p>');
+        $('#chatMessages').html('<div class="empty-state"><i class="fas fa-comment-slash"></i><p>Chưa có tin nhắn nào</p></div>');
     }
     scrollToBottom();
 }
@@ -370,10 +595,17 @@ function displayMessage(msg){
     const isPatient = msg.sender === user.tentk;
     msgDiv.addClass(isPatient ?  'patient' : 'doctor');
 
+    // ✅ FIX: Link PDF mở tab mới, không download
     if(msg.message && msg.message.startsWith('[FILE]')){
         const url = msg.url || msg.message. replace('[FILE] ', '');
-        const filename = msg.filename || url.split('/').pop();
-        msgDiv.html('<a href="' + url + '" target="_blank" download>📄 ' + filename + '</a>');
+        const filename = msg.filename || 'document. pdf';
+        
+        msgDiv.html(
+            '<a href="' + url + '" target="_blank" rel="noopener noreferrer">' +
+            '<i class="fas fa-file-pdf"></i> ' + 
+            filename + 
+            '</a>'
+        );
     } else {
         msgDiv.text(msg.message || '');
     }
@@ -400,7 +632,7 @@ function sendMessage(){
     if(!text || !currentDoctor) return;
 
     if(! socket || socket.readyState !== WebSocket.OPEN){
-        alert("❌ Kết nối WebSocket bị gián đoạn!");
+        alert("❌ Kết nối bị gián đoạn!");
         return;
     }
 
@@ -419,7 +651,6 @@ function sendMessage(){
                 };
                 
                 socket. send(JSON.stringify(msg));
-                console.log("📤 Sent:", msg);
                 
                 if(! messages[currentDoctor.tentk]) messages[currentDoctor.tentk] = [];
                 messages[currentDoctor.tentk].push({
@@ -434,9 +665,9 @@ function sendMessage(){
                 alert(response.message || "Bạn chưa có lịch hẹn với bác sĩ này!");
             }
         },
-        error: function(xhr, status, error){
-            console.error("Ajax error:", error);
-            alert("Không thể kiểm tra lịch hẹn. Vui lòng thử lại!");
+        error: function(xhr){
+            console.error("Ajax error:", xhr.responseText);
+            alert("Không thể kiểm tra lịch hẹn!");
         }
     });
 }
@@ -466,18 +697,19 @@ $('#fileInput').change(function(){
     }
 
     if(!socket || socket.readyState !== WebSocket.OPEN){
-        alert("❌ Kết nối WebSocket bị gián đoạn!");
+        alert("❌ Kết nối bị gián đoạn!");
         return;
     }
 
     const formData = new FormData();
-    formData.append('file', file);
+    formData. append('file', file);
     formData.append('receiver', currentDoctor.tentk);
     formData.append('sender', user.tentk);
 
-    $('#fileButton').prop('disabled', true). text('⏳ Đang tải lên...');
+    const originalText = $('#fileButton').html();
+    $('#fileButton').prop('disabled', true). html('<i class="fas fa-spinner fa-spin"></i> Đang tải...');
 
-    $.ajax({
+    $. ajax({
         url: 'Views/benhnhan/pages/tinnhan/uploadFile.php',
         type: 'POST',
         data: formData,
@@ -485,6 +717,8 @@ $('#fileInput').change(function(){
         processData: false,
         dataType: 'json',
         success: function(res){
+            console.log("✅ Upload response:", res);
+            
             if(res.success){
                 const msg = {
                     command: 'send',
@@ -492,15 +726,14 @@ $('#fileInput').change(function(){
                     receiver: currentDoctor.tentk,
                     message: '[FILE]',
                     filename: res.filename,
-                    url: res. url
+                    url: res.url
                 };
                 
                 socket.send(JSON.stringify(msg));
-                console.log("📤 File sent:", res. filename);
                 
-                if(! messages[currentDoctor.tentk]) messages[currentDoctor.tentk] = [];
+                if(!messages[currentDoctor.tentk]) messages[currentDoctor.tentk] = [];
                 messages[currentDoctor.tentk].push({
-                    sender: user. tentk,
+                    sender: user.tentk,
                     message: '[FILE]',
                     filename: res.filename,
                     url: res.url,
@@ -510,15 +743,19 @@ $('#fileInput').change(function(){
                 
                 alert("✅ Gửi file thành công!");
             } else {
-                alert("❌ Upload thất bại: " + (res.error || "Lỗi không xác định"));
+                alert("❌ Upload thất bại: " + (res.error || res.message || "Lỗi không xác định"));
             }
         },
         error: function(xhr, status, error){
-            console.error("Upload error:", error, xhr. responseText);
-            alert("❌ Upload thất bại!  Vui lòng thử lại.");
+            console. error("❌ Upload error:", {
+                status: status,
+                error: error,
+                response: xhr.responseText
+            });
+            alert("❌ Upload thất bại!  Kiểm tra Console (F12) để xem chi tiết.");
         },
         complete: function(){
-            $('#fileButton').prop('disabled', false).text('📎 Gửi file PDF');
+            $('#fileButton').prop('disabled', false).html(originalText);
         }
     });
 
@@ -530,13 +767,11 @@ $(document).on('click', '.user', function(){
     const name = $(this).data('name');
     const vaitro = $(this).data('vaitro');
     
-    console.log("🖱️ User clicked:", {tentk, name, vaitro});
     selectUser(tentk, name, vaitro);
 });
 
 $(document).ready(function(){
-    console.log("🚀 Page loaded, connecting WebSocket...");
-    console.log("👤 Current user:", user);
+    console.log("🚀 Initializing.. .");
     connectWebSocket();
 });
 </script>
