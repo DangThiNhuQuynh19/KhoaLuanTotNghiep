@@ -62,6 +62,15 @@ $tentk = $_SESSION['user']['tentk'];
         /* Chat area */
         #chatContainer { flex:1; display:flex; flex-direction:column; min-width:0; min-height:0; }
 
+        /* HEADER padding 50px as requested */
+        #chatHeader {
+            display:flex;
+            align-items:center;
+            gap:12px;
+            border-bottom: 1px solid #f0f2f5;
+            background: linear-gradient(90deg,#fff,#fbfdff);
+        }
+
         .header-avatar img { width:48px; height:48px; border-radius:50%; object-fit:cover; border:2px solid transparent; }
         .header-info { flex:1; display:flex; flex-direction:column; }
         #headerText { font-weight:700; font-size:14px; color:#0f1724; }
