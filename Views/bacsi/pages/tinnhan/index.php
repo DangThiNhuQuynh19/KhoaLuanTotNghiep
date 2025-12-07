@@ -69,7 +69,7 @@ let currentPatient = null;
 let messages = {};
 
 function connectWebSocket() {
-    socket = new WebSocket('wss://hanhphuc.site/ws');
+    var socket = new WebSocket("wss://hanhphuc.site/ws");
     socket.onopen = () => {
         console.log("WebSocket connected!");
         socket.send(JSON.stringify({ action: 'register', username: user.tentk, role: user.vaitro }));

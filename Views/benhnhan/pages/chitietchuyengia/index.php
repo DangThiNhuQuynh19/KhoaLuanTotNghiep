@@ -35,7 +35,6 @@ $lichkham = $cLichKham->getLichKhamOfChuyenGiaByNgay($ngay, $machuyengia, $gioHi
 html, body { height: 100%; }
 body {
     /* padding 20px total around page, include footer spacing at bottom */
-    padding: 20px;
     padding-top: 50px;
     padding-bottom: 20px; /* ensure footer spacing requested */
     margin: 0;
