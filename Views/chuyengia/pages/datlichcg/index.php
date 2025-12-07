@@ -571,8 +571,6 @@
             const danh_sach_benh_nhan = <?php echo json_encode($danh_sach_benh_nhan); ?>;
             const benh_nhan = danh_sach_benh_nhan.find(bn => bn.mabenhnhan === ma_benh_nhan);
 
-            const danh_sach_ho_so = <?php echo json_encode($chosobenhandientu->get_hsba()); ?>;
-            const ho_so_benh_nhan = danh_sach_ho_so.filter(hs => hs.mabenhnhan === ma_benh_nhan);
 
             if (benh_nhan) {
                 document.getElementById('ten_benh_nhan').value = benh_nhan.hoten;
@@ -581,12 +579,6 @@
                 document.getElementById('sdt_benh_nhan').value = benh_nhan.sdt;
             }
 
-            ho_so_benh_nhan.forEach(hs => {
-                const tuy_chon = document.createElement('option');
-                tuy_chon.value = hs.mahoso;
-                tuy_chon.textContent = `${hs.mahoso} - ${hs.ngaytao}`;
-                chon_ho_so.appendChild(tuy_chon);
-            });
         });
 
         document.getElementById('ngay_hen').addEventListener('change', cap_nhat_khung_gio);
