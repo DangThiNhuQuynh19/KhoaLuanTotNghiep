@@ -289,7 +289,7 @@ $('#sendButton').click(()=>{
     if(!text || !currentDoctor) return;
 
     $.ajax({
-        url: '/KLTN/Ajax/getlichhen.php',
+        url: 'Ajax/getlichhen.php',
         type: 'POST',
         dataType: 'json', 
         data: { bs: currentDoctor.tentk, bn: user.tentk },
