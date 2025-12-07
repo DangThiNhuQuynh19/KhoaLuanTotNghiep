@@ -275,15 +275,6 @@
 
                         <div class="form-col">
                             <div class="form-group">
-                                <label for="ma_ho_so">Hồ sơ bệnh nhân</label>
-                                <select name="ma_ho_so" id="ma_ho_so" required>
-                                    <option value="">-- Chọn hồ sơ --</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-col">
-                            <div class="form-group">
                                 <label for="ten_benh_nhan">Họ và tên</label>
                                 <input type="text" id="ten_benh_nhan" name="ten_benh_nhan" readonly>
                             </div>
@@ -571,23 +562,13 @@
 
             const danh_sach_benh_nhan = <?php echo json_encode($danh_sach_benh_nhan); ?>;
             const benh_nhan = danh_sach_benh_nhan.find(bn => bn.mabenhnhan === ma_benh_nhan);
-
-            const danh_sach_ho_so = <?php echo json_encode($chosobenhandientu->get_hsba()); ?>;
-            const ho_so_benh_nhan = danh_sach_ho_so.filter(hs => hs.mabenhnhan === ma_benh_nhan);
-
+            
             if (benh_nhan) {
                 document.getElementById('ten_benh_nhan').value = benh_nhan.hoten;
                 document.getElementById('ngay_sinh_benh_nhan').value = benh_nhan.ngaysinh;
                 document.getElementById('gioi_tinh_benh_nhan').value = benh_nhan.gioitinh;
                 document.getElementById('sdt_benh_nhan').value = benh_nhan.sdt;
             }
-
-            ho_so_benh_nhan.forEach(hs => {
-                const tuy_chon = document.createElement('option');
-                tuy_chon.value = hs.mahoso;
-                tuy_chon.textContent = `${hs.mahoso} - ${hs.ngaytao}`;
-                chon_ho_so.appendChild(tuy_chon);
-            });
         });
 
         document.getElementById('ngay_hen').addEventListener('change', cap_nhat_khung_gio);
