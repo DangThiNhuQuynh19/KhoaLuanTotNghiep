@@ -1,5 +1,11 @@
 <?php
-session_start();
+// Fixed chat UI for bác sĩ/patient view
+// - Start session safely to avoid repeated session_start() warnings
+// - Improved layout, LifeCare theme colors, avatar, patient list, message bubbles, file card display
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 if (!isset($_SESSION['user']['tentk'])) {
     header("Location: index.php");
     exit();
@@ -9,220 +15,255 @@ $tentk = $_SESSION['user']['tentk'];
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Chat Bác sĩ – Bệnh nhân</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body { height: 100%; }
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: #f0f2f5;
-            color: #0f1724;
-            overflow: hidden;
-        }
+<!-- Use Inter for crisp UI -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-        .chat-wrapper {
-            max-width: 1200px;
-            margin: 18px auto;
-            height: calc(100vh - 36px);
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
-            background: white;
-            display: flex;
-            margin-top: calc(var(--site-header-height) + var(--chat-gutter));
-            margin-bottom: calc(var(--site-footer-height) + var(--chat-gutter));
-        }
+<style>
+:root{
+  --primary: #4A60D7;     /* LifeCare primary */
+  --secondary: #E8EEFF;   /* LifeCare soft secondary */
+  --neutral-bg: #f6f7fb;
+  --muted: #7b8794;
+  --text: #2A2A2A;
+  --sidebar-width: 260px;
+  --header-h: 90px;
+  --input-h: 80px;
+  --bubble-radius: 12px;
+  --max-w: 1200px;
+}
 
-        /* Sidebar */
-        #userList { width: 320px; border-right: 1px solid #e6e9ee; background: #fff; display:flex; flex-direction:column; }
-        .sidebar-top { padding: 18px; display:flex; align-items:center; gap:12px; border-bottom: 1px solid #f0f2f5; }
-        .sidebar-top h3 { font-size:16px; font-weight:600; color:#0f1724; }
-        .search-box { padding: 10px 16px; border-bottom:1px solid #f0f2f5; }
-        .search-box input { width:100%; padding:10px 12px; border-radius:999px; border:1px solid #e6e9ee; background:#f7f9fb; font-size:14px; }
+*{box-sizing:border-box}
+html,body{height:100%; margin:0; font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,Arial; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+body{background:#f2f4f8;color:var(--text);}
 
-        .users-list { overflow-y:auto; padding:8px; }
-        .users-list::-webkit-scrollbar { width: 8px; }
-        .users-list::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.06); border-radius:6px; }
+/* Container */
+.container{
+  max-width:var(--max-w);
+  margin:18px auto;
+  height: calc(100vh - var(--header-h) - 36px);
+  display:flex;
+  align-items:stretch;
+  padding:0 12px;
+}
 
-        .user { display:flex; gap:12px; align-items:center; padding:12px; border-radius:12px; cursor:pointer; transition: background .12s, transform .12s; }
-        .user:hover { background:#f5f7fa; transform: translateX(2px); }
-        .user.active { background:#eef6ff; box-shadow: inset 0 0 0 1px rgba(22,119,255,0.06); }
+/* Chat layout card */
+.chat {
+  width:100%;
+  background:#fff;
+  border-radius:12px;
+  display:flex;
+  overflow:hidden;
+  box-shadow:0 8px 28px rgba(10,20,40,0.06);
+}
 
-        .user-avatar img { width:52px; height:52px; border-radius:50%; object-fit:cover; border:2px solid #f0f2f5; }
-        .user-info strong { display:block; font-size:13px; font-weight:600; color:#0f1724; }
-        .user-info small { color:#6b7280; font-size:10px; margin-top:4px; display:flex; gap:8px; align-items:center; }
+/* Sidebar (patient list) */
+.sidebar {
+  width:var(--sidebar-width);
+  min-width:var(--sidebar-width);
+  background:#fff;
+  border-right:1px solid #eceef3;
+  display:flex;
+  flex-direction:column;
+}
 
-        /* Chat area */
-        #chatContainer { flex:1; display:flex; flex-direction:column; min-width:0; min-height:0; }
+.sidebar-head {
+  padding:14px 16px;
+  border-bottom:1px solid #f1f3f6;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.sidebar-head h3{margin:0;font-size:16px;font-weight:600;color:var(--text);}
 
-        /* HEADER padding 50px as requested */
-        #chatHeader {
-            padding: 20px;
-            display:flex;
-            align-items:center;
-            gap:12px;
-            border-bottom: 1px solid #f0f2f5;
-            background: linear-gradient(90deg,#fff,#fbfdff);
-        }
+/* Search */
+.search {
+  padding:10px 16px;
+  border-bottom:1px solid #f6f8fb;
+  background:linear-gradient(90deg, rgba(74,96,215,0.03), rgba(232,238,255,0.01));
+}
+.search input{
+  width:100%;
+  padding:10px 12px;
+  border-radius:999px;
+  border:1px solid #e9eef8;
+  background:#fbfdff;
+  font-size:14px;
+  outline:none;
+}
 
-        .header-avatar img { width:48px; height:48px; border-radius:50%; object-fit:cover; border:2px solid transparent; }
-        .header-info { flex:1; display:flex; flex-direction:column; }
-        #headerText { font-weight:700; font-size:14px; color:#0f1724; }
-        #headerSub { color:#6b7280; font-size:13px; margin-top:6px; }
+/* List */
+.users {
+  overflow-y:auto;
+  padding:10px;
+}
+.users::-webkit-scrollbar{width:8px}
+.users::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.06);border-radius:6px}
 
-        /* Messages container with padding 50px */
-        #chatMessages {
-            flex:1;
-            padding: 18px;
-            overflow-y:auto;
-            background: linear-gradient(#f6f7fb,#f6f7fb);
-            min-height:0; /* ensure flex child can scroll */
-        }
-        #chatMessages::-webkit-scrollbar { width: 10px; }
-        #chatMessages::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.06); border-radius:6px; }
+.user {
+  display:flex;
+  gap:12px;
+  align-items:center;
+  padding:10px;
+  border-radius:10px;
+  cursor:pointer;
+  transition:background .14s, transform .08s;
+}
+.user:hover{ background:#f4f7ff; transform:translateX(2px); }
+.user.active{ background:linear-gradient(90deg, rgba(74,96,215,0.06), rgba(232,238,255,0.02)); border-left:4px solid var(--primary); padding-left:8px; }
 
-        .message-day { text-align:center; color:#9aa3b2; font-size:12px; margin:8px 0 18px; }
+/* avatar + text */
+.u-avatar {
+  width:48px; height:48px; border-radius:50%; overflow:hidden; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  background:#f3f5fb; border:1px solid #f0f2f7;
+}
+.u-avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
 
-        /* New simpler text-message styles (kept visually compatible with UI) */
-        .message {
-            display: block;
-            max-width: 68%;
-            padding: 10px 14px;
-            margin-bottom: 12px;
-            border-radius: 18px;
-            font-size: 14px;
-            line-height: 1.35;
-            clear: both;
-            word-wrap: break-word;
-            box-shadow: 0 4px 10px rgba(2,6,23,0.04);
-        }
-        .patient {
-            background: linear-gradient(135deg, #eef8ff, #e6f3ff);
-            color: #06344a;
-            float: right;
-            border-bottom-right-radius: 6px;
-        }
-        .doctor {
-            background: #ffffff;
-            color: #0f1724;
-            float: left;
-            border-bottom-left-radius: 6px;
-        }
-        .message a { color: inherit; text-decoration:none; display:inline-flex; gap:10px; align-items:center; }
-        .message .fa-file-pdf { color: #c53030; font-size:20px; margin-right:8px; }
+.u-info{min-width:0;}
+.u-name{font-size:14px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.u-sub{font-size:12px;color:var(--muted);margin-top:4px}
 
-        .message-meta { display:block; font-size:11px; color: rgba(15,23,36,0.5); margin-top:6px; text-align:right; }
-        .doctor .message-meta { text-align:left; color:#6b7280; }
+/* Chat area */
+.area { flex:1; display:flex; flex-direction:column; min-width:0; background:var(--neutral-bg); }
 
-        /* INPUT: padding 50px footer as requested */
-        .input-container {
-            padding: 20px;
-            border-top: 1px solid #eef2f7;
-            background: #fff;
-            display:flex;
-            align-items:center;
-            gap:10px;
-        }
+/* Header */
+.header {
+  padding:16px 20px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  background:#fff;
+  border-bottom:1px solid #eef2f7;
+  position:sticky;
+  top:0; z-index:4;
+}
+.h-avatar{ width:54px;height:54px;border-radius:50%;overflow:hidden;border:1px solid #eef2f7; }
+.h-avatar img{ width:100%;height:100%;object-fit:cover;display:block; }
+.h-info{flex:1; min-width:0}
+.h-title{ font-size:16px;font-weight:700;color:var(--text) }
+.h-sub{ font-size:13px;color:var(--muted); margin-top:4px }
 
-        .input-inner { display:flex; align-items:center; gap:10px; flex:1; background:#f4f6fb;  border-radius:999px; border:1px solid #e6e9ee; }
-        .input-inner textarea { border:none; background:transparent; outline:none; resize:none; font-size:14px; width:100%; color:#0f1724; padding:6px 8px; min-height:36px; max-height:120px; }
+/* Messages */
+.messages {
+  flex:1;
+  padding:22px;
+  overflow-y:auto;
+  min-height:0;
+  background:linear-gradient(180deg, #f8f9ff 0%, #f8f9ff 100%);
+}
+.messages::-webkit-scrollbar{ width:10px }
+.messages::-webkit-scrollbar-thumb{ background:rgba(0,0,0,0.06); border-radius:6px }
 
-        .icon-btn { background:transparent; border:none; cursor:pointer; color:#55607a; font-size:18px; padding:6px; border-radius:8px; }
-        .icon-btn:hover { background: rgba(0,0,0,0.03); }
-        .send-btn { background: #1677ff; color:#fff; border-radius:999px; border:none; padding:5px 10px; font-weight:600; cursor:pointer; box-shadow:0 6px 18px rgba(22,119,255,0.14); }
-        .send-btn:disabled { opacity:0.5; cursor:not-allowed; box-shadow:none; }
+/* Day separator */
+.day { text-align:center; color:#9da9bd; font-size:12px; margin:8px 0 18px; }
 
-        @media (max-width: 100%) {
-            #userList { width:100%; position:absolute; left:0; top:0; bottom:0; z-index:200; transform:translateX(-100%); transition:transform .22s ease; }
-            #userList.show { transform:translateX(0); box-shadow:0 12px 40px rgba(2,6,23,0.12); }
-            .chat-wrapper { margin:0; height:100vh; border-radius:0; }
-            /* reduce big paddings on small screens */
-            #chatHeader, #chatMessages, .input-container { padding: 18px; }
-            .message { max-width: 90%; }
-        }
+/* Message rows */
+.msg-row { display:flex; gap:12px; margin-bottom:12px; clear:both; align-items:flex-end; }
+.msg-row.left { justify-content:flex-start; }
+.msg-row.right { justify-content:flex-end; }
 
-        :root{
-        --site-header-height: 90px; 
-        --site-footer-height: 0px;  
-        --chat-input-height: 88px; 
-        --chat-gap: 18px;
-        }
+/* bubble */
+.bubble {
+  display:inline-block;
+  max-width:72%;
+  padding:10px 14px;
+  border-radius:var(--bubble-radius);
+  font-size:14px;
+  line-height:1.35;
+  word-break:break-word;
+  box-shadow:0 1px 3px rgba(10,20,40,0.04);
+  position:relative;
+}
 
-        .chat-wrapper {
-        position: relative;
-        max-width: 100%;
-        margin-left: auto;
-        margin-right: auto;
-        margin-top: calc(var(--chat-gap)); 
-        margin-bottom: calc(var(--chat-gap));
-        height: calc(100vh - var(--site-header-height) - var(--site-footer-height) - (var(--chat-gap) * 2));
-        display: flex;
-        overflow: hidden;
-        box-sizing: border-box;
-        }
+/* patient = other person; doctor = current user */
+.bubble.patient {
+  background:var(--primary);
+  color:#fff;
+  border-bottom-left-radius:10px;
+}
+.bubble.doctor {
+  background:var(--secondary);
+  color:var(--text);
+  border-bottom-right-radius:10px;
+}
 
-        #chatHeader {
-        position: sticky;
-        top: 0;
-        z-index: 3;
-        background: linear-gradient(90deg,#fff,#fbfdff);
-        }
+/* meta time */
+.meta { font-size:12px; color:rgba(255,255,255,0.85); margin-top:8px; display:block; text-align:left; }
+.bubble.doctor .meta { color:#6b7280; text-align:right; }
 
-        
-        #chatMessages {
-        flex: 1;
-        min-height: 0; 
-        overflow-y: auto;
-        padding: 20px;
-        padding-bottom: calc(var(--chat-input-height) + 10px);
-        background: linear-gradient(#f6f7fb,#f6f7fb);
-        }
+/* File card */
+.file-card {
+  display:flex;
+  gap:10px;
+  align-items:center;
+  max-width:300px;
+  min-width:0;
+  padding:8px 10px;
+  border-radius:10px;
+  background:#fff;
+  border:1px solid #e9edf6;
+}
+.file-icon {
+  width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(180deg,#fff,#fff); color:#d33a3a;font-weight:700;font-size:14px;border:1px solid rgba(0,0,0,0.02);
+}
+.file-meta{ min-width:0; display:flex; flex-direction:column; gap:4px; }
+.file-name{ font-size:13px; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:220px; }
+.file-time{ font-size:12px; color:#7b8794; }
 
-        .input-container {
-        position: sticky;
-        bottom: 0;
-        z-index: 3;
-        background: #fff;
-        box-shadow: 0 -6px 24px rgba(2,6,23,0.03);
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 5px 10px; /* có thể giảm nếu muốn input nhỏ lại */
-        box-sizing: border-box;
-        }
+/* Input area */
+.input {
+  padding:14px 18px;
+  background:#fff;
+  border-top:1px solid #eef2f7;
+  display:flex;
+  gap:12px;
+  align-items:center;
+  position:sticky;
+  bottom:0; z-index:5;
+}
+.input-inner {
+  flex:1; display:flex; gap:8px; align-items:center; background:#fff; border:1px solid #e9eef9; padding:8px 12px; border-radius:12px;
+}
+.textarea {
+  width:100%; min-height:44px; max-height:140px; border:none; outline:none; resize:none; font-size:14px; color:var(--text); background:transparent;
+}
+.btn {
+  display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:10px; border:none; cursor:pointer; font-weight:600;
+}
+.btn.send { background:var(--primary); color:#fff; box-shadow:0 8px 18px rgba(74,96,215,0.12) }
+.btn.send:disabled{ opacity:0.6; cursor:not-allowed; box-shadow:none; }
+.btn.attach{ background:transparent; border:1px solid #eef2f7; padding:8px;border-radius:8px; }
 
-        /* Giữ input-inner hiển thị đúng khi keyboard mobile bật */
-        .input-inner { z-index: 7; }
-
-        /* Tinh chỉnh cho tin nhắn không dính sát header/footer */
-        .message-day { margin-top: 6px; margin-bottom: 10px; }
-        .message { margin-bottom: 12px; }
-        @media (max-width: 100%) {
-        :root {
-            --site-header-height: 64px;
-            --chat-input-height: 66px;
-        }
-        .chat-wrapper {
-            height: calc(100vh - var(--site-header-height) - var(--site-footer-height));
-            margin-top: 0;
-            margin-bottom: 0;
-            border-radius: 0;
-        }
-        #chatMessages { padding: 18px; padding-bottom: calc(var(--chat-input-height) + 18px); }
-        .input-container { padding: 12px 16px; }
-        }
-    </style>
+/* Responsive */
+@media (max-width:900px){
+  .container { margin:0; height:100vh; padding:0; }
+  .sidebar{ position:absolute; left:0; top:0; bottom:0; transform:translateX(-100%); transition:transform .22s; z-index:40; box-shadow:0 12px 40px rgba(2,6,23,0.1); }
+  .sidebar.show{ transform:translateX(0); }
+  .sidebar { width:320px; min-width:320px; }
+  .messages { padding:18px }
+  .bubble { max-width:90% }
+}
+</style>
 </head>
 <body>
 
-<div class="chat-layout">
-    <div id="userList">
+<div class="container">
+  <div class="chat">
+    <aside class="sidebar" id="userList" aria-label="Danh sách bệnh nhân">
+      <div class="sidebar-head">
         <h3>Bệnh nhân</h3>
+      </div>
+
+      <div class="search">
+        <input id="searchInput" type="text" placeholder="Tìm bệnh nhân..." />
+      </div>
+
+      <div class="users" id="usersContainer">
         <?php
         include_once("Controllers/ctaikhoan.php");
         include_once("Controllers/cbacsi.php");
@@ -234,9 +275,17 @@ $tentk = $_SESSION['user']['tentk'];
             $tbl = $ctk->gettkbenhnhan($mabacsi);
             if ($tbl && $tbl->num_rows > 0) {
                 while ($row = $tbl->fetch_assoc()) {
-                    $hoten = htmlspecialchars($row['hoten'], ENT_QUOTES, 'UTF-8');
+                    $hoten = htmlspecialchars($row['hoten'] ?: 'Bệnh nhân', ENT_QUOTES, 'UTF-8');
                     $tentk_row = htmlspecialchars($row['tentk'], ENT_QUOTES, 'UTF-8');
-                    echo "<div class='user' data-tentk='{$tentk_row}' data-name='{$hoten}'><div style='width:44px;height:44px;border-radius:50%;background:#f0f0f0;margin-right:10px;flex-shrink:0;'></div><div><strong>{$hoten}</strong></div></div>";
+                    // If avatar exists on row, use it; fallback to default
+                    $avatar = (isset($row['avatar']) && $row['avatar']) ? htmlspecialchars($row['avatar'], ENT_QUOTES, 'UTF-8') : 'Assets/img/default.png';
+                    echo "<div class='user' data-tentk='{$tentk_row}' data-name='{$hoten}'>
+                            <div class='u-avatar'><img src='{$avatar}' alt='avatar'></div>
+                            <div class='u-info'>
+                              <div class='u-name'>{$hoten}</div>
+                              <div class='u-sub'>Bệnh nhân</div>
+                            </div>
+                          </div>";
                 }
             } else {
                 echo "<p style='padding:12px;color:#666;margin:0'>Không có bệnh nhân nào.</p>";
@@ -245,47 +294,46 @@ $tentk = $_SESSION['user']['tentk'];
             echo "<p style='padding:12px;color:#c0392b;margin:0'>Không tìm thấy thông tin bác sĩ từ tài khoản đăng nhập.</p>";
         }
         ?>
-    </div>
+      </div>
+    </aside>
 
-    <div id="chatContainer">
-        <div id="chatHeader">
-            <div class="header-avatar"><img id="headerAvatar" src="Assets/img/default.png" alt="avatar"></div>
-            <div class="header-info">
-                <div id="headerText">Chọn bệnh nhân để bắt chuyện</div>
-                <div id="headerSub">Sẵn sàng để tư vấn</div>
-            </div>
-            <div id="connectionStatus" style="font-size:13px;color:#6b7280;display:none">Đang kết nối</div>
+    <section class="area">
+      <header class="header" id="chatHeader">
+        <div class="h-avatar"><img id="headerAvatar" src="Assets/img/default.png" alt="avatar"></div>
+        <div class="h-info">
+          <div class="h-title" id="headerText">Chọn bệnh nhân để bắt chuyện</div>
+          <div class="h-sub" id="headerSub">Sẵn sàng để tư vấn</div>
         </div>
+        <div id="connectionStatus" style="font-size:13px;color:var(--muted);display:none">Đang kết nối</div>
+      </header>
 
-        <div id="chatMessages">
-            <div class="message-day" style="text-align:center;color:#9aa3b2;">Chưa có cuộc trò chuyện</div>
-        </div>
+      <div class="messages" id="chatMessages" role="log" aria-live="polite">
+        <div class="day">Chưa có cuộc trò chuyện</div>
+      </div>
 
-        <div class="input-container">
-            <div class="input-inner">
-                <button id="attachBtn" class="icon-btn" title="Gửi file (PDF)"><i class="fas fa-paperclip"></i></button>
-                <textarea id="messageInput" placeholder="Nhập tin nhắn..." rows="1" disabled></textarea>
-                <input type="file" id="fileInput" accept="application/pdf" style="display:none;">
-            </div>
-            <button id="sendButton" class="send-btn" disabled><i class="fas fa-paper-plane" style="margin-right:8px;"></i>Gửi</button>
+      <div class="input" id="chatInput">
+        <div class="input-inner">
+          <button id="attachBtn" class="btn attach" title="Gửi file (PDF)">📎</button>
+          <textarea id="messageInput" class="textarea" placeholder="Nhập tin nhắn..." rows="1" disabled></textarea>
+          <input type="file" id="fileInput" accept="application/pdf" style="display:none" />
         </div>
-    </div>
+        <button id="sendButton" class="btn send" disabled>Gửi ✈️</button>
+      </div>
+    </section>
+  </div>
 </div>
 
-<!-- Font Awesome + jQuery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" defer></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
 <script>
 /* Globals */
 let socket = null;
-let user = { tentk: "<?php echo htmlspecialchars($tentk, ENT_QUOTES, 'UTF-8'); ?>", vaitro: 0 }; // role 0 = doctor
+let user = { tentk: "<?php echo htmlspecialchars($tentk, ENT_QUOTES, 'UTF-8'); ?>", vaitro: 0 }; // 0 = doctor (current user)
 let currentPatient = null;
-let messages = {}; // messages keyed by patient tentk
+let messages = {}; // keyed by patient tentk
 
-/* Local map so file names persist across reloads if server metadata missing */
-const FILE_MAP_KEY = 'chat_file_map_v1';
-function loadFileMap(){ try{ const r = localStorage.getItem(FILE_MAP_KEY); return r?JSON.parse(r):[] }catch(e){return[]} }
+/* Local file map so metadata persists */
+const FILE_MAP_KEY = 'chat_file_map_v2';
+function loadFileMap(){ try{ const r = localStorage.getItem(FILE_MAP_KEY); return r ? JSON.parse(r) : []; }catch(e){return[]} }
 function saveFileMap(m){ try{ localStorage.setItem(FILE_MAP_KEY, JSON.stringify(m)); }catch(e){console.warn(e)} }
 function addFileMapEntry(sender, receiver, thoigiangui, filename, url){
     const map = loadFileMap();
@@ -307,10 +355,7 @@ function findFileMapEntryFuzzy(sender, receiver, thoigiangui){
     return best;
 }
 
-function toAbsoluteUrl(maybeUrl){
-    if(!maybeUrl) return null;
-    try{ return new URL(maybeUrl, window.location.href).href; } catch(e){ return maybeUrl; }
-}
+function toAbsoluteUrl(m){ if(!m) return null; try{ return new URL(m, window.location.href).href }catch(e){ return m } }
 function deriveFilenameFromUrl(url){
     if(!url) return '';
     try{
@@ -322,7 +367,7 @@ function deriveFilenameFromUrl(url){
     }
 }
 
-/* WebSocket */
+/* WebSocket connection */
 function connectWebSocket(){
     $('#connectionStatus').show().text('Đang kết nối...');
     try {
@@ -336,20 +381,20 @@ function connectWebSocket(){
 
     socket.onopen = function(){
         $('#connectionStatus').text('Đã kết nối');
-        try{ socket.send(JSON.stringify({ command: 'register', username: user.tentk, role: user.vaitro })); }catch(e){}
+        try{ socket.send(JSON.stringify({ command:'register', username: user.tentk, role: user.vaitro })); }catch(e){}
     };
 
-    socket.onmessage = function(event){
+    socket.onmessage = function(ev){
         let data;
-        try{ data = JSON.parse(event.data); } catch(e){ console.warn('Invalid WS message', event.data); return; }
+        try{ data = JSON.parse(ev.data); }catch(e){ console.warn('Invalid WS', ev.data); return; }
 
         if(data.command === 'messages'){
             const patient = data.receiver_tentk || data.partner;
             const raw = data.messages || [];
-            // normalize and repair file entries
+            // normalize file messages
             const normalized = raw.map(m => {
                 const nm = Object.assign({}, m);
-                const txt = (nm.message || '').toString();
+                const txt = (nm.message||'').toString();
                 if(txt.startsWith('[FILE]') || nm.filename || nm.url || nm.fileUrl){
                     nm.url = nm.url || nm.fileUrl || null;
                     if(!nm.url){
@@ -366,7 +411,7 @@ function connectWebSocket(){
             messages[patient] = normalized;
             if(currentPatient && currentPatient.tentk === patient) renderMessages(messages[patient]);
         }
-        else if(data.command === 'receive' || data.command === 'message'){
+        else if(data.command === 'receive' || data.command === 'message' || data.command === 'new_message'){
             const sender = data.sender || data.from;
             if(!messages[sender]) messages[sender] = [];
             const msgObj = {
@@ -377,8 +422,8 @@ function connectWebSocket(){
                 thoigiangui: data.thoigiangui || new Date().toISOString()
             };
 
-            // repair file metadata if needed using local map
-            const txt = (msgObj.message || '').toString();
+            // repair file entries via map
+            const txt = (msgObj.message||'').toString();
             if(txt.startsWith('[FILE]') || msgObj.filename || msgObj.url){
                 if(!msgObj.url){
                     const after = txt.replace(/^\[FILE\]\s*/i, '').trim();
@@ -396,9 +441,8 @@ function connectWebSocket(){
                 msgObj.message = '[FILE]';
             }
 
-            // Skip unusable file messages (no filename & no url)
             if(msgObj.message === '[FILE]' && !msgObj.filename && !msgObj.url){
-                console.warn('Ignored file message without filename/url', msgObj);
+                console.warn('Ignored unusable file msg', msgObj);
                 return;
             }
 
@@ -409,16 +453,8 @@ function connectWebSocket(){
         }
     };
 
-    socket.onerror = function(err){
-        console.error('WebSocket error', err);
-        $('#connectionStatus').text('Lỗi kết nối');
-    };
-
-    socket.onclose = function(ev){
-        console.warn('WebSocket closed', ev.code, ev.reason);
-        $('#connectionStatus').text('Đang kết nối lại...');
-        setTimeout(connectWebSocket, 3000);
-    };
+    socket.onerror = function(err){ console.error('WS error', err); $('#connectionStatus').text('Lỗi kết nối'); };
+    socket.onclose = function(ev){ console.warn('WS closed', ev); $('#connectionStatus').text('Đang kết nối lại...'); setTimeout(connectWebSocket, 3000); };
 }
 
 /* UI helpers */
@@ -427,12 +463,10 @@ function selectUserFromElement(el){
     const name = $(el).data('name') || 'Bệnh nhân';
     selectUser(tentk, name);
 }
-
 function selectUser(tentk, name){
     if(!tentk || !name) return;
     if(!socket || socket.readyState !== WebSocket.OPEN){
-        // wait and retry
-        setTimeout(()=>selectUser(tentk,name), 500);
+        setTimeout(()=>selectUser(tentk,name), 400);
         return;
     }
 
@@ -441,71 +475,86 @@ function selectUser(tentk, name){
 
     currentPatient = { tentk, name };
     $('#headerText').text('Đang trò chuyện với ' + name);
-    $('#headerAvatar').attr('src', 'Assets/img/default.png'); // optionally set patient avatar
+    // attempt to use the avatar from list
+    const avatarEl = $(`.user[data-tentk="${tentk}"] .u-avatar img`);
+    if(avatarEl.length) $('#headerAvatar').attr('src', avatarEl.attr('src'));
     $('#messageInput').prop('disabled', false).focus();
     $('#sendButton').prop('disabled', false);
 
-    $('#chatMessages').html('<div style="text-align:center;color:#777;padding:20px">Đang tải tin nhắn...</div>');
+    $('#chatMessages').html('<div class="day" style="text-align:center;color:#777;padding:20px">Đang tải tin nhắn...</div>');
 
     if(!messages[tentk]) messages[tentk] = [];
     renderMessages(messages[tentk]);
 
-    try{
-        socket.send(JSON.stringify({ command: 'load_messages', tentk: user.tentk, receiver_tentk: tentk }));
-    }catch(e){ console.warn(e); }
+    try{ socket.send(JSON.stringify({ command:'load_messages', tentk: user.tentk, receiver_tentk: tentk })); }catch(e){ console.warn(e) }
 }
 
 function renderMessages(arr){
-    const container = $('#chatMessages');
-    container.html('');
-    if(!arr || arr.length === 0){
-        container.html('<div style="text-align:center;color:#9aa3b2">Chưa có tin nhắn</div>');
-        return;
-    }
+    const c = $('#chatMessages');
+    c.html('');
+    if(!arr || arr.length===0){ c.html('<div class="day">Chưa có tin nhắn</div>'); return; }
     arr.forEach(m => displayMessage(m));
     scrollToBottom();
 }
 
+/* Avoid duplicate file rendering: compare last rendered file link */
+function lastRenderedFileInfo(){
+    const last = $('#chatMessages').find('.file-card').last();
+    if(!last || last.length===0) return null;
+    const href = last.closest('a').attr('href') || '';
+    const name = last.find('.file-name').text() || '';
+    const time = last.find('.file-time').text() || '';
+    return { href, name, time };
+}
+
 function displayMessage(msg){
-    // skip invalid
     if(!msg || typeof msg !== 'object') return;
-    // optionally repair missing filename/url from local map
+
+    // repair file name if missing
     if((msg.message && msg.message.toString().startsWith('[FILE]')) && !msg.filename && msg.url){
         msg.filename = deriveFilenameFromUrl(msg.url);
     }
 
     const isDoctor = msg.sender === user.tentk;
-    const msgDiv = $('<div>').addClass('message').addClass(isDoctor ? 'doctor' : 'patient');
+    const row = $('<div>').addClass('msg-row').addClass(isDoctor ? 'right' : 'left');
+    const bubble = $('<div>').addClass('bubble').addClass(isDoctor ? 'doctor' : 'patient');
 
     const isFile = (msg.message && msg.message.toString().startsWith('[FILE]')) || msg.filename || msg.url;
     if(isFile){
-        // ensure at least filename or url
         let url = msg.url || null;
         if(!url){
             const after = (msg.message||'').toString().replace(/^\[FILE\]\s*/i,'').trim();
             if(after) url = after;
         }
         url = toAbsoluteUrl(url);
-        let filename = msg.filename || deriveFilenameFromUrl(url) || null;
+        let filename = msg.filename || deriveFilenameFromUrl(url) || 'Tập tin.pdf';
 
-        if(!filename && !url){
-            // avoid showing undefined placeholder
-            console.warn('Skipping unusable file message', msg);
+        // dedupe: if last rendered file has same href/name and same sender/time approx, skip
+        const last = lastRenderedFileInfo();
+        const timeStr = formatTime(msg.thoigiangui || new Date().toISOString());
+        if(last && last.href === url && last.name === filename && last.time === timeStr){
+            // duplicate, ignore
             return;
         }
 
-        const a = $('<a target="_blank" rel="noopener noreferrer"></a>').attr('href', url || '#');
-        a.append($('<i>').addClass('fa fa-file-pdf'));
-        a.append($('<span>').text(' ' + (filename || 'Tập tin')));
-        msgDiv.append(a);
+        const link = $('<a>').attr('href', url || '#').attr('target','_blank').attr('rel','noopener noreferrer');
+        const card = $('<div>').addClass('file-card');
+        const icon = $('<div>').addClass('file-icon').text('PDF');
+        const meta = $('<div>').addClass('file-meta');
+        const nameEl = $('<div>').addClass('file-name').text(filename);
+        const timeEl = $('<div>').addClass('file-time').text(timeStr);
+        meta.append(nameEl).append(timeEl);
+        card.append(icon).append(meta);
+        link.append(card);
+        bubble.append(link);
     } else {
-        msgDiv.text(msg.message || '');
+        bubble.text(msg.message || '');
+        const m = $('<div>').addClass('meta').text(formatTime(msg.thoigiangui || new Date().toISOString()));
+        bubble.append(m);
     }
 
-    const meta = $('<div>').addClass('message-meta').text(formatTime(msg.thoigiangui || new Date().toISOString()));
-    msgDiv.append(meta);
-
-    $('#chatMessages').append(msgDiv);
+    row.append(bubble);
+    $('#chatMessages').append(row);
     scrollToBottom();
 }
 
@@ -513,7 +562,6 @@ function scrollToBottom(){
     const box = $('#chatMessages');
     requestAnimationFrame(()=>{ try{ box.scrollTop(box[0].scrollHeight); }catch(e){} });
 }
-
 function formatTime(iso){
     try{
         const d = new Date(iso);
@@ -521,19 +569,17 @@ function formatTime(iso){
     }catch(e){ return ''; }
 }
 
-/* Sending text */
+/* Sending messages */
 $('#sendButton').on('click', sendMessage);
-$('#messageInput').on('keypress', function(e){
-    if(e.which === 13 && !e.shiftKey){ e.preventDefault(); sendMessage(); }
-});
+$('#messageInput').on('keypress', function(e){ if(e.which === 13 && !e.shiftKey){ e.preventDefault(); sendMessage(); } });
 
 function sendMessage(){
     const text = $('#messageInput').val().trim();
     if(!text || !currentPatient) return;
     if(!socket || socket.readyState !== WebSocket.OPEN){ alert('Kết nối bị gián đoạn'); return; }
 
-    const payload = { command: 'send', sender: user.tentk, receiver: currentPatient.tentk, message: text, thoigiangui: new Date().toISOString() };
-    try{ socket.send(JSON.stringify(payload)); }catch(e){ console.warn(e); }
+    const payload = { command:'send', sender: user.tentk, receiver: currentPatient.tentk, message: text, thoigiangui: new Date().toISOString() };
+    try{ socket.send(JSON.stringify(payload)); }catch(e){ console.warn(e) }
 
     if(!messages[currentPatient.tentk]) messages[currentPatient.tentk] = [];
     messages[currentPatient.tentk].push(payload);
@@ -541,7 +587,7 @@ function sendMessage(){
     $('#messageInput').val('');
 }
 
-/* File upload for doctor */
+/* File upload */
 $('#attachBtn').on('click', function(){
     if(!currentPatient){ alert('Chọn bệnh nhân trước!'); return; }
     $('#fileInput').click();
@@ -553,17 +599,17 @@ $('#fileInput').on('change', function(){
     if(file.type !== 'application/pdf'){ alert('Chỉ chấp nhận file PDF'); $(this).val(''); return; }
     if(file.size > 10 * 1024 * 1024){ alert('File quá lớn (max 10MB)'); $(this).val(''); return; }
 
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('receiver', currentPatient.tentk);
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('receiver', currentPatient.tentk);
 
-    const origHtml = $('#attachBtn').html();
-    $('#attachBtn').prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i>');
+    const orig = $('#attachBtn').html();
+    $('#attachBtn').prop('disabled', true).text('⏳');
 
     $.ajax({
-        url: 'Views/bacsi/pages/tinnhan/upload.php', 
+        url: 'Views/bacsi/pages/tinnhan/upload.php',
         type: 'POST',
-        data: formData,
+        data: fd,
         contentType: false,
         processData: false,
         dataType: 'json',
@@ -572,7 +618,6 @@ $('#fileInput').on('change', function(){
                 const filename = res.filename || res.saved_name || file.name;
                 const url = res.url || res.fileUrl || null;
                 const ts = new Date().toISOString();
-
                 if(url) addFileMapEntry(user.tentk, currentPatient.tentk, ts, filename, url);
 
                 const payload = {
@@ -594,23 +639,32 @@ $('#fileInput').on('change', function(){
             }
         },
         error: function(xhr, st, err){
-            console.error('Upload error', err, xhr.responseText);
+            console.error('Upload error', err, xhr && xhr.responseText);
             alert('Upload thất bại!');
         },
         complete: function(){
-            $('#attachBtn').prop('disabled', false).html(origHtml);
+            $('#attachBtn').prop('disabled', false).html(orig);
             $('#fileInput').val('');
         }
     });
 });
 
-/* Events: click user */
+/* Click user */
 $(document).on('click', '.user', function(){ selectUserFromElement(this); });
+
+/* Search filter */
+$('#searchInput').on('input', function(){
+    const q = $(this).val().trim().toLowerCase();
+    if(!q){ $('.user').show(); return; }
+    $('.user').each(function(){
+        const name = $(this).data('name') || '';
+        $(this)[ (name.toLowerCase().indexOf(q) !== -1) ? 'show' : 'hide' ]();
+    });
+});
 
 /* Init */
 $(function(){
     connectWebSocket();
-    // make sure header/status displays
     $('#connectionStatus').hide();
 });
 </script>
