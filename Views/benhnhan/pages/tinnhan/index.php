@@ -466,39 +466,26 @@ function renderMessages(arr) {
 }
 
 /* Display a single message as text block (keeps UI consistent but simple) */
-function displayTextMessage(msg) {
-    const container = $('#chatMessages');
-    const isMe = msg.sender === user.tentk;
-    const msgDiv = $('<div>').addClass('message').addClass(isMe ? 'patient' : 'doctor');
+function displayMessage(msg){
+    const msgDiv = $('<div class="message"></div>');
+    const isPatient = msg.sender === user.tentk;
+    msgDiv.addClass(isPatient ? 'patient' : 'doctor');
 
-    const isFile = (msg.message && msg.message.toString().startsWith('[FILE]')) || msg.filename || msg.url;
-    if (isFile) {
-        let url = msg.url || null;
-        if (!url) {
-            const after = (msg.message || '').toString().replace(/^\[FILE\]\s*/i, '').trim();
-            if (after) url = after;
-        }
-        url = toAbsoluteUrl(url);
-        let filename = msg.filename || deriveFilenameFromUrl(url) || 'Tập tin';
-        // fuzzy map
-        if ((!msg.filename || msg.filename === 'Tập tin') && msg.thoigiangui) {
-            const ent = findFileMapEntryFuzzy(msg.sender, currentDoctor ? currentDoctor.tentk : null, msg.thoigiangui);
-            if (ent && ent.filename) filename = ent.filename;
-        }
-        const a = $('<a target="_blank" rel="noopener noreferrer"></a>').attr('href', url || '#');
-        a.append($('<i>').addClass('fas fa-file-pdf'));
-        a.append($('<span>').text(' ' + filename));
-        msgDiv.append(a);
-    } else {
+    // 🔥 Kiểm tra tin nhắn file (bắt đầu bằng [FILE])
+    if(msg.message && msg.message.startsWith('[FILE]')){
+        const url = msg.url || msg.message.replace('[FILE] ', '');
+        const filename = msg.filename || url.split('/').pop();
+
+        msgDiv.html(`<a href="${url}" target="_blank" download>📄 ${filename}</a>`);
+    } 
+    else {
         msgDiv.text(msg.message || '');
     }
 
-    const meta = $('<div>').addClass('message-meta').text(formatTime(msg.thoigiangui || new Date().toISOString()));
-    msgDiv.append(meta);
-
-    container.append(msgDiv);
-    scrollToBottom();
+    $('#chatMessages').append(msgDiv);
+    $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
 }
+
 
 function scrollToBottom() {
     const box = $('#chatMessages');
@@ -540,9 +527,9 @@ function sendMessage() {
     });
 }
 
-/* File upload flow (kept using uploadFile.php as in previous code) */
-$('#attachBtn').on('click', function(){
-    if (!currentDoctor) { alert('Chọn bác sĩ trước!'); return; }
+// Gửi file PDF
+$('#fileButton').click(()=>{
+    if(!currentDoctor) return alert("Chọn bác sĩ trước!");
     $('#fileInput').click();
 });
 
@@ -552,22 +539,12 @@ $('#fileInput').change(function(){
 
     if(file.type !== "application/pdf"){
         alert("Chỉ chấp nhận file PDF!");
-        $(this).val('');
-        return;
-    }
-
-    if (file.size > 10 * 1024 * 1024) {
-        alert("File quá lớn (max 10MB)!");
-        $(this).val('');
         return;
     }
 
     const formData = new FormData();
     formData.append('file', file);
     formData.append('receiver', currentDoctor.tentk);
-
-    const origHtml = $('#attachBtn').html();
-    $('#attachBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
 
     $.ajax({
         url: 'Views/benhnhan/pages/tinnhan/uploadFile.php',
@@ -577,44 +554,28 @@ $('#fileInput').change(function(){
         processData: false,
         dataType: 'json',
         success: function(res){
-            if(res && res.success){
-                const filename = res.filename || res.saved_name || file.name;
-                const url = res.url || res.fileUrl || null;
-                const ts = new Date().toISOString();
-
-                // store mapping locally so reloads can show original filename
-                if (url) addFileMapEntry(user.tentk, currentDoctor.tentk, ts, filename, url);
-
-                // send message metadata over WS
-                const payload = {
+            if(res.success){
+                const msg = {
                     command: 'send',
                     sender: user.tentk,
                     receiver: currentDoctor.tentk,
                     message: '[FILE]',
-                    filename: filename,
-                    url: url,
-                    thoigiangui: ts
+                    filename: res.filename,
+                    url: res.url
                 };
-                try { if(socket && socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify(payload)); } catch(e){ console.warn('WS send file meta failed', e); }
-
-                // locally display (as text-style)
-                const localMsg = { sender: user.tentk, message: '[FILE]', filename: filename, url: url, thoigiangui: ts };
-                if (!messages[currentDoctor.tentk]) messages[currentDoctor.tentk] = [];
-                messages[currentDoctor.tentk].push(localMsg);
-                displayTextMessage(localMsg);
+                if(socket && socket.readyState === WebSocket.OPEN){
+                    socket.send(JSON.stringify(msg));
+                }
             } else {
-                alert("Upload thất bại: " + (res && res.error ? res.error : 'Không rõ lỗi'));
+                alert("Upload thất bại: " + res.error);
             }
         },
-        error: function(xhr, st, err){
-            console.error('Upload error', err, xhr.responseText);
+        error: function(){
             alert("Upload thất bại!");
-        },
-        complete: function(){
-            $('#attachBtn').prop('disabled', false).html(origHtml);
-            $('#fileInput').val('');
         }
     });
+
+    $(this).val('');
 });
 
 /* Events */
