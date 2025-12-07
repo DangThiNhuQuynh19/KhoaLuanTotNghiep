@@ -453,16 +453,33 @@ function selectUser(tentk, name, vaitro) {
 }
 
 /* Render messages using simple text-style blocks (patient/doctor) */
-function renderMessages(arr) {
-    const container = $('#chatMessages');
-    container.html('');
-    if (!arr || arr.length === 0) {
-        container.html('<div class="message-day">Chưa có tin nhắn</div>');
-        scrollToBottom();
-        return;
-    }
-    arr.forEach(m => displayTextMessage(m));
-    scrollToBottom();
+function renderMessages(msgArray){
+    $('#chatMessages').html('');
+
+    msgArray.forEach(m => {
+        
+        // Nếu là file dạng [FILE]
+        if (m.message && m.message.startsWith("[FILE]")) {
+
+            // Nếu tin này là do BỆNH NHÂN gửi -> bỏ qua
+            if (m.sender === user.tentk) return;
+
+            const url = m.message.replace("[FILE]", "").trim();
+            const filename = url.split("/").pop();
+
+            displayFileMessage({
+                sender: m.sender,
+                filename: filename,
+                url: url
+            });
+
+        } else {
+            // Tin nhắn text (text không bị double nên giữ)
+            displayMessage(m);
+        }
+    });
+
+    $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
 }
 
 /* Display a single message as text block (keeps UI consistent but simple) */
