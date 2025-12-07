@@ -147,6 +147,77 @@ $tentk = $_SESSION['user']['tentk'];
             #chatHeader, #chatMessages, .input-container { padding: 18px; }
             .message { max-width: 90%; }
         }
+
+        :root{
+        --site-header-height: 90px; 
+        --site-footer-height: 0px;  
+        --chat-input-height: 88px; 
+        --chat-gap: 18px;
+        }
+
+        .chat-wrapper {
+        position: relative;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: calc(var(--chat-gap)); 
+        margin-bottom: calc(var(--chat-gap));
+        height: calc(100vh - var(--site-header-height) - var(--site-footer-height) - (var(--chat-gap) * 2));
+        display: flex;
+        overflow: hidden;
+        box-sizing: border-box;
+        }
+
+        #chatHeader {
+        position: sticky;
+        top: 0;
+        z-index: 3;
+        background: linear-gradient(90deg,#fff,#fbfdff);
+        }
+
+        
+        #chatMessages {
+        flex: 1;
+        min-height: 0; 
+        overflow-y: auto;
+        padding: 50px;
+        padding-bottom: calc(var(--chat-input-height) + 10px);
+        background: linear-gradient(#f6f7fb,#f6f7fb);
+        }
+
+        .input-container {
+        position: sticky;
+        bottom: 0;
+        z-index: 3;
+        background: #fff;
+        box-shadow: 0 -6px 24px rgba(2,6,23,0.03);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 15px 20px; /* có thể giảm nếu muốn input nhỏ lại */
+        box-sizing: border-box;
+        }
+
+        /* Giữ input-inner hiển thị đúng khi keyboard mobile bật */
+        .input-inner { z-index: 7; }
+
+        /* Tinh chỉnh cho tin nhắn không dính sát header/footer */
+        .message-day { margin-top: 6px; margin-bottom: 10px; }
+        .message { margin-bottom: 12px; }
+        @media (max-width: 100%) {
+        :root {
+            --site-header-height: 64px;
+            --chat-input-height: 66px;
+        }
+        .chat-wrapper {
+            height: calc(100vh - var(--site-header-height) - var(--site-footer-height));
+            margin-top: 0;
+            margin-bottom: 0;
+            border-radius: 0;
+        }
+        #chatMessages { padding: 18px; padding-bottom: calc(var(--chat-input-height) + 18px); }
+        .input-container { padding: 12px 16px; }
+        }
     </style>
 </head>
 <body>
