@@ -466,26 +466,39 @@ function renderMessages(arr) {
 }
 
 /* Display a single message as text block (keeps UI consistent but simple) */
-function displayMessage(msg){
-    const msgDiv = $('<div class="message"></div>');
-    const isPatient = msg.sender === user.tentk;
-    msgDiv.addClass(isPatient ? 'patient' : 'doctor');
+function displayTextMessage(msg) {
+    const container = $('#chatMessages');
+    const isMe = msg.sender === user.tentk;
+    const msgDiv = $('<div>').addClass('message').addClass(isMe ? 'patient' : 'doctor');
 
-    // 🔥 Kiểm tra tin nhắn file (bắt đầu bằng [FILE])
-    if(msg.message && msg.message.startsWith('[FILE]')){
-        const url = msg.url || msg.message.replace('[FILE] ', '');
-        const filename = msg.filename || url.split('/').pop();
-
-        msgDiv.html(`<a href="${url}" target="_blank" download>📄 ${filename}</a>`);
-    } 
-    else {
+    const isFile = (msg.message && msg.message.toString().startsWith('[FILE]')) || msg.filename || msg.url;
+    if (isFile) {
+        let url = msg.url || null;
+        if (!url) {
+            const after = (msg.message || '').toString().replace(/^\[FILE\]\s*/i, '').trim();
+            if (after) url = after;
+        }
+        url = toAbsoluteUrl(url);
+        let filename = msg.filename;
+        // fuzzy map
+        if ((!msg.filename || msg.filename === 'Tập tin') && msg.thoigiangui) {
+            const ent = findFileMapEntryFuzzy(msg.sender, currentDoctor ? currentDoctor.tentk : null, msg.thoigiangui);
+            if (ent && ent.filename) filename = ent.filename;
+        }
+        const a = $('<a target="_blank" rel="noopener noreferrer"></a>').attr('href', url || '#');
+        a.append($('<i>').addClass('fas fa-file-pdf'));
+        a.append($('<span>').text(' ' + filename));
+        msgDiv.append(a);
+    } else {
         msgDiv.text(msg.message || '');
     }
 
-    $('#chatMessages').append(msgDiv);
-    $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
-}
+    const meta = $('<div>').addClass('message-meta').text(formatTime(msg.thoigiangui || new Date().toISOString()));
+    msgDiv.append(meta);
 
+    container.append(msgDiv);
+    scrollToBottom();
+}
 
 function scrollToBottom() {
     const box = $('#chatMessages');
