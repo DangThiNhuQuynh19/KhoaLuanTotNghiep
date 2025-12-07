@@ -64,7 +64,7 @@ $tentk = $_SESSION['user']['tentk'];
 
         /* HEADER padding 50px as requested */
         #chatHeader {
-            padding-top: 50px;
+            padding: 20px;
             display:flex;
             align-items:center;
             gap:12px;
