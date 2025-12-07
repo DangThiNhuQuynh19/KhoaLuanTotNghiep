@@ -66,91 +66,67 @@ body { background-color: #f0f2f5; font-family: Arial, sans-serif; }
 let socket;
 let user = { tentk: "<?php echo htmlspecialchars($tentk, ENT_QUOTES, 'UTF-8'); ?>", vaitro: 0 };
 let currentPatient = null;
-let messages = {}; // lưu tin nhắn theo bệnh nhân
+let messages = {};
 
-// Kết nối WebSocket
 function connectWebSocket() {
     socket = new WebSocket('wss://hanhphuc.site/ws');
     socket.onopen = () => {
         console.log("WebSocket connected!");
-        socket.send(JSON.stringify({action:'register', username:user.tentk, role:user.vaitro}));
+        socket.send(JSON.stringify({ action: 'register', username: user.tentk, role: user.vaitro }));
     };
-
     socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
-
-        // Khi server trả tất cả tin nhắn từ DB
-        if(data.command === 'messages'){
-            messages[data.receiver_tentk] = data.messages;
-            if(currentPatient && currentPatient.tentk === data.receiver_tentk){
-                renderMessages(messages[data.receiver_tentk]);
+        if (data.command === 'messages') {
+            const patientID = data.receiver_tentk;
+            messages[patientID] = data.messages;
+            if (currentPatient && currentPatient.tentk === patientID) {
+                renderMessages(messages[patientID]);
             }
-        }
-
-        // Khi nhận tin nhắn mới
-        if(data.command === 'receive' || data.command === 'receive_file'){
-            const sender = data.sender;
-            if(!messages[sender]) messages[sender] = [];
-            messages[sender].push(data);
-            if(currentPatient && currentPatient.tentk === sender){
-                data.command === 'receive' ? displayMessage(data) : displayFileMessage(data);
+        } else if (data.command === 'receive') {
+            if (!messages[data.sender]) messages[data.sender] = [];
+            messages[data.sender].push(data);
+            if (currentPatient && currentPatient.tentk === data.sender) {
+                displayMessage(data);
             }
-        }
-
-        // Xác nhận file gửi thành công
-        if(data.command === 'file_sent'){
-            $('#chatMessages .message').last().html(`<a href="${data.url}" target="_blank" download>📄 ${data.filename}</a>`);
         }
     };
-
-    socket.onclose = () => { setTimeout(connectWebSocket, 3000); };
+    socket.onclose = () => {
+        console.warn("WebSocket closed. Attempting to reconnect...");
+        setTimeout(connectWebSocket, 3000);
+    };
 }
 
-// Chọn bệnh nhân để chat
-function selectUser(tentk, name){
-    currentPatient = {tentk, name};
+function selectUser(tentk, name) {
+    currentPatient = { tentk, name };
     $('#chatHeader').text('Đang trò chuyện với bệnh nhân ' + name);
     $('#messageInput').prop('disabled', false);
     $('#sendButton').prop('disabled', false);
     $('#chatMessages').html('');
 
-    if(!messages[tentk]) messages[tentk] = [];
-
-    // Gửi lệnh load messages từ DB
-    if(socket && socket.readyState === WebSocket.OPEN){
-        socket.send(JSON.stringify({command:'load_messages', tentk:user.tentk, receiver_tentk:tentk}));
-    }
-
+    if (!messages[tentk]) messages[tentk] = [];
     renderMessages(messages[tentk]);
+
+    if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify({
+            command: "load_messages",
+            tentk: user.tentk,
+            receiver_tentk: tentk
+        }));
+    } else {
+        console.warn("WebSocket is not ready. Retrying...");
+        setTimeout(() => selectUser(tentk, name), 2000);
+    }
 }
 
-// Render tất cả tin nhắn (text + file)
-function renderMessages(msgArray){
+function renderMessages(msgArray) {
     $('#chatMessages').html('');
-    msgArray.forEach(m => {
-        if(m.message && m.message.startsWith('[FILE]')){
-            displayFileMessage({sender:m.sender, filename:m.message.split('/').pop(), url:m.message.replace('[FILE]','').trim()});
-        } else {
-            displayMessage(m);
-        }
-    });
+    msgArray.forEach(m => displayMessage(m));
 }
 
-// Hiển thị tin nhắn text
-function displayMessage(msg){
+function displayMessage(msg) {
     const msgDiv = $('<div class="message"></div>');
-    msgDiv.addClass(msg.sender === user.tentk || msg.self ? 'doctor' : 'patient');
-    msgDiv.text(msg.message || '');
-    $('#chatMessages').append(msgDiv);
-    $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
-}
-
-// Hiển thị tin nhắn file
-function displayFileMessage(msg){
-    const msgDiv = $('<div class="message"></div>');
-    msgDiv.addClass(msg.sender === user.tentk || msg.self ? 'doctor' : 'patient');
-    const fileLink = msg.url ? `<a href="${msg.url}" target="_blank" download>📄 ${msg.filename}</a>` : `📄 ${msg.filename} (đang tải lên...)`;
-    msgDiv.html(fileLink);
+    msgDiv.text(msg.message);
+    msgDiv.addClass(msg.sender === user.tentk ? 'doctor' : 'patient');
     $('#chatMessages').append(msgDiv);
     $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
 }
@@ -177,43 +153,7 @@ $('#sendButton').click(() => {
     }
 });
 
-// // Upload file PDF và gửi WebSocket
-// $('#fileInput').on('change', function(){
-//     const file = this.files[0];
-//     if(!file || file.type !== 'application/pdf'){ alert("Chỉ chọn file PDF!"); return; }
-
-//     const formData = new FormData();
-//     formData.append('file', file);
-//     formData.append('receiver', currentPatient.tentk); // thêm dòng này
-
-//     $.ajax({
-//         url: 'Views/bacsi/pages/tinnhan/upload.php',
-//         type: 'POST',
-//         data: formData,
-//         processData: false,
-//         contentType: false,
-//         dataType: 'json',
-//         success: function(data){
-//             if(data.success){
-//                 const msg = {
-//                     command:'send_file',
-//                     sender:user.tentk,
-//                     receiver:currentPatient.tentk,
-//                     filename:data.filename,
-//                     url:data.url
-//                 };
-//                 socket.send(JSON.stringify(msg));
-//                 displayFileMessage({...msg, self:true});
-//                 $('#fileInput').val('');
-//             } else alert(data.error);
-//         },
-//         error: function(xhr){ alert("Upload thất bại: "+xhr.responseText); }
-//     });
-// });
-
-
 connectWebSocket();
-
 </script>
 </body>
 </html>
