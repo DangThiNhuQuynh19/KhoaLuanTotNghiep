@@ -168,7 +168,7 @@ let messages = {}; // lưu lịch sử theo từng bác sĩ
 
 // 📡 Kết nối WebSocket
 function connectWebSocket() {
-    socket = new WebSocket('ws://localhost:8080');
+    socket = new WebSocket('wss://hanhphuc.site/ws');
 
     socket.onopen = () => {
         console.log("✅ WebSocket connected");
