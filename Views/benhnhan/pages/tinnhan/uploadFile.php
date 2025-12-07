@@ -84,9 +84,10 @@ if (move_uploaded_file($file['tmp_name'], $targetPath)) {
     // Use SERVER_NAME for security (more reliable than HTTP_HOST which can be manipulated)
     $serverName = $_SERVER['SERVER_NAME'] ?? ($_SERVER['HTTP_HOST'] ?? 'localhost');
     // Handle non-standard ports
-    $port = $_SERVER['SERVER_PORT'] ?? '80';
+    $defaultPort = ($scheme === 'https') ? '443' : '80';
+    $port = $_SERVER['SERVER_PORT'] ?? $defaultPort;
     $portSuffix = '';
-    if (($scheme === 'https' && $port != '443') || ($scheme === 'http' && $port != '80')) {
+    if (($scheme === 'https' && $port !== '443') || ($scheme === 'http' && $port !== '80')) {
         $portSuffix = ':' . $port;
     }
     $publicBaseUrl = $scheme . '://' . $serverName . $portSuffix . '/uploads/';
