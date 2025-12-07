@@ -155,53 +155,61 @@ function displayFileMessage(msg){
     $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
 }
 
-// Gửi tin nhắn text
 $('#sendButton').click(() => {
     const text = $('#messageInput').val().trim();
-    if(!text || !currentPatient) return;
-    const msg = {command:'send', sender:user.tentk, receiver:currentPatient.tentk, message:text};
-    if(socket && socket.readyState === WebSocket.OPEN){
+    if (!text || !currentPatient) return;
+
+    const msg = {
+        command: 'send',
+        sender: user.tentk,
+        receiver: currentPatient.tentk,
+        message: text
+    };
+
+    if (socket && socket.readyState === WebSocket.OPEN) {
         socket.send(JSON.stringify(msg));
-        if(!messages[currentPatient.tentk]) messages[currentPatient.tentk] = [];
+        if (!messages[currentPatient.tentk]) messages[currentPatient.tentk] = [];
         messages[currentPatient.tentk].push(msg);
         displayMessage(msg);
         $('#messageInput').val('');
+    } else {
+        console.warn("WebSocket is not ready.");
     }
 });
 
-// Upload file PDF và gửi WebSocket
-$('#fileInput').on('change', function(){
-    const file = this.files[0];
-    if(!file || file.type !== 'application/pdf'){ alert("Chỉ chọn file PDF!"); return; }
+// // Upload file PDF và gửi WebSocket
+// $('#fileInput').on('change', function(){
+//     const file = this.files[0];
+//     if(!file || file.type !== 'application/pdf'){ alert("Chỉ chọn file PDF!"); return; }
 
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('receiver', currentPatient.tentk); // thêm dòng này
+//     const formData = new FormData();
+//     formData.append('file', file);
+//     formData.append('receiver', currentPatient.tentk); // thêm dòng này
 
-    $.ajax({
-        url: 'Views/bacsi/pages/tinnhan/upload.php',
-        type: 'POST',
-        data: formData,
-        processData: false,
-        contentType: false,
-        dataType: 'json',
-        success: function(data){
-            if(data.success){
-                const msg = {
-                    command:'send_file',
-                    sender:user.tentk,
-                    receiver:currentPatient.tentk,
-                    filename:data.filename,
-                    url:data.url
-                };
-                socket.send(JSON.stringify(msg));
-                displayFileMessage({...msg, self:true});
-                $('#fileInput').val('');
-            } else alert(data.error);
-        },
-        error: function(xhr){ alert("Upload thất bại: "+xhr.responseText); }
-    });
-});
+//     $.ajax({
+//         url: 'Views/bacsi/pages/tinnhan/upload.php',
+//         type: 'POST',
+//         data: formData,
+//         processData: false,
+//         contentType: false,
+//         dataType: 'json',
+//         success: function(data){
+//             if(data.success){
+//                 const msg = {
+//                     command:'send_file',
+//                     sender:user.tentk,
+//                     receiver:currentPatient.tentk,
+//                     filename:data.filename,
+//                     url:data.url
+//                 };
+//                 socket.send(JSON.stringify(msg));
+//                 displayFileMessage({...msg, self:true});
+//                 $('#fileInput').val('');
+//             } else alert(data.error);
+//         },
+//         error: function(xhr){ alert("Upload thất bại: "+xhr.responseText); }
+//     });
+// });
 
 
 connectWebSocket();
