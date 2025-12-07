@@ -23,7 +23,6 @@ $tentk = $_SESSION['user']['tentk'];
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html, body { height: 100%; }
         body {
-            padding-top: 200px;
             font-family: 'Poppins', sans-serif;
             background: #f0f2f5;
             -webkit-font-smoothing: antialiased;
@@ -367,6 +366,30 @@ function updateConnectionStatusClass(text, visible=true) {
     el.css('display', visible ? 'block' : 'none');
 }
 
+function toAbsoluteUrl(maybeUrl) {
+    if (!maybeUrl) return null;
+    try {
+        // If it's already absolute, this will work; if relative, it will resolve against current location
+        return new URL(maybeUrl, window.location.href).href;
+    } catch (e) {
+        return maybeUrl;
+    }
+}
+
+function deriveFilenameFromUrl(url) {
+    if (!url) return null;
+    try {
+        const pathname = new URL(url, window.location.href).pathname;
+        const parts = pathname.split('/');
+        let name = parts.pop() || parts.pop(); // handle trailing slash
+        return decodeURIComponent(name || '');
+    } catch (e) {
+        // fallback: try basic split
+        const parts = url.split('/');
+        return decodeURIComponent(parts.pop() || '');
+    }
+}
+
 /* WebSocket connect */
 function connectWebSocket() {
     updateConnectionStatusClass('Đang kết nối...', true);
@@ -402,7 +425,34 @@ function connectWebSocket() {
 
         if (data.command === 'messages') {
             const partner = data.receiver_tentk || data.partner;
-            messages[partner] = data.messages || [];
+            const raw = data.messages || [];
+            // Normalize messages so file url/filename persist after reload
+            const normalized = raw.map(m => {
+                const nm = Object.assign({}, m);
+                // If message indicates file
+                const txt = (nm.message || '').toString();
+                if (txt.startsWith('[FILE]') || nm.filename || nm.url || nm.fileUrl) {
+                    // extract url from possible fields or after [FILE]
+                    let u = nm.url || nm.fileUrl || null;
+                    if (!u) {
+                        // message might be like "[FILE] /path/to/file.pdf" or "[FILE]https://..."
+                        const after = txt.replace(/^\[FILE\]\s*/i, '').trim();
+                        if (after) u = after;
+                    }
+                    if (u) {
+                        u = toAbsoluteUrl(u);
+                        nm.url = u;
+                    }
+                    // ensure filename
+                    if (!nm.filename && nm.url) {
+                        nm.filename = deriveFilenameFromUrl(nm.url);
+                    }
+                    // keep message marker for backwards compat
+                    nm.message = '[FILE]';
+                }
+                return nm;
+            });
+            messages[partner] = normalized;
             if (currentDoctor && currentDoctor.tentk === partner) {
                 renderMessages(messages[partner]);
             }
@@ -416,11 +466,27 @@ function connectWebSocket() {
                 url: data.url || data.fileUrl || null,
                 thoigiangui: data.thoigiangui || new Date().toISOString()
             };
+
+            // Normalize file message if needed
+            if ((msgObj.message && msgObj.message.toString().startsWith('[FILE]')) || msgObj.filename || msgObj.url) {
+                let u = msgObj.url;
+                if (!u) {
+                    const after = (msgObj.message || '').toString().replace(/^\[FILE\]\s*/i, '').trim();
+                    if (after) u = after;
+                }
+                if (u) {
+                    u = toAbsoluteUrl(u);
+                    msgObj.url = u;
+                }
+                if (!msgObj.filename && msgObj.url) {
+                    msgObj.filename = deriveFilenameFromUrl(msgObj.url);
+                }
+                msgObj.message = '[FILE]';
+            }
+
             messages[sender].push(msgObj);
             if (currentDoctor && currentDoctor.tentk === sender) {
                 displayMessage(msgObj);
-            } else {
-                // optional: highlight contact (not implemented)
             }
         }
     };
@@ -496,27 +562,32 @@ function displayMessage(msg) {
     const isMe = msg.sender === user.tentk;
     const wrapper = $('<div class="message-wrapper"></div>').addClass(isMe ? 'sent' : 'received');
 
-    // optional avatar for received
     if (!isMe) {
         const avatarUrl = $('.user.active .user-avatar img').attr('src') || 'Assets/img/default.png';
         wrapper.append($('<img>').addClass('avatar-small').attr('src', avatarUrl).on('error', function(){ $(this).attr('src','Assets/img/default.png'); }));
     } else {
-        // keep space for alignment
         wrapper.append($('<div>').css('width','32px'));
     }
 
     const bubble = $('<div class="bubble"></div>');
 
-    // file message detection: if explicit filename or url provided prefer them
-    if ((msg.filename && msg.url) || (msg.message && msg.message === '[FILE]')) {
-        const filename = msg.filename || 'document.pdf';
-        const url = msg.url || msg.fileUrl || (typeof msg.message === 'string' ? msg.message.replace(/^\[FILE\]\s*/,'') : '');
-        const a = $('<a target="_blank" rel="noopener"></a>').attr('href', url || '#');
+    // File message handling
+    const isFile = (msg.message && msg.message.toString().startsWith('[FILE]')) || msg.filename || msg.url;
+    if (isFile) {
+        let url = msg.url || null;
+        if (!url) {
+            // message might contain url after [FILE]
+            const after = (msg.message || '').toString().replace(/^\[FILE\]\s*/i, '').trim();
+            if (after) url = after;
+        }
+        url = toAbsoluteUrl(url);
+
+        let filename = msg.filename || deriveFilenameFromUrl(url) || 'Tập tin';
+        const a = $('<a target="_blank" rel="noopener noreferrer"></a>').attr('href', url || '#');
         a.append($('<i>').addClass('fas fa-file-pdf'));
         a.append($('<span>').text(' ' + filename));
         bubble.append(a);
     } else {
-        // plain text
         bubble.text(msg.message || '');
     }
 
@@ -625,17 +696,18 @@ $('#fileInput').on('change', function(){
         success: function(res) {
             // Accept multiple response shapes for robustness
             const ok = res && (res.success === true || res.status === 'ok' || res.success == 1);
-            const filename = res && (res.filename || res.fileName || (res.data && res.data.filename));
+            const filename = res && (res.filename || res.fileName || (res.data && res.data.filename) || file.name);
             const url = res && (res.url || res.fileUrl || (res.data && res.data.url));
 
-            if (ok && (url || res.messageUrl || res.fileUrl)) {
+            if (ok && url) {
+                const absUrl = toAbsoluteUrl(url);
                 const payload = {
                     command: 'send',
                     sender: user.tentk,
                     receiver: currentDoctor.tentk,
                     message: '[FILE]',
-                    filename: filename || (file && file.name),
-                    url: url || res.messageUrl || res.fileUrl
+                    filename: filename,
+                    url: absUrl
                 };
                 try { socket.send(JSON.stringify(payload)); } catch(e){ console.warn('WS send file meta failed', e); }
 
