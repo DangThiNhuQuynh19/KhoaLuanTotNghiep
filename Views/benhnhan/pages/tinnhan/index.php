@@ -158,7 +158,7 @@ $tentk = $_SESSION['user']['tentk'];
 <div class="chat-layout">
     <div id="userList">
         <h3>Bác Sĩ / Chuyên Gia</h3>
-        <? php
+        <?php
         include_once("Controllers/ctaikhoan.php");
         $p = new ctaiKhoan();
         $tentk1 = $_SESSION['user']['tentk'];
