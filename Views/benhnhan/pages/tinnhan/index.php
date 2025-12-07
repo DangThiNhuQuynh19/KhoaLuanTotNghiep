@@ -552,20 +552,18 @@ $('#attachBtn').on('click', function(){
     $('#fileInput').click();
 });
 
-$('#fileInput').on('change', function(){
+$('#fileInput').change(function(){
     const file = this.files[0];
-    if (!file) return;
-    if (file.type !== 'application/pdf') { alert('⚠️ Chỉ chấp nhận PDF!'); $(this).val(''); return; }
-    if (file.size > 10 * 1024 * 1024) { alert('⚠️ File quá lớn (max 10MB)!'); $(this).val(''); return; }
-    if (!socket || socket.readyState !== WebSocket.OPEN) { alert('❌ Kết nối bị gián đoạn!'); $(this).val(''); return; }
+    if(!file) return;
 
-    const fd = new FormData();
-    fd.append('file', file);
-    fd.append('receiver', currentDoctor.tentk);
-    fd.append('sender', user.tentk);
+    if(file.type !== "application/pdf"){
+        alert("Chỉ chấp nhận file PDF!");
+        return;
+    }
 
-    const orig = $('#attachBtn').html();
-    $('#attachBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('receiver', currentDoctor.tentk);
 
     $.ajax({
         url: 'Views/benhnhan/pages/tinnhan/uploadFile.php',
@@ -595,6 +593,8 @@ $('#fileInput').on('change', function(){
             alert("Upload thất bại!");
         }
     });
+
+    $(this).val('');
 });
 
 /* Events */
