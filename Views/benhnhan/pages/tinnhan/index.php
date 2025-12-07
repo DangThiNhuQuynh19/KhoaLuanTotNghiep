@@ -58,7 +58,7 @@ $tentk = $_SESSION['user']['tentk'];
         .user-info small { color:#6b7280; font-size:13px; margin-top:4px; display:flex; gap:8px; align-items:center; }
 
         /* Chat area */
-        #chatContainer { flex:1; display:flex; flex-direction:column; min-width:0; }
+        #chatContainer { flex:1; display:flex; flex-direction:column; min-width:0; min-height:0; }
 
         /* HEADER padding 50px as requested */
         #chatHeader {
@@ -81,6 +81,7 @@ $tentk = $_SESSION['user']['tentk'];
             padding: 50px;
             overflow-y:auto;
             background: linear-gradient(#f6f7fb,#f6f7fb);
+            min-height:0; /* ensure flex child can scroll */
         }
         #chatMessages::-webkit-scrollbar { width: 10px; }
         #chatMessages::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.06); border-radius:6px; }
@@ -104,7 +105,7 @@ $tentk = $_SESSION['user']['tentk'];
 
         /* Make message colors lighter/subtle as requested */
         .message-wrapper.sent .bubble {
-            background: linear-gradient(135deg, #e6f0ff, #d7eaff); /* pale blue */
+            background: linear-gradient(135deg, #eef8ff, #e6f3ff); /* very pale blue */
             color: #06344a; /* darker text for contrast */
             border-bottom-right-radius:6px;
         }
@@ -507,9 +508,9 @@ function displayMessage(msg) {
 function scrollToBottom() {
     const box = $('#chatMessages');
     // ensure layout finished before scrolling
-    setTimeout(function(){
+    requestAnimationFrame(function(){
         try { box.scrollTop(box[0].scrollHeight); } catch(e){}
-    }, 40);
+    });
 }
 
 /* Sending text */
@@ -567,7 +568,7 @@ $('#fileInput').on('change', function(){
     $('#attachBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
 
     $.ajax({
-        url: 'Views/benhnhan/pages/tinnhan/uploadFile.php',
+        url: 'Views/benhnhan/pages/tinnhan/download.php',
         method: 'POST',
         data: fd,
         contentType: false,
