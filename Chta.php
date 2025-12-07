@@ -63,7 +63,7 @@ $vaitro = $_SESSION['user']['vaitro']; // 0 = bác sĩ, 1 = bệnh nhân
 
 <script>
 const tentk = "<?php echo $tentk; ?>";
-const ws = new WebSocket("ws://localhost:8080");
+const ws = new WebSocket('wss://hanhphuc.site/ws');
 const receiverInput = document.getElementById('receiver');
 let currentReceiver = null;
 
