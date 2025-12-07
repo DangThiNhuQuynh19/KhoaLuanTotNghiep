@@ -455,66 +455,24 @@ function selectUser(tentk, name, vaitro) {
 /* Render messages using simple text-style blocks (patient/doctor) */
 function renderMessages(msgArray){
     $('#chatMessages').html('');
-
     msgArray.forEach(m => {
-        
-        // Nếu là file dạng [FILE]
-        if (m.message && m.message.startsWith("[FILE]")) {
-
-            // Nếu tin này là do BỆNH NHÂN gửi -> bỏ qua
-            if (m.sender === user.tentk) return;
-
-            const url = m.message.replace("[FILE]", "").trim();
-            const filename = url.split("/").pop();
-
-            displayFileMessage({
-                sender: m.sender,
-                filename: filename,
-                url: url
-            });
-
+        if(m.message && m.message.startsWith('[FILE]')){
+            displayFileMessage({sender:m.sender, filename:m.message.split('/').pop(), url:m.message.replace('[FILE]','').trim()});
         } else {
-            // Tin nhắn text (text không bị double nên giữ)
             displayMessage(m);
         }
     });
-
-    $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
 }
 
 /* Display a single message as text block (keeps UI consistent but simple) */
-function displayTextMessage(msg) {
-    const container = $('#chatMessages');
-    const isMe = msg.sender === user.tentk;
-    const msgDiv = $('<div>').addClass('message').addClass(isMe ? 'patient' : 'doctor');
-
-    const isFile = (msg.message && msg.message.toString().startsWith('[FILE]')) || msg.filename || msg.url;
-    if (isFile) {
-        let url = msg.url || null;
-        if (!url) {
-            const after = (msg.message || '').toString().replace(/^\[FILE\]\s*/i, '').trim();
-            if (after) url = after;
-        }
-        url = toAbsoluteUrl(url);
-        let filename = msg.filename;
-        // fuzzy map
-        if ((!msg.filename || msg.filename === 'Tập tin') && msg.thoigiangui) {
-            const ent = findFileMapEntryFuzzy(msg.sender, currentDoctor ? currentDoctor.tentk : null, msg.thoigiangui);
-            if (ent && ent.filename) filename = ent.filename;
-        }
-        const a = $('<a target="_blank" rel="noopener noreferrer"></a>').attr('href', url || '#');
-        a.append($('<i>').addClass('fas fa-file-pdf'));
-        a.append($('<span>').text(' ' + filename));
-        msgDiv.append(a);
-    } else {
-        msgDiv.text(msg.message || '');
-    }
-
-    const meta = $('<div>').addClass('message-meta').text(formatTime(msg.thoigiangui || new Date().toISOString()));
-    msgDiv.append(meta);
-
-    container.append(msgDiv);
-    scrollToBottom();
+// Hiển thị tin nhắn file
+function displayFileMessage(msg){
+    const msgDiv = $('<div class="message"></div>');
+    msgDiv.addClass(msg.sender === user.tentk || msg.self ? 'patient' : 'doctor');
+    const fileLink = msg.url ? `<a href="${msg.url}" target="_blank" download>📄 ${msg.filename}</a>` : `📄 ${msg.filename} (đang tải lên...)`;
+    msgDiv.html(fileLink);
+    $('#chatMessages').append(msgDiv);
+    $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
 }
 
 function scrollToBottom() {
