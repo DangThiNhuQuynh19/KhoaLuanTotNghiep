@@ -563,7 +563,7 @@ $tentk = $_SESSION['user']['tentk'];
             </div>
             
             <div class="users-list">
-                <? php
+                <?php
                 include_once("Controllers/ctaikhoan.php");
                 $p = new ctaiKhoan();
                 $tentk1 = $_SESSION['user']['tentk'];
