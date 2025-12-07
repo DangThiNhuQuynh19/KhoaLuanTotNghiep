@@ -145,6 +145,78 @@ $tentk = $_SESSION['user']['tentk'];
             #chatHeader, #chatMessages, .input-container { padding: 18px; }
             .message { max-width: 90%; }
         }
+                :root{
+        /* adjust if your site header/footer heights differ */
+        --site-header-height: 90px;
+        --site-footer-height: 80px;
+        --chat-gutter: 18px;
+        --input-area-height: 84px; /* approximate height of .input-container (padding + controls) */
+        }
+
+        /* Keep the chat wrapper inside the visible viewport (between header & footer) */
+        .chat-wrapper {
+        max-width: 1200px;
+        margin: calc(var(--chat-gutter)) auto;
+        /* leave space for top header and bottom footer */
+        height: calc(100vh - var(--site-header-height) - var(--site-footer-height) - (var(--chat-gutter) * 2));
+        /* optional: make it visually placed under the global header */
+        margin-top: calc(var(--site-header-height) + var(--chat-gutter));
+        margin-bottom: calc(var(--site-footer-height) + var(--chat-gutter));
+        display: flex;
+        position: relative;
+        }
+
+        /* Keep header of chat sticky at top inside the chat column */
+        #chatHeader {
+        position: sticky;
+        top: 0;
+        z-index: 5; /* on top of messages */
+        background: linear-gradient(90deg,#fff,#fbfdff);
+        }
+
+        /* Messages area: make sure it scrolls and never gets hidden under the input */
+        #chatMessages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 50px;
+        /* ensure last messages are not hidden behind the input/footer - allow some extra space */
+        padding-bottom: calc(var(--input-area-height) + 32px);
+        min-height: 0; /* important for flex children to allow scrolling */
+        background: linear-gradient(#f6f7fb,#f6f7fb);
+        }
+
+        /* Pin the input area to the bottom of the chat column (inside .chat-wrapper) */
+        .input-container {
+        position: sticky;
+        bottom: 0; /* stick to bottom of .chat-wrapper */
+        z-index: 6;
+        background: #fff;
+        box-shadow: 0 -6px 24px rgba(2,6,23,0.03);
+        /* keep the same internal layout */
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 18px 50px; /* reduce if you want smaller input height */
+        }
+
+        /* Make sure the inner textarea area remains visible when keyboard/mobile open */
+        .input-inner { z-index: 6; }
+
+        /* Small-screen tuning */
+        @media (max-width: 900px) {
+        :root {
+            --site-header-height: 64px;
+            --site-footer-height: 64px;
+            --input-area-height: 66px;
+        }
+        .chat-wrapper {
+            height: calc(100vh - var(--site-header-height) - var(--site-footer-height));
+            margin-top: var(--site-header-height);
+            margin-bottom: var(--site-footer-height);
+        }
+        #chatMessages { padding: 18px; padding-bottom: calc(var(--input-area-height) + 18px); }
+        .input-container { padding: 12px 18px; }
+        }
     </style>
 </head>
 <body>
@@ -245,15 +317,18 @@ function loadFileMap() {
 function saveFileMap(map) {
     try { localStorage.setItem(FILE_MAP_KEY, JSON.stringify(map)); } catch (e) { console.warn('saveFileMap failed', e); }
 }
+// Normalize url when saving mapping
 function addFileMapEntry(sender, receiver, thoigiangui, filename, url) {
     const map = loadFileMap();
-    map.push({ sender, receiver, thoigiangui, filename, url });
+    const abs = toAbsoluteUrl(url) || url || null;
+    map.push({ sender, receiver, thoigiangui, filename, url: abs });
     saveFileMap(map);
 }
 function findFileMapEntryByUrl(url) {
     if (!url) return null;
     const map = loadFileMap();
-    return map.find(e => e.url && e.url === url) || null;
+    const abs = toAbsoluteUrl(url) || url;
+    return map.find(e => e.url && e.url === abs) || null;
 }
 function findFileMapEntryFuzzy(sender, receiver, thoigiangui) {
     if (!thoigiangui) return null;
@@ -299,6 +374,64 @@ function deriveFilenameFromUrl(url) {
         const parts = url.split('/');
         return decodeURIComponent(parts.pop() || '');
     }
+}
+
+/* Attempt to repair a single file-message using local maps; return repaired object or null if not usable */
+function repairFileMessage(msg) {
+    // ensure url absolute
+    if (msg.url) msg.url = toAbsoluteUrl(msg.url);
+    if (!msg.filename && msg.url) msg.filename = deriveFilenameFromUrl(msg.url);
+
+    // fuzzy map by participants + timestamp
+    if ((!msg.filename || !msg.url) && msg.thoigiangui) {
+        const mapEntry = findFileMapEntryFuzzy(msg.sender || user.tentk, msg.receiver || (currentDoctor ? currentDoctor.tentk : null), msg.thoigiangui);
+        if (mapEntry) {
+            if (!msg.filename && mapEntry.filename) msg.filename = mapEntry.filename;
+            if (!msg.url && mapEntry.url) msg.url = toAbsoluteUrl(mapEntry.url);
+        }
+    }
+
+    // if url exists, try lookup by url
+    if (msg.url) {
+        const byUrl = findFileMapEntryByUrl(msg.url);
+        if (byUrl && byUrl.filename) msg.filename = msg.filename || byUrl.filename;
+    }
+
+    // if still no url and no filename for [FILE] message, treat as unusable (avoid showing generic placeholder)
+    if ((msg.message && msg.message.toString().startsWith('[FILE]')) && !msg.url && !msg.filename) {
+        return null;
+    }
+    return msg;
+}
+
+/* Remove duplicates and repair file messages for an array of messages */
+function dedupeAndRepairMessages(arr) {
+    const out = [];
+    const seen = new Set();
+    arr.forEach(m => {
+        // shallow clone to avoid mutating original
+        const msg = Object.assign({}, m);
+        // Try to repair file messages
+        const txt = (msg.message || '').toString();
+        if (txt.startsWith('[FILE]') || msg.filename || msg.url || msg.fileUrl) {
+            // normalize url property name
+            msg.url = msg.url || msg.fileUrl || null;
+            const repaired = repairFileMessage(msg);
+            if (!repaired) return; // skip unusable file message
+            // use repaired fields
+            msg.filename = repaired.filename;
+            msg.url = repaired.url;
+        }
+
+        // build dedupe key: prefer url, then filename, then message text; include sender + rounded timestamp (2s)
+        const timeKey = msg.thoigiangui ? Math.floor(new Date(msg.thoigiangui).getTime() / 2000) : '';
+        const keyBase = (msg.url || msg.filename || (msg.message || '')) + '|' + (msg.sender || '') + '|' + timeKey;
+        if (seen.has(keyBase)) return;
+        seen.add(keyBase);
+
+        out.push(msg);
+    });
+    return out;
 }
 
 /* WebSocket connect */
@@ -349,22 +482,14 @@ function connectWebSocket() {
                     }
                     if (u) nm.url = toAbsoluteUrl(u);
                     if (!nm.filename && nm.url) nm.filename = deriveFilenameFromUrl(nm.url);
-                    if ((!nm.filename || !nm.url) && nm.thoigiangui) {
-                        const mapEntry = findFileMapEntryFuzzy(nm.sender || user.tentk, nm.receiver || partner, nm.thoigiangui);
-                        if (mapEntry) {
-                            if (!nm.filename && mapEntry.filename) nm.filename = mapEntry.filename;
-                            if (!nm.url && mapEntry.url) nm.url = mapEntry.url;
-                        }
-                    }
-                    if (nm.url) {
-                        const byUrl = findFileMapEntryByUrl(nm.url);
-                        if (byUrl && byUrl.filename) nm.filename = byUrl.filename;
-                    }
+                    // nm.message remains '[FILE]' as marker
                     nm.message = '[FILE]';
                 }
                 return nm;
             });
-            messages[partner] = normalized;
+
+            // Repair and dedupe
+            messages[partner] = dedupeAndRepairMessages(normalized);
             if (currentDoctor && currentDoctor.tentk === partner) renderMessages(messages[partner]);
         } else if (data.command === 'receive' || data.command === 'message') {
             const sender = data.sender || data.from;
@@ -376,28 +501,16 @@ function connectWebSocket() {
                 url: data.url || data.fileUrl || null,
                 thoigiangui: data.thoigiangui || new Date().toISOString()
             };
+            // normalize & repair file message; if repair returns null -> ignore
             const txt = (msgObj.message || '').toString();
             if (txt.startsWith('[FILE]') || msgObj.filename || msgObj.url) {
-                let u = msgObj.url;
-                if (!u) {
-                    const after = txt.replace(/^\[FILE\]\s*/i, '').trim();
-                    if (after) u = after;
+                const tmp = repairFileMessage(msgObj);
+                if (!tmp) {
+                    console.warn('Ignored incoming file message with no url/filename', msgObj);
+                    return;
                 }
-                if (u) msgObj.url = toAbsoluteUrl(u);
-                if (!msgObj.filename && msgObj.url) msgObj.filename = deriveFilenameFromUrl(msgObj.url);
-                // try local map
-                if ((!msgObj.filename || !msgObj.url)) {
-                    const mapEntry = findFileMapEntryFuzzy(msgObj.sender, msgObj.receiver || user.tentk, msgObj.thoigiangui);
-                    if (mapEntry) {
-                        if (!msgObj.filename) msgObj.filename = mapEntry.filename;
-                        if (!msgObj.url) msgObj.url = mapEntry.url;
-                    }
-                }
-                if (msgObj.url) {
-                    const byUrl = findFileMapEntryByUrl(msgObj.url);
-                    if (byUrl && byUrl.filename) msgObj.filename = byUrl.filename;
-                }
-                msgObj.message = '[FILE]';
+                msgObj.filename = tmp.filename;
+                msgObj.url = tmp.url;
             }
             messages[sender].push(msgObj);
             if (currentDoctor && currentDoctor.tentk === sender) displayTextMessage(msgObj);
@@ -473,21 +586,24 @@ function displayTextMessage(msg) {
 
     const isFile = (msg.message && msg.message.toString().startsWith('[FILE]')) || msg.filename || msg.url;
     if (isFile) {
+        // ensure we have at least filename or url (repair function already tried)
         let url = msg.url || null;
         if (!url) {
             const after = (msg.message || '').toString().replace(/^\[FILE\]\s*/i, '').trim();
             if (after) url = after;
         }
         url = toAbsoluteUrl(url);
-        let filename = msg.filename || deriveFilenameFromUrl(url) || 'Tập tin';
-        // fuzzy map
-        if ((!msg.filename || msg.filename === 'Tập tin') && msg.thoigiangui) {
-            const ent = findFileMapEntryFuzzy(msg.sender, currentDoctor ? currentDoctor.tentk : null, msg.thoigiangui);
-            if (ent && ent.filename) filename = ent.filename;
+        let filename = msg.filename || deriveFilenameFromUrl(url) || null;
+
+        // If still no filename and no url -> skip (prevents 'Tập tin' undefined)
+        if (!filename && !url) {
+            console.warn('Skipping file message because no filename/url', msg);
+            return;
         }
+
         const a = $('<a target="_blank" rel="noopener noreferrer"></a>').attr('href', url || '#');
         a.append($('<i>').addClass('fas fa-file-pdf'));
-        a.append($('<span>').text(' ' + filename));
+        a.append($('<span>').text(' ' + (filename || 'Tập tin')));
         msgDiv.append(a);
     } else {
         msgDiv.text(msg.message || '');
@@ -582,7 +698,7 @@ $('#fileInput').change(function(){
                 const url = res.url || res.fileUrl || null;
                 const ts = new Date().toISOString();
 
-                // store mapping locally so reloads can show original filename
+                // store mapping locally so reloads can show original filename (normalize url)
                 if (url) addFileMapEntry(user.tentk, currentDoctor.tentk, ts, filename, url);
 
                 // send message metadata over WS
@@ -592,13 +708,13 @@ $('#fileInput').change(function(){
                     receiver: currentDoctor.tentk,
                     message: '[FILE]',
                     filename: filename,
-                    url: url,
+                    url: toAbsoluteUrl(url) || url,
                     thoigiangui: ts
                 };
                 try { if(socket && socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify(payload)); } catch(e){ console.warn('WS send file meta failed', e); }
 
                 // locally display (as text-style)
-                const localMsg = { sender: user.tentk, message: '[FILE]', filename: filename, url: url, thoigiangui: ts };
+                const localMsg = { sender: user.tentk, message: '[FILE]', filename: filename, url: toAbsoluteUrl(url) || url, thoigiangui: ts };
                 if (!messages[currentDoctor.tentk]) messages[currentDoctor.tentk] = [];
                 messages[currentDoctor.tentk].push(localMsg);
                 displayTextMessage(localMsg);
