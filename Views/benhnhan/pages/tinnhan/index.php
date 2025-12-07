@@ -187,7 +187,11 @@ $tentk = $_SESSION['user']['tentk'];
                         </div>";
                 }
             } else {
-                echo "<div style='padding:24px;text-align:center;color:#6b7280;'><i class='fas fa-user-slash' style='font-size:28px;margin-bottom:8px;display:block;'></i><p>Chưa có bác sĩ nào</p></div>";
+                // Sửa: in thông báo khi không có bác sĩ (đóng đúng chuỗi)
+                echo "<div style='padding:24px;text-align:center;color:#6b7280;'>
+                        <i class='fas fa-user-slash' style='font-size:28px;margin-bottom:8px;display:block;'></i>
+                        <p>Chưa có bác sĩ nào</p>
+                      </div>";
             }
             ?>
         </div>
