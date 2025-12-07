@@ -332,17 +332,17 @@
                                 
                                 <div class="ca-kham">
                                     <p>Ca Sáng</p>
-                                    <div class="khung-gio-grid" id="online_ca_sang"></div>
+                                    <div class="khung-gio-grid" id="Online_ca_sang"></div>
                                 </div>
                                 
                                 <div class="ca-kham">
                                     <p>Ca Chiều</p>
-                                    <div class="khung-gio-grid" id="online_ca_chieu"></div>
+                                    <div class="khung-gio-grid" id="Online_ca_chieu"></div>
                                 </div>
                                 
                                 <div class="ca-kham">
                                     <p>Ca Tối</p>
-                                    <div class="khung-gio-grid" id="online_ca_toi"></div>
+                                    <div class="khung-gio-grid" id="Online_ca_toi"></div>
                                 </div>
                             </div>
                         </div>
@@ -353,17 +353,17 @@
                                 
                                 <div class="ca-kham">
                                     <p>Ca Sáng</p>
-                                    <div class="khung-gio-grid" id="offline_ca_sang"></div>
+                                    <div class="khung-gio-grid" id="Offline_ca_sang"></div>
                                 </div>
                                 
                                 <div class="ca-kham">
                                     <p>Ca Chiều</p>
-                                    <div class="khung-gio-grid" id="offline_ca_chieu"></div>
+                                    <div class="khung-gio-grid" id="Offline_ca_chieu"></div>
                                 </div>
                                 
                                 <div class="ca-kham">
                                     <p>Ca Tối</p>
-                                    <div class="khung-gio-grid" id="offline_ca_toi"></div>
+                                    <div class="khung-gio-grid" id="Offline_ca_toi"></div>
                                 </div>
                             </div>
                         </div>
@@ -596,8 +596,8 @@
             const khungGioKham = document.getElementById('khung_gio_kham');
             // Reset giao diện khung giờ
             const khung_gio_ids = [
-                'online_ca_sang','online_ca_chieu','online_ca_toi',
-                'offline_ca_sang','offline_ca_chieu','offline_ca_toi'
+                'Online_ca_sang','Online_ca_chieu','Online_ca_toi',
+                'Offline_ca_sang','Offline_ca_chieu','Offline_ca_toi'
             ];
             khung_gio_ids.forEach(id => document.getElementById(id).innerHTML = '');
             
@@ -648,7 +648,7 @@
                     btn.dataset.hinhthuc = kg.hinhthuclamviec;
                     btn.innerHTML = `
                         <div class="time">${kg.giobatdau.split(':').slice(0, 2).join(':')} - ${kg.gioketthuc.split(':').slice(0, 2).join(':')}</div>
-                        <div class="status">${kg.hinhthuclamviec === 'online' ? 'Khám Online' : 'Tại Bệnh Viện'}</div>
+                        <div class="status">${kg.hinhthuclamviec === 'Online' ? 'Khám Online' : 'Tại Bệnh Viện'}</div>
                     `;
 
                     btn.addEventListener('click', function() {
