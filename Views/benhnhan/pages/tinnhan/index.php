@@ -56,8 +56,8 @@ $tentk = $_SESSION['user']['tentk'];
         .user.active { background:#eef6ff; box-shadow: inset 0 0 0 1px rgba(22,119,255,0.06); }
 
         .user-avatar img { width:52px; height:52px; border-radius:50%; object-fit:cover; border:2px solid #f0f2f5; }
-        .user-info strong { display:block; font-size:15px; font-weight:600; color:#0f1724; }
-        .user-info small { color:#6b7280; font-size:13px; margin-top:4px; display:flex; gap:8px; align-items:center; }
+        .user-info strong { display:block; font-size:13px; font-weight:600; color:#0f1724; }
+        .user-info small { color:#6b7280; font-size:10px; margin-top:4px; display:flex; gap:8px; align-items:center; }
 
         /* Chat area */
         #chatContainer { flex:1; display:flex; flex-direction:column; min-width:0; min-height:0; }
@@ -74,13 +74,13 @@ $tentk = $_SESSION['user']['tentk'];
 
         .header-avatar img { width:48px; height:48px; border-radius:50%; object-fit:cover; border:2px solid transparent; }
         .header-info { flex:1; display:flex; flex-direction:column; }
-        #headerText { font-weight:700; font-size:18px; color:#0f1724; }
+        #headerText { font-weight:700; font-size:14px; color:#0f1724; }
         #headerSub { color:#6b7280; font-size:13px; margin-top:6px; }
 
         /* Messages container with padding 50px */
         #chatMessages {
             flex:1;
-            padding: 50px;
+            padding: 18px;
             overflow-y:auto;
             background: linear-gradient(#f6f7fb,#f6f7fb);
             min-height:0; /* ensure flex child can scroll */
@@ -131,15 +131,15 @@ $tentk = $_SESSION['user']['tentk'];
             gap:10px;
         }
 
-        .input-inner { display:flex; align-items:center; gap:10px; flex:1; background:#f4f6fb; padding:8px 12px; border-radius:999px; border:1px solid #e6e9ee; }
+        .input-inner { display:flex; align-items:center; gap:10px; flex:1; background:#f4f6fb;  border-radius:999px; border:1px solid #e6e9ee; }
         .input-inner textarea { border:none; background:transparent; outline:none; resize:none; font-size:14px; width:100%; color:#0f1724; padding:6px 8px; min-height:36px; max-height:120px; }
 
         .icon-btn { background:transparent; border:none; cursor:pointer; color:#55607a; font-size:18px; padding:6px; border-radius:8px; }
         .icon-btn:hover { background: rgba(0,0,0,0.03); }
-        .send-btn { background: #1677ff; color:#fff; border-radius:999px; border:none; padding:10px 14px; font-weight:600; cursor:pointer; box-shadow:0 6px 18px rgba(22,119,255,0.14); }
+        .send-btn { background: #1677ff; color:#fff; border-radius:999px; border:none; padding:5px 10px; font-weight:600; cursor:pointer; box-shadow:0 6px 18px rgba(22,119,255,0.14); }
         .send-btn:disabled { opacity:0.5; cursor:not-allowed; box-shadow:none; }
 
-        @media (max-width: 900px) {
+        @media (max-width: 100%) {
             #userList { width:100%; position:absolute; left:0; top:0; bottom:0; z-index:200; transform:translateX(-100%); transition:transform .22s ease; }
             #userList.show { transform:translateX(0); box-shadow:0 12px 40px rgba(2,6,23,0.12); }
             .chat-wrapper { margin:0; height:100vh; border-radius:0; }
@@ -180,7 +180,7 @@ $tentk = $_SESSION['user']['tentk'];
         flex: 1;
         min-height: 0; 
         overflow-y: auto;
-        padding: 50px;
+        padding: 20px;
         padding-bottom: calc(var(--chat-input-height) + 10px);
         background: linear-gradient(#f6f7fb,#f6f7fb);
         }
@@ -194,7 +194,7 @@ $tentk = $_SESSION['user']['tentk'];
         display: flex;
         align-items: center;
         gap: 10px;
-        padding: 15px 20px; /* có thể giảm nếu muốn input nhỏ lại */
+        padding: 5px 10px; /* có thể giảm nếu muốn input nhỏ lại */
         box-sizing: border-box;
         }
 
