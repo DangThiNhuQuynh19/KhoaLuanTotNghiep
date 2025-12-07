@@ -497,7 +497,6 @@
 
         async function kiem_tra_form() {
             const ma_benh_nhan = document.getElementById('ma_benh_nhan').value;
-            const ma_ho_so = document.getElementById('ma_ho_so').value;
             const ngay_hen = document.getElementById('ngay_hen').value;
             const gio_hen = document.getElementById('gio_hen_selected').value;
 
@@ -512,7 +511,6 @@
             };
 
             if (!ma_benh_nhan) { showError('Vui lòng chọn bệnh nhân.'); return false; }
-            if (!ma_ho_so) { showError('Vui lòng chọn hồ sơ bệnh nhân.'); return false; }
             if (!ngay_hen) { showError('Vui lòng chọn ngày khám.'); return false; }
             if (!gio_hen) { showError('Vui lòng chọn khung giờ khám.'); return false; }
 
@@ -541,8 +539,6 @@
             document.getElementById('gioi_tinh_benh_nhan').value = '';
             document.getElementById('sdt_benh_nhan').value = '';
             
-            const chon_ho_so = document.getElementById('ma_ho_so');
-            chon_ho_so.innerHTML = '<option value="">-- Chọn hồ sơ --</option>';
 
         }
     
@@ -555,8 +551,6 @@
             document.getElementById('gioi_tinh_benh_nhan').value = '';
             document.getElementById('sdt_benh_nhan').value = '';
             
-            const chon_ho_so = document.getElementById('ma_ho_so');
-            chon_ho_so.innerHTML = '<option value="">-- Chọn hồ sơ --</option>';
    
             if (!ma_benh_nhan) return;
 
