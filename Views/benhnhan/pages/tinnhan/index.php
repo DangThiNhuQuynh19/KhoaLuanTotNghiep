@@ -452,34 +452,6 @@ function selectUser(tentk, name, vaitro) {
     try { socket.send(JSON.stringify({ command: 'load_messages', tentk: user.tentk, receiver_tentk: tentk })); } catch(e){ console.warn(e); }
 }
 
-/* Render messages using simple text-style blocks (patient/doctor) */
-function renderMessages(msgArray){
-    $('#chatMessages').html('');
-
-    msgArray.forEach(m => {
-        
-        if (m.message && m.message.startsWith("[FILE]")) {
-
-            if (m.sender === user.tentk) return; // FIX DOUBLE FILE
-
-            const url = m.message.replace("[FILE]", "").trim();
-            const filename = url.split("/").pop();
-
-            displayFileMessage({
-                sender: m.sender,
-                filename: filename,
-                url: url
-            });
-
-        } else {
-            displayMessage(m);
-        }
-    });
-
-    $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
-}
-
-
 /* Display a single message as text block (keeps UI consistent but simple) */
 function displayTextMessage(msg) {
     const container = $('#chatMessages');
