@@ -169,8 +169,6 @@ let messages = {}; // lưu lịch sử theo từng bác sĩ
 // 📡 Kết nối WebSocket
 function connectWebSocket() {
     var socket = new WebSocket("wss://hanhphuc.site/ws");
-
-
     socket.onopen = () => {
         console.log("✅ WebSocket connected");
         socket.send(JSON.stringify({ 
@@ -290,7 +288,7 @@ $('#sendButton').click(()=>{
     if(!text || !currentDoctor) return;
 
     $.ajax({
-        url: '/KLTN/Ajax/getlichhen.php',
+        url: 'Ajax/getlichhen.php',
         type: 'POST',
         dataType: 'json', 
         data: { bs: currentDoctor.tentk, bn: user.tentk },
