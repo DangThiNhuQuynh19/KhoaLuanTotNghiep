@@ -128,7 +128,7 @@ $tentk = $_SESSION['user']['tentk'];
         <h3>Bác Sĩ / Chuyên Gia</h3>
         <?php
         include_once("Controllers/ctaikhoan. php");
-        $p = new ctaiKhoan();
+        $p = new cTaiKhoan();
         $tentk1 = $_SESSION['user']['tentk'];
         $tbl = $p->gettkbacsi($tentk1);
 
