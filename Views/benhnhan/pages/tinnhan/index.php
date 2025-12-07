@@ -64,6 +64,7 @@ $tentk = $_SESSION['user']['tentk'];
 
         /* HEADER padding 50px as requested */
         #chatHeader {
+            padding-top: 50px;
             display:flex;
             align-items:center;
             gap:12px;
@@ -122,7 +123,7 @@ $tentk = $_SESSION['user']['tentk'];
 
         /* INPUT: padding 50px footer as requested */
         .input-container {
-            padding: 50px;
+            padding: 20px;
             border-top: 1px solid #eef2f7;
             background: #fff;
             display:flex;
