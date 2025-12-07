@@ -568,7 +568,7 @@ $('#fileInput').on('change', function(){
     $('#attachBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
 
     $.ajax({
-        url: 'Views/benhnhan/pages/tinnhan/download.php',
+        url: 'Views/benhnhan/pages/tinnhan/uploadFile.php',
         method: 'POST',
         data: fd,
         contentType: false,
