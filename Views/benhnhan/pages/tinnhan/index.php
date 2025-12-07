@@ -1,4 +1,4 @@
-<? php
+<?php
 if (! isset($_SESSION['user']['tentk'])) {
     header("Location: action=dangnhap");
     exit();
@@ -125,7 +125,7 @@ $tentk = $_SESSION['user']['tentk'];
             transition: opacity 0.3s;
         }
         
-        . user:hover {
+        .user:hover {
             background: rgba(52, 152, 219, 0.15);
             transform: translateX(8px);
         }
@@ -153,7 +153,7 @@ $tentk = $_SESSION['user']['tentk'];
             transition: all 0.3s;
         }
         
-        . user. active img {
+        .user.active img {
             border-color: #3498db;
             box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.2);
         }
@@ -729,8 +729,8 @@ function selectUser(tentk, name, vaitro){
         return;
     }
 
-    $('. user').removeClass('active');
-    $('. user'). filter(function() {
+    $('.user').removeClass('active');
+    $('.user'). filter(function() {
         return $(this).data('tentk') === tentk;
     }).addClass('active');
     
