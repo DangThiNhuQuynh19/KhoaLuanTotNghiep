@@ -49,7 +49,7 @@ if ($file['size'] > 10 * 1024 * 1024) {
 }
 
 // ✅ Tạo thư mục upload nếu chưa có
-$uploadDir = 'https://hanhphuc.site/uploads';
+$uploadDir = __DIR__ . '/uploads/';
 if (!file_exists($uploadDir)) {
     if (! mkdir($uploadDir, 0755, true)) {
         echo json_encode([
