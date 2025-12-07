@@ -18,7 +18,7 @@ if ($file['type'] !== 'application/pdf') {
 }
 
 // Thư mục uploads
-$uploadDir = 'C:/xampp/htdocs/KLTN/uploads/';
+$uploadDir = 'D:/';
 if(!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
 
 // Tên file an toàn
@@ -27,7 +27,7 @@ $path = $uploadDir.$safeName;
 
 // Upload file
 if(move_uploaded_file($file['tmp_name'], $path)){
-    $url = "http://localhost/KLTN/uploads/".$safeName;
+    $url = "https://hanhphuc.site/uploads/".$safeName;
 
     // Lưu file vào database dưới dạng tin nhắn [FILE]
     if(isset($_POST['receiver'])){ // gửi từ client kèm tentk người nhận
