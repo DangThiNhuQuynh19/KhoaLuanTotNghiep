@@ -48,7 +48,10 @@ if ($mime !== 'application/pdf') {
     exit;
 }
 
-$uploadDirFS = '/var/www/html/KhoaLuanTotNghiep/uploads/'; 
+// Calculate project root relative to this file
+$projectRoot = realpath(__DIR__ . '/../../../../');
+$uploadDirFS = $projectRoot . '/uploads/';
+
 if (!is_dir($uploadDirFS)) {
     if (!mkdir($uploadDirFS, 0755, true)) {
         echo json_encode(['success' => false, 'error' => 'Không thể tạo thư mục uploads trên server']);
@@ -72,8 +75,10 @@ if (!is_uploaded_file($file['tmp_name'])) {
 }
 
 if (move_uploaded_file($file['tmp_name'], $targetPath)) {
-
-    $publicBaseUrl = 'https://hanhphuc.site/uploads/';
+    // Build public URL based on current server scheme and hostname
+    $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+    $httpHost = $_SERVER['HTTP_HOST'] ?? 'localhost';
+    $publicBaseUrl = $scheme . '://' . $httpHost . '/uploads/';
     $publicUrl = rtrim($publicBaseUrl, '/') . '/' . rawurlencode($safeName);
 
     echo json_encode([
