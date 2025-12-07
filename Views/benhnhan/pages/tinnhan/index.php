@@ -569,34 +569,31 @@ $('#fileInput').on('change', function(){
 
     $.ajax({
         url: 'Views/benhnhan/pages/tinnhan/uploadFile.php',
-        method: 'POST',
-        data: fd,
+        type: 'POST',
+        data: formData,
         contentType: false,
         processData: false,
         dataType: 'json',
-        success: function(res) {
-            const ok = res && (res.success === true || res.status === 'ok' || res.success == 1);
-            const filename = res && (res.filename || res.fileName || (res.data && res.data.filename) || file.name);
-            const url = res && (res.url || res.fileUrl || (res.data && res.data.url));
-            if (ok && url) {
-                const absUrl = toAbsoluteUrl(url);
-                // create local timestamp and store mapping so reload can show the file
-                const ts = new Date().toISOString();
-                addFileMapEntry(user.tentk, currentDoctor.tentk, ts, filename, absUrl);
-
-                const payload = { command: 'send', sender: user.tentk, receiver: currentDoctor.tentk, message: '[FILE]', filename: filename, url: absUrl, thoigiangui: ts };
-                try { socket.send(JSON.stringify(payload)); } catch(e){ console.warn('WS send file meta failed', e); }
-
-                if (!messages[currentDoctor.tentk]) messages[currentDoctor.tentk] = [];
-                const localMsg = { sender: user.tentk, message: '[FILE]', filename: filename, url: absUrl, thoigiangui: ts };
-                messages[currentDoctor.tentk].push(localMsg);
-                displayMessage(localMsg);
+        success: function(res){
+            if(res.success){
+                const msg = {
+                    command: 'send',
+                    sender: user.tentk,
+                    receiver: currentDoctor.tentk,
+                    message: '[FILE]',
+                    filename: res.filename,
+                    url: res.url
+                };
+                if(socket && socket.readyState === WebSocket.OPEN){
+                    socket.send(JSON.stringify(msg));
+                }
             } else {
-                alert(res && res.message ? res.message : '❌ Upload thất bại!');
+                alert("Upload thất bại: " + res.error);
             }
         },
-        error: function(xhr, st, err) { console.error('Upload error', err); alert('❌ Upload thất bại!'); },
-        complete: function() { $('#attachBtn').prop('disabled', false).html(orig); $('#fileInput').val(''); }
+        error: function(){
+            alert("Upload thất bại!");
+        }
     });
 });
 
