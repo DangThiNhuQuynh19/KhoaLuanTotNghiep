@@ -48,7 +48,7 @@ if ($mime !== 'application/pdf') {
     exit;
 }
 
-$uploadDirFS = '/var/www/html/KhoaLuanTotNghiep/uploads'; 
+$uploadDirFS = '/var/www/html/KhoaLuanTotNghiep/uploads/'; 
 if (!is_dir($uploadDirFS)) {
     if (!mkdir($uploadDirFS, 0755, true)) {
         echo json_encode(['success' => false, 'error' => 'Không thể tạo thư mục uploads trên server']);
