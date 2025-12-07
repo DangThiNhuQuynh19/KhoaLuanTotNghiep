@@ -324,7 +324,7 @@ function selectUser(tentk, name, vaitro){
     
     // ✅ SỬA LỖI: Bỏ dấu cách trong selector
     $('.user').removeClass('active');
-    $('. user[data-tentk="' + tentk + '"]').addClass('active');
+    $('.user[data-tentk="' + tentk + '"]').addClass('active');
     
     currentDoctor = { tentk, name, vaitro };
     localStorage.setItem('selectedDoctor', tentk);
