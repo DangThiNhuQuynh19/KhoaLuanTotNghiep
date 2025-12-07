@@ -56,7 +56,6 @@ body { background-color: #f0f2f5; font-family: Arial, sans-serif; }
         <div id="chatHeader">Chọn bệnh nhân để trò chuyện</div>
         <div id="chatMessages"></div>
         <textarea id="messageInput" placeholder="Nhập tin nhắn..." disabled></textarea>
-        <input type="file" id="fileInput" accept="application/pdf" style="margin-bottom: 10px;">
         <button id="sendButton" disabled>Gửi</button>
     </div>
 </div>
