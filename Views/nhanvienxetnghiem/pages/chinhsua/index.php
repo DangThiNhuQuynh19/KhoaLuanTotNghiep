@@ -3,6 +3,7 @@ date_default_timezone_set('Asia/Ho_Chi_Minh');
 
 include_once("Assets/config.php");
 include_once('Controllers/clichxetnghiem.php');
+include_once('Controllers/cthongbao.php');
 
 // =======================
 // XỬ LÝ LƯU FORM POST
@@ -56,6 +57,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     mysqli_query($con, $updateStatus);
 
     mysqli_close($con);
+
+    // Gửi thông báo cho bác sĩ đã tạo phiếu xét nghiệm
+    $cThongBao = new cThongBao();
+    $cThongBao->send_test_result_notification($malich);
 
     echo "<script>
         alert('✅ Cập nhật kết quả xét nghiệm thành công!');

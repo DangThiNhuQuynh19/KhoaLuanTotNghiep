@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>               
-<body>
+<body data-username="<?php echo $_SESSION['user']['tentk'] ?? ''; ?>">
 <header class="main-header">
     <div class="logo">
         <a href="?action=trangchu">
@@ -34,6 +34,23 @@
     </nav>
 
     <div class="user-menu">
+        <!-- Notification Bell Icon -->
+        <div class="notification-icon" style="position: relative; margin-right: 20px; cursor: pointer;">
+            <i class="fas fa-bell" style="font-size: 20px; color: #333;"></i>
+            <span class="notification-badge" style="
+                position: absolute;
+                top: -8px;
+                right: -8px;
+                background: #ff4444;
+                color: white;
+                border-radius: 50%;
+                padding: 2px 6px;
+                font-size: 11px;
+                font-weight: bold;
+                display: none;
+            ">0</span>
+        </div>
+        
         <div class="user-info">
             <span><?php echo $bacsi["hoten"] ?? 'Bác sĩ'; ?></span>
             <img src="Assets/img/<?php echo $bacsi["imgbs"]; ?>" class="user-avatar">
@@ -46,6 +63,9 @@
         </div>
     </div>
 </header>
+
+<!-- Include notification handler script -->
+<script src="Assets/js/notification-handler.js"></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
