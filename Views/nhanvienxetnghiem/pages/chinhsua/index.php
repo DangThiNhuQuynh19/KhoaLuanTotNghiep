@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $gioLay = $_POST['giolaymau'] ?? '';
     $nhanxet = $_POST['nhanxet'] ?? '';
 
-    $con = mysqli_connect("localhost", "root", "", "hanhphuc");
+    $con = mysqli_connect("localhost", "kltn", "Kltntrangquynh2025@", "hanhphuc");
     mysqli_set_charset($con, "utf8");
 
     $now = date('Y-m-d H:i:s');
