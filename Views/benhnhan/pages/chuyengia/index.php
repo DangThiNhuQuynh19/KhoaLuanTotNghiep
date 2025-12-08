@@ -198,7 +198,11 @@ if (!empty($_GET['name']) && !empty($_GET['linhvuc'])) {
             box-shadow: 0 4px 12px rgba(1,87,155,0.12);
         }
         .btn-schedule:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(1,87,155,0.12); }
-
+        .search-forms{
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 40px;
+        }
     </style>
 </head>
 <body>
