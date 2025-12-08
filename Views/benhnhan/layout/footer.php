@@ -4,6 +4,7 @@
   - Adds higher z-index so the iframe appears above footer and other elements.
   - Uses max-height: calc(100vh - ...) and safe-area inset to avoid overlap with bottom UI / home indicator.
   - Improved toggle logic and click handling so the panel doesn't accidentally close.
+  - Ensure footer is part of a column layout so it is pushed below content and has 20px gap when page content is short.
 -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
@@ -14,12 +15,26 @@
   --accent: #bfa6ff;
   --muted: rgba(255,255,255,0.8);
 }
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+/* Ensure the body can be converted to a column layout by the script below */
+.page-content {
+  /* this will be set to flex:1 by the script on DOM ready; declared here as fallback */
+  flex: 1 0 auto;
+}
+
+/* Footer styling */
 .custom-footer{
   background: var(--footer-bg);
   color: #fff;
   font-family: 'Segoe UI', Tahoma, sans-serif;
   position: relative;
   z-index: 1;
+  /* ensure there is at least 20px gap from content above when content is short */
+  margin-top: 20px;
 }
 .custom-footer a{ color: var(--muted); text-decoration: none; }
 .custom-footer a:hover{ color: var(--accent); text-decoration: none; }
@@ -28,11 +43,12 @@
 .footer-text{ color: var(--muted); font-size: .88rem; line-height: 1.5; margin-bottom: 10px; }
 .footer-links{ list-style:none; padding:0; margin:0; }
 .footer-links li{ margin:8px 0; }
-.social-icons a{ display:inline-flex; align-items:center; justify-content:center; width:40px; height:40px; border-radius:8px; background:rgba(255,255,255,0.06); color: #fff; margin-right:8px; transition:all .15s ease; }
+.social-icons a{ display:inline-flex; align-items:center; justify-content:center; width:40px; height:40px; border-radius:8px; background:rgba(255,255,255,0.06); color: #fff; margin-right:8px; transition: transform .12s, background .12s, color .12s; }
 .social-icons a:hover{ transform:translateY(-3px); background: rgba(191,166,255,0.14); color: var(--accent); }
 .newsletter input[type="email"]{ background: rgba(255,255,255,0.06); border: none; color: #fff; }
 .newsletter .btn{ background: var(--accent); border: none; color: #2b2366; font-weight:600; }
 .footer-bottom{ border-top:1px solid rgba(255,255,255,0.06); padding-top:18px; color: rgba(255,255,255,0.7); font-size: .9rem; }
+
 /* Chatbot */
 .chatbot-icon{
   position: fixed;
@@ -107,6 +123,8 @@
     min-height: 400px;
     height: 100%;
   }
+
+  .chatbot-icon { right: 12px; bottom: 12px; }
 }
  
 </style>
@@ -176,8 +194,10 @@
 </div>
 
 <script>
+/* Year */
 document.getElementById('year').textContent = new Date().getFullYear();
 
+/* Chatbot open/close logic */
 const chatbotBtn = document.getElementById('chatbotBtn');
 const chatbotFrame = document.getElementById('chatbotFrame');
 
@@ -201,6 +221,7 @@ chatbotBtn.addEventListener('click', (e) => {
   toggleChat();
 });
 
+/* Clicking outside closes chat, but clicking inside iframe or on button won't */
 document.addEventListener('click', (e) => {
   const target = e.target;
   if (target === chatbotBtn || chatbotBtn.contains(target)) return;
@@ -214,5 +235,69 @@ chatbotBtn.addEventListener('keydown', (e) => {
     toggleChat();
   }
 });
-</script>
 
+/*
+  Make footer behave like a typical "sticky footer" layout:
+  - If the page content is short, footer should sit 20px below content and be visually near the bottom.
+  - If the page content is long, footer is pushed below content naturally.
+  We do this by wrapping existing body children (except the footer) into a .page-content div
+  and switching body to a column flex layout. This is done dynamically so we don't need to
+  change other template files.
+*/
+(function ensureStickyFooterGap() {
+  function applyLayout() {
+    const footer = document.querySelector('footer.custom-footer');
+    if (!footer) return;
+
+    const body = document.body;
+
+    // If we've already done the conversion, update sizing only
+    if (body.classList.contains('pf-layout-applied')) {
+      // ensure footer keeps margin-top 20px
+      footer.style.marginTop = '20px';
+      return;
+    }
+
+    // Create wrapper to hold everything except the footer
+    const wrapper = document.createElement('div');
+    wrapper.className = 'page-content';
+
+    // Move all nodes before footer into wrapper
+    while (body.firstChild && body.firstChild !== footer) {
+      wrapper.appendChild(body.firstChild);
+    }
+
+    // Insert wrapper before footer
+    body.insertBefore(wrapper, footer);
+
+    // Make the body a column flex container so that wrapper grows and footer is pushed
+    body.style.display = 'flex';
+    body.style.flexDirection = 'column';
+    body.style.minHeight = '100vh';
+
+    // Ensure the wrapper fills remaining space when content is short
+    wrapper.style.flex = '1 0 auto';
+
+    // Keep footer margin
+    footer.style.marginTop = '20px';
+
+    // tag to avoid reapplying
+    body.classList.add('pf-layout-applied');
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', applyLayout);
+  } else {
+    applyLayout();
+  }
+
+  // Re-apply on resize in case dynamic content changes layout
+  window.addEventListener('resize', function() {
+    // small debounce
+    clearTimeout(window.__pf_footer_resize);
+    window.__pf_footer_resize = setTimeout(function() {
+      applyLayout();
+    }, 120);
+  }, { passive: true });
+})();
+</script>
