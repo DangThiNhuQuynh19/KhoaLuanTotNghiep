@@ -165,6 +165,40 @@ class ChatServer implements MessageComponentInterface {
             return;
         }
 
+        // Lệnh "notification" - Gửi thông báo push
+        if ($command === 'notification') {
+            $receiver = $data['receiver'] ?? null;
+            $title = $data['title'] ?? '';
+            $content = $data['content'] ?? '';
+            $type = $data['type'] ?? 'ketquaxetnghiem';
+            $malichxetnghiem = $data['malichxetnghiem'] ?? null;
+            $mathongbao = $data['mathongbao'] ?? null;
+
+            if (!$receiver) {
+                echo "⚠️ Missing receiver for notification.\n";
+                return;
+            }
+
+            echo "Sending notification to {$receiver}: {$title}\n";
+
+            // Gửi thông báo cho người nhận nếu họ đang online
+            if (isset($this->userConnections[$receiver])) {
+                $this->userConnections[$receiver]->send(json_encode([
+                    'command' => 'notification',
+                    'type' => $type,
+                    'title' => $title,
+                    'content' => $content,
+                    'malichxetnghiem' => $malichxetnghiem,
+                    'mathongbao' => $mathongbao,
+                    'timestamp' => date('Y-m-d H:i:s')
+                ]));
+                echo "✅ Notification sent successfully to {$receiver}\n";
+            } else {
+                echo "⚠️ User {$receiver} is not online. Notification saved in database.\n";
+            }
+            return;
+        }
+
 
     }
 
