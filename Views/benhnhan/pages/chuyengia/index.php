@@ -30,14 +30,15 @@ if (!empty($_GET['name']) && !empty($_GET['linhvuc'])) {
     <title>Danh sách chuyên gia</title>
     <style>
         body{
-	    padding-top: 100px;
-	    margin: auto;
+	        margin-top: 100px;
+	        margin: auto;
             margin-top: 100px;
             font-family: Arial, sans-serif;
             background: white;
             color: #222;
         }
         .textsearch{
+            display:flex; gap:10px; align-items:center; justify-content:center;
             border-radius: 15px; 
             width:220px;
             height:25px; 
@@ -152,7 +153,7 @@ if (!empty($_GET['name']) && !empty($_GET['linhvuc'])) {
             }
         }
         .search-forms{
-            padding-left: 30%;
+            display:flex; gap:10px; align-items:center; justify-content:center;
         }
         .btn-schedule {
             text-decoration: none;
