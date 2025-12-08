@@ -37,28 +37,55 @@ if (!empty($_GET['name']) && !empty($_GET['linhvuc'])) {
             background: white;
             color: #222;
         }
-        .textsearch{
-            display:flex; gap:10px; align-items:center; justify-content:center;
-            border-radius: 15px; 
-            width:220px;
-            height:25px; 
-            padding-left: 5px;
-            border-color:rgb(60, 21, 97);
+/* Filter / search form styles */
+        .filter-form{ display:flex; gap:10px; align-items:center; justify-content:center; flex-wrap:nowrap; }
+        .filter-form .input-group{ position: relative; display:flex; align-items:center; max-width: fit-content; }
+        .filter-form .input-group .bi-search{ position: absolute; left: 12px; color: #6b2f8a; font-size: 0.9rem; pointer-events: none; z-index: 1; }
+        .filter-form .form-control{
+            border-radius: 25px !important;
+            width: 140px;
+            padding: 6px 12px 6px 32px;
+            font-size: 13px;
+            border: 2px solid rgba(108,58,148,0.12) !important;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(59,21,97,0.06);
+            outline: none;
         }
-        .textsearch::placeholder {
-            color:rgb(60, 21, 97);
-            opacity: 1; 
+        .filter-form .form-control:focus{
+            border-color: rgba(108,58,148,0.3) !important;
+            box-shadow: 0 2px 12px rgba(59,21,97,0.12) !important;
         }
+        .filter-form .form-select{
+            border-radius: 25px;
+            width: 140px;
+            padding: 6px 12px;
+            font-size: 13px;
+            border: 2px solid rgba(108,58,148,0.12);
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(59,21,97,0.06);
+        }
+        .filter-form .btn-search{
+            border-radius: 25px;
+            padding: 7px 18px;
+            background: #3c1561;
+            color: #fff;
+            border: 0;
+            font-weight:600;
+            font-size: 13px;
+            box-shadow: 0 4px 12px rgba(60,21,97,0.18);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .filter-form .btn-search:hover{ transform: translateY(-2px); background:#4d1a7c; }
 
-        .btnsearch{
-            width: 80px;
-            height: 30px;
-            border-radius: 10px; 
-            color: rgb(60, 21, 97);
-            font-size:14px;
+        /* Smaller devices */
+        @media (max-width: 992px){
+            .filter-form{ flex-wrap: wrap; }
+            .filter-form .form-control, .filter-form .form-select{ width: 220px; }
         }
-        .search{
-            padding-left: 40%;
+        @media (max-width: 576px){
+            .filter-form .form-control, .filter-form .form-select{ width: 180px; }
+            .filter-form{ gap:8px; }
         }
         body {
             font-family: Arial, sans-serif;
@@ -153,7 +180,7 @@ if (!empty($_GET['name']) && !empty($_GET['linhvuc'])) {
             }
         }
         .search-forms{
-            display:flex; gap:10px; align-items:center; justify-content:center;
+            padding-left: 30%;
         }
         .btn-schedule {
             text-decoration: none;
@@ -176,28 +203,37 @@ if (!empty($_GET['name']) && !empty($_GET['linhvuc'])) {
 </head>
 <body>
 <h1>Danh sách chuyên gia</h1>
+
 <div class="search-forms" style="margin-top: 10px;">
- 
-    <form method="GET" action="index.php">
+    <!-- Form tìm kiếm bác sĩ và lọc theo khoa -->
+    <form method="GET" action="index.php" class="filter-form" aria-label="Tìm kiếm chuyên gia">
         <input type="hidden" name="action" value="chuyengia">
-        <input class="textsearch" type="text" name="name" placeholder=" Nhập tên chuyên gia..." 
-            value="<?php echo isset($_GET['name']) ? htmlspecialchars($_GET['name']) : '' ?>">
-        <select name="linhvuc" class="textsearch">
-            <option value="">-- Chọn lĩnh vực --</option>
-            <?php
-                if ($dsLinhVuc && $dsLinhVuc->num_rows > 0) {
-                    while ($row = $dsLinhVuc->fetch_assoc()) {
-                        $selected = (isset($_GET['linhvuc']) && $row['malinhvuc'] == $_GET['linhvuc']) ? "selected" : "";
-                        echo "<option value='{$row['malinhvuc']}' $selected>".htmlspecialchars($row['tenlinhvuc'])."</option>";
+
+        <div class="input-group" role="search" aria-label="Tìm theo tên">
+            <span class="bi bi-search" aria-hidden="true"></span>
+            <input type="text" name="name" class="form-control" placeholder="Nhập tên chuyên gia..."
+                value="<?php echo isset($_GET['name']) ? htmlspecialchars($_GET['name']) : '' ?>">
+        </div>
+
+        <div class="input-group" aria-label="Chọn lĩnh vực">
+            <select name="linhvuc" class="form-select" aria-label="Lĩnh vực">
+                <option value="">-- Chọn lĩnh vực --</option>
+                <?php
+                    if (isset($dsLinhVuc) && $dsLinhVuc && $dsLinhVuc->num_rows > 0) {
+                        // rewind result pointer in case this template is included after earlier fetch
+                        $dsLinhVuc->data_seek(0);
+                        while ($row = $dsLinhVuc->fetch_assoc()) {
+                            $selected = (isset($_GET['linhvuc']) && $row['malinhvuc'] == $_GET['linhvuc']) ? "selected" : "";
+                            echo "<option value='".htmlspecialchars($row['malinhvuc'])."' $selected>".htmlspecialchars($row['tenlinhvuc'])."</option>";
+                        }
                     }
-                }
-            ?>
-        </select>
-        <button class="btnsearch" type="submit">Tìm kiếm</button>
+                ?>
+            </select>
+        </div>
+
+        <button class="btn-search" type="submit" aria-label="Tìm kiếm bác sĩ">Tìm kiếm</button>
     </form>
 </div>
-
-
 
 <?php 
     if (is_int($ds) && $ds == -1) {
