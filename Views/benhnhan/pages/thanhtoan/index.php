@@ -1,6 +1,6 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI';}
-body{background:#f8f6fc;color:#333;}
+body{background:#f8f6fc;color:#333; margin-top: 100px;} 
 .container{max-width:1000px;margin:40px auto;padding:20px;}
 .payment-info{background:#fff;border-radius:15px;padding:30px;box-shadow:0 8px 20px rgba(0,0,0,0.08);}
 .payment-info h2{text-align:center;color:#6f42c1;margin-bottom:25px;font-size:1.8rem;}
