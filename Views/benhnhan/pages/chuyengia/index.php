@@ -30,14 +30,12 @@ if (!empty($_GET['name']) && !empty($_GET['linhvuc'])) {
     <title>Danh sách chuyên gia</title>
     <style>
         body{
-	        margin-top: 100px;
-	        margin: auto;
             margin-top: 100px;
             font-family: Arial, sans-serif;
             background: white;
             color: #222;
         }
-/* Filter / search form styles */
+`/* Filter / search form styles */
         .filter-form{ display:flex; gap:10px; align-items:center; justify-content:center; flex-wrap:nowrap; }
         .filter-form .input-group{ position: relative; display:flex; align-items:center; max-width: fit-content; }
         .filter-form .input-group .bi-search{ position: absolute; left: 12px; color: #6b2f8a; font-size: 0.9rem; pointer-events: none; z-index: 1; }
@@ -87,15 +85,14 @@ if (!empty($_GET['name']) && !empty($_GET['linhvuc'])) {
             .filter-form .form-control, .filter-form .form-select{ width: 180px; }
             .filter-form{ gap:8px; }
         }
-        body {
-            font-family: Arial, sans-serif;
-            background: white;
-        }
+
         h1 {
             text-align: center;
             color: #3c1561;
-            margin-top: 30px;
+            margin-top: 20px;
+            font-size: 2rem;
         }
+
 
         .doctor-card {
             display: flex;
@@ -207,7 +204,6 @@ if (!empty($_GET['name']) && !empty($_GET['linhvuc'])) {
 </head>
 <body>
 <h1>Danh sách chuyên gia</h1>
-
 <div class="search-forms" style="margin-top: 10px;">
     <!-- Form tìm kiếm bác sĩ và lọc theo khoa -->
     <form method="GET" action="index.php" class="filter-form" aria-label="Tìm kiếm chuyên gia">
