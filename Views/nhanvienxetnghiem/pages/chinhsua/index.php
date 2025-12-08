@@ -24,8 +24,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $gioLay = $_POST['giolaymau'] ?? '';
     $nhanxet = $_POST['nhanxet'] ?? '';
 
-    $con = mysqli_connect("localhost", "root", "", "hanhphuc");
-    mysqli_set_charset($con, "utf8");
+    // Use proper database connection
+    include_once('Models/ketnoi.php');
+    $p = new clsKetNoi();
+    $con = $p->moKetNoi();
+    mysqli_set_charset($con, 'utf8');
 
     $now = date('Y-m-d H:i:s');
 
@@ -56,11 +59,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $updateStatus = "UPDATE lichxetnghiem SET matrangthai = 12 WHERE malichxetnghiem = $malich";
     mysqli_query($con, $updateStatus);
 
-    mysqli_close($con);
+    $p->dongKetNoi($con);
 
     // Gửi thông báo cho bác sĩ đã tạo phiếu xét nghiệm
-    $cThongBao = new cThongBao();
-    $cThongBao->send_test_result_notification($malich);
+    try {
+        $cThongBao = new cThongBao();
+        $notificationSent = $cThongBao->send_test_result_notification($malich);
+        
+        if (!$notificationSent) {
+            error_log("Failed to send notification for test result #$malich");
+        }
+    } catch (Exception $e) {
+        error_log("Error sending notification: " . $e->getMessage());
+    }
 
     echo "<script>
         alert('✅ Cập nhật kết quả xét nghiệm thành công!');

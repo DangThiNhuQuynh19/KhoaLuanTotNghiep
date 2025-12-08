@@ -75,8 +75,13 @@ class cThongBao {
             if ($mathongbao) {
                 // Gửi thông báo real-time qua WebSocket
                 $this->send_websocket_notification($mabacsi, $tieude, $noidung, $malichxetnghiem, $mathongbao);
+                error_log("Notification created successfully for doctor $mabacsi, test #$malichxetnghiem");
                 return true;
+            } else {
+                error_log("Failed to create notification in database for test #$malichxetnghiem");
             }
+        } else {
+            error_log("Could not find doctor information for test #$malichxetnghiem");
         }
         
         return false;
