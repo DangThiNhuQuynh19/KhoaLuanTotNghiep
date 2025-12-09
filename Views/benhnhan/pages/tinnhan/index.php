@@ -639,7 +639,7 @@ function sendMessage() {
         dataType: 'json',
         data: {bs: currentDoctor.tentk, bn: user.tentk},
         success: function(response){
-            if (response && response.status =='ok') {
+            if (response && response.status =='fail') {
                 const msg = { command: 'send', sender: user.tentk, receiver: currentDoctor.tentk, message: text };
                 try { socket.send(JSON.stringify(msg)); } catch(e){}
                 if (!messages[currentDoctor.tentk]) messages[currentDoctor.tentk] = [];
