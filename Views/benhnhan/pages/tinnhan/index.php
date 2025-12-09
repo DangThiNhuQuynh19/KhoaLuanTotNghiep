@@ -24,7 +24,7 @@ $tentk = $_SESSION['user']['tentk'];
             font-family: 'Poppins', sans-serif;
             background: #f0f2f5;
             color: #0f1724;
-            overflow: hidden;
+            padding-top:100px;
         }
 
         .chat-wrapper {
@@ -37,7 +37,6 @@ $tentk = $_SESSION['user']['tentk'];
             background: white;
             display: flex;
             margin-top: calc(var(--site-header-height) + var(--chat-gutter));
-            margin-top: 100px;
             margin-bottom: calc(var(--site-footer-height) + var(--chat-gutter));
         }
 
