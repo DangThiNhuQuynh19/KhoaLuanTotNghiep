@@ -11,6 +11,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HanhPhuc Hospital</title>
+    <link rel="icon" type="image/x-icon" href="app/public/favicon.ico">
     <link rel="stylesheet" href="Views/bacsi/assets/css/css.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -19,7 +20,7 @@
 <header class="main-header">
     <div class="logo">
         <a href="?action=trangchu">
-            <img src="/Assets/img/logo.png" alt="Hanh Phuc Hospital Logo" style="width:130px;">
+            <img src="Assets/img/logo.png" alt="Hanh Phuc Hospital Logo" style="width:130px;">
         </a>
     </div>
 
@@ -42,7 +43,7 @@
         
         <div class="user-info">
             <span><?php echo $bacsi["hoten"] ?? 'Bác sĩ'; ?></span>
-            <img src="/Assets/img/<?php echo $bacsi["imgbs"]; ?>" class="user-avatar">
+            <img src="Assets/img/<?php echo $bacsi["imgbs"]; ?>" class="user-avatar">
         </div>
 
         <div class="dropdown-menu">
@@ -54,7 +55,7 @@
 </header>
 
 <!-- Include notification handler script -->
-<script src="/Assets/js/notification-handler.js"></script>
+<script src="Assets/js/notification-handler.js"></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
