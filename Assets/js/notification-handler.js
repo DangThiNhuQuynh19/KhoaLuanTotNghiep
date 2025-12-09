@@ -3,8 +3,7 @@
  * Kết nối WebSocket và xử lý thông báo real-time
  */
 
-<script> 
-    class NotificationHandler {
+class NotificationHandler {
         constructor(username) {
             this.username = username;
             this.ws = null;
@@ -316,11 +315,10 @@
         }
     }
 // Khởi tạo notification handler khi trang load
-    document.addEventListener('DOMContentLoaded', () => {
-        // Lấy username từ session (cần truyền từ PHP)
-        const username = document.body.getAttribute('data-username');
-        if (username) {
-            window.notificationHandler = new NotificationHandler(username);
-        }
-    });
-</script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Lấy username từ session (cần truyền từ PHP)
+    const username = document.body.getAttribute('data-username');
+    if (username) {
+        window.notificationHandler = new NotificationHandler(username);
+    }
+});
