@@ -6,8 +6,12 @@ class mLichHen {
         $p = new clsketnoi();
         $conn = $p->moketnoi();
 
-        // Sử dụng GROUP BY pkb.maphieukhambenh để loại bỏ dòng trùng lặp
-        $sql = "SELECT distinct
+        // --- KHẮC PHỤC LỖI: Tắt chế độ ONLY_FULL_GROUP_BY cho phiên làm việc này ---
+        // Lệnh này giúp MySQL chấp nhận GROUP BY mà không bắt buộc liệt kê toàn bộ các cột
+        $conn->query("SET sql_mode = 'NO_ENGINE_SUBSTITUTION'"); 
+        // --------------------------------------------------------------------------
+
+        $sql = "SELECT 
                 pkb.maphieukhambenh,
                 pkb.ngaykham,
                 kg.giobatdau,
@@ -22,9 +26,7 @@ class mLichHen {
                 tt.tentrangthai
             FROM phieukhambenh pkb
             JOIN khunggiokhambenh kg ON pkb.makhunggiokb = kg.makhunggiokb
-            -- JOIN lichlamviec: Chỉ lấy lịch làm việc khớp ngày khám (nếu bảng lichlamviec có cot ngaylamviec)
-            -- Nếu không, GROUP BY ở dưới sẽ xử lý việc trùng lặp
-            JOIN lichlamviec llv ON llv.macalamviec = kg.macalamviec 
+            JOIN lichlamviec llv ON llv.macalamviec = kg.macalamviec
             JOIN nguoidung bn ON pkb.mabenhnhan = bn.manguoidung
             JOIN nguoidung nd ON pkb.mabacsi = nd.manguoidung
             LEFT JOIN bacsi bs ON pkb.mabacsi = bs.mabacsi
@@ -33,7 +35,7 @@ class mLichHen {
             WHERE 1=1 ";
 
         $params = [];
-        $types = ""; // Chuỗi định danh kiểu dữ liệu cho bind_param
+        $types = ""; 
 
         // 1. Lọc theo ngày
         if (!empty($ngay)) {
@@ -44,7 +46,7 @@ class mLichHen {
             $sql .= " AND DATE(pkb.ngaykham) = CURDATE() ";
         }
 
-        // 2. Lọc theo loại khám: bacsi / chuyengia
+        // 2. Lọc theo loại khám
         if (!empty($loaikham)) {
             if ($loaikham === "bacsi") {
                 $sql .= " AND bs.mabacsi IS NOT NULL ";
@@ -53,7 +55,7 @@ class mLichHen {
             }
         }
 
-        // 3. Lọc theo hình thức: online / offline
+        // 3. Lọc theo hình thức
         if (!empty($hinhthuclamviec)) {
             $sql .= " AND llv.hinhthuclamviec = ? ";
             $params[] = $hinhthuclamviec;
@@ -67,14 +69,13 @@ class mLichHen {
             $types .= "s";
         }
 
-        // QUAN TRỌNG: Group By để gom nhóm các dòng trùng lặp lại thành 1
+        // Gom nhóm để tránh trùng lặp dữ liệu (nguyên nhân gây lỗi double trước đó)
         $sql .= " GROUP BY pkb.maphieukhambenh ";
 
         $sql .= " ORDER BY pkb.ngaykham ASC, kg.giobatdau ASC";
 
         $stmt = $conn->prepare($sql);
         
-        // Chỉ bind param nếu mảng params có dữ liệu
         if (count($params) > 0) {
             $stmt->bind_param($types, ...$params);
         }
@@ -85,6 +86,8 @@ class mLichHen {
             $p->dongketnoi($conn);
             return $result;
         } else {
+            // In lỗi ra nếu vẫn còn lỗi khác (để debug)
+            // echo $stmt->error; 
             $stmt->close();
             $p->dongketnoi($conn);
             return false;
