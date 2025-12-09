@@ -7,7 +7,7 @@ class mLichHen {
         $conn = $p->moketnoi();
 
         // Sử dụng GROUP BY pkb.maphieukhambenh để loại bỏ dòng trùng lặp
-        $sql = "SELECT 
+        $sql = "SELECT distinct
                 pkb.maphieukhambenh,
                 pkb.ngaykham,
                 kg.giobatdau,
