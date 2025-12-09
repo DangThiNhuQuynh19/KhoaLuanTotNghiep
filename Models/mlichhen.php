@@ -11,7 +11,7 @@ class mLichHen {
                 pkb.ngaykham,
                 kg.giobatdau,
                 bn.hoten AS ten_benhnhan,
-                nd.hoten AS ten_nguoi_kham,  -- lấy từ bảng nguoidung
+                nd.hoten AS ten_nguoi_kham,
                 CASE
                     WHEN bs.mabacsi IS NOT NULL THEN 'bacsi'
                     WHEN cg.machuyengia IS NOT NULL THEN 'chuyengia'
@@ -21,13 +21,19 @@ class mLichHen {
                 tt.tentrangthai
             FROM phieukhambenh pkb
             JOIN khunggiokhambenh kg ON pkb.makhunggiokb = kg.makhunggiokb
-            LEFT JOIN lichlamviec llv ON llv.macalamviec = kg.macalamviec
+            
+            /* FIX JOIN CHỐNG DOUBLE */
+            JOIN lichlamviec llv 
+                ON llv.manguoidung = pkb.mabacsi
+                AND llv.ngaylamviec = DATE(pkb.ngaykham)
+                AND llv.makhunggio = pkb.makhunggiokb
+
             JOIN nguoidung bn ON pkb.mabenhnhan = bn.manguoidung
             JOIN nguoidung nd ON pkb.mabacsi = nd.manguoidung
-            LEFT JOIN bacsi bs ON pkb.mabacsi = bs.mabacsi
-            LEFT JOIN chuyengia cg ON pkb.mabacsi = cg.machuyengia
+            LEFT JOIN bacsi bs ON pkb.mabacsi = bs.manguoidung
+            LEFT JOIN chuyengia cg ON pkb.mabacsi = cg.manguoidung
             JOIN trangthai tt ON pkb.matrangthai = tt.matrangthai
-            WHERE 1=1 ";
+            WHERE 1 = 1 ";
 
         $params = [];
 
@@ -39,7 +45,7 @@ class mLichHen {
             $sql .= " AND DATE(pkb.ngaykham) = CURDATE() ";
         }
 
-        // Lọc theo loại khám: bacsi / chuyengia
+        // Lọc theo loại khám (bacsi / chuyengia)
         if (!empty($loaikham)) {
             if ($loaikham === "bacsi") {
                 $sql .= " AND bs.mabacsi IS NOT NULL ";
@@ -48,7 +54,7 @@ class mLichHen {
             }
         }
 
-        // Lọc theo hình thức: online / offline
+        // Lọc theo hình thức (online/offline)
         if (!empty($hinhthuclamviec)) {
             $sql .= " AND llv.hinhthuclamviec = ? ";
             $params[] = $hinhthuclamviec;
