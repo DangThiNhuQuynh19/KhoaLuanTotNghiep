@@ -198,8 +198,6 @@ if (isset($_POST['datlich'])) {
               </div>
               <div class="col-md-6">
                 <p><strong>Điện thoại:</strong> <?php echo htmlspecialchars(decryptData($bn['sdt'])); ?></p>
-                <p><strong>Email tài khoản:</strong> <?php echo htmlspecialchars(decryptData($bn['email'])); ?></p>
-                <p><strong>Email cá nhân:</strong> <?php echo htmlspecialchars(decryptData($bn['emailcanhan'])); ?></p>
                 <p><strong>Email tài khoản:</strong> <?php echo htmlspecialchars(isset($bn['email']) ? decryptData($bn['email']) : ""); ?></p>
                 <p><strong>Email cá nhân:</strong> <?php echo htmlspecialchars(isset($bn['emailcanhan']) ? decryptData($bn['emailcanhan']) : ""); ?></p>
                 <p><strong>Dân tộc:</strong> <?php echo htmlspecialchars($bn['dantoc']); ?></p>
