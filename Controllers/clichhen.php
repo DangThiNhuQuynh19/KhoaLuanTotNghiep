@@ -1,5 +1,5 @@
 <?php
-include_once(__DIR__ . '/../Models/mLichHen.php');
+include_once('Models/mlichhen.php');
 
 class cLichHen {
     public function getAllLichHen($ngay = null, $loaikham = null, $hinhthuc = null, $tenbenhnhan = null) {
