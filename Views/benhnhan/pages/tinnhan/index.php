@@ -637,7 +637,7 @@ function sendMessage() {
         url: 'Ajax/getlichhen.php',
         type: 'POST',
         dataType: 'json',
-        data: { bs: currentDoctor.tentk, bn: user.tentk },
+        data: {bs: currentDoctor.tentk, bn: user.tentk},
         success: function(response){
             if (response && response.status === 'ok') {
                 const msg = { command: 'send', sender: user.tentk, receiver: currentDoctor.tentk, message: text };
