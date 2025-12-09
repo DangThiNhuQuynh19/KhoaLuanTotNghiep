@@ -1,5 +1,6 @@
 <?php
-include_once(__DIR__ . '/../../../../Controllers/ctaikhoan.php');
+include_once('Controllers/ctaikhoan.php');
+include_once('Assets/config.php');
 
 // Kiểm tra đăng nhập
 if(!isset($_SESSION['user']['tentk'])){
@@ -34,16 +35,6 @@ $soDuVi = $cTaiKhoan->getSoDuVi($tentk);
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-
-        .wallet-container {
-            max-width: 600px;
-            width: 100%;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-            margin-top: 80px;
         }
 
         .wallet-header {
@@ -193,7 +184,7 @@ $soDuVi = $cTaiKhoan->getSoDuVi($tentk);
     </style>
 </head>
 <body>
-    <div class="wallet-container">
+    <div class="container">
         <div class="wallet-header">
             <h1>
                 <i class="fas fa-wallet wallet-icon"></i>
@@ -214,7 +205,7 @@ $soDuVi = $cTaiKhoan->getSoDuVi($tentk);
                 <i class="fas fa-user-circle"></i>
                 <div class="info-text">
                     <div class="info-label">Tài khoản</div>
-                    <div class="info-value"><?php echo htmlspecialchars($tentk); ?></div>
+                    <div class="info-value"><?php echo htmlspecialchars(decryptData($tentk)); ?></div>
                 </div>
             </div>
 
