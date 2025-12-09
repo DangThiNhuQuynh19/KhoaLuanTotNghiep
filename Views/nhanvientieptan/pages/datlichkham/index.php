@@ -1,10 +1,10 @@
 <?php
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 
-include_once __DIR__ . "/../../../../Controllers/cLichKham.php";
-include_once __DIR__ . "/../../../../Controllers/cBacSi.php";
-include_once __DIR__ . "/../../../../Controllers/cChuyenGia.php";
-include_once __DIR__ . "/../../../../Controllers/cBenhNhan.php";
+include_once "Controllers/cLichKham.php";
+include_once "Controllers/cBacSi.php";
+include_once "Controllers/cChuyenGia.php";
+include_once "Controllers/cBenhNhan.php";
 
 $cLichKham = new cLichKham();
 $cBacSi = new cBacSi();

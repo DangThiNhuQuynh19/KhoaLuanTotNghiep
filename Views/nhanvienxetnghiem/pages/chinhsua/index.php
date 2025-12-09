@@ -5,9 +5,6 @@ include_once("Assets/config.php");
 include_once('Controllers/clichxetnghiem.php');
 include_once('Controllers/cthongbao.php');
 
-// =======================
-// XỬ LÝ LƯU FORM POST
-// =======================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Lấy id từ URL (GET), không từ form
     if (!isset($_GET['id']) || empty($_GET['id'])) {
