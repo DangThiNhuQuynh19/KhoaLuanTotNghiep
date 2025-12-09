@@ -245,7 +245,7 @@ body {
                             Xem thêm
                         </button>
 
-                        <a href="?action=lichkhamchuyengia&id=<?php echo $_GET['idcg']; ?>" class="btn-schedule" aria-label="Đặt lịch bác sĩ">
+                        <a href="?action=lichkhamchuyengia&idcg=<?php echo $_GET['idcg']; ?>" class="btn-schedule" aria-label="Đặt lịch bác sĩ">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
                                 <rect x="3" y="5" width="18" height="16" rx="2" stroke="rgba(255,255,255,0.9)" stroke-width="1.2"/>
                                 <path d="M16 3v4M8 3v4" stroke="rgba(255,255,255,0.9)" stroke-width="1.2" stroke-linecap="round"/>
