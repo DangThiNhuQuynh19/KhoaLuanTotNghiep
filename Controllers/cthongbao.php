@@ -64,6 +64,7 @@ class cThongBao {
             $bacsi = $bacsi_info->fetch_assoc();
             $mabacsi = $bacsi['mabacsi'];
             $tenbacsi = $bacsi['hoten'];
+            $tentk = $bacsi['tentk']; // Use tentk for WebSocket registration
             
             // Tạo nội dung thông báo
             $tieude = "Kết quả xét nghiệm đã có";
@@ -74,7 +75,7 @@ class cThongBao {
             
             if ($mathongbao) {
                 // Gửi thông báo real-time qua WebSocket
-                $this->send_websocket_notification($mabacsi, $tieude, $noidung, $malichxetnghiem, $mathongbao);
+                $this->send_websocket_notification($tentk, $tieude, $noidung, $malichxetnghiem, $mathongbao);
                 return true;
             }
         }
@@ -83,38 +84,79 @@ class cThongBao {
     }
     
     // Gửi thông báo qua WebSocket
-    private function send_websocket_notification($manguoidung, $tieude, $noidung, $malichxetnghiem, $mathongbao) {
-        // Kết nối đến WebSocket server
+    private function send_websocket_notification($tentk, $tieude, $noidung, $malichxetnghiem, $mathongbao) {
+        // Create notification payload
+        $notification_data = array(
+            'command' => 'notification',
+            'type' => 'ketquaxetnghiem',
+            'receiver' => $tentk,
+            'title' => $tieude,
+            'content' => $noidung,
+            'malichxetnghiem' => $malichxetnghiem,
+            'mathongbao' => $mathongbao,
+            'timestamp' => date('Y-m-d H:i:s')
+        );
+        
+        // Send notification to WebSocket server via HTTP
+        // The WebSocket server should be listening on the same server
         $host = 'localhost';
         $port = 8080;
         
         try {
-            // Tạo payload thông báo
-            $notification_data = array(
-                'command' => 'notification',
-                'type' => 'ketquaxetnghiem',
-                'receiver' => $manguoidung,
-                'title' => $tieude,
-                'content' => $noidung,
-                'malichxetnghiem' => $malichxetnghiem,
-                'mathongbao' => $mathongbao,
-                'timestamp' => date('Y-m-d H:i:s')
-            );
+            // Create a WebSocket client connection
+            $context = stream_context_create();
+            $socket = @stream_socket_client("tcp://{$host}:{$port}", $errno, $errstr, 2, STREAM_CLIENT_CONNECT, $context);
             
-            // Gửi thông báo đến WebSocket server
-            $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
-            if ($socket !== false) {
-                $result = @socket_connect($socket, $host, $port);
-                if ($result) {
-                    $message = json_encode($notification_data);
-                    socket_write($socket, $message, strlen($message));
-                    socket_close($socket);
-                    return true;
+            if ($socket) {
+                // Perform WebSocket handshake
+                $key = base64_encode(random_bytes(16));
+                $handshake = "GET / HTTP/1.1\r\n" .
+                            "Host: {$host}:{$port}\r\n" .
+                            "Upgrade: websocket\r\n" .
+                            "Connection: Upgrade\r\n" .
+                            "Sec-WebSocket-Key: {$key}\r\n" .
+                            "Sec-WebSocket-Version: 13\r\n\r\n";
+                
+                fwrite($socket, $handshake);
+                
+                // Read handshake response
+                $response = '';
+                while ($line = fgets($socket)) {
+                    $response .= $line;
+                    if (trim($line) === '') break;
                 }
-                socket_close($socket);
+                
+                // Send notification message
+                $message = json_encode($notification_data);
+                $messageLength = strlen($message);
+                
+                // WebSocket frame format for text message
+                $frame = chr(0x81); // FIN + text frame
+                if ($messageLength < 126) {
+                    $frame .= chr($messageLength | 0x80); // Mask bit set
+                } else if ($messageLength < 65536) {
+                    $frame .= chr(126 | 0x80) . pack('n', $messageLength);
+                } else {
+                    $frame .= chr(127 | 0x80) . pack('J', $messageLength);
+                }
+                
+                // Add masking key and masked payload
+                $maskingKey = random_bytes(4);
+                $frame .= $maskingKey;
+                for ($i = 0; $i < $messageLength; $i++) {
+                    $frame .= $message[$i] ^ $maskingKey[$i % 4];
+                }
+                
+                fwrite($socket, $frame);
+                fclose($socket);
+                
+                error_log("✅ WebSocket notification sent to {$tentk}");
+                return true;
+            } else {
+                error_log("❌ Failed to connect to WebSocket server: {$errstr}");
             }
         } catch (Exception $e) {
-            error_log("WebSocket notification error: " . $e->getMessage());
+            error_log("❌ WebSocket notification error: " . $e->getMessage());
         }
         
         return false;
