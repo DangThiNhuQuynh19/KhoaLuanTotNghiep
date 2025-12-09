@@ -1,8 +1,3 @@
-/**
- * Notification Handler for Test Result Push Notifications
- * Kết nối WebSocket và xử lý thông báo real-time
- */
-
 <script> 
     class NotificationHandler {
         constructor(username) {
