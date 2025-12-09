@@ -33,15 +33,19 @@ if ($trung) {
 // Tạo mã phiếu khám bệnh
 $maphieukb = 'PKB' . time() . rand(100, 999);
 
+// Trạng thái phiếu khám: 6 = Chờ xác nhận
+$TRANG_THAI_CHO_XAC_NHAN = 6;
+
 // Thêm phiếu khám bệnh
-// Tham số: maphieukb, ngaykham, makhunggiokb, mabacsi (hoặc machuyengia), mabenhnhan, matrangthai
+// Lưu ý: Cột 'mabacsi' trong DB lưu cả mã bác sĩ và mã chuyên gia
+// $manguoidung có thể là mabacsi (VD: '1', '36') hoặc machuyengia (VD: 'CG_77219778')
 $success = $cPhieuKhamBenh->insertphieukham(
     $maphieukb,
     $ngaylam,
     $makhunggiokb,
-    $manguoidung,  // Có thể là mabacsi hoặc machuyengia
+    $manguoidung,  // ID của bác sĩ hoặc chuyên gia
     $mabenhnhan,
-    6  // Trạng thái mặc định (6 = chờ xác nhận hoặc tương tự)
+    $TRANG_THAI_CHO_XAC_NHAN
 );
 
 if ($success) {
