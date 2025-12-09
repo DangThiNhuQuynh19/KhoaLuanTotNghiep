@@ -129,6 +129,7 @@ $labelEnd = date("d/m/Y", strtotime($days[6]));
     font-family: Inter, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
+.body {padding: 20px;}
 
 /* Header */
 .week-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; }
