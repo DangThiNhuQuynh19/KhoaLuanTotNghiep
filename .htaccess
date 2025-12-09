@@ -3,6 +3,7 @@ RewriteEngine On
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !\.(js|css|jpg|jpeg|png|gif|ico|svg|woff|woff2|ttf|eot)$ [NC]
 
 RewriteRule ^(.*)$ index.php?$1 [L,QSA]
 
