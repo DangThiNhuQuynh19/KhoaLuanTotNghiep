@@ -79,7 +79,7 @@ h1 i {
     margin-right: 8px;
 }
 .search-forms {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     padding: 30px;
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
@@ -312,11 +312,6 @@ h1 i {
 <body>
 
 <div class="main-container">
-<div class="text-center">
-    <a href="index.php" class="home-link">
-        <i class="bi bi-house-door-fill"></i> Trang chủ
-    </a>
-</div>
 
 <h1>
     <i class="bi bi-people-fill"></i> Danh sách bác sĩ
