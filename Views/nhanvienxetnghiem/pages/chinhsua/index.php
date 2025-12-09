@@ -97,17 +97,15 @@ $lich = $lichChiTiet[0];
 
 // Extract existing test results if they exist
 $existingResults = [];
-if (!empty($lich['tenchisoxetnghiem'])) {
-    // There are existing test results, collect them
-    foreach ($lichChiTiet as $row) {
-        if (!empty($row['tenchisoxetnghiem'])) {
-            $existingResults[] = [
-                'tenchiso' => $row['tenchisoxetnghiem'],
-                'giatri' => $row['giatriketqua'],
-                'donvi' => $row['donviketqua'],
-                'thamchieu' => $row['khoangthamchieu']
-            ];
-        }
+// Check all rows for existing test results, not just the first one
+foreach ($lichChiTiet as $row) {
+    if (!empty($row['tenchisoxetnghiem'])) {
+        $existingResults[] = [
+            'tenchiso' => $row['tenchisoxetnghiem'],
+            'giatri' => $row['giatriketqua'],
+            'donvi' => $row['donviketqua'],
+            'thamchieu' => $row['khoangthamchieu']
+        ];
     }
 }
 
