@@ -194,6 +194,27 @@ class mtaikhoan{
         }
     }
 
+    public function getSoDuVi($tentk){
+        $con = $this->conn;
+        if(!$con) {
+            return false;
+        }
+        
+        $con->set_charset('utf8mb4');
+        $str = "SELECT vitien FROM taikhoan WHERE tentk = ?";
+        $stmt = $con->prepare($str);
+        $stmt->bind_param("s", $tentk);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $stmt->close();
+        
+        if($result && $result->num_rows > 0){
+            $row = $result->fetch_assoc();
+            return $row['vitien'];
+        }else{
+            return 0;
+        }
+    }
 
 }
 ?>

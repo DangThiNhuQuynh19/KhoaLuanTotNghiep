@@ -79,6 +79,12 @@ class ctaiKhoan {
             }
         }
     }
+
+    public function getSoDuVi($tentk){
+        $p = new mtaikhoan();
+        $result = $p->getSoDuVi($tentk);
+        return $result !== false ? $result : 0;
+    }
     
 }
 ?>
