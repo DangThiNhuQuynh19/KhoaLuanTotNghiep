@@ -183,20 +183,7 @@ if(isset($_POST['btnHoanTat']) || isset($_POST['btnupdate'])) {
     if($cchitiethoso->create_chitiethoso($posted_mahoso, $bacsi['mabacsi'], $trieuchung, $chandoan, $huongdieutri, $madonthuoc, $ketluan) ){
         // After successfully saving the medical record, update the appointment status to matrangthai = 8
         if(!empty($posted_maphieu)){
-            // Prefer controller method if available
-            if(method_exists($cphieukhambenh, 'updateTrangThaiPKB')) {
-                // assumed signature: updateTrangThaiPKB($maphieu, $matrangthai)
-                $okUpdate = $cphieukhambenh->updateTrangThaiPKB($posted_maphieu, 8);
-            } elseif(method_exists($cphieukhambenh, 'update_matrangthai')) {
-                $okUpdate = $cphieukhambenh->update_matrangthai($posted_maphieu, 8);
-            } else {
-                // Fallback direct SQL update
-                if(isset($conn) && $conn){
-                    $mp = $conn->real_escape_string($posted_maphieu);
-                    $okUpdate = $conn->query("UPDATE phieukhambenh SET matrangthai = 8, tentrangthai = 'Đã khám' WHERE maphieukhambenh = '$mp'");
-                } else {
-                    $okUpdate = false;
-                }
+                $okUpdate = $cphieukhambenh->updateTrangThaiPKB($posted_maphieu, "Đã khám");
             }
         } else {
             $okUpdate = false;
@@ -226,7 +213,6 @@ if(isset($_POST['btnHoanTat']) || isset($_POST['btnupdate'])) {
         </script>';
         exit();
     }
-}
 ?>
 <link rel="stylesheet" href="Views/bacsi/assets/css/csschitiethoso.css">
 

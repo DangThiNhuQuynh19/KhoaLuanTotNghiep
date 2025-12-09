@@ -344,7 +344,6 @@
                 return false;
             }
         }
-        
         public function select_phieukhamonl_homnay($manguoidung,$ngay){
             $p = new clsKetNoi();
             $con = $p->moketnoi();

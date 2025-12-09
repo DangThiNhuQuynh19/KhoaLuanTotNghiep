@@ -9,7 +9,7 @@
                 $madonthuoc_sql = $madonthuoc ? "'$madonthuoc'" : "NULL";
 
                 $str = "INSERT INTO chitiethoso(mahoso,mabacsi,ngaykham,trieuchungbandau,chandoan,huongdieutri,madonthuoc,ketluan)
-                VALUES('$mahoso','$mabacsi',CURDATE(),'$trieuchung','$chandoan','$huongdieutri',$madonthuoc_sql,'$ketluan')";
+                VALUES('$mahoso','$mabacsi',NOW(),'$trieuchung','$chandoan','$huongdieutri',$madonthuoc_sql,'$ketluan')";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;
@@ -35,6 +35,7 @@
                 return false; 
             }
         }
+
 
         public function select_chitiethoso_mahoso_chuyengia($mahoso){
             $p = new clsKetNoi();
