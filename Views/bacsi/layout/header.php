@@ -37,18 +37,7 @@
         <!-- Notification Bell Icon -->
         <div class="notification-icon" style="position: relative; margin-right: 20px; cursor: pointer;">
             <i class="fas fa-bell" style="font-size: 20px; color: #333;"></i>
-            <span class="notification-badge" style="
-                position: absolute;
-                top: -8px;
-                right: -8px;
-                background: #ff4444;
-                color: white;
-                border-radius: 50%;
-                padding: 2px 6px;
-                font-size: 11px;
-                font-weight: bold;
-                display: none;
-            ">0</span>
+            <span class="notification-badge" style="position: absolute; top: -8px; right: -8px; background: #ff4444; color: white; border-radius: 50%; padding: 2px 6px; font-size: 11px; font-weight: bold; display: none;">0</span>
         </div>
         
         <div class="user-info">
