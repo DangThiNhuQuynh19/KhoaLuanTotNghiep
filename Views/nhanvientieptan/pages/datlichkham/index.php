@@ -597,7 +597,7 @@ ngayInput.forEach(function(input) {
     input.setAttribute('min', today);
     input.addEventListener('change', function() {
         if(this.value < today){
-            alert('Vui lòng chọn ngày');
+            alert('Vui lòng chọn ngày hợp lệ (không được nhỏ hơn ngày hôm nay)');
             this.value = today;
         }
     });
