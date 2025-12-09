@@ -137,7 +137,7 @@
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if($con){
-                $str = "SELECT SELECT l.*, tt.tentrangthai, loai.tenloaixetnghiem, c.tenchuyenkhoa, 
+                $str = "SELECT l.*, tt.tentrangthai, loai.tenloaixetnghiem, c.tenchuyenkhoa, 
                 k.giobatdau, k.gioketthuc
                 FROM lichxetnghiem AS l
                 JOIN trangthai tt on tt.matrangthai = l.matrangthai
