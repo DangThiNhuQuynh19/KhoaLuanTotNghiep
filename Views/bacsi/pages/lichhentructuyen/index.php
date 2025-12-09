@@ -155,6 +155,7 @@ $paged_list = $total ? array_slice($lichkham_list, $offset, $perPage) : [];
                            <td>
                             <?php
                                 $hosobenhnhan = $chsba->get_mahoso_by_benhnhan_nguoikham($i['mabenhnhan'], $bacsi['machuyenkhoa']);
+                                echo $hosobenhnhan['mahoso'];
                             ?>
                                <?php if($tentrangthai === 'Chưa khám'): ?>
                                 
