@@ -114,6 +114,21 @@
 <!-- Include notification handler script -->
 <script src="Assets/js/notification-handler.js"></script>
 
+<style>
+.notification-item {
+    padding: 15px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.notification-item:hover {
+    background: #f0f0f0 !important;
+}
+.notification-item.unread {
+    background: #f8f9fa;
+}
+</style>
+
 <script>
 document.addEventListener("DOMContentLoaded", function() {
     const dropdown = document.querySelector(".dropdown-menu");
@@ -174,14 +189,19 @@ document.addEventListener("DOMContentLoaded", function() {
             .catch(error => console.error('Error marking all as read:', error));
     });
 
-    // Function to load notifications
-    function loadNotifications() {
-        notificationList.innerHTML = `
+    // Helper function to create loading HTML
+    function getLoadingHTML() {
+        return `
             <div class="notification-loading" style="padding: 40px; text-align: center; color: #999;">
                 <i class="fas fa-spinner fa-spin" style="font-size: 24px;"></i>
                 <p style="margin-top: 10px;">Đang tải thông báo...</p>
             </div>
         `;
+    }
+
+    // Function to load notifications
+    function loadNotifications() {
+        notificationList.innerHTML = getLoadingHTML();
 
         fetch('Ajax/thongbao.php?action=get_all')
             .then(response => response.json())
@@ -196,13 +216,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         `;
                     } else {
                         notificationList.innerHTML = data.data.map(notification => `
-                            <div class="notification-item" data-mathongbao="${notification.mathongbao}" style="
-                                padding: 15px 20px;
-                                border-bottom: 1px solid #f0f0f0;
-                                cursor: pointer;
-                                background: ${notification.daxem == 0 ? '#f8f9fa' : 'white'};
-                                transition: background 0.2s;
-                            " onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='${notification.daxem == 0 ? '#f8f9fa' : 'white'}'">
+                            <div class="notification-item ${notification.daxem == 0 ? 'unread' : ''}" data-mathongbao="${notification.mathongbao}">
                                 <div style="display: flex; gap: 12px;">
                                     <div style="
                                         width: 8px;
