@@ -173,37 +173,28 @@ if(isset($_POST['btnHoanTat']) || isset($_POST['btnupdate'])) {
     if($cchitiethoso->create_chitiethoso($mahoso,$bacsi['mabacsi'],$_POST['trieuchung'] ?? '',$_POST['chandoan'] ?? '',$_POST['huongdieutri'] ?? '',$madonthuoc,$_POST['ketluan'] ?? '') ){
         // After successfully saving the medical record, update the appointment status to "Đã khám"
         $maphieu = 'PKB' . time() . rand(100, 999);
-        if($maphieu){
-            // Try controller method(s) first if available; fallback to direct SQL update if controller does not expose an update function.
-            if(method_exists($cphieukhambenh, 'update_trangthai_phieukhambenh')){
-                // common possible method name in controller
-                $cphieukhambenh->update_trangthai_phieukhambenh($maphieu, 'Đã khám');
-            } elseif(method_exists($cphieukhambenh, 'update_trangthai')){
-                $cphieukhambenh-> updateTrangThaiPKB($maphieu, '8');
-            } else {
-                // Fallback: direct DB update (assumes $conn from Assets/config.php and table/column names)
-                if(isset($conn) && $conn){
-                    $mp = $conn->real_escape_string($maphieu);
-                    // tentrangthai used elsewhere in the listing, set it if that column exists
-                    $conn->query("UPDATE phieukhambenh SET tentrangthai = 'Đã khám' WHERE maphieukhambenh = '$mp'");
-                }
-            }
+        if($cphieukhambenh-> updateTrangThaiPKB($maphieu, '8')){
+            $message = '<strong>Thành công!</strong> Cập nhật hồ sơ thành công';
+            echo '<script>
+                alert("Thành công! Cập nhật hồ sơ thành công");
+                window.location.href = "?action=chitiethoso&mahoso=' . htmlspecialchars($mahoso, ENT_QUOTES, 'UTF-8') . '";
+            </script>';
+            exit();
+        }else{
+            $message = '<strong>Thất bại!</strong> Cập nhật hồ sơ thất bại vui lòng thử lại.';
+            echo '<script>
+                alert("Thất bại!Cập nhật hồ sơ thất bại vui lòng thử lại");
+                window.location.href = "?action=chitiethoso&mahoso=' . htmlspecialchars($mahoso, ENT_QUOTES, 'UTF-8') . '";
+            </script>';
+        exit();
         }
 
-        $message = '<strong>Thành công!</strong> Cập nhật hồ sơ thành công';
-        echo '<script>
-            alert("Thành công! Cập nhật hồ sơ thành công");
-            window.location.href = "?action=chitiethoso&mahoso=' . htmlspecialchars($mahoso, ENT_QUOTES, 'UTF-8') . '";
-        </script>';
-        exit();
-    }
-    else{
+    }else{
         $message = '<strong>Thất bại!</strong> Cập nhật hồ sơ thất bại vui lòng thử lại.';
         echo '<script>
             alert("Thất bại!Cập nhật hồ sơ thất bại vui lòng thử lại");
             window.location.href = "?action=chitiethoso&mahoso=' . htmlspecialchars($mahoso, ENT_QUOTES, 'UTF-8') . '";
         </script>';
-        exit();
     }  
 
 }
