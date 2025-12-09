@@ -25,7 +25,7 @@ class mLichHen {
             /* FIX JOIN CHỐNG DOUBLE */
             JOIN lichlamviec llv 
                 ON llv.manguoidung = pkb.mabacsi
-                AND llv.ngaylamviec = DATE(pkb.ngaykham)
+                AND llv.ngaylam = DATE(pkb.ngaykham)
                 AND llv.makhunggio = pkb.makhunggiokb
 
             JOIN nguoidung bn ON pkb.mabenhnhan = bn.manguoidung
