@@ -459,15 +459,16 @@ class mLichKham {
             }
         
             // Nếu ngày chọn là hôm nay, lọc giờ đã qua
-            $isToday = $ngayChon === date('Y-m-d');
+            $currentDate = date('Y-m-d');
+            $isToday = $ngayChon === $currentDate;
         
             $stmt->bind_param(
                 "ssssss",
                 $ngayChon,   // pkb.ngaykham = ?
                 $manguoi,    // llv.manguoidung = ?
                 $ngayChon,   // llv.ngaylam = ?
-                date('Y-m-d'), // so sánh với hôm nay
-                date('Y-m-d'), // so sánh với hôm nay
+                $currentDate, // so sánh với hôm nay
+                $currentDate, // so sánh với hôm nay
                 $gioHienTai  // kg.giobatdau >= ?
             );
         

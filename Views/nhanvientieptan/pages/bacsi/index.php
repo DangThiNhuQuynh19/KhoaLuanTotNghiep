@@ -182,13 +182,20 @@ h1 i {
 .doctor-name {
     font-size: 26px;
     font-weight: 700;
-    color: #2d3748;
+    color: #667eea;
     margin-bottom: 12px;
     text-transform: uppercase;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+}
+/* Fallback for browsers that don't support background-clip */
+@supports not (background-clip: text) or not (-webkit-background-clip: text) {
+    .doctor-name {
+        background: none;
+        color: #667eea;
+    }
 }
 .doctor-position {
     font-style: italic;
