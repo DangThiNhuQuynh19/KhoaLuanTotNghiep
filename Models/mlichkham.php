@@ -490,8 +490,8 @@ class mLichKham {
             $sql = "
                 SELECT b.mabacsi AS id, nd.hoten, 0 AS vaitro
                 FROM bacsi b 
-                JOIN nguoidung nd ON nd.manguoidung = b.manguoidung
-                WHERE b.manguoidung = '$manguoidung'
+                JOIN nguoidung nd ON nd.manguoidung = b.mabacsi
+                WHERE b.mabacsi = '$manguoidung'
                 LIMIT 1
             ";
             $result = $con->query($sql);
@@ -505,8 +505,8 @@ class mLichKham {
             $sql = "
                 SELECT c.machuyengia AS id, nd.hoten, 1 AS vaitro
                 FROM chuyengia c
-                JOIN nguoidung nd ON nd.manguoidung = c.manguoidung
-                WHERE c.manguoidung = '$manguoidung'
+                JOIN nguoidung nd ON nd.manguoidung = c.machuyengia
+                WHERE c.machuyengia = '$manguoidung'
                 LIMIT 1
             ";
             $result = $con->query($sql);
