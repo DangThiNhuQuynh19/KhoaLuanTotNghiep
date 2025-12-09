@@ -363,7 +363,7 @@
                     <?php if(isset($_SESSION['name'])):?>
                         <div class="user-info">
                             <span class="user-name"><?php echo $_SESSION['name']?></span>
-                            <span class="user-role"><?php echo $vaitro?></span>
+                            <span class="user-role">Bệnh nhân</span>
                         </div>
                     <?php endif ?>
                     <div class="user-info">

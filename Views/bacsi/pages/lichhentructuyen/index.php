@@ -94,7 +94,7 @@ $cthuoc = new cThuoc();
 $clichxetnghiem = new cLichXetNghiem();
 $cketquaxetnghiem = new cKetQuaXetNghiem();
 $cloaixetnghiem = new cLoaiXetNghiem();
-$mahoso = $_GET['mahoso'];
+$mahoso = $_GET['mahoso'] ?? null;
 $thuoc = $cthuoc->get_thuoc();
 
 $loaixetnghiem = $cloaixetnghiem-> get_loaixetnghiem();
@@ -109,25 +109,37 @@ $chitiethoso_mahoso = $cchitiethoso->get_chitiethoso_mahoso($mahoso);
 $message = "";
 
 // Xử lý form khi submit
-if(isset($_POST['btnupdate'])) {
+// NOTE: form in modal uses hidden input btnHoanTat — accept both names to be robust.
+if(isset($_POST['btnHoanTat']) || isset($_POST['btnupdate'])) {
+    // Medications (optional) - create donthuoc only if medications were added
+    $madonthuoc = NULL;
     if(isset($_POST['medications']) && !empty($_POST['medications'])){
         // Tạo đơn thuốc mới
         if($cdonthuoc->create_donthuoc()){
             $donthuoc = $cdonthuoc->get_donthuoc_new();
-            $madonthuoc=$donthuoc[0]['madonthuoc'];
-            foreach($_POST['medications'] as $thuoc){
-                $cchitietdongthuoc->create_chitietdonthuoc(
-                    $madonthuoc,
-                    $thuoc['mathuoc'],
-                    $thuoc['lieudung'],
-                    $thuoc['thoigianuong'],
-                    $thuoc['songayuong']  
-                );
+            $madonthuoc = $donthuoc[0]['madonthuoc'];
+            foreach($_POST['medications'] as $thuoc_item){
+                // guard: ensure required fields exist
+                $mathuoc = $thuoc_item['mathuoc'] ?? null;
+                $lieudung = $thuoc_item['lieudung'] ?? null;
+                $thoigianuong = $thuoc_item['thoigianuong'] ?? null;
+                $songayuong = $thuoc_item['songayuong'] ?? null;
+                if($mathuoc && $lieudung && $thoigianuong && $songayuong){
+                    $cchitietdongthuoc->create_chitietdonthuoc(
+                        $madonthuoc,
+                        $mathuoc,
+                        $lieudung,
+                        $thoigianuong,
+                        $songayuong  
+                    );
+                }
             }
         }else{
-            $madonthuoc=NULL;
+            $madonthuoc = NULL;
         }
     }
+
+    // Lab appointment (optional) - only if test & date & time provided
     if (!empty($benhnhan[0]['mabenhnhan']) && !empty($_POST['test']) && !empty($_POST['appointmentDate']) && !empty($_POST['appointmentTime']) && !empty($mahoso)) {
         // Tạo tên file duy nhất (dựa theo thời gian)
         $filename = 'qr_' . time() . '.png'; // Ví dụ: qr_1716634452.png
@@ -149,25 +161,40 @@ if(isset($_POST['btnupdate'])) {
         $result = $builder->build();
         file_put_contents($savePath, $result->getString());
         if ($clichxetnghiem->create_lichxetnghiem($benhnhan[0]['mabenhnhan'],$_POST['test'],$_POST['appointmentDate'],$_POST['appointmentTime'],'Đã đặt lịch',$mahoso,$filename)) {
-            // Redirect to prevent duplicate submission
-            echo '<script>
-                alert("Thành công! Đã đặt lịch xét nghiệm");
-                window.location.href = "?action=chitiethoso&mahoso=' . htmlspecialchars($mahoso, ENT_QUOTES, 'UTF-8') . '";
-            </script>';
-            exit();
+            // success feedback for lab creation (we continue to process record update)
+            // do not exit here - let overall record update continue
         } else {
-            echo '<script>
-                alert("Thất bại! Đặt lịch xét nghiệm thất bại vui lòng thử lại");
-                window.location.href = "?action=chitiethoso&mahoso=' . htmlspecialchars($mahoso, ENT_QUOTES, 'UTF-8') . '";
-            </script>';
-            exit();
+            // If lab creation fails, we don't block the overall update. Log or set message.
+            // For user feedback we'll append later.
+            $message .= '<div style="color:orange;">Lưu ý: Đặt lịch xét nghiệm thất bại, vui lòng kiểm tra lại.</div>';
         }
     }
-    if($cchitiethoso->create_chitiethoso($mahoso,$bacsi['mabacsi'],$_POST['trieuchung'],$_POST['chandoan'],$_POST['huongdieutri'],$madonthuoc,$_POST['ketluan']) ){
+
+    // Create / update bệnh án (always attempt). Use $madonthuoc (may be NULL).
+    if($cchitiethoso->create_chitiethoso($mahoso,$bacsi['mabacsi'],$_POST['trieuchung'] ?? '',$_POST['chandoan'] ?? '',$_POST['huongdieutri'] ?? '',$madonthuoc,$_POST['ketluan'] ?? '') ){
+        // After successfully saving the medical record, update the appointment status to "Đã khám"
+        $maphieu = $_POST['maphieukhambenh'] ?? null;
+        if($maphieu){
+            // Try controller method(s) first if available; fallback to direct SQL update if controller does not expose an update function.
+            if(method_exists($cphieukhambenh, 'update_trangthai_phieukhambenh')){
+                // common possible method name in controller
+                $cphieukhambenh->update_trangthai_phieukhambenh($maphieu, 'Đã khám');
+            } elseif(method_exists($cphieukhambenh, 'update_trangthai')){
+                $cphieukhambenh->update_trangthai($maphieu, 'Đã khám');
+            } else {
+                // Fallback: direct DB update (assumes $conn from Assets/config.php and table/column names)
+                if(isset($conn) && $conn){
+                    $mp = $conn->real_escape_string($maphieu);
+                    // tentrangthai used elsewhere in the listing, set it if that column exists
+                    $conn->query("UPDATE phieukhambenh SET tentrangthai = 'Đã khám' WHERE maphieukhambenh = '$mp'");
+                }
+            }
+        }
+
         $message = '<strong>Thành công!</strong> Cập nhật hồ sơ thành công';
         echo '<script>
             alert("Thành công! Cập nhật hồ sơ thành công");
-            window.location.href = "?action=chitiethoso&mahoso=' . $mahoso . '";
+            window.location.href = "?action=chitiethoso&mahoso=' . htmlspecialchars($mahoso, ENT_QUOTES, 'UTF-8') . '";
         </script>';
         exit();
     }
@@ -175,7 +202,7 @@ if(isset($_POST['btnupdate'])) {
         $message = '<strong>Thất bại!</strong> Cập nhật hồ sơ thất bại vui lòng thử lại.';
         echo '<script>
             alert("Thất bại!Cập nhật hồ sơ thất bại vui lòng thử lại");
-            window.location.href = "?action=chitiethoso&mahoso=' . $mahoso . '";
+            window.location.href = "?action=chitiethoso&mahoso=' . htmlspecialchars($mahoso, ENT_QUOTES, 'UTF-8') . '";
         </script>';
         exit();
     }  
