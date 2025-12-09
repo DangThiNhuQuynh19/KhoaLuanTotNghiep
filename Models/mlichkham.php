@@ -483,23 +483,43 @@ class mLichKham {
             $con = $p->moketnoi();
             $con->set_charset('utf8');
         
-            // Kiểm tra bác sĩ
-            $sql = "SELECT mabacsi AS id, nd.hoten, 0 AS vaitro FROM bacsi join nguoidung nd on nd.manguoidung = bacsi.mabacsi WHERE mabacsi='$manguoidung' LIMIT 1";
+            // Ép kiểu an toàn
+            $manguoidung = $con->real_escape_string($manguoidung);
+        
+            // Kiểm tra bác sĩ (vaitro = 0)
+            $sql = "
+                SELECT b.mabacsi AS id, nd.hoten, 0 AS vaitro
+                FROM bacsi b 
+                JOIN nguoidung nd ON nd.manguoidung = b.manguoidung
+                WHERE b.manguoidung = '$manguoidung'
+                LIMIT 1
+            ";
             $result = $con->query($sql);
             if ($result && $result->num_rows > 0) {
-                return $result->fetch_assoc();
+                $data = $result->fetch_assoc();
+                $con->close();
+                return $data;
             }
         
-            // Kiểm tra chuyên gia
-            $sql = "SELECT machuyengia AS id, nd.hoten, 1 AS vaitro FROM chuyengia  join nguoidung on nguoidung.manguoidung = chuyengia.machuyengia WHERE machuyengia='$manguoidung' LIMIT 1";
+            // Kiểm tra chuyên gia (vaitro = 1)
+            $sql = "
+                SELECT c.machuyengia AS id, nd.hoten, 1 AS vaitro
+                FROM chuyengia c
+                JOIN nguoidung nd ON nd.manguoidung = c.manguoidung
+                WHERE c.manguoidung = '$manguoidung'
+                LIMIT 1
+            ";
             $result = $con->query($sql);
             if ($result && $result->num_rows > 0) {
-                return $result->fetch_assoc();
+                $data = $result->fetch_assoc();
+                $con->close();
+                return $data;
             }
         
+            $con->close();
             return null; // Không tìm thấy
         }
-
+        
         public function select_lichkham_mabacsi($mabacsi){
             $p = new clsKetNoi();
             $con = $p->moketnoi();
