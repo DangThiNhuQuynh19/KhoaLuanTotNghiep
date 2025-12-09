@@ -119,11 +119,18 @@ class cThongBao {
                 
                 fwrite($socket, $handshake);
                 
-                // Read handshake response
+                // Read handshake response with timeout
                 $response = '';
+                $maxIterations = 100; // Prevent infinite loop
+                $iteration = 0;
                 while ($line = fgets($socket)) {
                     $response .= $line;
                     if (trim($line) === '') break;
+                    if (++$iteration > $maxIterations) {
+                        fclose($socket);
+                        error_log("❌ WebSocket handshake timeout");
+                        return false;
+                    }
                 }
                 
                 // Send notification message

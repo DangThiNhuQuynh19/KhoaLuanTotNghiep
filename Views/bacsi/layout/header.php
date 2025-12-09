@@ -151,8 +151,8 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    // Function to load notifications
-    function loadNotifications() {
+    // Function to load notifications (make it global for retry button)
+    window.loadNotifications = function() {
         notificationList.innerHTML = '<div style="padding: 20px; text-align: center; color: #999;">Đang tải...</div>';
         
         fetch('/Ajax/thongbao.php?action=get_all')
@@ -166,9 +166,23 @@ document.addEventListener("DOMContentLoaded", function() {
             })
             .catch(error => {
                 console.error('Error loading notifications:', error);
-                notificationList.innerHTML = '<div style="padding: 20px; text-align: center; color: #f44336;">Lỗi khi tải thông báo</div>';
+                notificationList.innerHTML = `
+                    <div style="padding: 20px; text-align: center; color: #f44336;">
+                        <i class="fas fa-exclamation-circle" style="font-size: 24px; margin-bottom: 8px;"></i>
+                        <p style="margin: 0;">Không thể tải thông báo</p>
+                        <button onclick="loadNotifications()" style="
+                            margin-top: 12px;
+                            padding: 8px 16px;
+                            background: #2196F3;
+                            color: white;
+                            border: none;
+                            border-radius: 4px;
+                            cursor: pointer;
+                        ">Thử lại</button>
+                    </div>
+                `;
             });
-    }
+    };
 
     // Function to display notifications
     function displayNotifications(notifications) {
@@ -229,11 +243,17 @@ document.addEventListener("DOMContentLoaded", function() {
             fetch(`/Ajax/thongbao.php?action=mark_read&mathongbao=${notification.mathongbao}`)
                 .then(response => response.json())
                 .then(data => {
-                    if (data.success && window.notificationHandler) {
-                        window.notificationHandler.updateNotificationBadge();
+                    if (data.success) {
+                        if (window.notificationHandler) {
+                            window.notificationHandler.updateNotificationBadge();
+                        }
+                    } else {
+                        console.warn('Failed to mark notification as read:', data.message);
                     }
                 })
-                .catch(error => console.error('Error marking notification as read:', error));
+                .catch(error => {
+                    console.error('Error marking notification as read:', error);
+                });
         }
         
         // Navigate to detail if available
@@ -255,9 +275,14 @@ document.addEventListener("DOMContentLoaded", function() {
                     if (window.notificationHandler) {
                         window.notificationHandler.updateNotificationBadge();
                     }
+                } else {
+                    alert('Không thể đánh dấu tất cả đã đọc. Vui lòng thử lại.');
                 }
             })
-            .catch(error => console.error('Error marking all as read:', error));
+            .catch(error => {
+                console.error('Error marking all as read:', error);
+                alert('Có lỗi xảy ra. Vui lòng thử lại.');
+            });
     }
 
     // Function to format date
