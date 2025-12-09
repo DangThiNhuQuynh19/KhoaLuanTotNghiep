@@ -1,10 +1,10 @@
 <?php
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 
-include_once "Controllers/cLichKham.php";
-include_once "Controllers/cBacSi.php";
-include_once "Controllers/cChuyenGia.php";
-include_once "Controllers/cBenhNhan.php";
+include_once "Controllers/clichkham.php";
+include_once "Controllers/cbacsi.php";
+include_once "Controllers/cchuyengia.php";
+include_once "Controllers/cbenhnhan.php";
 
 $cLichKham = new cLichKham();
 $cBacSi = new cBacSi();
