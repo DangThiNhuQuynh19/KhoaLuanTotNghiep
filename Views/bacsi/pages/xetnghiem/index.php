@@ -130,4 +130,4 @@
         </div>
     </div>
 </div>
-<?php require("Views/bacsi/layout/footer.php"); ?>
+

@@ -396,20 +396,6 @@ if(isset($_POST['btnupdate'])) {
         </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="main-footer">
-        <div class="footer-content">
-            <div class="copyright">
-                &copy; <?php echo date('Y'); ?> Bệnh Viện Hạnh Phúc. Tất cả các quyền được bảo lưu.
-            </div>
-            <div class="footer-links">
-                <a href="about.php">Về chúng tôi</a>
-                <a href="privacy.php">Chính sách bảo mật</a>
-                <a href="terms.php">Điều khoản sử dụng</a>
-                <a href="contact.php">Liên hệ</a>
-            </div>
-        </div>
-    </footer>
 
     <!-- Modal Xét nghiệm -->
     <div id="modalxetnghiem" class="modal">

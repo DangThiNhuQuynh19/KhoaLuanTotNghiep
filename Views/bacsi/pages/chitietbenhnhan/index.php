@@ -312,4 +312,4 @@ popup.addEventListener('click', (e) => {
     }
 });
 </script>
-<?php require("Views/bacsi/layout/footer.php"); ?>
+
