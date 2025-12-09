@@ -170,17 +170,16 @@ if(isset($_POST['btnHoanTat']) || isset($_POST['btnupdate'])) {
         }
     }
 
-    // Create / update bệnh án (always attempt). Use $madonthuoc (may be NULL).
     if($cchitiethoso->create_chitiethoso($mahoso,$bacsi['mabacsi'],$_POST['trieuchung'] ?? '',$_POST['chandoan'] ?? '',$_POST['huongdieutri'] ?? '',$madonthuoc,$_POST['ketluan'] ?? '') ){
         // After successfully saving the medical record, update the appointment status to "Đã khám"
-        $maphieu = $_POST['maphieukhambenh'] ?? null;
+        $maphieu = 'PKB' . time() . rand(100, 999);
         if($maphieu){
             // Try controller method(s) first if available; fallback to direct SQL update if controller does not expose an update function.
             if(method_exists($cphieukhambenh, 'update_trangthai_phieukhambenh')){
                 // common possible method name in controller
                 $cphieukhambenh->update_trangthai_phieukhambenh($maphieu, 'Đã khám');
             } elseif(method_exists($cphieukhambenh, 'update_trangthai')){
-                $cphieukhambenh->update_trangthai($maphieu, 'Đã khám');
+                $cphieukhambenh-> updateTrangThaiPKB($maphieu, '8');
             } else {
                 // Fallback: direct DB update (assumes $conn from Assets/config.php and table/column names)
                 if(isset($conn) && $conn){
