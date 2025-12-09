@@ -200,7 +200,7 @@ if(isset($_POST['btnupdate'])) {
                             </div>
                             <div class="patient-data-item">
                                 <div class="data-label">Email</div>
-                                <div class="data-value"><?php echo decryptData($benhnhan[0]['email']); ?></div>
+                                <div class="data-value"><?php echo isset ($benhnhan[0]['email'])? decryptData($benhnhan[0]['email']) : " "; ?></div>
                             </div>
                             <div class="patient-data-item">
                                 <div class="data-label">CCCD</div>
