@@ -461,15 +461,9 @@ class mLichKham {
             // Nếu ngày chọn là hôm nay, lọc giờ đã qua
             $isToday = $ngayChon === date('Y-m-d');
         
-            $stmt->bind_param(
-                "ssssss",
-                $ngayChon,   // pkb.ngaykham = ?
-                $manguoi,    // llv.manguoidung = ?
-                $ngayChon,   // llv.ngaylam = ?
-                date('Y-m-d'), // so sánh với hôm nay
-                date('Y-m-d'), // so sánh với hôm nay
-                $gioHienTai  // kg.giobatdau >= ?
-            );
+            $currentDate = date('Y-m-d');
+            $stmt->bind_param("ssssss", $ngayChon, $manguoi, $ngayChon, 
+            $currentDate, $currentDate, $gioHienTai);
         
             if (!$stmt->execute()) {
                 error_log("Execute failed: " . $stmt->error);
