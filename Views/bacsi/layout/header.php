@@ -19,7 +19,7 @@
 <header class="main-header">
     <div class="logo">
         <a href="?action=trangchu">
-            <img src="Assets/img/logo.png" alt="Hanh Phuc Hospital Logo" style="width:130px;">
+            <img src="/Assets/img/logo.png" alt="Hanh Phuc Hospital Logo" style="width:130px;">
         </a>
     </div>
 
@@ -42,7 +42,7 @@
         
         <div class="user-info">
             <span><?php echo $bacsi["hoten"] ?? 'Bác sĩ'; ?></span>
-            <img src="Assets/img/<?php echo $bacsi["imgbs"]; ?>" class="user-avatar">
+            <img src="/Assets/img/<?php echo $bacsi["imgbs"]; ?>" class="user-avatar">
         </div>
 
         <div class="dropdown-menu">
@@ -54,7 +54,7 @@
 </header>
 
 <!-- Include notification handler script -->
-<script src="Assets/js/notification-handler.js"></script>
+<script src="/Assets/js/notification-handler.js"></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
