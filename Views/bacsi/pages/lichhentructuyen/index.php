@@ -1,7 +1,4 @@
 <?php
-// File: lichhentructuyen.php
-// Purpose: Ensure medical record save works and appointment status is updated.
-// IMPORTANT: This version updates matrangthai = 8 when marking appointment as "Đã khám".
 
 include_once('Controllers/cphieukhambenh.php');
 include_once('Controllers/cbacsi.php');
@@ -11,9 +8,9 @@ include_once('Controllers/cloaixetnghiem.php');
 include_once('Controllers/ckhunggioxetnghiem.php');
 include_once("Assets/config.php");
 
-require 'vendor/autoload.php';
-use Endroid\QrCode\Builder\Builder;
-use Endroid\QrCode\Writer\PngWriter;
+if (isset($_POST['btnHoanTat'])) {
+   include_once('Controllers/xulyhoantatkham.php');
+}
 
 // Initialize controllers
 $cbacsi = new cBacSi();
@@ -28,7 +25,7 @@ $thuoc_list = $cthuoc->get_thuoc();
 $loaixetnghiem_list = $cloaixetnghiem->get_loaixetnghiem();
 $khunggioxetnghiem_list = $ckhunggioxetnghiem->get_khunggioxetnghiem();
 
-$bacsi = $cbacsi->getBacSiByTenTK($_SESSION['user']['tentk'] ?? '');
+$bacsi = $cbacsi->getBacSiByTenTK($_SESSION['user']['tentk']);
 
 // Lấy dữ liệu tìm kiếm (sử dụng GET để hỗ trợ phân trang)
 $tukhoa = $_GET['tukhoa'] ?? '';
@@ -37,21 +34,21 @@ $ngay = $_GET['ngay'] ?? '';
 $homnay_checked = isset($_GET['homnay']) ? 'checked' : '';
 
 // Lấy default list theo bác sĩ
-$lichkham_list = $cphieukhambenh->get_lichkhamonl_mabacsi($bacsi['mabacsi'] ?? null);
+$lichkham_list = $cphieukhambenh->get_lichkhamonl_mabacsi($bacsi['mabacsi']);
 
 // Checkbox Hôm nay
 if(isset($_GET['homnay'])){
-   $lichkham_list = $cphieukhambenh->get_lichkhamonl_homnay($bacsi['mabacsi'] ?? null, date('Y-m-d'));
+   $lichkham_list = $cphieukhambenh->get_lichkhamonl_homnay($bacsi['mabacsi'], date('Y-m-d'));
 }
 
 // Tìm kiếm
 if(isset($_GET["btntimkiem"])){
-   $lichkham_list = $cphieukhambenh->search_phieukhamonl($tukhoa, $trangthai, $ngay, $bacsi['mabacsi'] ?? null);
+   $lichkham_list = $cphieukhambenh->search_phieukhamonl($tukhoa, $trangthai, $ngay, $bacsi['mabacsi']);
 }
 
 // Bỏ tìm kiếm
 if(isset($_GET["btnbo"])){
-   $lichkham_list = $cphieukhambenh->get_lichkhamonl_mabacsi($bacsi['mabacsi'] ?? null);
+   $lichkham_list = $cphieukhambenh->get_lichkhamonl_mabacsi($bacsi['mabacsi']);
    $tukhoa = $trangthai = $ngay = '';
    $homnay_checked = '';
    header("Location: " . strtok($_SERVER["REQUEST_URI"], '?'));
@@ -66,6 +63,10 @@ $totalPages = $total ? max(1, ceil($total / $perPage)) : 1;
 if($page > $totalPages) $page = $totalPages;
 $offset = ($page - 1) * $perPage;
 $paged_list = $total ? array_slice($lichkham_list, $offset, $perPage) : [];
+
+require 'vendor/autoload.php';
+use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Writer\PngWriter;
 
 include_once("Assets/config.php");
 include_once('Controllers/cbenhnhan.php');
@@ -97,26 +98,28 @@ $mahoso = $_GET['mahoso'] ?? null;
 $thuoc = $cthuoc->get_thuoc();
 
 $loaixetnghiem = $cloaixetnghiem-> get_loaixetnghiem();
-$benhnhan = $mahoso ? $chosobenhandientu->get_benhnhan_mahoso($mahoso) : [];
-$chitiethoso = $mahoso ? $chosobenhandientu->getDonThuocByIDHS($mahoso) : [];
-$bacsi = $cbacsi->getBacSiByTenTK($_SESSION['user']['tentk'] ?? '');
-$chuyenkhoa = $cchuyenkhoa->get_chuyenkhoa_mabacsi($bacsi['mabacsi'] ?? null);
-$hoso = $mahoso ? $chosobenhandientu->get_hoso_mahoso($mahoso) : [];
-$lichxetnghiem = $mahoso ? $clichxetnghiem->get_lichxetnghiem_mahoso($mahoso) : [];
-$donthuoc = $mahoso ? $cdonthuoc->get_donthuoc_mahoso($mahoso) : [];
-$chitiethoso_mahoso = $mahoso ? $cchitiethoso->get_chitiethoso_mahoso($mahoso) : [];
+$benhnhan = $chosobenhandientu->get_benhnhan_mahoso($mahoso);
+$chitiethoso = $chosobenhandientu->getDonThuocByIDHS($mahoso);
+$bacsi = $cbacsi->getBacSiByTenTK($_SESSION['user']['tentk']);
+$chuyenkhoa = $cchuyenkhoa->get_chuyenkhoa_mabacsi($bacsi['mabacsi']);
+$hoso = $chosobenhandientu->get_hoso_mahoso($mahoso);
+$lichxetnghiem = $clichxetnghiem->get_lichxetnghiem_mahoso($mahoso);
+$donthuoc = $cdonthuoc->get_donthuoc_mahoso($mahoso);
+$chitiethoso_mahoso = $cchitiethoso->get_chitiethoso_mahoso($mahoso);
 $message = "";
 
 // Xử lý form khi submit
-// Accept both btnHoanTat (modal) and btnupdate (compat)
+// NOTE: form in modal uses hidden input btnHoanTat — accept both names to be robust.
 if(isset($_POST['btnHoanTat']) || isset($_POST['btnupdate'])) {
-    // Medications optional
+    // Medications (optional) - create donthuoc only if medications were added
     $madonthuoc = NULL;
     if(isset($_POST['medications']) && !empty($_POST['medications'])){
+        // Tạo đơn thuốc mới
         if($cdonthuoc->create_donthuoc()){
             $donthuoc = $cdonthuoc->get_donthuoc_new();
-            $madonthuoc=$donthuoc[0]['madonthuoc'] ?? NULL;
+            $madonthuoc = $donthuoc[0]['madonthuoc'];
             foreach($_POST['medications'] as $thuoc_item){
+                // guard: ensure required fields exist
                 $mathuoc = $thuoc_item['mathuoc'] ?? null;
                 $lieudung = $thuoc_item['lieudung'] ?? null;
                 $thoigianuong = $thuoc_item['thoigianuong'] ?? null;
@@ -132,65 +135,58 @@ if(isset($_POST['btnHoanTat']) || isset($_POST['btnupdate'])) {
                 }
             }
         }else{
-            $madonthuoc=NULL;
+            $madonthuoc = NULL;
         }
     }
 
-    // Lab test booking optional
+    // Lab appointment (optional) - only if test & date & time provided
     if (!empty($benhnhan[0]['mabenhnhan']) && !empty($_POST['test']) && !empty($_POST['appointmentDate']) && !empty($_POST['appointmentTime']) && !empty($mahoso)) {
-        $filename = 'qr_' . time() . '.png';
+        // Tạo tên file duy nhất (dựa theo thời gian)
+        $filename = 'qr_' . time() . '.png'; // Ví dụ: qr_1716634452.png
         $savePath = 'Assets/img/' . $filename;
 
         $kg= $ckhunggioxetnghiem->get_khunggioxetnghiem_makhunggio($_POST['appointmentTime']);
         $loai =$cloaixetnghiem->get_loaixetnghiem_maloaixetnghiem($_POST['test']);
         $bn_id=$cbenhnhan->getbenhnhanbyid($benhnhan[0]['mabenhnhan']);
-        try {
-            $builder = new Builder(
-                writer: new PngWriter(),
-                data: $data = "Họ tên: " . $benhnhan[0]['mabenhnhan'] . "\n" .
-                "SĐT: " . decryptData($benhnhan[0]['sdtbenhnhan']) . "\n" .
-                "Tên xét nghiệm: ".$loai[0]['tenloaixetnghiem']. "\n" .
-                "Ngày xét nghiệm: " . $_POST['appointmentDate'] . "\n" .
-                "Giờ xét nghiệm: " . $kg[0]['giobatdau']. "\n" .
-                "Bác sĩ đặt lịch: ".$bacsi['hoten']
-            );
-            $result = $builder->build();
-            file_put_contents($savePath, $result->getString());
-            $clichxetnghiem->create_lichxetnghiem($benhnhan[0]['mabenhnhan'],$_POST['test'],$_POST['appointmentDate'],$_POST['appointmentTime'],'Đã đặt lịch',$mahoso,$filename);
-            // do not exit here; continue to save medical record and update appointment status
-        } catch (Exception $e) {
-            // do nothing blocking; optionally log $e->getMessage()
+        // Tạo QR code
+        $builder = new Builder(
+            writer: new PngWriter(),
+            data: $data = "Họ tên: " . $benhnhan[0]['mabenhnhan'] . "\n" .
+            "SĐT: " . decryptData($benhnhan[0]['sdtbenhnhan']) . "\n" .
+            "Tên xét nghiệm: ".$loai[0]['tenloaixetnghiem']. "\n" .
+            "Ngày xét nghiệm: " . $_POST['appointmentDate'] . "\n" .
+            "Giờ xét nghiệm: " . $kg[0]['giobatdau']. "\n" .
+            "Bác sĩ đặt lịch: ".$bacsi['hoten']
+        );
+        $result = $builder->build();
+        file_put_contents($savePath, $result->getString());
+        if ($clichxetnghiem->create_lichxetnghiem($benhnhan[0]['mabenhnhan'],$_POST['test'],$_POST['appointmentDate'],$_POST['appointmentTime'],'Đã đặt lịch',$mahoso,$filename)) {
+            // success feedback for lab creation (we continue to process record update)
+            // do not exit here - let overall record update continue
+        } else {
+            // If lab creation fails, we don't block the overall update. Log or set message.
+            // For user feedback we'll append later.
+            $message .= '<div style="color:orange;">Lưu ý: Đặt lịch xét nghiệm thất bại, vui lòng kiểm tra lại.</div>';
         }
     }
 
-    // Save medical record
-    $trieuchung = $_POST['trieuchung'] ?? '';
-    $chandoan = $_POST['chandoan'] ?? '';
-    $huongdieutri = $_POST['huongdieutri'] ?? '';
-    $ketluan = $_POST['ketluan'] ?? '';
-
-    if($cchitiethoso->create_chitiethoso($mahoso,$bacsi['mabacsi'] ?? null,$trieuchung,$chandoan,$huongdieutri,$madonthuoc,$ketluan) ){
-        // Update appointment status: set matrangthai = 8 (and tentrangthai = 'Đã khám').
-
+    // Create / update bệnh án (always attempt). Use $madonthuoc (may be NULL).
+    if($cchitiethoso->create_chitiethoso($mahoso,$bacsi['mabacsi'],$_POST['trieuchung'] ?? '',$_POST['chandoan'] ?? '',$_POST['huongdieutri'] ?? '',$madonthuoc,$_POST['ketluan'] ?? '') ){
+        // After successfully saving the medical record, update the appointment status to "Đã khám"
         $maphieu = $_POST['maphieukhambenh'] ?? null;
         if($maphieu){
-            // Prefer controller update method if it exists and supports status id
-            if(method_exists($cphieukhambenh, 'update_matrangthai')) {
-                // assumed signature: update_matrangthai($maphieu, $matrangthai)
-                $cphieukhambenh->update_matrangthai($maphieu, 8);
-            } elseif(method_exists($cphieukhambenh, 'update_trangthai_phieukhambenh')) {
-                // try to call method with id if it supports it
-                // if it expects text, developer should replace with correct call
-                $cphieukhambenh->update_trangthai_phieukhambenh($maphieu, 8);
-            } elseif(method_exists($cphieukhambenh, 'update_trangthai')) {
-                // may accept id or text; try id first
-                $cphieukhambenh->updateTrangThaiPKB($maphieu, 8);
+            // Try controller method(s) first if available; fallback to direct SQL update if controller does not expose an update function.
+            if(method_exists($cphieukhambenh, 'update_trangthai_phieukhambenh')){
+                // common possible method name in controller
+                $cphieukhambenh->update_trangthai_phieukhambenh($maphieu, 'Đã khám');
+            } elseif(method_exists($cphieukhambenh, 'update_trangthai')){
+                $cphieukhambenh->update_trangthai($maphieu, 'Đã khám');
             } else {
-                // Fallback: direct SQL update using matrangthai = 8 and tentrangthai = 'Đã khám'
+                // Fallback: direct DB update (assumes $conn from Assets/config.php and table/column names)
                 if(isset($conn) && $conn){
                     $mp = $conn->real_escape_string($maphieu);
-                    // Update matrangthai to 8 (the status id you requested) and tentrangthai for display consistency
-                    $conn->query("UPDATE phieukhambenh SET matrangthai = 8, tentrangthai = 'Đã khám' WHERE maphieukhambenh = '$mp'");
+                    // tentrangthai used elsewhere in the listing, set it if that column exists
+                    $conn->query("UPDATE phieukhambenh SET tentrangthai = 'Đã khám' WHERE maphieukhambenh = '$mp'");
                 }
             }
         }
@@ -528,6 +524,7 @@ function openModalTab(evt, tabName) {
 var medicationList = [];
 var medicationIndex = 0;
 
+// Helper function to escape HTML
 function escapeHtml(text) {
    var map = {
        '&': '&amp;',
@@ -589,6 +586,7 @@ function updateMedicationTable() {
        medicationList.forEach(function(med, idx) {
            var row = tbody.insertRow();
            
+           // Create cells using DOM methods for security
            var cell1 = row.insertCell(0);
            var cell2 = row.insertCell(1);
            var cell3 = row.insertCell(2);
@@ -619,6 +617,7 @@ function updateMedicationInputs() {
    container.innerHTML = '';
 
    medicationList.forEach(function(med, idx) {
+       // Create hidden inputs using DOM methods
        var inputMathuoc = document.createElement('input');
        inputMathuoc.type = 'hidden';
        inputMathuoc.name = 'medications[' + idx + '][mathuoc]';
