@@ -87,14 +87,7 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     padding-bottom: 30px;
 }
-.container {
-    background-color: #ffffff;
-    border-radius: 20px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-    padding: 30px;
-    margin-top: 30px;
-    margin-bottom: 30px;
-}
+
 .page-header {
     border-bottom: 3px solid #667eea;
     padding-bottom: 15px;
