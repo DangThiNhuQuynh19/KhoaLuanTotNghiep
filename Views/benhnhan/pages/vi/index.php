@@ -21,22 +21,6 @@ $soDuVi = $cTaiKhoan->getSoDuVi($tentk);
     <title>Ví Hạnh Phúc</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
         .wallet-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 30px;
