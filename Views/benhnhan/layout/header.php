@@ -378,6 +378,7 @@
                         <a href="?action=lichhen"><i class="fas fa-calendar-check"></i> Lịch hẹn của bạn</a>
                         <a href="?action=lichxetnghiem"><i class="fas fa-stethoscope"></i> Lịch hẹn xét nghiệm</a>
                         <a href="?action=tinnhan"><i class="fas fa-envelope"></i> Tin nhắn</a>
+                        <a href="?action=vi"><i class="fas fa-wallet"></i> Ví Hạnh Phúc</a>
                         <div class="dropdown-divider"></div>
                         <a href="?action=caidat"><i class="fas fa-cog"></i>Tài khoản bệnh nhân</a>
                         <a href="?action=dangxuat"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
