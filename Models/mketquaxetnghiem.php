@@ -85,7 +85,7 @@ class mKetQuaXetNghiem{
         $p = new clsKetNoi();
         $con = $p->moketnoi();
         $con->set_charset('utf8');
-        //$con->query("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
+        $con->query("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
         if($con){
             $str = "select distinct kq.*, l.*, ct .*, bs.*, bn.*, nd.*, ck.* from ketquaxetnghiem as kq
             join lichxetnghiem as l on kq.malichxetnghiem=l.malichxetnghiem
@@ -95,7 +95,7 @@ class mKetQuaXetNghiem{
             join nguoidung as nd on nd.manguoidung=bn.mabenhnhan    
             join chuyenkhoa as ck on bs.machuyenkhoa=ck.machuyenkhoa
             where ct.mabacsi='$mabacsi'
-            DESC LIMIT 3";
+            ORDER BY ngayhen DESC LIMIT 3";
             $tbl = $con->query($str);
             $p->dongketnoi($con);
             return $tbl;
