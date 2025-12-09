@@ -26,7 +26,7 @@ class mLichHen {
             JOIN lichlamviec llv 
                 ON llv.manguoidung = pkb.mabacsi
                 AND llv.ngaylam = DATE(pkb.ngaykham)
-                AND llv.makhunggio = pkb.makhunggiokb
+                AND llv.giobatdau = pkb.giobatdau
 
             JOIN nguoidung bn ON pkb.mabenhnhan = bn.manguoidung
             JOIN nguoidung nd ON pkb.mabacsi = nd.manguoidung
