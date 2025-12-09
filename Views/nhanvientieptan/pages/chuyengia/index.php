@@ -36,11 +36,7 @@ body {
     margin: 0;
     padding: 20px 0;
 }
-.main-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
+
 h1 {
     text-align: center;
     color: #fff;
