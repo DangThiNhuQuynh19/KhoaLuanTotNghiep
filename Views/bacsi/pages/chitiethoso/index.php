@@ -373,25 +373,38 @@ if(isset($_POST['btnupdate'])) {
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php if(isset($donthuoc)):?>
-                                    <?php $dem = 1; ?>
-                                    <?php foreach ($donthuoc as $i): ?>
+                                <?php
+                                // An toàn: đảm bảo $donthuoc là một mảng trước khi dùng foreach
+                                if (!empty($donthuoc) && is_array($donthuoc)): 
+                                    $dem = 1;
+                                    foreach ($donthuoc as $i):
+                                        // Lấy chi tiết đơn thuốc và bảo đảm dạng mảng để json_encode an toàn
+                                        $chitietdonthuoc = $cchitietdongthuoc->get_chitietdonthuoc_madonthuoc($i['madonthuoc']);
+                                        if (!is_array($chitietdonthuoc)) {
+                                            $chitietdonthuoc = [];
+                                        }
+                                        // JSON cho JS (giữ Unicode)
+                                        $chitietdonthuocJson = json_encode($chitietdonthuoc, JSON_UNESCAPED_UNICODE);
+                                ?>
                                     <tr>
                                         <td><?php echo $dem; ?></td>
                                         <td><?php echo $i['ngaytaodonthuoc']; ?></td>
                                         <td>
-                                            <?php
-                                                $chitietdonthuoc = $cchitietdongthuoc->get_chitietdonthuoc_madonthuoc($i['madonthuoc']);
-                                                $chitietdonthuocJson = json_encode($chitietdonthuoc);
-                                            ?>
                                             <button class="btn-small btn-primary" onclick='openchitietdonthuoc(<?php echo $chitietdonthuocJson; ?>)'>
                                                 Chi tiết
-                                            </button>    
+                                            </button>
                                         </td>
-                                        <?php $dem++; ?>
                                     </tr>
-                                    <?php endforeach; ?>
-                                <?php endif;?>
+                                <?php
+                                    $dem++;
+                                    endforeach;
+                                else:
+                                    // Hiển thị hàng trống / thông báo khi không có đơn thuốc
+                                ?>
+                                    <tr>
+                                        <td colspan="3" style="text-align:center; color:gray;">Chưa có đơn thuốc</td>
+                                    </tr>
+                                <?php endif; ?>
                             </tbody>
                         </table>
                     </div>
