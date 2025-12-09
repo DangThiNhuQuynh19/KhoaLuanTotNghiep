@@ -4,6 +4,7 @@ session_start();
 header('Content-Type: application/json');
 
 include_once('../Controllers/cthongbao.php');
+include_once('../Controllers/cbacsi.php');
 
 // Kiểm tra người dùng đã đăng nhập
 if (!isset($_SESSION['user']) || !isset($_SESSION['user']['tentk'])) {
@@ -11,7 +12,16 @@ if (!isset($_SESSION['user']) || !isset($_SESSION['user']['tentk'])) {
     exit;
 }
 
-$manguoidung = $_SESSION['user']['tentk']; // Lấy username từ session
+// Lấy mã người dùng (mabacsi = manguoidung cho bác sĩ)
+$cbacsi = new cbacsi();
+$bacsi = $cbacsi->getBacSiByTenTK($_SESSION['user']['tentk']);
+
+if ($bacsi === -1 || $bacsi === 0) {
+    echo json_encode(['success' => false, 'message' => 'Không tìm thấy thông tin bác sĩ']);
+    exit;
+}
+
+$manguoidung = $bacsi['mabacsi']; // mabacsi chính là manguoidung
 $action = $_GET['action'] ?? '';
 
 $cThongBao = new cThongBao();
