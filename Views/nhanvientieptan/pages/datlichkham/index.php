@@ -507,7 +507,7 @@ body {
 
 <div class="modal fade" id="modalChonBenhNhan" tabindex="-1" aria-labelledby="modalChonBenhNhanLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <form method="post" action="xulydatlich.php" id="formChonBenhNhan">
+    <form method="post" action="action=xulydatlich" id="formChonBenhNhan">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="modalChonBenhNhanLabel"><i class="bi bi-person-plus-fill"></i> Chọn bệnh nhân</h5>
