@@ -137,7 +137,8 @@
             $con = $p->moketnoi();
             $con->set_charset('utf8');
             if($con){
-                $str = "SELECT * 
+                $str = "SELECT SELECT l.*, tt.tentrangthai, loai.tenloaixetnghiem, c.tenchuyenkhoa, 
+                k.giobatdau, k.gioketthuc
                 FROM lichxetnghiem AS l
                 JOIN trangthai tt on tt.matrangthai = l.matrangthai
                 JOIN hosobenhan AS hs ON l.mahoso = hs.mahoso
@@ -146,7 +147,8 @@
                 JOIN loaixetnghiem AS loai ON l.maloaixetnghiem = loai.maloaixetnghiem
                 JOIN chuyenkhoa AS c ON loai.machuyenkhoa = c.machuyenkhoa
                 JOIN khunggioxetnghiem AS k ON k.makhunggioxetnghiem = l.makhunggio
-                WHERE b.mabenhnhan='$mabenhnhan'";
+                WHERE l.mabenhnhan='$mabenhnhan'
+                ORDER BY l.malichxetnghiem DESC";
                 $tbl = $con->query($str);
                 $p->dongketnoi($con);
                 return $tbl;
