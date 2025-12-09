@@ -200,7 +200,7 @@ class mtaikhoan{
             return false;
         }
         
-        $con->set_charset('utf8');
+        $con->set_charset('utf8mb4');
         $str = "SELECT vitien FROM taikhoan WHERE tentk = ?";
         $stmt = $con->prepare($str);
         $stmt->bind_param("s", $tentk);

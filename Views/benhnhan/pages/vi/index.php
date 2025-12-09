@@ -2,7 +2,7 @@
 include_once(__DIR__ . '/../../../../Controllers/ctaikhoan.php');
 
 // Kiểm tra đăng nhập
-if(!isset($_SESSION['user']['tentk'])){
+if(!isset($_SESSION['user']) || !isset($_SESSION['user']['tentk'])){
     header("Location:index.php?action=dangnhap");
     exit();
 }
@@ -236,7 +236,7 @@ $soDuVi = $cTaiKhoan->getSoDuVi($tentk);
         </div>
 
         <div class="action-buttons">
-            <button class="btn btn-back" onclick="window.location.href='?action=trangchu'">
+            <button class="btn btn-back" id="btnBack">
                 <i class="fas fa-arrow-left"></i>
                 Quay lại
             </button>
@@ -247,5 +247,11 @@ $soDuVi = $cTaiKhoan->getSoDuVi($tentk);
             Số dư ví được sử dụng để thanh toán các dịch vụ khám chữa bệnh tại Bệnh viện Hạnh Phúc
         </div>
     </div>
+    
+    <script>
+        document.getElementById('btnBack').addEventListener('click', function() {
+            window.location.href = '?action=trangchu';
+        });
+    </script>
 </body>
 </html>
