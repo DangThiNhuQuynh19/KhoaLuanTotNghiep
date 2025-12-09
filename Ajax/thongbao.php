@@ -16,7 +16,7 @@ include_once('../Controllers/cbacsi.php');
 $cbacsi = new cbacsi();
 $bacsi = $cbacsi->getBacSiByTenTK($_SESSION['user']['tentk']);
 
-if (!$bacsi || !isset($bacsi['mabacsi'])) {
+if (!$bacsi || !is_array($bacsi) || !isset($bacsi['mabacsi'])) {
     echo json_encode(['success' => false, 'message' => 'Không tìm thấy thông tin bác sĩ']);
     exit;
 }
