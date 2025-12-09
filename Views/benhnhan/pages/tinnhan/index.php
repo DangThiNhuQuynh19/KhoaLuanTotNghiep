@@ -648,6 +648,7 @@ function sendMessage() {
                 displayTextMessage(localMsg);
                 $('#messageInput').val('');
             } else {
+                console.log(currentDoctor.tentk, user.tentk);
                 alert(response.message || 'Bạn chưa có lịch hẹn!');
             }
         },
