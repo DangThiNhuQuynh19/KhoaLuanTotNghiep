@@ -269,7 +269,7 @@ if ($currentTab === 'active') {
                     <td><?= htmlspecialchars($bn['hoten']) ?></td>
                     <td><?= htmlspecialchars($bn['ngaysinh']) ?></td>
                     <td><?= htmlspecialchars($bn['gioitinh']) ?></td>
-                    <td><?= htmlspecialchars(decryptData($bn['sdt'])); ?></td>
+                    <td><?= htmlspecialchars(isset($bn['sdt'])?decryptData($bn['sdt']) : ""); ?></td>
                     <td><?= htmlspecialchars($bn['sonha']) . ', ' . htmlspecialchars($bn['tenxaphuong']) . ', ' . htmlspecialchars($bn['tentinhthanhpho']); ?></td>
                     <td><?= htmlspecialchars(isset($bn['moiquanhevoinguoithan']))?$bn['moiquanhevoinguoithan']:""  ?></td>
                     <td>
