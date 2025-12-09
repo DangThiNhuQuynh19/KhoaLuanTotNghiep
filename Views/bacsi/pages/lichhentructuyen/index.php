@@ -94,32 +94,39 @@ $cthuoc = new cThuoc();
 $clichxetnghiem = new cLichXetNghiem();
 $cketquaxetnghiem = new cKetQuaXetNghiem();
 $cloaixetnghiem = new cLoaiXetNghiem();
-$mahoso = $_GET['mahoso'] ?? null;
 $thuoc = $cthuoc->get_thuoc();
 
 $loaixetnghiem = $cloaixetnghiem-> get_loaixetnghiem();
-$benhnhan = $chosobenhandientu->get_benhnhan_mahoso($mahoso);
-$chitiethoso = $chosobenhandientu->getDonThuocByIDHS($mahoso);
+
+// Note: determine mahoso from POST (modal submission) first, then GET
+$mahoso = $_POST['mahoso'] ?? $_GET['mahoso'] ?? null;
+$benhnhan = $mahoso ? $chosobenhandientu->get_benhnhan_mahoso($mahoso) : [];
+$chitiethoso = $mahoso ? $chosobenhandientu->getDonThuocByIDHS($mahoso) : [];
 $bacsi = $cbacsi->getBacSiByTenTK($_SESSION['user']['tentk']);
 $chuyenkhoa = $cchuyenkhoa->get_chuyenkhoa_mabacsi($bacsi['mabacsi']);
-$hoso = $chosobenhandientu->get_hoso_mahoso($mahoso);
-$lichxetnghiem = $clichxetnghiem->get_lichxetnghiem_mahoso($mahoso);
-$donthuoc = $cdonthuoc->get_donthuoc_mahoso($mahoso);
-$chitiethoso_mahoso = $cchitiethoso->get_chitiethoso_mahoso($mahoso);
+$hoso = $mahoso ? $chosobenhandientu->get_hoso_mahoso($mahoso) : [];
+$lichxetnghiem = $mahoso ? $clichxetnghiem->get_lichxetnghiem_mahoso($mahoso) : [];
+$donthuoc = $mahoso ? $cdonthuoc->get_donthuoc_mahoso($mahoso) : [];
+$chitiethoso_mahoso = $mahoso ? $cchitiethoso->get_chitiethoso_mahoso($mahoso) : [];
 $message = "";
 
-// Xử lý form khi submit
-// NOTE: form in modal uses hidden input btnHoanTat — accept both names to be robust.
+/*
+  Xử lý form khi submit
+  - Accept btnHoanTat (modal) and btnupdate for compatibility
+  - Use posted mahoso and maphieukhambenh from the modal button data attributes
+*/
 if(isset($_POST['btnHoanTat']) || isset($_POST['btnupdate'])) {
-    // Medications (optional) - create donthuoc only if medications were added
+    $posted_mahoso = $_POST['mahoso'] ?? null;
+    $posted_maphieu = $_POST['maphieukhambenh'] ?? null;
+    $posted_mabenhnhan = $_POST['mabenhnhan'] ?? null;
+
+    // Medications (optional)
     $madonthuoc = NULL;
     if(isset($_POST['medications']) && !empty($_POST['medications'])){
-        // Tạo đơn thuốc mới
         if($cdonthuoc->create_donthuoc()){
             $donthuoc = $cdonthuoc->get_donthuoc_new();
-            $madonthuoc = $donthuoc[0]['madonthuoc'];
+            $madonthuoc = $donthuoc[0]['madonthuoc'] ?? NULL;
             foreach($_POST['medications'] as $thuoc_item){
-                // guard: ensure required fields exist
                 $mathuoc = $thuoc_item['mathuoc'] ?? null;
                 $lieudung = $thuoc_item['lieudung'] ?? null;
                 $thoigianuong = $thuoc_item['thoigianuong'] ?? null;
@@ -130,7 +137,7 @@ if(isset($_POST['btnHoanTat']) || isset($_POST['btnupdate'])) {
                         $mathuoc,
                         $lieudung,
                         $thoigianuong,
-                        $songayuong  
+                        $songayuong
                     );
                 }
             }
@@ -139,64 +146,86 @@ if(isset($_POST['btnHoanTat']) || isset($_POST['btnupdate'])) {
         }
     }
 
-    // Lab appointment (optional) - only if test & date & time provided
-    if (!empty($benhnhan[0]['mabenhnhan']) && !empty($_POST['test']) && !empty($_POST['appointmentDate']) && !empty($_POST['appointmentTime']) && !empty($mahoso)) {
-        // Tạo tên file duy nhất (dựa theo thời gian)
-        $filename = 'qr_' . time() . '.png'; // Ví dụ: qr_1716634452.png
+    // Lab appointment (optional)
+    if (!empty($posted_mabenhnhan) && !empty($_POST['test']) && !empty($_POST['appointmentDate']) && !empty($_POST['appointmentTime']) && !empty($posted_mahoso)) {
+        $filename = 'qr_' . time() . '.png';
         $savePath = 'Assets/img/' . $filename;
 
         $kg= $ckhunggioxetnghiem->get_khunggioxetnghiem_makhunggio($_POST['appointmentTime']);
         $loai =$cloaixetnghiem->get_loaixetnghiem_maloaixetnghiem($_POST['test']);
-        $bn_id=$cbenhnhan->getbenhnhanbyid($benhnhan[0]['mabenhnhan']);
-        // Tạo QR code
-        $builder = new Builder(
-            writer: new PngWriter(),
-            data: $data = "Họ tên: " . $benhnhan[0]['mabenhnhan'] . "\n" .
-            "SĐT: " . decryptData($benhnhan[0]['sdtbenhnhan']) . "\n" .
-            "Tên xét nghiệm: ".$loai[0]['tenloaixetnghiem']. "\n" .
-            "Ngày xét nghiệm: " . $_POST['appointmentDate'] . "\n" .
-            "Giờ xét nghiệm: " . $kg[0]['giobatdau']. "\n" .
-            "Bác sĩ đặt lịch: ".$bacsi['hoten']
-        );
-        $result = $builder->build();
-        file_put_contents($savePath, $result->getString());
-        if ($clichxetnghiem->create_lichxetnghiem($benhnhan[0]['mabenhnhan'],$_POST['test'],$_POST['appointmentDate'],$_POST['appointmentTime'],'Đã đặt lịch',$mahoso,$filename)) {
-            // success feedback for lab creation (we continue to process record update)
-            // do not exit here - let overall record update continue
-        } else {
-            // If lab creation fails, we don't block the overall update. Log or set message.
-            // For user feedback we'll append later.
-            $message .= '<div style="color:orange;">Lưu ý: Đặt lịch xét nghiệm thất bại, vui lòng kiểm tra lại.</div>';
+        try {
+            $builder = new Builder(
+                writer: new PngWriter(),
+                data: $data = "Họ tên: " . ($benhnhan[0]['mabenhnhan'] ?? $posted_mabenhnhan) . "\n" .
+                "SĐT: " . (isset($benhnhan[0]['sdtbenhnhan']) ? decryptData($benhnhan[0]['sdtbenhnhan']) : '') . "\n" .
+                "Tên xét nghiệm: ".($loai[0]['tenloaixetnghiem'] ?? ''). "\n" .
+                "Ngày xét nghiệm: " . $_POST['appointmentDate'] . "\n" .
+                "Giờ xét nghiệm: " . ($kg[0]['giobatdau'] ?? '') . "\n" .
+                "Bác sĩ đặt lịch: ".$bacsi['hoten']
+            );
+            $result = $builder->build();
+            file_put_contents($savePath, $result->getString());
+            $ok = $clichxetnghiem->create_lichxetnghiem($posted_mabenhnhan,$_POST['test'],$_POST['appointmentDate'],$_POST['appointmentTime'],'Đã đặt lịch',$posted_mahoso,$filename);
+            if(!$ok){
+                $message .= '<div style="color:orange;">Lưu ý: Đặt lịch xét nghiệm thất bại, vui lòng kiểm tra lại.</div>';
+            }
+        } catch (Exception $e) {
+            $message .= '<div style="color:orange;">Lưu ý: Lỗi khi tạo QR xét nghiệm.</div>';
         }
     }
 
-    if($cchitiethoso->create_chitiethoso($mahoso,$bacsi['mabacsi'],$_POST['trieuchung'] ?? '',$_POST['chandoan'] ?? '',$_POST['huongdieutri'] ?? '',$madonthuoc,$_POST['ketluan'] ?? '') ){
-        // After successfully saving the medical record, update the appointment status to "Đã khám"
-        $maphieu = 'PKB' . time() . rand(100, 999);
-        if($cphieukhambenh-> updateTrangThaiPKB($maphieu, '8')){
+    // Save medical record (use posted_mahoso)
+    $trieuchung = $_POST['trieuchung'] ?? '';
+    $chandoan = $_POST['chandoan'] ?? '';
+    $huongdieutri = $_POST['huongdieutri'] ?? '';
+    $ketluan = $_POST['ketluan'] ?? '';
+
+    if($cchitiethoso->create_chitiethoso($posted_mahoso, $bacsi['mabacsi'], $trieuchung, $chandoan, $huongdieutri, $madonthuoc, $ketluan) ){
+        // After successfully saving the medical record, update the appointment status to matrangthai = 8
+        if(!empty($posted_maphieu)){
+            // Prefer controller method if available
+            if(method_exists($cphieukhambenh, 'updateTrangThaiPKB')) {
+                // assumed signature: updateTrangThaiPKB($maphieu, $matrangthai)
+                $okUpdate = $cphieukhambenh->updateTrangThaiPKB($posted_maphieu, 8);
+            } elseif(method_exists($cphieukhambenh, 'update_matrangthai')) {
+                $okUpdate = $cphieukhambenh->update_matrangthai($posted_maphieu, 8);
+            } else {
+                // Fallback direct SQL update
+                if(isset($conn) && $conn){
+                    $mp = $conn->real_escape_string($posted_maphieu);
+                    $okUpdate = $conn->query("UPDATE phieukhambenh SET matrangthai = 8, tentrangthai = 'Đã khám' WHERE maphieukhambenh = '$mp'");
+                } else {
+                    $okUpdate = false;
+                }
+            }
+        } else {
+            $okUpdate = false;
+        }
+
+        if($okUpdate){
             $message = '<strong>Thành công!</strong> Cập nhật hồ sơ thành công';
             echo '<script>
                 alert("Thành công! Cập nhật hồ sơ thành công");
-                window.location.href = "?action=chitiethoso&mahoso=' . htmlspecialchars($mahoso, ENT_QUOTES, 'UTF-8') . '";
+                window.location.href = "?action=chitiethoso&mahoso=' . htmlspecialchars($posted_mahoso, ENT_QUOTES, 'UTF-8') . '";
             </script>';
             exit();
-        }else{
-            $message = '<strong>Thất bại!</strong> Cập nhật hồ sơ thất bại vui lòng thử lại.';
+        } else {
+            // Record saved but appointment status update failed
+            $message = '<strong>Hoàn tất hồ sơ nhưng không cập nhật trạng thái lịch khám.</strong>';
             echo '<script>
-                alert("Thất bại!Cập nhật hồ sơ thất bại vui lòng thử lại");
-                window.location.href = "?action=chitiethoso&mahoso=' . htmlspecialchars($mahoso, ENT_QUOTES, 'UTF-8') . '";
+                alert("Hoàn tất hồ sơ nhưng không cập nhật trạng thái lịch khám. Vui lòng kiểm tra.");
+                window.location.href = "?action=chitiethoso&mahoso=' . htmlspecialchars($posted_mahoso, ENT_QUOTES, 'UTF-8') . '";
             </script>';
-        exit();
+            exit();
         }
-
-    }else{
+    } else {
         $message = '<strong>Thất bại!</strong> Cập nhật hồ sơ thất bại vui lòng thử lại.';
         echo '<script>
-            alert("Thất bại!Cập nhật hồ sơ thất bại vui lòng thử lại");
-            window.location.href = "?action=chitiethoso&mahoso=' . htmlspecialchars($mahoso, ENT_QUOTES, 'UTF-8') . '";
+            alert("Thất bại! Cập nhật hồ sơ thất bại vui lòng thử lại");
+            window.location.href = "?action=chitiethoso&mahoso=' . htmlspecialchars($posted_mahoso ?? $mahoso, ENT_QUOTES, 'UTF-8') . '";
         </script>';
-    }  
-
+        exit();
+    }
 }
 ?>
 <link rel="stylesheet" href="Views/bacsi/assets/css/csschitiethoso.css">
@@ -279,6 +308,9 @@ if(isset($_POST['btnHoanTat']) || isset($_POST['btnupdate'])) {
                                case 'Chờ thanh toán': $statusClass='status-pending'; break;
                                default: $statusClass='';
                            }
+
+                           // Get mahoso for this patient + specialty
+                           $hosobenhnhan = $chsba->get_mahoso_by_benhnhan_nguoikham($i['mabenhnhan'], $bacsi['machuyenkhoa']);
                        ?>
                        <tr>
                            <td><?php echo htmlspecialchars($i['maphieukhambenh']); ?></td>
@@ -288,18 +320,14 @@ if(isset($_POST['btnHoanTat']) || isset($_POST['btnupdate'])) {
                            <td><?php echo number_format($i['giakham'],0,',','.'); ?> VND</td>
                            <td><span class="status-badge <?php echo $statusClass; ?>"><?php echo htmlspecialchars($i['tentrangthai']); ?></span></td>
                            <td>
-                            <?php
-                                $hosobenhnhan = $chsba->get_mahoso_by_benhnhan_nguoikham($i['mabenhnhan'], $bacsi['machuyenkhoa']);
-                            ?>
                                <?php if($tentrangthai === 'Chưa khám'): ?>
-                                
                                    <a class="btn-primary btn-small" href="?action=tinnhan&id=<?php echo urlencode($i['mabenhnhan']); ?>"><i class="fas fa-comment-medical"></i> Nhắn tin</a>
                                    <button type="button" class="btn-success btn-small btn-kham" 
                                        data-maphieu="<?php echo htmlspecialchars($i['maphieukhambenh']); ?>"
                                        data-mabenhnhan="<?php echo htmlspecialchars($i['mabenhnhan']); ?>"
                                        data-hoten="<?php echo htmlspecialchars($i['hoten']); ?>"
                                        data-ngay="<?php echo htmlspecialchars($i['ngaykham']); ?>"
-                                       data-mahoso = "<?php echo htmlspecialchars ($hosobenhnhan['mahoso'])?>"
+                                       data-mahoso = "<?php echo htmlspecialchars ($hosobenhnhan['mahoso'] ?? ''); ?>"
                                        ><i class="fas fa-stethoscope"></i> Khám</button>
                                <?php endif; ?>
                            </td>
@@ -641,23 +669,19 @@ document.querySelectorAll('.btn-kham').forEach(function(btn){
        var mabenhnhan = btn.getAttribute('data-mabenhnhan');
        var mahoso = btn.getAttribute('data-mahoso');
        var hoten = btn.getAttribute('data-hoten');
-       var ngay = btn.getAttribute('data-ngay');
+       // Note: we no longer use data-ngay for the modal date; set to current date
+       var today = new Date();
+       var yyyy = today.getFullYear();
+       var mm = ('0' + (today.getMonth()+1)).slice(-2);
+       var dd = ('0' + today.getDate()).slice(-2);
 
-       document.getElementById('form_maphieu').value = maphieu;
-       document.getElementById('form_mabenhnhan').value = mabenhnhan;
-       document.getElementById('form_mahoso').value = mahoso;
-       document.getElementById('form_hoten').value = hoten;
+       document.getElementById('form_maphieu').value = maphieu || '';
+       document.getElementById('form_mabenhnhan').value = mabenhnhan || '';
+       document.getElementById('form_mahoso').value = mahoso || '';
+       document.getElementById('form_hoten').value = hoten || '';
        
-       // format ngày cho input date
-       try {
-           var d = new Date(ngay);
-           var yyyy = d.getFullYear();
-           var mm = ('0' + (d.getMonth()+1)).slice(-2);
-           var dd = ('0' + d.getDate()).slice(-2);
-           document.getElementById('form_ngay').value = yyyy + '-' + mm + '-' + dd;
-       } catch(e) {
-           document.getElementById('form_ngay').value = '';
-       }
+       // set ngày khám to current date (user requested)
+       document.getElementById('form_ngay').value = yyyy + '-' + mm + '-' + dd;
 
        // Reset tabs to first tab
        document.querySelectorAll('.update-tab-content').forEach(function(tab) {
@@ -669,12 +693,14 @@ document.querySelectorAll('.btn-kham').forEach(function(btn){
        });
        document.getElementById('diagnosis-tab').style.display = 'block';
        document.getElementById('diagnosis-tab').classList.add('active');
-       document.querySelector('.update-tab-link').classList.add('active');
+       var firstLink = document.querySelector('.update-tab-link');
+       if(firstLink) firstLink.classList.add('active');
 
        // Reset medication list
        medicationList = [];
        medicationIndex = 0;
        updateMedicationTable();
+       updateMedicationInputs();
 
        document.getElementById('modalBackdrop').style.display = 'block';
        document.getElementById('modalBackdrop').setAttribute('aria-hidden','false');
