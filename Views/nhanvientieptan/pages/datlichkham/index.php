@@ -81,42 +81,295 @@ if ($tatCaLich && $tatCaLich->num_rows > 0) {
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <style>
-body { background-color: #f1f5f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-.card-nguoi { margin-bottom: 20px; border-radius: 12px; box-shadow: 0 6px 15px rgba(0,0,0,0.1); border: none; transition: transform 0.2s; }
-.card-nguoi:hover { transform: translateY(-3px); }
-.card.mb-2 { border-radius: 10px; box-shadow: 0 3px 8px rgba(0,0,0,0.05); }
-.card-header { background-color: #e9ecef; font-weight: 600; font-size: 0.95rem; }
-.btn-gio { margin: 4px 4px 4px 0; padding: 6px 12px; font-size: 0.85rem; border-radius: 8px; transition: transform 0.2s, box-shadow 0.2s; }
-.btn-gio:hover { transform: scale(1.05); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
-.btn-online { background-color: #0dcaf0; color: white; }
-.btn-offline { background-color: #198754; color: white; }
-.btn-selected { border: 2px solid #ffc107 !important; background-color: #ffc107 !important; color: black !important; }
-.card-body h5 { margin-bottom: 15px; font-weight: 700; color: #343a40; }
-.ten-loai-kham { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; font-weight: 700; font-size: 0.9rem; border-radius: 8px; color: #fff; margin-top: 15px; }
-.ten-loai-kham.online { background-color: #0dcaf0; color: #fff; }
-.ten-loai-kham.offline { background-color: #28a745; color: #fff; }
-.ten-loai-kham i, .ten-loai-kham { text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
-.card-body h6 { margin-top: 10px; margin-bottom: 8px; font-weight: 600; color: #495057; }
-.ca-group { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 5px; margin-bottom: 10px; }
-form .form-label { font-weight: 600; font-size: 0.9rem; }
-.modal-content { border-radius: 12px; overflow: hidden; }
-.modal-header { background-color: #0d6efd; color: white; }
-.modal-footer button { border-radius: 8px; }
-.select2-container--default .select2-selection--single { border-radius: 8px; height: 38px; padding: 4px 12px; border: 1px solid #ced4da; }
-.select2-container--default .select2-selection--single .select2-selection__rendered { line-height: 28px; }
-.select2-container--default .select2-selection--single .select2-selection__arrow { height: 38px; }
-@media(max-width:768px){ .ca-group { justify-content: flex-start; } .card-body h5 { font-size: 1rem; } }
+body { 
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding-bottom: 30px;
+}
+.container {
+    background-color: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    padding: 30px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+.page-header {
+    border-bottom: 3px solid #667eea;
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+}
+.page-header h1 {
+    color: #2d3748;
+    font-weight: 700;
+    font-size: 2rem;
+}
+.page-header h1 i {
+    color: #667eea;
+    margin-right: 10px;
+}
+.btn-home {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    padding: 10px 20px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+.btn-home:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+.filter-section {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 5px 20px rgba(240, 147, 251, 0.3);
+}
+.filter-section label {
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+.filter-section .form-control,
+.filter-section .form-select {
+    border-radius: 10px;
+    border: 2px solid rgba(255,255,255,0.3);
+    background-color: rgba(255,255,255,0.95);
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+.filter-section .form-control:focus,
+.filter-section .form-select:focus {
+    border-color: #ffffff;
+    box-shadow: 0 0 0 0.2rem rgba(255,255,255,0.3);
+    background-color: #ffffff;
+}
+.btn-primary {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    border: none;
+    font-weight: 600;
+    padding: 10px 25px;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+}
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(79, 172, 254, 0.6);
+}
+.card-nguoi { 
+    margin-bottom: 25px; 
+    border-radius: 20px; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15); 
+    border: none; 
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+.card-nguoi:hover { 
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+}
+.card-nguoi .card-body {
+    padding: 30px;
+}
+.card-nguoi .card-title {
+    color: #2d3748;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 3px solid #667eea;
+}
+.card-nguoi .card-title .badge {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    padding: 8px 15px;
+    font-size: 0.85rem;
+    border-radius: 20px;
+    margin-left: 10px;
+}
+.card.mb-2 { 
+    border-radius: 15px; 
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08); 
+    border: 2px solid #e2e8f0;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+.card.mb-2:hover {
+    border-color: #667eea;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+}
+.card-header { 
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #ffffff;
+    font-weight: 700; 
+    font-size: 1.05rem;
+    padding: 15px 20px;
+    border: none;
+}
+.btn-gio { 
+    margin: 6px 6px 6px 0; 
+    padding: 10px 18px; 
+    font-size: 0.9rem; 
+    font-weight: 600;
+    border-radius: 12px; 
+    border: 2px solid transparent;
+    transition: all 0.3s ease; 
+    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+}
+.btn-gio:hover { 
+    transform: translateY(-3px) scale(1.05); 
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+.btn-online { 
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+    border-color: #00f2fe;
+}
+.btn-online:hover {
+    background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+    color: white;
+}
+.btn-offline { 
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    color: white;
+    border-color: #38f9d7;
+}
+.btn-offline:hover {
+    background: linear-gradient(135deg, #38f9d7 0%, #43e97b 100%);
+    color: white;
+}
+.btn-selected { 
+    border: 3px solid #fbbf24 !important; 
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%) !important;
+    color: #1f2937 !important;
+    font-weight: 700 !important;
+    box-shadow: 0 8px 25px rgba(251, 191, 36, 0.5) !important;
+}
+.ten-loai-kham { 
+    display: inline-flex; 
+    align-items: center; 
+    gap: 8px; 
+    padding: 10px 18px; 
+    font-weight: 700; 
+    font-size: 1rem; 
+    border-radius: 12px; 
+    color: #fff; 
+    margin-top: 20px;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+.ten-loai-kham.online { 
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+.ten-loai-kham.offline { 
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+.ten-loai-kham i { 
+    font-size: 1.2rem;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.3); 
+}
+.card-body strong { 
+    color: #4a5568;
+    font-weight: 700;
+}
+.ca-group { 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 8px; 
+    margin-top: 8px; 
+    margin-bottom: 15px; 
+}
+.modal-content { 
+    border-radius: 20px; 
+    overflow: hidden;
+    border: none;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.modal-header { 
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px 25px;
+    border: none;
+}
+.modal-header .modal-title {
+    font-weight: 700;
+    font-size: 1.3rem;
+}
+.modal-body {
+    padding: 25px;
+}
+.modal-footer {
+    padding: 20px 25px;
+    border-top: 2px solid #e2e8f0;
+}
+.modal-footer button { 
+    border-radius: 10px;
+    padding: 10px 25px;
+    font-weight: 600;
+}
+.btn-success {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    border: none;
+    box-shadow: 0 4px 15px rgba(67, 233, 123, 0.4);
+}
+.btn-success:hover {
+    background: linear-gradient(135deg, #38f9d7 0%, #43e97b 100%);
+    box-shadow: 0 6px 20px rgba(67, 233, 123, 0.6);
+}
+.btn-secondary {
+    background: linear-gradient(135deg, #868f96 0%, #596164 100%);
+    border: none;
+}
+.select2-container--default .select2-selection--single { 
+    border-radius: 10px; 
+    height: 42px; 
+    padding: 6px 15px; 
+    border: 2px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+.select2-container--default .select2-selection--single:focus { 
+    border-color: #667eea;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered { 
+    line-height: 28px;
+    color: #2d3748;
+    font-weight: 500;
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow { 
+    height: 42px; 
+}
+#thongTinCa {
+    background: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 100%);
+    padding: 15px;
+    border-radius: 12px;
+    border-left: 4px solid #667eea;
+    margin-bottom: 20px;
+}
+#thongTinCa strong {
+    color: #4c1d95;
+}
+@media(max-width:768px){ 
+    .ca-group { justify-content: flex-start; } 
+    .card-nguoi .card-title { font-size: 1.2rem; }
+    .page-header h1 { font-size: 1.5rem; }
+    .container { padding: 20px; margin-top: 15px; }
+}
 </style>
 </head>
 <body>
 <div class="container mt-5">
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="m-0"><i class="bi bi-people"></i> Đặt lịch khám</h1>
-    <a href="index.php" class="btn btn-outline-primary"><i class="bi bi-house-door-fill"></i> Trang chủ</a>
+<div class="page-header d-flex justify-content-between align-items-center">
+    <h1 class="m-0"><i class="bi bi-calendar-check-fill"></i> Đặt lịch khám</h1>
+    <a href="index.php" class="btn btn-home text-white"><i class="bi bi-house-door-fill"></i> Trang chủ</a>
 </div>
 
-<form method="post" class="mb-4 row g-3 align-items-end">
+<div class="filter-section">
+<form method="post" class="row g-3 align-items-end">
     <div class="col-auto">
         <label>Chọn hiển thị</label>
         <select name="chonTheo" class="form-select" onchange="this.form.submit()">
@@ -160,18 +413,22 @@ form .form-label { font-weight: 600; font-size: 0.9rem; }
     <?php endif; ?>
 
     <div class="col-auto align-self-end">
-        <button type="submit" class="btn btn-primary">Xem lịch</button>
+        <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> Xem lịch</button>
     </div>
 </form>
+</div>
 
 <?php if (!empty($lichTheoNguoi)) : ?>
 <div class="row">
 <?php foreach ($lichTheoNguoi as $idnguoi => $nguoi): 
     $roleText = $nguoi['vaitro']==0?'Bác sĩ':'Chuyên gia'; ?>
     <div class="col-12">
-        <div class="card card-nguoi mb-4">
+        <div class="card card-nguoi">
             <div class="card-body">
-                <h5 class="card-title"><?= htmlspecialchars($nguoi['hoten']) ?> (<?= $roleText ?>)</h5>
+                <h5 class="card-title">
+                    <?= htmlspecialchars($nguoi['hoten']) ?> 
+                    <span class="badge"><?= $roleText ?></span>
+                </h5>
                 <?php 
                 $lichTheoNgay = [];
                 foreach (['online','offline'] as $loai) {
@@ -190,8 +447,8 @@ form .form-label { font-weight: 600; font-size: 0.9rem; }
 
                 foreach($lichTheoNgay as $ngay => $caNgay): ?>
                     <div class="card mb-2">
-                        <div class="card-header bg-light">
-                            <strong>Ngày: <?= date('d-m-Y', strtotime($ngay)) ?></strong>
+                        <div class="card-header">
+                            <i class="bi bi-calendar3"></i> <strong>Ngày: <?= date('d/m/Y', strtotime($ngay)) ?></strong>
                         </div>
                         <div class="card-body">
                             <?php foreach(['online','offline'] as $loai): ?>
@@ -203,10 +460,10 @@ form .form-label { font-weight: 600; font-size: 0.9rem; }
                                 }
                                 ?>
                                 <?php if($coLich): ?>
-                                    <h6 class="ten-loai-kham <?= $loai ?>">
+                                    <div class="ten-loai-kham <?= $loai ?>">
                                         <i class="bi <?= $loai=='online'?'bi-laptop':'bi-hospital' ?>"></i>
                                         <?= $tenLoai ?>
-                                    </h6>
+                                    </div>
                                     <?php foreach(['Sáng','Chiều','Tối'] as $tenCa): ?>
                                         <?php if(!empty($caNgay[$loai][$tenCa])): 
                                             $thongtinPhong = $caNgay[$loai][$tenCa][0]['thongtin_phong'] ?? '';
@@ -218,16 +475,16 @@ form .form-label { font-weight: 600; font-size: 0.9rem; }
                                                         (<?= htmlspecialchars($thongtinPhong) ?>)
                                                     <?php endif; ?>:
                                                 </strong>
-                                                <div class="ca-group">
+                                                 <div class="ca-group">
                                                     <?php foreach($caNgay[$loai][$tenCa] as $ca): ?>
                                                         <button type="button"
-                                                            class="btn <?= $loai=='online'?'btn-online':'btn-offline' ?> btn-sm btn-gio"
+                                                            class="btn <?= $loai=='online'?'btn-online':'btn-offline' ?> btn-gio"
                                                             data-makhunggiokb="<?= $ca['makhunggiokb'] ?>"
                                                             data-manguoidung="<?= $idnguoi ?>"
                                                             data-ngaylam="<?= $ca['ngaylam'] ?>"
                                                             data-bs-toggle="modal"
                                                             data-bs-target="#modalChonBenhNhan">
-                                                            <?= $ca['giobatdau'] ?> - <?= $ca['gioketthuc'] ?>
+                                                            <i class="bi bi-clock"></i> <?= $ca['giobatdau'] ?> - <?= $ca['gioketthuc'] ?>
                                                         </button>
                                                     <?php endforeach; ?>
                                                 </div>
@@ -245,27 +502,31 @@ form .form-label { font-weight: 600; font-size: 0.9rem; }
 <?php endforeach; ?>
 </div>
 <?php elseif ($chonTheo=='nguoi' && ($bacsi || $chuyengia)): ?>
-<p>Người này chưa có ca khám từ ngày <?= date('d-m-Y', strtotime($ngaychon)) ?> trở đi.</p>
+<div class="alert alert-info" role="alert">
+    <i class="bi bi-info-circle-fill"></i> Người này chưa có ca khám từ ngày <strong><?= date('d/m/Y', strtotime($ngaychon)) ?></strong> trở đi.
+</div>
 <?php elseif ($chonTheo=='ngay'): ?>
-<p>Không có ca khám nào trong ngày <?= date('d-m-Y', strtotime($ngaychon)) ?></p>
+<div class="alert alert-warning" role="alert">
+    <i class="bi bi-exclamation-triangle-fill"></i> Không có ca khám nào trong ngày <strong><?= date('d/m/Y', strtotime($ngaychon)) ?></strong>
+</div>
 <?php endif; ?>
 
 </div>
 
 <div class="modal fade" id="modalChonBenhNhan" tabindex="-1" aria-labelledby="modalChonBenhNhanLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-dialog-centered">
     <form method="post" action="xulydatlich.php" id="formChonBenhNhan">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="modalChonBenhNhanLabel">Chọn bệnh nhân</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <h5 class="modal-title" id="modalChonBenhNhanLabel"><i class="bi bi-person-plus-fill"></i> Chọn bệnh nhân</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <input type="hidden" name="makhunggiokb" id="modal_makhunggiokb">
           <input type="hidden" name="manguoidung" id="modal_manguoidung">
           <input type="hidden" name="ngaylam" id="modal_ngaylam">
           <div class="mb-3">
-            <label for="benhnhan" class="form-label">Bệnh nhân</label>
+            <label for="benhnhan" class="form-label"><i class="bi bi-person-badge"></i> Bệnh nhân</label>
             <select name="mabenhnhan" id="benhnhan" class="form-select" required>
               <option value="">-- Chọn bệnh nhân --</option>
               <?php foreach($dsBenhNhan as $bn): ?>
@@ -275,8 +536,8 @@ form .form-label { font-weight: 600; font-size: 0.9rem; }
           </div>
         </div>
         <div class="modal-footer">
-          <button type="submit" class="btn btn-success">Đặt lịch</button>
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+          <button type="submit" class="btn btn-success"><i class="bi bi-check-circle-fill"></i> Đặt lịch</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-circle"></i> Hủy</button>
         </div>
       </div>
     </form>
