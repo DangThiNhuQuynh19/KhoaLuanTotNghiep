@@ -6,12 +6,22 @@ header('Content-Type: application/json');
 include_once('../Controllers/cthongbao.php');
 
 // Kiểm tra người dùng đã đăng nhập
-if (!isset($_SESSION['user'])) {
+if (!isset($_SESSION['user']) || !isset($_SESSION['user']['tentk'])) {
    echo json_encode(['success' => false, 'message' => 'Chưa đăng nhập']);
    exit;
 }
 
-$manguoidung = $_SESSION['user'];
+// Lấy thông tin bác sĩ từ session
+include_once('../Controllers/cbacsi.php');
+$cbacsi = new cbacsi();
+$bacsi = $cbacsi->getBacSiByTenTK($_SESSION['user']['tentk']);
+
+if (!$bacsi || !is_array($bacsi) || !isset($bacsi['mabacsi'])) {
+    echo json_encode(['success' => false, 'message' => 'Không tìm thấy thông tin bác sĩ']);
+    exit;
+}
+
+$manguoidung = $bacsi['mabacsi'];
 $action = $_GET['action'] ?? '';
 
 $cThongBao = new cThongBao();
