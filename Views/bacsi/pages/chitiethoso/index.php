@@ -43,6 +43,9 @@ $donthuoc = $cdonthuoc->get_donthuoc_mahoso($mahoso);
 $chitiethoso_mahoso = $cchitiethoso->get_chitiethoso_mahoso($mahoso);
 $message = "";
 
+// Fix: ensure $madonthuoc is always defined (NULL if not created)
+$madonthuoc = NULL;
+
 // Xử lý form khi submit
 if(isset($_POST['btnupdate'])) {
     if(isset($_POST['medications']) && !empty($_POST['medications'])){
@@ -63,6 +66,7 @@ if(isset($_POST['btnupdate'])) {
             $madonthuoc=NULL;
         }
     }
+    // Lưu ý: vẫn chỉ tạo lịch xét nghiệm nếu bác sĩ cung cấp đầy đủ test + date + time
     if (!empty($benhnhan[0]['mabenhnhan']) && !empty($_POST['test']) && !empty($_POST['appointmentDate']) && !empty($_POST['appointmentTime']) && !empty($mahoso)) {
         // Tạo tên file duy nhất (dựa theo thời gian)
         $filename = 'qr_' . time() . '.png'; // Ví dụ: qr_1716634452.png
@@ -781,19 +785,9 @@ if(isset($_POST['btnupdate'])) {
             
             if (form) {
                 form.addEventListener("submit", function(e) {
-                    // Nếu đang ở tab đơn thuốc và có thuốc trong danh sách
-                    const activeTab = document.querySelector(".update-tab-content.active");
-                    if (activeTab && activeTab.id === "update-prescription") {
-                        // Kiểm tra xem có thuốc nào trong danh sách không
-                        if (medications.length === 0) {
-                            e.preventDefault(); // Ngăn form submit
-                            alert("Vui lòng thêm ít nhất một loại thuốc vào đơn!");
-                            return false;
-                        }
-                        
-                        // Đảm bảo hidden inputs đã được cập nhật
-                        updateMedicationInputs();
-                    }
+                    // Fix: luôn cập nhật hidden inputs trước khi submit
+                    // Không chặn submit chỉ vì danh sách thuốc trống — cho phép bác sĩ chỉ cập nhật chẩn đoán mà không cần thêm thuốc
+                    updateMedicationInputs();
                 });
             }
         });
