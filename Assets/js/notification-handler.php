@@ -19,7 +19,7 @@
         connect() {
             try {
                 // Kết nối đến WebSocket server
-                this.ws = new WebSocket('ws://localhost:8080');
+                this.ws = new WebSocket("wss://hanhphuc.site/ws");;
                 
                 this.ws.onopen = () => {
                     console.log('✅ WebSocket connected');
