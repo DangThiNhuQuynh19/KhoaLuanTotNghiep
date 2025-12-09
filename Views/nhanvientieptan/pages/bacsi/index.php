@@ -37,16 +37,11 @@ if ($name && $khoa) {
 <style>
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
     margin: 0;
     padding: 20px 0;
 }
-.page-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
+
 h1 {
     text-align: center;
     color: #fff;
@@ -316,7 +311,7 @@ h1 i {
 </head>
 <body>
 
-<div class="page-container">
+<div class="main-container">
 <div class="text-center">
     <a href="index.php" class="home-link">
         <i class="bi bi-house-door-fill"></i> Trang chủ
