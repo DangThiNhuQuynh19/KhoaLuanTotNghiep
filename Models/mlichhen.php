@@ -21,7 +21,7 @@ class mLichHen {
                 tt.tentrangthai
             FROM phieukhambenh pkb
             JOIN khunggiokhambenh kg ON pkb.makhunggiokb = kg.makhunggiokb
-            JOIN lichlamviec llv ON llv.macalamviec = kg.macalamviec
+            LEFT JOIN lichlamviec llv ON llv.macalamviec = kg.macalamviec
             JOIN nguoidung bn ON pkb.mabenhnhan = bn.manguoidung
             JOIN nguoidung nd ON pkb.mabacsi = nd.manguoidung
             LEFT JOIN bacsi bs ON pkb.mabacsi = bs.mabacsi
