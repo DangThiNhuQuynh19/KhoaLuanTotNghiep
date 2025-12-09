@@ -1,6 +1,6 @@
 <?php
 include_once(__DIR__ . '/../Models/mlichkham.php');
-
+date_default_timezone_set('Asia/Ho_Chi_Minh');
 class cLichKham {
     public function getLichKhamOfBacSiByNgay($ngay, $id, $gioHienTai = null) {
         $p = new mLichKham();
