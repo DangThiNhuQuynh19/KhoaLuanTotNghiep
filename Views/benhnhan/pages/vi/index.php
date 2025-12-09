@@ -1,8 +1,8 @@
 <?php
-include_once('Controllers/ctaikhoan.php');
+include_once(__DIR__ . '/../../../../Controllers/ctaikhoan.php');
 
 // Kiểm tra đăng nhập
-if(!isset($_SESSION["dangnhap"]) || !isset($_SESSION["user"])){
+if(!isset($_SESSION['user']['tentk'])){
     header("Location:index.php?action=dangnhap");
     exit();
 }
@@ -214,7 +214,7 @@ $soDuVi = $cTaiKhoan->getSoDuVi($tentk);
                 <i class="fas fa-user-circle"></i>
                 <div class="info-text">
                     <div class="info-label">Tài khoản</div>
-                    <div class="info-value"><?php echo isset($_SESSION['user']['tentk']) ? $_SESSION['user']['tentk'] : 'N/A'; ?></div>
+                    <div class="info-value"><?php echo htmlspecialchars($tentk); ?></div>
                 </div>
             </div>
 
