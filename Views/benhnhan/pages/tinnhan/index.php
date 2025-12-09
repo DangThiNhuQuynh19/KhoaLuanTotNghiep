@@ -21,6 +21,7 @@ $tentk = $_SESSION['user']['tentk'];
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html, body { height: 100%; }
         body {
+            padding-top: 100px;
             font-family: 'Poppins', sans-serif;
             background: #f0f2f5;
             color: #0f1724;
