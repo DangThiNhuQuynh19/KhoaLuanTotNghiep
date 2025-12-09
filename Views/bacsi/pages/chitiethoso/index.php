@@ -84,10 +84,14 @@ if(isset($_POST['btnupdate'])) {
         $result = $builder->build();
         file_put_contents($savePath, $result->getString());
         if ($clichxetnghiem->create_lichxetnghiem($benhnhan[0]['mabenhnhan'],$_POST['test'],$_POST['appointmentDate'],$_POST['appointmentTime'],'Đã đặt lịch',$mahoso,$filename)) {
-            $message = '<strong>Thành công!</strong> Cập nhật hồ sơ thành công';
-            $messageType = 'success';
+            // Redirect to prevent duplicate submission
+            echo '<script>
+                alert("Thành công! Đã đặt lịch xét nghiệm");
+                window.location.href = "?action=chitiethoso&mahoso=' . $mahoso . '";
+            </script>';
+            exit();
         } else {
-            $message = '<strong>Thất bại!</strong> Cập nhật hồ sơ thất bại vui lòng thử lại.';
+            $message = '<strong>Thất bại!</strong> Đặt lịch xét nghiệm thất bại vui lòng thử lại.';
             $messageType = 'error';
         }
     }
