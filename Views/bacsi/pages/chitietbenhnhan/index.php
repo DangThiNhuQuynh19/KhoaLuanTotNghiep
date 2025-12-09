@@ -192,13 +192,13 @@ $active_tab = $_GET['tab'] ?? 'medical-records';
                                         foreach ($lichxetnghiem_list as $i) {
                                             switch ($i['tentrangthai']) {
                                                 case 'Chờ thanh toán':
-                                                    $style = 'status-completed';
+                                                    $style = 'status-pending';
                                                     break;
                                                 case 'Đang thực hiện':
                                                     $style = 'status-processing';
                                                     break;
-                                                case 'Hoàn thành':
-                                                    $style = 'status-pending';
+                                                case 'Đã có kết quả':
+                                                    $style = 'status-completed';
                                                     break;
                                                 case 'Đã hủy':
                                                     $style = 'status-canceled';
