@@ -70,6 +70,119 @@ document.addEventListener("DOMContentLoaded", function() {
     document.addEventListener("click", function() {
         dropdown.classList.remove("show");
     });
+    
+    // Xử lý click vào notification icon
+    const notificationIcon = document.querySelector(".notification-icon");
+    if (notificationIcon) {
+        notificationIcon.addEventListener("click", function(e) {
+            e.stopPropagation();
+            showNotificationDropdown();
+        });
+    }
 });
+
+// Hiển thị dropdown thông báo
+function showNotificationDropdown() {
+    // Kiểm tra xem đã có dropdown chưa
+    let existingDropdown = document.querySelector('.notification-dropdown');
+    if (existingDropdown) {
+        existingDropdown.remove();
+        return; // Toggle off nếu đã mở
+    }
+    
+    // Tạo dropdown
+    const dropdown = document.createElement('div');
+    dropdown.className = 'notification-dropdown';
+    dropdown.style.cssText = `
+        position: absolute;
+        top: 100%;
+        right: 0;
+        margin-top: 10px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        width: 350px;
+        max-height: 400px;
+        overflow-y: auto;
+        z-index: 1000;
+    `;
+    
+    dropdown.innerHTML = '<div style="padding: 12px; text-align: center;">Đang tải...</div>';
+    
+    document.querySelector('.notification-icon').style.position = 'relative';
+    document.querySelector('.notification-icon').appendChild(dropdown);
+    
+    // Tải danh sách thông báo
+    fetch('Ajax/thongbao.php?action=get_all&daxem=0')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (data.data.length === 0) {
+                    dropdown.innerHTML = `
+                        <div style="padding: 20px; text-align: center; color: #999;">
+                            <i class="fas fa-bell-slash" style="font-size: 32px; margin-bottom: 8px;"></i>
+                            <p style="margin: 0;">Không có thông báo mới</p>
+                        </div>
+                    `;
+                } else {
+                    let html = '<div style="padding: 12px; border-bottom: 1px solid #eee; font-weight: 600;">Thông báo</div>';
+                    data.data.forEach(notification => {
+                        html += `
+                            <div class="notification-item" data-mathongbao="${notification.mathongbao}" data-malichxetnghiem="${notification.malichxetnghiem}" style="
+                                padding: 12px;
+                                border-bottom: 1px solid #eee;
+                                cursor: pointer;
+                                background: ${notification.daxem == 0 ? '#f0f8ff' : 'white'};
+                            " onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='${notification.daxem == 0 ? '#f0f8ff' : 'white'}'">
+                                <div style="font-weight: 600; margin-bottom: 4px;">${notification.tieude}</div>
+                                <div style="font-size: 13px; color: #666; margin-bottom: 4px;">${notification.noidung}</div>
+                                <div style="font-size: 11px; color: #999;">${notification.ngaytao}</div>
+                            </div>
+                        `;
+                    });
+                    dropdown.innerHTML = html;
+                    
+                    // Thêm event listener cho mỗi notification item
+                    dropdown.querySelectorAll('.notification-item').forEach(item => {
+                        item.addEventListener('click', function() {
+                            const mathongbao = this.getAttribute('data-mathongbao');
+                            const malichxetnghiem = this.getAttribute('data-malichxetnghiem');
+                            
+                            // Đánh dấu đã đọc
+                            if (mathongbao) {
+                                fetch(`Ajax/thongbao.php?action=mark_read&mathongbao=${mathongbao}`)
+                                    .then(() => {
+                                        if (window.notificationHandler) {
+                                            window.notificationHandler.updateNotificationBadge();
+                                        }
+                                    });
+                            }
+                            
+                            // Chuyển đến trang kết quả xét nghiệm
+                            if (malichxetnghiem) {
+                                window.location.href = `?action=ketquaxetnghiem&id=${malichxetnghiem}`;
+                            }
+                        });
+                    });
+                }
+            } else {
+                dropdown.innerHTML = `<div style="padding: 20px; text-align: center; color: red;">Lỗi: ${data.message}</div>`;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading notifications:', error);
+            dropdown.innerHTML = '<div style="padding: 20px; text-align: center; color: red;">Lỗi tải thông báo</div>';
+        });
+    
+    // Đóng dropdown khi click ra ngoài
+    setTimeout(() => {
+        document.addEventListener('click', function closeDropdown(e) {
+            if (!dropdown.contains(e.target) && !e.target.closest('.notification-icon')) {
+                dropdown.remove();
+                document.removeEventListener('click', closeDropdown);
+            }
+        });
+    }, 100);
+}
 
 </script>

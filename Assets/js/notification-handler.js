@@ -253,7 +253,7 @@ class NotificationHandler {
     markAsRead(mathongbao) {
         if (!mathongbao) return;
         
-        fetch(`/Ajax/thongbao.php?action=mark_read&mathongbao=${mathongbao}`)
+        fetch(`Ajax/thongbao.php?action=mark_read&mathongbao=${mathongbao}`)
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
@@ -264,7 +264,7 @@ class NotificationHandler {
     }
     
     loadUnreadNotifications() {
-        fetch('/Ajax/thongbao.php?action=count_unread')
+        fetch('Ajax/thongbao.php?action=count_unread')
             .then(response => response.json())
             .then(data => {
                 if (data.success) {

@@ -6,12 +6,12 @@ header('Content-Type: application/json');
 include_once('../Controllers/cthongbao.php');
 
 // Kiểm tra người dùng đã đăng nhập
-if (!isset($_SESSION['user'])) {
+if (!isset($_SESSION['user']) || !isset($_SESSION['user']['tentk'])) {
     echo json_encode(['success' => false, 'message' => 'Chưa đăng nhập']);
     exit;
 }
 
-$manguoidung = $_SESSION['user'];
+$manguoidung = $_SESSION['user']['tentk']; // Lấy username từ session
 $action = $_GET['action'] ?? '';
 
 $cThongBao = new cThongBao();
