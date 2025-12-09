@@ -602,6 +602,31 @@ ngayInput.forEach(function(input) {
         }
     });
 });
+
+// Ngăn form submit nhiều lần (double click)
+var isSubmitting = false;
+document.getElementById('formChonBenhNhan').addEventListener('submit', function(e) {
+    if (isSubmitting) {
+        e.preventDefault();
+        return false;
+    }
+    
+    // Kiểm tra bệnh nhân đã được chọn
+    var benhnhanSelect = document.getElementById('benhnhan');
+    if (!benhnhanSelect.value) {
+        e.preventDefault();
+        alert('Vui lòng chọn bệnh nhân!');
+        return false;
+    }
+    
+    isSubmitting = true;
+    // Disable nút submit để ngăn click lại
+    var submitBtn = this.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Đang xử lý...';
+    
+    return true;
+});
 </script>
 </body>
 </html>

@@ -18,7 +18,7 @@ if (!$makhunggiokb || !$manguoidung || !$ngaylam || !$mabenhnhan) {
 }
 
 // Lấy thông tin người khám để phân biệt bác sĩ hay chuyên gia
-$nguoi = $cLichKham->getThongTinNguoi($manguoidung); // giả sử trả về ['vaitro'=>0 hoặc 1, 'hoten'=>...]
+$nguoi = $cLichKham->getThongTinNguoi($manguoidung);
 $vaitro = $nguoi['vaitro'] ?? 0; // 0 = bác sĩ, 1 = chuyên gia
 
 // Kiểm tra trùng lịch cho bệnh nhân
@@ -30,14 +30,19 @@ if ($trung) {
     exit;
 }
 
-// Thêm lịch khám
-if ($vaitro == 0) {
-    // Bác sĩ
-    $success = $cLichKham->datLichChoBacSi($mabenhnhan, $manguoidung, $makhunggiokb, $ngaylam);
-} else {
-    // Chuyên gia
-    $success = $cLichKham->datLichChoChuyenGia($mabenhnhan, $manguoidung, $makhunggiokb, $ngaylam);
-}
+// Tạo mã phiếu khám bệnh
+$maphieukb = 'PKB' . time() . rand(100, 999);
+
+// Thêm phiếu khám bệnh
+// Tham số: maphieukb, ngaykham, makhunggiokb, mabacsi (hoặc machuyengia), mabenhnhan, matrangthai
+$success = $cPhieuKhamBenh->insertphieukham(
+    $maphieukb,
+    $ngaylam,
+    $makhunggiokb,
+    $manguoidung,  // Có thể là mabacsi hoặc machuyengia
+    $mabenhnhan,
+    6  // Trạng thái mặc định (6 = chờ xác nhận hoặc tương tự)
+);
 
 if ($success) {
     echo "<p style='color:green;'>Đặt lịch thành công!</p>";
@@ -46,4 +51,4 @@ if ($success) {
     echo "<p style='color:red;'>Đặt lịch thất bại. Vui lòng thử lại!</p>";
     echo '<p><a href="javascript:history.back()">Quay lại</a></p>';
 }
-?>g
+?>
