@@ -215,7 +215,12 @@ $kq_list=$cketquaxetnghiem->get_ketquaxetnghiem($_GET['id']);
                 
             </div>
         </div>
-
-        
+        <div class="card" style="margin-top: 20px;">
+            <div class="card-body" style="text-align: center;">
+                <a href="?action=chitiethoso&mahoso=<?php echo $kq[0]['mahoso']; ?>" class="btn-primary">
+                    <i class="fas fa-stethoscope"></i> Chẩn đoán
+                </a>
+            </div>
+        </div>        
 </div>
 

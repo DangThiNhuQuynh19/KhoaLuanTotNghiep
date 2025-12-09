@@ -63,6 +63,124 @@ $totalPages = $total ? max(1, ceil($total / $perPage)) : 1;
 if($page > $totalPages) $page = $totalPages;
 $offset = ($page - 1) * $perPage;
 $paged_list = $total ? array_slice($lichkham_list, $offset, $perPage) : [];
+
+require 'vendor/autoload.php';
+use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Writer\PngWriter;
+
+include_once("Assets/config.php");
+include_once('Controllers/cbenhnhan.php');
+include_once('Controllers/cchuyenkhoa.php');
+include_once('Controllers/chosobenhandientu.php');
+include_once('Controllers/cdonthuoc.php');
+include_once('Controllers/cthuoc.php');
+include_once('Controllers/cchitietdonthuoc.php');
+include_once('Controllers/cchitiethoso.php');
+include_once('Controllers/cbacsi.php');
+include_once('Controllers/clichxetnghiem.php');
+include_once('Controllers/cketquaxetnghiem.php');
+include_once('Controllers/cloaixetnghiem.php');
+include_once('Controllers/ckhunggioxetnghiem.php');
+
+$ckhunggioxetnghiem = new cKhungGioXetNghiem();
+$cbacsi = new cBacSi();
+$chosobenhandientu = new cHoSoBenhAnDienTu();
+$cchitietdongthuoc = new cChiTietDonThuoc();
+$cchitiethoso = new cChiTietHoSo();
+$cbenhnhan = new cBenhnhan();
+$cchuyenkhoa = new cChuyenKhoa();
+$cdonthuoc = new cDonThuoc();
+$cthuoc = new cThuoc();
+$clichxetnghiem = new cLichXetNghiem();
+$cketquaxetnghiem = new cKetQuaXetNghiem();
+$cloaixetnghiem = new cLoaiXetNghiem();
+$mahoso = $_GET['mahoso'];
+$thuoc = $cthuoc->get_thuoc();
+
+$loaixetnghiem = $cloaixetnghiem-> get_loaixetnghiem();
+$benhnhan = $chosobenhandientu->get_benhnhan_mahoso($mahoso);
+$chitiethoso = $chosobenhandientu->getDonThuocByIDHS($mahoso);
+$bacsi = $cbacsi->getBacSiByTenTK($_SESSION['user']['tentk']);
+$chuyenkhoa = $cchuyenkhoa->get_chuyenkhoa_mabacsi($bacsi['mabacsi']);
+$hoso = $chosobenhandientu->get_hoso_mahoso($mahoso);
+$lichxetnghiem = $clichxetnghiem->get_lichxetnghiem_mahoso($mahoso);
+$donthuoc = $cdonthuoc->get_donthuoc_mahoso($mahoso);
+$chitiethoso_mahoso = $cchitiethoso->get_chitiethoso_mahoso($mahoso);
+$message = "";
+
+// Xử lý form khi submit
+if(isset($_POST['btnupdate'])) {
+    if(isset($_POST['medications']) && !empty($_POST['medications'])){
+        // Tạo đơn thuốc mới
+        if($cdonthuoc->create_donthuoc()){
+            $donthuoc = $cdonthuoc->get_donthuoc_new();
+            $madonthuoc=$donthuoc[0]['madonthuoc'];
+            foreach($_POST['medications'] as $thuoc){
+                $cchitietdongthuoc->create_chitietdonthuoc(
+                    $madonthuoc,
+                    $thuoc['mathuoc'],
+                    $thuoc['lieudung'],
+                    $thuoc['thoigianuong'],
+                    $thuoc['songayuong']  
+                );
+            }
+        }else{
+            $madonthuoc=NULL;
+        }
+    }
+    if (!empty($benhnhan[0]['mabenhnhan']) && !empty($_POST['test']) && !empty($_POST['appointmentDate']) && !empty($_POST['appointmentTime']) && !empty($mahoso)) {
+        // Tạo tên file duy nhất (dựa theo thời gian)
+        $filename = 'qr_' . time() . '.png'; // Ví dụ: qr_1716634452.png
+        $savePath = 'Assets/img/' . $filename;
+
+        $kg= $ckhunggioxetnghiem->get_khunggioxetnghiem_makhunggio($_POST['appointmentTime']);
+        $loai =$cloaixetnghiem->get_loaixetnghiem_maloaixetnghiem($_POST['test']);
+        $bn_id=$cbenhnhan->getbenhnhanbyid($benhnhan[0]['mabenhnhan']);
+        // Tạo QR code
+        $builder = new Builder(
+            writer: new PngWriter(),
+            data: $data = "Họ tên: " . $benhnhan[0]['mabenhnhan'] . "\n" .
+            "SĐT: " . decryptData($benhnhan[0]['sdtbenhnhan']) . "\n" .
+            "Tên xét nghiệm: ".$loai[0]['tenloaixetnghiem']. "\n" .
+            "Ngày xét nghiệm: " . $_POST['appointmentDate'] . "\n" .
+            "Giờ xét nghiệm: " . $kg[0]['giobatdau']. "\n" .
+            "Bác sĩ đặt lịch: ".$bacsi['hoten']
+        );
+        $result = $builder->build();
+        file_put_contents($savePath, $result->getString());
+        if ($clichxetnghiem->create_lichxetnghiem($benhnhan[0]['mabenhnhan'],$_POST['test'],$_POST['appointmentDate'],$_POST['appointmentTime'],'Đã đặt lịch',$mahoso,$filename)) {
+            // Redirect to prevent duplicate submission
+            echo '<script>
+                alert("Thành công! Đã đặt lịch xét nghiệm");
+                window.location.href = "?action=chitiethoso&mahoso=' . htmlspecialchars($mahoso, ENT_QUOTES, 'UTF-8') . '";
+            </script>';
+            exit();
+        } else {
+            echo '<script>
+                alert("Thất bại! Đặt lịch xét nghiệm thất bại vui lòng thử lại");
+                window.location.href = "?action=chitiethoso&mahoso=' . htmlspecialchars($mahoso, ENT_QUOTES, 'UTF-8') . '";
+            </script>';
+            exit();
+        }
+    }
+    if($cchitiethoso->create_chitiethoso($mahoso,$bacsi['mabacsi'],$_POST['trieuchung'],$_POST['chandoan'],$_POST['huongdieutri'],$madonthuoc,$_POST['ketluan']) ){
+        $message = '<strong>Thành công!</strong> Cập nhật hồ sơ thành công';
+        echo '<script>
+            alert("Thành công! Cập nhật hồ sơ thành công");
+            window.location.href = "?action=chitiethoso&mahoso=' . $mahoso . '";
+        </script>';
+        exit();
+    }
+    else{
+        $message = '<strong>Thất bại!</strong> Cập nhật hồ sơ thất bại vui lòng thử lại.';
+        echo '<script>
+            alert("Thất bại!Cập nhật hồ sơ thất bại vui lòng thử lại");
+            window.location.href = "?action=chitiethoso&mahoso=' . $mahoso . '";
+        </script>';
+        exit();
+    }  
+
+}
 ?>
 <link rel="stylesheet" href="Views/bacsi/assets/css/csschitiethoso.css">
 
@@ -155,7 +273,6 @@ $paged_list = $total ? array_slice($lichkham_list, $offset, $perPage) : [];
                            <td>
                             <?php
                                 $hosobenhnhan = $chsba->get_mahoso_by_benhnhan_nguoikham($i['mabenhnhan'], $bacsi['machuyenkhoa']);
-                                echo $hosobenhnhan['mahoso'];
                             ?>
                                <?php if($tentrangthai === 'Chưa khám'): ?>
                                 
