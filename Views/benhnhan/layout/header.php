@@ -365,11 +365,12 @@
                             <span class="user-name"><?php echo $_SESSION['name']?></span>
                             <span class="user-role">Bệnh nhân</span>
                         </div>
-                    <?php endif ?>
+                    <?php else: ?>
                     <div class="user-info">
                         <span class="user-name"><?php echo $benhnhan["hoten"]?></span>
                         <span class="user-role"><?php echo $vaitro?></span>
                     </div>
+                    <?php endif ?>
                     <div class="dropdown-menu" id="dropdownMenu">
                         <div class="dropdown-header">
                             <h4>Tài khoản của bạn</h4>
