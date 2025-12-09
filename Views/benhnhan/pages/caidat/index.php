@@ -271,7 +271,7 @@ if ($currentTab === 'active') {
                     <td><?= htmlspecialchars($bn['gioitinh']) ?></td>
                     <td><?= htmlspecialchars(decryptData($bn['sdt'])); ?></td>
                     <td><?= htmlspecialchars($bn['sonha']) . ', ' . htmlspecialchars($bn['tenxaphuong']) . ', ' . htmlspecialchars($bn['tentinhthanhpho']); ?></td>
-                    <td><?= htmlspecialchars($bn['moiquanhevoinguoithan']) ?></td>
+                    <td><?= htmlspecialchars(isset($bn['moiquanhevoinguoithan']))?$bn['moiquanhevoinguoithan']:""  ?></td>
                     <td>
                         <?php 
                         $status = $bn['tentrangthai'] ?? 'Đang hoạt động';
