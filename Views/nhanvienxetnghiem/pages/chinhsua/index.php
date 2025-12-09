@@ -95,6 +95,22 @@ if(!$lichChiTiet || $lichChiTiet === 0){
 
 $lich = $lichChiTiet[0];
 
+// Extract existing test results if they exist
+$existingResults = [];
+if (!empty($lich['tenchisoxetnghiem'])) {
+    // There are existing test results, collect them
+    foreach ($lichChiTiet as $row) {
+        if (!empty($row['tenchisoxetnghiem'])) {
+            $existingResults[] = [
+                'tenchiso' => $row['tenchisoxetnghiem'],
+                'giatri' => $row['giatriketqua'],
+                'donvi' => $row['donviketqua'],
+                'thamchieu' => $row['khoangthamchieu']
+            ];
+        }
+    }
+}
+
 // Trạng thái
 $statusMap = [
     10 => ['text'=>'Chờ thanh toán','class'=>'btn-pending'],
@@ -347,13 +363,25 @@ a:hover {
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td><input type="text" name="tenchiso[]" placeholder="VD: Glucose"></td>
-                    <td><input type="text" name="giatri[]" placeholder="VD: 5.6"></td>
-                    <td><input type="text" name="donvi[]" placeholder="VD: mmol/L"></td>
-                    <td><input type="text" name="thamchieu[]" placeholder="VD: 3.9 - 6.4"></td>
-                    <td><button type="button" onclick="removeRow(this)">🗑️</button></td>
-                </tr>
+                <?php if (!empty($existingResults)): ?>
+                    <?php foreach ($existingResults as $result): ?>
+                        <tr>
+                            <td><input type="text" name="tenchiso[]" placeholder="VD: Glucose" value="<?= htmlspecialchars($result['tenchiso']) ?>"></td>
+                            <td><input type="text" name="giatri[]" placeholder="VD: 5.6" value="<?= htmlspecialchars($result['giatri']) ?>"></td>
+                            <td><input type="text" name="donvi[]" placeholder="VD: mmol/L" value="<?= htmlspecialchars($result['donvi']) ?>"></td>
+                            <td><input type="text" name="thamchieu[]" placeholder="VD: 3.9 - 6.4" value="<?= htmlspecialchars($result['thamchieu']) ?>"></td>
+                            <td><button type="button" onclick="removeRow(this)">🗑️</button></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr>
+                        <td><input type="text" name="tenchiso[]" placeholder="VD: Glucose"></td>
+                        <td><input type="text" name="giatri[]" placeholder="VD: 5.6"></td>
+                        <td><input type="text" name="donvi[]" placeholder="VD: mmol/L"></td>
+                        <td><input type="text" name="thamchieu[]" placeholder="VD: 3.9 - 6.4"></td>
+                        <td><button type="button" onclick="removeRow(this)">🗑️</button></td>
+                    </tr>
+                <?php endif; ?>
             </tbody>
         </table>
         <button type="button" onclick="addRow()" style="margin-top:10px; background:#0d6efd;">➕ Thêm chỉ số</button>
