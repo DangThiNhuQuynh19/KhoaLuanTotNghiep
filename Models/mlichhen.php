@@ -28,10 +28,10 @@ class mLichHen {
                 AND llv.ngaylamviec = DATE(pkb.ngaykham)
                 AND llv.makhunggio = pkb.makhunggiokb
 
-            JOIN nguoidung bn ON pkb.mabenhnhan = bn.manguoidung
+            JOIN nguoidung bn ON pkb.mabenhnhan = bn.mabenhnhan
             JOIN nguoidung nd ON pkb.mabacsi = nd.manguoidung
-            LEFT JOIN bacsi bs ON pkb.mabacsi = bs.manguoidung
-            LEFT JOIN chuyengia cg ON pkb.mabacsi = cg.manguoidung
+            LEFT JOIN bacsi bs ON pkb.mabacsi = bs.mabacsi
+            LEFT JOIN chuyengia cg ON pkb.mabacsi = cg.machuyengia
             JOIN trangthai tt ON pkb.matrangthai = tt.matrangthai
             WHERE 1 = 1 ";
 
