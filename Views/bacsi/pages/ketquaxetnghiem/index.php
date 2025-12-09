@@ -217,13 +217,15 @@ $kq_list=$cketquaxetnghiem->get_ketquaxetnghiem($_GET['id']);
         </div>
 
         <!-- Diagnosis Button -->
+        <?php if (!empty($kq) && isset($kq[0]['mahoso'])): ?>
         <div class="card" style="margin-top: 20px;">
             <div class="card-body" style="text-align: center;">
-                <a href="?action=chitiethoso&mahoso=<?php echo $kq[0]['mahoso']; ?>" class="btn-primary">
+                <a href="?action=chitiethoso&mahoso=<?php echo htmlspecialchars($kq[0]['mahoso'], ENT_QUOTES, 'UTF-8'); ?>" class="btn-primary">
                     <i class="fas fa-stethoscope"></i> Chẩn đoán
                 </a>
             </div>
         </div>
+        <?php endif; ?>
         
 </div>
 
