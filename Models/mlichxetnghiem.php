@@ -138,7 +138,7 @@
             $con->set_charset('utf8');
             if($con){
                 $str = "SELECT l.*, tt.tentrangthai, loai.tenloaixetnghiem, c.tenchuyenkhoa, 
-                       k.giobatdau, k.gioketthuc, l.ngayhen
+                       k.giobatdau, k.gioketthuc
                 FROM lichxetnghiem AS l
                 JOIN trangthai tt on tt.matrangthai = l.matrangthai
                 JOIN loaixetnghiem AS loai ON l.maloaixetnghiem = loai.maloaixetnghiem
