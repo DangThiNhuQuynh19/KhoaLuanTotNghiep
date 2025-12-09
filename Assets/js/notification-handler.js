@@ -1,5 +1,4 @@
-<script> 
-    class NotificationHandler {
+class NotificationHandler {
         constructor(username) {
             this.username = username;
             this.ws = null;
@@ -318,4 +317,3 @@
             window.notificationHandler = new NotificationHandler(username);
         }
     });
-</script>
