@@ -205,7 +205,7 @@ if(isset($_POST['btnHoanTat']) || isset($_POST['btnupdate'])) {
             </script>';
             exit();
         }
-    } 
+    }
 ?>
 <link rel="stylesheet" href="Views/bacsi/assets/css/csschitiethoso.css">
 
@@ -648,7 +648,12 @@ document.querySelectorAll('.btn-kham').forEach(function(btn){
        var mabenhnhan = btn.getAttribute('data-mabenhnhan');
        var mahoso = btn.getAttribute('data-mahoso');
        var hoten = btn.getAttribute('data-hoten');
-    
+       // Note: we no longer use data-ngay for the modal date; set to current date
+       var today = new Date();
+       var yyyy = today.getFullYear();
+       var mm = ('0' + (today.getMonth()+1)).slice(-2);
+       var dd = ('0' + today.getDate()).slice(-2);
+
        document.getElementById('form_maphieu').value = maphieu || '';
        document.getElementById('form_mabenhnhan').value = mabenhnhan || '';
        document.getElementById('form_mahoso').value = mahoso || '';
