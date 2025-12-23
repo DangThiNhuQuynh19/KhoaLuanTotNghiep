@@ -74,14 +74,14 @@
                           $_SESSION['popup_title'] = 'Thành công!';
                           $_SESSION['popup_message'] = 'Đã đặt lịch xét nghiệm và gửi email yêu cầu thanh toán đến bệnh nhân.';
                           
-                          // Redirect để tránh insert lần nữa khi F5
-                          header("Location: " . $_SERVER['REQUEST_URI']);
+                          // Redirect to patient details page to prevent duplicate submissions
+                          header("Location: ?action=chitietbenhnhan&id=" . urlencode($_POST['ma_benh_nhan']) . "&tab=tests");
                           exit();
                           
                       } else {
                           $_SESSION['thong_bao'] = '<strong>Cảnh báo!</strong> Đã đặt lịch thành công nhưng không thể gửi email. Vui lòng liên hệ bệnh nhân trực tiếp.';
                           $_SESSION['loai_thong_bao'] = 'canh_bao';
-                          header("Location: " . $_SERVER['REQUEST_URI']);
+                          header("Location: ?action=chitietbenhnhan&id=" . urlencode($_POST['ma_benh_nhan']) . "&tab=tests");
                           exit();
                           
                       }
