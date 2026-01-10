@@ -11,7 +11,8 @@ if (!isset($_SESSION['user'])) {
    exit;
 }
 
-$manguoidung = $_SESSION['user'];
+// Get the actual user identifier (tentk or manguoidung)
+$manguoidung = $_SESSION['user']['tentk'] ?? $_SESSION['user']['manguoidung'] ?? $_SESSION['user'];
 $action = $_GET['action'] ?? '';
 
 $cThongBao = new cThongBao();

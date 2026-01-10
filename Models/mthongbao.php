@@ -113,11 +113,12 @@ class mThongBao {
         
         if ($con) {
             $malichxetnghiem = intval($malichxetnghiem);
-            $str = "SELECT ct.mabacsi, nd.hoten, nd.email 
+            $str = "SELECT ct.mabacsi, nd.hoten, nd.email, tk.tentk 
                     FROM lichxetnghiem l 
                     JOIN hosobenhan hs ON l.mahoso = hs.mahoso
                     JOIN chitiethoso ct ON ct.mahoso = hs.mahoso
                     JOIN nguoidung nd ON nd.manguoidung = ct.mabacsi
+                    JOIN taikhoan tk ON tk.mataikhoan = nd.mataikhoan
                     WHERE l.malichxetnghiem = $malichxetnghiem
                     LIMIT 1";
             
